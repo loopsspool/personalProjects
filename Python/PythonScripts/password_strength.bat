@@ -1,0 +1,1 @@
+@py.exe C:\PythonScripts\password_strength.py %*

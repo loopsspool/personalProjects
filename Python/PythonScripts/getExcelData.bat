@@ -1,0 +1,1 @@
+@py.exe C:\PythonScripts\getExcelData.py %*

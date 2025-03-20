@@ -1,0 +1,1 @@
+@py.exe C:\\Users\\ejone\\Desktop\\Code\\Javascript\\p5\\projects\\write_index_for.py %*

@@ -1,0 +1,24 @@
+@viewport 
+{
+   width: device-width ;
+   zoom: 1.0 ;
+}
+
+@media screen and (max-width:400px) {
+   .scaled
+   {
+      transform: scale(1.0);
+      transform-origin: top left;
+   }
+}
+
+html
+{
+   background-color: #666666;
+}
+
+.scaled
+{
+   transform: scale(2);
+   transform-origin: top left;
+}

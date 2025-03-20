@@ -1,0 +1,1 @@
+@py.exe C:\PythonScripts\write_batch_for.py %*

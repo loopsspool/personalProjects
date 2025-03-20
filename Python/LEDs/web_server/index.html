@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+   <head>
+      <meta name="viewport" content="width=device-width, initial-scale=1">
+      <link rel="stylesheet" type="text/css" href="style.css/?version1">
+   </head>
+   <body class="scaled">
+
+      <form action="/" method="POST" id="led settings" name="led settings">
+
+         <label for="effect" id="effect label" name="effect label">Effects:</label>
+         <br>
+         <select id="effect" name="effect" onchange="this.form.submit()">
+            <option value="Off">Off</option>
+            <option value="" disabled></option>
+
+            <optgroup label="Static Effects">
+               <option value="Color">Color</option>
+            </optgroup>
+            <option value="" disabled></option>
+
+            <optgroup label="Animated Effects">
+               <option value="Animated alternating colors">Alternating colors</option>
+               <option value="Color fade">Color fade</option>
+               <option value="Twinkle">Twinkle</option>
+               <option value="Random">Random</option>
+            </optgroup>
+         </select>
+         <br>
+         <br>
+
+         <label for="colors" id="colors label" name="colors label">Color:</label>
+         <br>
+         <div id="colors">
+            <input type="color" id="color0" name="color0" value="#FF4614" onchange="this.form.submit()">
+            <input type="color" id="color1" name="color1" value="#FF4614" style="display:none;" onchange="this.form.submit()">
+            <input type="color" id="color2" name="color2" value="#FF4614" style="display:none;" onchange="this.form.submit()">
+            <input type="color" id="color3" name="color3" value="#FF4614" style="display:none;" onchange="this.form.submit()">
+            <input type="color" id="color4" name="color4" value="#FF4614" style="display:none;" onchange="this.form.submit()">
+            <input type="color" id="color5" name="color5" value="#FF4614" style="display:none;" onchange="this.form.submit()">
+            <input type="color" id="color6" name="color6" value="#FF4614" style="display:none;" onchange="this.form.submit()">
+            <input type="color" id="color7" name="color7" value="#FF4614" style="display:none;" onchange="this.form.submit()">
+            <input type="color" id="color8" name="color8" value="#FF4614" style="display:none;" onchange="this.form.submit()">
+            <input type="color" id="color9" name="color9" value="#FF4614" style="display:none;" onchange="this.form.submit()">
+
+            <br>
+
+            <input type="button" id="add color button" name="add color button" value="Add color" onclick="inc_color()">
+            <input type="button" id="remove color button" name="remove color button" value="Remove color" onclick="dec_color()">
+            <input type="number" id="amount of colors" name="amount of colors" defaultValue=1 value=1 min=1 max=10 style="display:none;">
+
+            <br>
+            <label for="mult color style" id="mult color style label" name="mult color style label">Multiple color style:</label>
+            <div id="mult color style">
+               <input type="radio" id="alternating style" name="mult color style" value="alternating" checked="checked" onclick="alternating_radio()">
+               <label for="alternating style">Alternating</label>
+               <input type="radio" id="block style" name="mult color style" value="block" onclick="block_radio()">
+               <label for="block style">Block</label>
+
+               <br>
+
+               <div id="block sizes">
+                  <input type="number" id="block size 0" name="block size 0" defaultValue=2 value=2 min=1 style="display:none;" onchange="this.form.submit()">
+                  <input type="number" id="block size 1" name="block size 1" defaultValue=2 value=2 min=1 style="display:none;" onchange="this.form.submit()">
+                  <input type="number" id="block size 2" name="block size 2" defaultValue=2 value=2 min=1 style="display:none;" onchange="this.form.submit()">
+                  <input type="number" id="block size 3" name="block size 3" defaultValue=2 value=2 min=1 style="display:none;" onchange="this.form.submit()">
+                  <input type="number" id="block size 4" name="block size 4" defaultValue=2 value=2 min=1 style="display:none;" onchange="this.form.submit()">
+                  <input type="number" id="block size 5" name="block size 5" defaultValue=2 value=2 min=1 style="display:none;" onchange="this.form.submit()">
+                  <input type="number" id="block size 6" name="block size 6" defaultValue=2 value=2 min=1 style="display:none;" onchange="this.form.submit()">
+                  <input type="number" id="block size 7" name="block size 7" defaultValue=2 value=2 min=1 style="display:none;" onchange="this.form.submit()">
+                  <input type="number" id="block size 8" name="block size 8" defaultValue=2 value=2 min=1 style="display:none;" onchange="this.form.submit()">
+                  <input type="number" id="block size 9" name="block size 9" defaultValue=2 value=2 min=1 style="display:none;" onchange="this.form.submit()">
+               </div>
+
+               <!-- Value for checkboxes is what's submitted when checked, not it's current state -->
+               <label for="mult block sizes checkbox" id="mult block sizes checkbox label" name="mult block sizes checkbox label">Enable multiple block sizes</label>
+               <input type="checkbox" id="mult block sizes checkbox" name="mult block sizes checkbox" value="True" style="display:none;" onchange="this.form.submit()">
+            </div>            
+         </div>
+         <br>
+
+         <label for="mult brightnesses checkbox" id="mult brightnesses checkbox label" name="mult brightnesses checkbox label" style="display:none;">Enable multiple brightnesses</label>
+         <input type="checkbox" id="mult brightnesses checkbox" name="mult brightnesses checkbox" value="True" style="display:none;" onchange="this.form.submit()">
+         <br>
+         <br>
+
+         <label for="brightness" id="brightness label" name="brightness label">Brightness:</label>
+         <div id="brightnesses">
+            <input type="range" id="brightness0" name="brightness0" value=50 min=0 max=100 onchange="this.form.submit()">
+            <input type="range" id="brightness1" name="brightness1" value=50 min=0 max=100 style="display:none;" onchange="this.form.submit()">
+            <input type="range" id="brightness2" name="brightness2" value=50 min=0 max=100 style="display:none;" onchange="this.form.submit()">
+            <input type="range" id="brightness3" name="brightness3" value=50 min=0 max=100 style="display:none;" onchange="this.form.submit()">
+            <input type="range" id="brightness4" name="brightness4" value=50 min=0 max=100 style="display:none;" onchange="this.form.submit()">
+            <input type="range" id="brightness5" name="brightness5" value=50 min=0 max=100 style="display:none;" onchange="this.form.submit()">
+            <input type="range" id="brightness6" name="brightness6" value=50 min=0 max=100 style="display:none;" onchange="this.form.submit()">
+            <input type="range" id="brightness7" name="brightness7" value=50 min=0 max=100 style="display:none;" onchange="this.form.submit()">
+            <input type="range" id="brightness8" name="brightness8" value=50 min=0 max=100 style="display:none;" onchange="this.form.submit()">
+            <input type="range" id="brightness9" name="brightness9" value=50 min=0 max=100 style="display:none;" onchange="this.form.submit()">
+         </div>
+         <br>
+
+         <label for="animated speed slider" id="animated speed slider label" name="animated speed slider label" style="display:none;">Animated Effect Speed</label>
+         <br>
+         <div>
+            <input type="range" id="animated speed slider" name="animated speed slider" value=50 min=0 max=100 style="display:none;" onchange="this.form.submit()">
+         </div>
+         <br>
+         <h3 id="timer notice" name="timer notice" style="display:none;">Lights are currently sleeping. Change the timer times to wake them up!</h3>
+         <br>
+         <label for="timer" id="timer label" name="timer label">Timer (24hr):</label>
+         <br>
+         <!-- Number type because safari stupidly doesn't support time input -->
+         On hour: <input type="number" id="on time" name="on time" defaultValue=6 value=6 min=0 max=23 onchange="this.form.submit()"><br>
+         Off hour: <input type="number" id="off time" name="off time" defaultValue=2 value=2 min=0 max=23 onchange="this.form.submit()">
+         <br>
+         <br>
+         Raspberry Pi temperature is: {{ temp }}
+
+
+         <script>
+            const form = document.getElementById("led settings");
+            const form_elements = form.elements; // HTMLFormControlsCollection
+            const colors = document.querySelectorAll("input[type=color]"); // NodeList
+            const block_sizes = document.getElementById("block sizes").children;  // HTMLCollection
+            const brightnesses = document.getElementById("brightnesses").children;  // HTMLCollection
+            const labels = document.getElementsByTagName("LABEL"); // HTMLCollection
+
+            var form_elements_arr = Array.prototype.slice.call(form_elements, 0);
+            var labels_arr = Array.prototype.slice.call(labels, 0);
+            const form_elements_wtih_labels = form_elements_arr.concat(labels_arr);
+
+            function hide(...elements)
+            {
+               for (let i = 0; i < elements.length; i++)
+               {
+                  if (typeof(elements[i]) === "string") // Checks if element is passed by id
+                     document.getElementById(elements[i]).style = "display:none;";
+                  if (typeof(elements[i]) === "object") // Checks if element is passed by element
+                     elements[i].style = "display:none;";
+               }
+            }
+
+            function hide_all_except(...except)
+            {
+               for (let i = 0; i < form_elements_wtih_labels.length; i++)
+               {
+                  if (except.includes(form_elements_wtih_labels[i].id))
+                     continue;
+                  else
+                     hide(form_elements_wtih_labels[i]);
+               }
+            }
+
+            function show(...elements)
+            {
+               for (let i = 0; i < elements.length; i++)
+               {
+                  if (typeof(elements[i]) === "string") // Checks if element is passed by id
+                     document.getElementById(elements[i]).style = "display:inline;";
+                  if (typeof(elements[i]) === "object") // Checks if element is passed by element
+                     elements[i].style = "display:inline;";
+               }
+            }
+
+            // This is a workaround to update amount of colors localStorage
+            // Fires change event when changing value through js
+            var changed = new Event("change");
+
+            // Keeps track of amount of colors
+            function inc_color()
+            {
+               num = parseInt(form_elements["amount of colors"].value);
+               if (num < form_elements["amount of colors"].max)
+               {
+                  num++;
+                  form_elements["amount of colors"].value = num;
+                  form_elements["amount of colors"].dispatchEvent(changed);
+                  form.submit();
+               }
+            }
+
+            function dec_color()
+            {
+               num = parseInt(form_elements["amount of colors"].value);
+               if (num > form_elements["amount of colors"].min)
+               {
+                  num--;
+                  form_elements["amount of colors"].value = num;
+                  form_elements["amount of colors"].dispatchEvent(changed);
+                  form.submit();
+               }
+            }
+
+            // Since only one radio can be checked at a time
+            // And my localStorage triggers onchange, which would only be setting the one to true, while the others true
+               // The last radio defaults to true in that case
+            // These explicitly set one to true, the other to false, push both to localStorage, and submit the form
+            function alternating_radio()
+            {
+               form_elements["block style"].checked = false;
+               form_elements["alternating style"].checked = true;
+               form_elements["block style"].dispatchEvent(changed);
+               form_elements["alternating style"].dispatchEvent(changed);
+               //hide("mult block sizes checkbox label", "mult block sizes checkbox");
+               form.submit();
+            }
+
+            function block_radio()
+            {
+               form_elements["alternating style"].checked = false;
+               form_elements["block style"].checked = true;
+               form_elements["block style"].dispatchEvent(changed);
+               form_elements["alternating style"].dispatchEvent(changed);
+               //show("mult block sizes checkbox label", "mult block sizes checkbox");
+               form.submit();
+            }
+
+            // Saves form values across refreshes/form submits
+            for(let i = 0; i < form_elements.length; i++)
+            {
+               // Skips the add/remove color buttons since they don't need a change event listener
+               if (form_elements[i].id == "add color" ||
+                   form_elements[i].id == "remove color")
+               {
+                  continue;
+               }
+
+               // Saves value
+               form_elements[i].addEventListener("change", function() {
+                  // Since checkboxes don't have a value attribute, must use checked attribute
+                  if (this.type === "checkbox" ||
+                      this.type === "radio")
+                        localStorage.setItem(this.id, this.checked);
+                  else
+                     localStorage.setItem(this.id, this.value);
+               });
+
+               // Sets value
+               let val = localStorage.getItem(form_elements[i].id);
+               if (val) 
+               {
+                  // Since localStorage stores values only as strings
+                  // Boolean values must be converted from a string back to boolean
+                     // to be assigned to a checked attribute
+                  if (form_elements[i].type === "checkbox" ||
+                      form_elements[i].type === "radio")
+                  {
+                     form_elements[i].checked = (val == "true");
+                  }
+                  else
+                     form_elements[i].value = val; 
+               }
+            }
+
+
+            //////////////////////////////////////////////////// SHOWING/HIDING ELEMENTS ////////////////////////////////////////////////////
+
+            // Only to check if animated effect speed slider should show
+            var animated_effects = [
+               "Animated alternating colors",
+               "Color fade",
+               "Twinkle",
+               "Random"
+            ];
+
+            var has_mult_brightnesses = form_elements["mult brightnesses checkbox"].checked;
+            var has_mult_block_sizes = form_elements["mult block sizes checkbox"].checked;
+
+            // Shows number of colors and brightnesses
+            // Yet another workaround...
+            // Can't be put in add/remove color button functions because form submit removes styling
+            // Using localStorage because of accessing the value of amount of colors wasn't working
+               // Something to do with value element and value property/ value = defaultValue/ etc
+            let amount_of_colors = parseInt(localStorage.getItem(form_elements["amount of colors"].id));
+            // TODO: Function-ize all this
+            if (amount_of_colors) 
+            {
+               if (amount_of_colors > 1)
+               {
+                  // Shows multiple brightness and multiple color style information
+                  show("mult brightnesses checkbox label", "mult brightnesses checkbox",
+                       "mult color style label", "mult color style",
+                       "mult block sizes checkbox label", "mult block sizes checkbox");
+
+                  // Shows single or multiple block sizes
+                  if (form_elements["block style"].checked)
+                  {
+                     // TODO: Base the 350 on the amount of leds somehow (hardcode?)
+                     show("block size 0");
+                     document.getElementById("block size 0").max = Math.ceil(350/amount_of_colors);
+                     if (document.getElementById("block size 0").value > Math.ceil(350/amount_of_colors))
+                        document.getElementById("block size 0").value = Math.ceil(350/amount_of_colors)
+
+                     if (has_mult_block_sizes)
+                     {
+                        for (let i = 1; i < amount_of_colors; i++)
+                        {
+                           show(block_sizes[i]);
+                           block_sizes[i].max = Math.ceil(350/amount_of_colors);
+
+                           if (block_sizes[i].value > Math.ceil(350/amount_of_colors))
+                              block_sizes[i].value = Math.ceil(350/amount_of_colors)
+                        }
+                     }
+                     else
+                     {
+                        for (let i = 1; i < amount_of_colors; i++)
+                           hide(block_sizes[i]);
+                     }
+                  }
+                  else
+                  {
+                     hide("mult block sizes checkbox label", "mult block sizes checkbox");
+                     for (let i = 1; i < amount_of_colors; i++)
+                        hide(block_sizes[i]);
+                  }
+               }
+               // If amount of colors == 1
+               else
+               {
+                  // Hide all the stuff depending on multiple colors
+                  hide("mult brightnesses checkbox label", "mult brightnesses checkbox",
+                       "mult color style label", "mult color style",
+                       "mult block sizes checkbox label", "mult block sizes checkbox");
+                  
+                  for (let i = 0; i < amount_of_colors; i++)
+                     hide(block_sizes[i]);
+               }
+               // Shows colors and brightnesses
+               for (let i = 0; i < amount_of_colors; i++)
+               {
+                  show(colors[i]);
+
+                  if (has_mult_brightnesses)
+                     show(brightnesses[i]);
+               }
+            }
+      
+            // Animated effects speed slider
+            if (animated_effects.includes(form_elements["effect"].value))
+               show("animated speed slider label", "animated speed slider");
+            else
+               hide("animated speed slider label", "animated speed slider");
+
+            // Off call
+            if (form_elements["effect"].value == "Off")
+               hide_all_except("effect label", "effect");
+
+            // Random call
+            // TODO: This will eventually be taken out when the Random effect is converted into a random button
+            if (form_elements["effect"].value == "Random")
+            {
+               hide_all_except("effect label",
+                               "effect",
+                               "brightness label",
+                               "brightness0",
+                               "animated speed slider label",
+                               "animated speed slider",
+                              );
+            }
+
+            // TODO: Reload page when timer starts/stops
+            var current_hour = new Date().getHours();
+            let off_time = parseInt(localStorage.getItem(form_elements["off time"].id));
+            let on_time = parseInt(localStorage.getItem(form_elements["on time"].id));
+            if (on_time && off_time)
+            {
+               currently_off_time = false;
+               if (off_time <= on_time)
+                  currently_off_time = (off_time <= current_hour) && (current_hour < on_time);
+               else
+                  currently_off_time = (off_time < current_hour) || (current_hour <= on_time);
+
+               if (currently_off_time)
+               {
+                  hide_all_except("timer label", "on time", "off time");
+                  document.getElementsByTagName("h3")[0].style = "display:inline;";
+               }
+               else
+                  document.getElementsByTagName("h3")[0].style = "display:none;";;
+            }
+            show("timer label", "on time", "off time");
+
+         </script>
+         
+      </form>
+      
+   </body>
+</html>

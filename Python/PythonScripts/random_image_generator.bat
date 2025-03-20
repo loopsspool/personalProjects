@@ -1,0 +1,1 @@
+@py.exe C:\PythonScripts\random_image_generator.py %*
