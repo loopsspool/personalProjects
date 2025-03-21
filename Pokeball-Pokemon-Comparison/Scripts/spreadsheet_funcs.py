@@ -3,52 +3,51 @@ import openpyxl     # For reading excel workbook
 
 from globals import *
 
-# TODO: Change these so sheet is first variable
-def cell_value(row, col, sheet):
+def cell_value(sheet, row, col):
     return (sheet.cell(row, col).value)
 
-def isnt_empty(row, col, sheet):
-    return (cell_value(row, col, sheet) != None)
+def isnt_empty(sheet, row, col):
+    return (cell_value(sheet, row, col) != None)
 
-def is_empty(row, col, sheet):
-    return (cell_value(row, col, sheet) == None)
+def is_empty(sheet, row, col):
+    return (cell_value(sheet, row, col) == None)
 
 # Returns column number from column name
-def get_col_number(col_name, sheet):
+def get_col_number(sheet, col_name):
     for col in range(1, sheet.max_column):
-        if (cell_value(1, col, sheet) == col_name):
+        if (cell_value(sheet, 1, col) == col_name):
             return col
 
 # Returns column name from column number
-def get_col_name(col_number, sheet):
-    return(cell_value(1, col_number, sheet))
+def get_col_name(sheet, col_number):
+    return(cell_value(sheet, 1, col_number))
 
 # TODO: Add pokemon start and to go after start, so this isnt running unecessarily
 def generate_pokedex_from_spreadsheet():
     print("Getting pokemon info from spreadsheet...")
-    name_col = get_col_number("Name", pokemon_info_sheet)
-    num_col = get_col_number("#", pokemon_info_sheet)
-    gen_col = get_col_number("Gen", pokemon_info_sheet)
-    f_col = get_col_number("Female Variation", pokemon_info_sheet)
-    mega_col = get_col_number("Mega", pokemon_info_sheet)
-    giganta_col = get_col_number("Gigantamax", pokemon_info_sheet)
-    reg_forms_col = get_col_number("Regional Forms", pokemon_info_sheet)
-    type_forms_col = get_col_number("Type Forms", pokemon_info_sheet)
-    misc_forms_col = get_col_number("Misc Forms", pokemon_info_sheet)
-    gen8_col = get_col_number("Available in Gen 8", pokemon_info_sheet)
+    name_col = get_col_number(pokemon_info_sheet, "Name")
+    num_col = get_col_number(pokemon_info_sheet, "#")
+    gen_col = get_col_number(pokemon_info_sheet, "Gen")
+    f_col = get_col_number(pokemon_info_sheet, "Female Variation")
+    mega_col = get_col_number(pokemon_info_sheet, "Mega")
+    giganta_col = get_col_number(pokemon_info_sheet, "Gigantamax")
+    reg_forms_col = get_col_number(pokemon_info_sheet, "Regional Forms")
+    type_forms_col = get_col_number(pokemon_info_sheet, "Type Forms")
+    misc_forms_col = get_col_number(pokemon_info_sheet, "Misc Forms")
+    gen8_col = get_col_number(pokemon_info_sheet, "Available in Gen 8")
     
     # Getting poke specific relevant info
     for i in range(2, 900):
-        name = cell_value(i, name_col, pokemon_info_sheet)
-        num = cell_value(i, num_col, pokemon_info_sheet)
-        gen = int(cell_value(i, gen_col, pokemon_info_sheet))
-        has_f_var = isnt_empty(i, f_col, pokemon_info_sheet)
-        has_mega = isnt_empty(i, mega_col, pokemon_info_sheet)
-        has_giganta = isnt_empty(i, giganta_col, pokemon_info_sheet)
-        reg_forms = cell_value(i, reg_forms_col, pokemon_info_sheet)
-        has_type_forms = isnt_empty(i, type_forms_col, pokemon_info_sheet)
-        has_misc_forms = isnt_empty(i, misc_forms_col, pokemon_info_sheet)
-        is_in_gen8 = isnt_empty(i, gen8_col, pokemon_info_sheet)
+        name = cell_value(pokemon_info_sheet, i, name_col)
+        num = cell_value(pokemon_info_sheet, i, num_col)
+        gen = int(cell_value(pokemon_info_sheet, i, gen_col))
+        has_f_var = isnt_empty(pokemon_info_sheet, i, f_col)
+        has_mega = isnt_empty(pokemon_info_sheet, i, mega_col)
+        has_giganta = isnt_empty(pokemon_info_sheet, i, giganta_col)
+        reg_forms = cell_value(pokemon_info_sheet, i, reg_forms_col)
+        has_type_forms = isnt_empty(pokemon_info_sheet, i, type_forms_col)
+        has_misc_forms = isnt_empty(pokemon_info_sheet, i, misc_forms_col)
+        is_in_gen8 = isnt_empty(pokemon_info_sheet, i, gen8_col)
 
         # Adding to pokedex
         globals.pokedex.append(globals.Pokemon(name, num, gen, has_f_var, has_mega, has_giganta, reg_forms, has_type_forms, has_misc_forms, is_in_gen8))
@@ -63,10 +62,10 @@ missing_imgs = {}
 def add_missing_images_to_poke():
     print("Getting missing images from spreadsheet...")
 
-    poke_num_col = get_col_number("#", pokemon_files_sheet)
-    poke_name_col = get_col_number("Name", pokemon_files_sheet)
-    tags_col = get_col_number("Tags", pokemon_files_sheet)
-    filename_col = get_col_number("Filename", pokemon_files_sheet)
+    poke_num_col = get_col_number(pokemon_files_sheet, "#")
+    poke_name_col = get_col_number(pokemon_files_sheet, "Name")
+    tags_col = get_col_number(pokemon_files_sheet, "Tags")
+    filename_col = get_col_number(pokemon_files_sheet, "Filename")
 
     prev_row_poke_num = -1
     # TODO: Check poke_num_start_from + 1 is accurate (starts at bulbasaur for 1)
@@ -74,8 +73,8 @@ def add_missing_images_to_poke():
         # TODO: check this works too
         if row > poke_num_start_from + 1:
             prev_row_poke_num = poke_num
-        poke_num = int(cell_value(row, poke_num_col, pokemon_files_sheet))
-        poke_name = cell_value(row, poke_name_col, pokemon_files_sheet)
+        poke_num = int(cell_value(pokemon_files_sheet, row, poke_num_col))
+        poke_name = cell_value(pokemon_files_sheet, row, poke_name_col)
         # Only print getting missing images message if its a new pokemon
         if prev_row_poke_num != poke_num:
             print("Getting ", poke_name, " missing images")
@@ -89,13 +88,13 @@ def add_missing_images_to_poke():
                 poke_obj = pokemon
                 break
         # Tags meaning shiny, animated, back, froms, etc
-        tags = cell_value(row, tags_col, pokemon_files_sheet)
+        tags = cell_value(pokemon_files_sheet, row, tags_col)
         # If just regular front image
         if tags == None:
             tags = ""
         # This grabs my translated filename for the image from the spreadsheet
         # Includes all but gen&game, since those cols are to determine what is missing
-        filename = cell_value(row, filename_col, pokemon_files_sheet)
+        filename = cell_value(pokemon_files_sheet, row, filename_col)
 
         # For only going after certain pokemon
             # If the server kicks me, this'll pick up my place
@@ -107,7 +106,7 @@ def add_missing_images_to_poke():
         #     # This is to speed up the file each time I have to run it because of a server boot
         #     # Only goes n number after the starter poke
         #     # Checking if the previous pokemon name was different than the last
-        #     if poke_name != cell_value(row-1, poke_name_col, pokemon_files_sheet):
+        #     if poke_name != cell_value(pokemon_files_sheet, row-1, poke_name_col):
         #         pokemon_after += 1
         # NOTE: Change the last number to pick up where last left off
         # TODO: Why greater than 493?
@@ -129,7 +128,7 @@ def add_missing_images_to_poke():
         # Only doing filename_col up because those are where the actual checks need to be made (missing for certain games)
         # And +1 at the end to be inclusive
         for col in range(filename_col + 1, pokemon_files_sheet.max_column + 1):
-            col_name = get_col_name(col, pokemon_files_sheet)
+            col_name = get_col_name(pokemon_files_sheet, col)
 
             # Triggers at Platinum because excel file is reverse chronological, so Plat is first gen 4 game hit
             # Every loop iteration after is_below_gen5 will be true
@@ -142,7 +141,7 @@ def add_missing_images_to_poke():
                 is_swsh = False
             
             # If pokemon image is unavailable, continue (don't add to missing images obviously)
-            if cell_value(row, col, pokemon_files_sheet) == "u":
+            if cell_value(pokemon_files_sheet, row, col) == "u":
                 continue
 
             # If it's a back image from a pokemon between gen1 and gen4
@@ -151,7 +150,7 @@ def add_missing_images_to_poke():
             # If there were, each file will be named differently
             # Otherwise, they will all be lumped into a single gen# back img
             is_back_below_gen5 = is_below_gen5 and "-Back" in filename
-            if is_empty(row, col, pokemon_files_sheet) or is_back_below_gen5 or is_swsh:
+            if is_empty(pokemon_files_sheet, row, col) or is_back_below_gen5 or is_swsh:
                 # Where to insert the gen in the filename
                 gen_insert_index = filename.find(poke_name) + len(poke_name)
                 gen_and_game = combine_gen_and_game(col_name, poke_num, tags)
