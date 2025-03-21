@@ -1,3 +1,5 @@
+from globals import types, uppers, creams, sweets
+
 # TODO: Read through this and break it up
 
 def bulba_game_denoter_conversion(filename):
@@ -434,6 +436,8 @@ def form_translation(pokemon, computer_filename):
 
     return(bulba_code_form)
 
+# TODO: Put into globals
+# NOTE: Double check occasionally
 no_bulba_forms = []
 # Pikachu World Cap
 no_bulba_forms.append("-Form-Cap-World")

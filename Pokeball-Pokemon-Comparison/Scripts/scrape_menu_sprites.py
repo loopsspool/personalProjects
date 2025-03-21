@@ -2,6 +2,7 @@ import requests # To retrieve webpages
 from bs4 import BeautifulSoup   # To parse webpages
 import re   # For filtering what images to download
 import os   # For downloading those images to my computer
+from globals import *
 
 def get_menu_sprites():
     print("Getting Menu Sprites...")

@@ -1,5 +1,7 @@
-import globals
-from scrape_image_tools import get_img_from_string
+from globals import *
+from scrape_image_tools import get_img_from_string, get_largest_png
+import re   # For filtering what images to download
+
 
 # TODO: Should probably also have a quick way to download drawn regional variants since they're likely to introduce more at some point
 

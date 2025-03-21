@@ -1,7 +1,12 @@
 import requests # To retrieve webpages
 from bs4 import BeautifulSoup   # To parse webpages
 import urllib   # For downloading those images to my computer
+import re   # For filtering what images to download
+
 from globals import *
+from scrape_image_tools import *
+from scrape_bulba_translators import potentially_adapt_game_in_filename
+from scrape_drawn_images import get_drawn_images
 
 # TODO: Run check first if files are missing so I'm not mindlessly going into each pokemon
 
@@ -138,7 +143,7 @@ def scrape_game_imgs():
         #     # This is to speed up the file each time I have to run it because of a server boot
         #     # Only goes n number after the starter poke
         #     poke_acc += 1
-        if not pokemon.has_f_var or 10 <= int(pokemon.number) > 493 or int(pokemon.number) <= back_start:
+        if not pokemon.has_f_var or 10 <= int(pokemon.number) > 493 or int(pokemon.number) <= poke_num_start_from:
             continue
 
         for img in missing_gen1_thru_gen4_back_imgs:
@@ -180,7 +185,8 @@ def scrape_game_imgs():
                 break
 
             # Getting Drawn images
-            # Keep this here before the break for missing sprites so I can still get the drawn form even if there's no missing sprites
+            # Keep this here before the break for missing sprites so I can still get the drawn images even if there's no missing sprites
+            # TODO: Run check to see if drawn image actually missing
             for i, caption in enumerate(thumb_text):
                 if re.search("^\d\d\d[a-zA-Z]", caption) != None:
                     get_drawn_images(pokemon, thumbs[i])

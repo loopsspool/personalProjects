@@ -1,5 +1,5 @@
-import openpyxl     # For reading excel workbook
-# Must explicitly state this...
+from scrape_bulba_translators import bulba_doesnt_have_this_form, determine_bulba_name
+from scrape_game_tools import combine_gen_and_game
 
 from globals import *
 
@@ -52,7 +52,7 @@ def generate_pokedex_from_spreadsheet():
         # Adding to pokedex
         globals.pokedex.append(globals.Pokemon(name, num, gen, has_f_var, has_mega, has_giganta, reg_forms, has_type_forms, has_misc_forms, is_in_gen8))
 
-#  TODO: Is this used?
+#  TODO: Should this be array not dict?
 missing_imgs = {}
 
 # TODO: Break this into a shitload of functions so I can actually read it
