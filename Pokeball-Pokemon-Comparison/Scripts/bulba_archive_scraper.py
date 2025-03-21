@@ -29,10 +29,3 @@ add_missing_images_to_poke()
 get_game_img_urls()
 scrape_game_imgs()
 #get_menu_sprites()
-
-
-
-        
-    
-
-    
