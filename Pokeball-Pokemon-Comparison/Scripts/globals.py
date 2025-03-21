@@ -52,8 +52,10 @@ sweets = [("Berry_Sweet", "B"), ("Clover_Sweet", "C"), ("Flower_Sweet", "F"), ("
 pokemon_info = load_workbook(filename = 'C:\\Users\\ejone\\OneDrive\\Desktop\\Code\\Javascript\\p5\\projects\\Pokeball Pokemon Comparison\\Pokemon Info.xlsx', data_only=True)
 pokemon_info_sheet = pokemon_info.worksheets[0]
 # Spreadsheet for file tracking (what images I do/dont have)
+# TODO: Add drawn and menu sprites
 pokemon_files = load_workbook(filename = 'C:\\Users\\ejone\\OneDrive\\Desktop\\Code\\Javascript\\p5\\projects\\Pokeball Pokemon Comparison\\Pokemon File-check.xlsx', data_only=True)
 pokemon_files_sheet = pokemon_files.worksheets[0]
+# TODO: Global frequently used column indices? Use get_col from spreadsheet tools and have them all defined here for use to save computing power?
 
 save_path_starter = "C:\\Users\\ejone\\OneDrive\\Desktop\\Code\\Javascript\\p5\\projects\\Pokeball Pokemon Comparison\\Images\\Pokemon"
 game_save_path = save_path_starter + "\\Game Sprites\\"
