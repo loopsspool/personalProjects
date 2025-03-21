@@ -40,6 +40,14 @@ def bulba_game_denoter_conversion(filename):
         return (" 7p")
     if "Sword-Shield" in filename:
         return (" 8s")
+    
+# If the file contains lateral generation changes (black to black2, xy to oras) change the filename to accomodate my script
+def potentially_adapt_game_in_filename(filename):
+    if " 5b2 " in filename:
+        return (filename.replace(" 5b2 ", " 5b "))
+    if " 6o " in filename:
+        return (filename.replace(" 6o ", " 6x "))
+    return(filename)
 
 def check_for_form(plaintext_form, bulba_form_code, curr_bulba_form, computer_filename):
     if plaintext_form in computer_filename:

@@ -1,15 +1,7 @@
 import openpyxl     # For reading excel workbook
 # Must explicitly state this...
-from openpyxl import load_workbook
 
-import globals
-
-# For Pokedex Info
-pokemon_info = load_workbook(filename = 'C:\\Users\\ejone\\OneDrive\\Desktop\\Code\\Javascript\\p5\\projects\\Pokeball Pokemon Comparison\\Pokemon Info.xlsx', data_only=True)
-pokemon_info_sheet = pokemon_info.worksheets[0]
-# For file tracking (what images I do/dont have)
-pokemon_files = load_workbook(filename = 'C:\\Users\\ejone\\OneDrive\\Desktop\\Code\\Javascript\\p5\\projects\\Pokeball Pokemon Comparison\\Pokemon File-check.xlsx', data_only=True)
-pokemon_files_sheet = pokemon_files.worksheets[0]
+from globals import *
 
 # TODO: Change these so sheet is first variable
 def cell_value(row, col, sheet):
@@ -31,10 +23,9 @@ def get_col_number(col_name, sheet):
 def get_col_name(col_number, sheet):
     return(cell_value(1, col_number, sheet))
 
+# TODO: Add pokemon start and to go after start, so this isnt running unecessarily
 def generate_pokedex_from_spreadsheet():
     print("Getting pokemon info from spreadsheet...")
-
-    # Gets column numbers from spreadsheet
     name_col = get_col_number("Name", pokemon_info_sheet)
     num_col = get_col_number("#", pokemon_info_sheet)
     gen_col = get_col_number("Gen", pokemon_info_sheet)
@@ -62,16 +53,26 @@ def generate_pokedex_from_spreadsheet():
         # Adding to pokedex
         globals.pokedex.append(globals.Pokemon(name, num, gen, has_f_var, has_mega, has_giganta, reg_forms, has_type_forms, has_misc_forms, is_in_gen8))
 
+#  TODO: Is this used?
+missing_imgs = {}
+
 # TODO: Break this into a shitload of functions so I can actually read it
 # TODO: This function is stupid slow
 # TODO: Add param for which poke num to start from
 # Reading the filecheck spreadsheet with the end goal of adding missing images
-def add_missing_images_to_poke(start_num):
+def add_missing_images_to_poke():
+    print("Getting missing images from spreadsheet...")
+
+    poke_num_col = get_col_number("#", pokemon_files_sheet)
+    poke_name_col = get_col_number("Name", pokemon_files_sheet)
+    tags_col = get_col_number("Tags", pokemon_files_sheet)
+    filename_col = get_col_number("Filename", pokemon_files_sheet)
+
     prev_row_poke_num = -1
-    # TODO: Check start_num + 1 is accurate (starts at bulbasaur for 1)
-    for row in range(start_num + 1, pokemon_files_sheet.max_row):
+    # TODO: Check poke_num_start_from + 1 is accurate (starts at bulbasaur for 1)
+    for row in range(poke_num_start_from + 1, pokemon_files_sheet.max_row):
         # TODO: check this works too
-        if row > start_num + 1:
+        if row > poke_num_start_from + 1:
             prev_row_poke_num = poke_num
         poke_num = int(cell_value(row, poke_num_col, pokemon_files_sheet))
         poke_name = cell_value(row, poke_name_col, pokemon_files_sheet)
@@ -109,7 +110,8 @@ def add_missing_images_to_poke(start_num):
         #     if poke_name != cell_value(row-1, poke_name_col, pokemon_files_sheet):
         #         pokemon_after += 1
         # NOTE: Change the last number to pick up where last left off
-        if not poke_obj.has_f_var or int(poke_obj.number) > 493 or int(poke_obj.number) <= back_start:
+        # TODO: Why greater than 493?
+        if not poke_obj.has_f_var or int(poke_obj.number) > 493 or int(poke_obj.number) <= poke_num_start_from:
             continue
 
         if bulba_doesnt_have_this_form(filename):
