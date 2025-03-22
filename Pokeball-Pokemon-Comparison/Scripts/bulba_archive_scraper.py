@@ -28,6 +28,9 @@ from scraping import get_game_img_urls, scrape_game_imgs
 
 # NOTE: Always check Bulba first, they have higher quality images
 # TODO: Maybe occassionally run checks on images saved in mass (say all gen 9) Wikidex most common file size (250x250? 180x180? Def small, Bulba has most gen 8 (all switch?) at 1024x1024) to see if bulba now has those in higher res
+# Honestly yeah, write to pokedex JSON all small, non-animated images (bc bulba sux for animation, mostly coming from Wikidex)
+# When scraping bulba, search for higher quality ones
+# TODO: Or are bulbas just more pixels bc more whitespace, not necessarily higher res??? Check visually and see
 generate_pokedex_from_spreadsheet()
 add_missing_images_to_poke()
 get_game_img_urls()

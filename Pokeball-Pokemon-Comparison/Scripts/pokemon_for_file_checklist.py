@@ -3,9 +3,10 @@ import xlsxwriter   # For writing new form rows
 import os   # To check for files
 
 # TODO: This should always be run at the end of each scrape
-# Or, even better, update cells at time of download from scraping file
+# Or, even better, update cells at time of download from scraping file (and delete from their object missing imgs array)
 # In that case this should only be run when the pokedex is not up to date (for unobtainables and whatnot, since missing_pokes func relies on that data)
 # and only on the newest added pokes
+# Also when you run this you could have this run add missing imgs from spreadsheet_funcs as well
 
 # SPREADSHEET DATA
 pokemon_info = xlrd.open_workbook('C:\\Users\\ejone\\OneDrive\\Desktop\\Code\\Javascript\\p5\\projects\\Pokeball Pokemon Comparison\\Pokemon Info.xls')
