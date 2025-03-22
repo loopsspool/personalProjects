@@ -59,8 +59,7 @@ def generate_pokedex_from_spreadsheet():
 
 # TODO: When JSONs implementation complete, only run this when generating pokedex
 # TODO: When this happens this function should be redundant, as the poke
-# TODO: Break this into a shitload of functions so I can actually read it
-# TODO: This function is stupid slow
+
 # Reading the filecheck spreadsheet with the end goal of adding missing images
 def add_missing_images_to_poke():
     print("Getting missing images from spreadsheet...")
@@ -72,11 +71,11 @@ def add_missing_images_to_poke():
         # Haven't reset poke_num yet, so it is the previous rows poke num
         prev_row_poke_num = poke_num
         poke_num = int(cell_value(pokemon_files_sheet, row, poke_files_num_col))
-        poke_name = cell_value(pokemon_files_sheet, row, poke_files_name_col)
         #TODO: Test
         poke_obj = pokedex[poke_num-1]
         # Only print getting missing images message if its a new pokemon
         if prev_row_poke_num != poke_num:
+            poke_name = cell_value(pokemon_files_sheet, row, poke_files_name_col)
             print("Getting ", poke_name, " missing images")
         
         # Tags meaning shiny, animated, back, froms, etc
@@ -92,13 +91,9 @@ def add_missing_images_to_poke():
             continue
 
         # This is to track generations and skip if it's a back sprite below gen 5
-        # Those sprites are being pulled seperately in the row only loop above
         # To be sifted through to see if they're different by game for the given pokemon
         is_below_gen5 = False
-        # TODO: Is this still needed?
-        # This is to download anything from Sword and Shield
-        # Realized after bulba has higher quality gen8 models than wikidex
-        is_swsh = False
+
         # Only doing filename_col up because those are where the actual checks need to be made (missing for certain games)
         # And +1 at the end to be inclusive
         for col in range(poke_files_filename_col + 1, pokemon_files_sheet.max_column + 1):
@@ -109,11 +104,6 @@ def add_missing_images_to_poke():
             if col_name == "Platinum":
                 is_below_gen5 = True
 
-            if col_name == "Sword-Shield":
-                is_swsh = True
-            else:
-                is_swsh = False
-            
             # If pokemon image is unavailable, continue (don't add to missing images obviously)
             if cell_value(pokemon_files_sheet, row, col) == "u":
                 continue
@@ -124,7 +114,7 @@ def add_missing_images_to_poke():
             # If there were, each file will be named differently
             # Otherwise, they will all be lumped into a single gen# back img
             is_back_below_gen5 = is_below_gen5 and "-Back" in filename
-            if is_empty(pokemon_files_sheet, row, col) or is_back_below_gen5 or is_swsh:
+            if is_empty(pokemon_files_sheet, row, col) or is_back_below_gen5:
                 # Where to insert the gen in the filename
                 gen_insert_index = filename.find(poke_name) + len(poke_name)
                 gen_and_game = combine_gen_and_game(col_name, poke_num, tags)
@@ -134,11 +124,11 @@ def add_missing_images_to_poke():
                 if "-Back" in tags:
                     # Adding space because initially there was no space in spreadsheet
                         # This was for sorting purposes because back sprites start with hyphen immediately after gen
-                            # But front sprites follow with a space so they come first in file order
+                        # But front sprites follow with a space so they come first in file order
                     # This variable is necessary because bulba uses games to denote which back sprites are from where
                         # In my filenaming convention (gen4 and below excluded due to actual sprite differences between games)
-                            # For backs I JUST use gen
-                                # But to scrape the image from bulba, I still need the game denoter, which this gets me
+                        # For backs I JUST use gen
+                        # But to scrape the image from bulba, I still need the game denoter, which this gets me
                     back_filename_w_game_and_gen_for_bulba = filename[:gen_insert_index] + " " + gen_and_game + filename[gen_insert_index:]
                     bulba_name = determine_bulba_name(back_filename_w_game_and_gen_for_bulba, poke_obj)
                     actual_filename =""
@@ -162,7 +152,6 @@ def add_missing_images_to_poke():
                         poke_obj.missing_gen1_thru_gen4_back_imgs.append((actual_filename, bulba_name))
                     else:
                         poke_obj.missing_imgs.append((actual_filename, bulba_name))
-                    #print(actual_filename, "     changed to     ", bulba_name)
                 else:
                     # Going +1 after the insert index because there's a space for non-back sprites
                     # This is to simulate in the spreadsheet the space between generation and games in the filenames
