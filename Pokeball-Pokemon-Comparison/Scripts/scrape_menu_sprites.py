@@ -7,6 +7,7 @@ from globals import *
 def get_menu_sprites():
     print("Getting Menu Sprites...")
 
+    # TODO: IMPORTANT!!! Now Gen8 has BDSP, LA, and SwSh sprites. Also IX Menu sprites too
     ms_end_urls = ["Generation_VI_menu_sprites", "Generation_VIII_menu_sprites"]
     for end_url in ms_end_urls:
         ms_page = requests.get("https://archives.bulbagarden.net/wiki/Category:" + end_url, headers={'User-Agent': 'Mozilla/5.0'})

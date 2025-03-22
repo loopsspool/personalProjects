@@ -35,4 +35,5 @@ generate_pokedex_from_spreadsheet()
 add_missing_images_to_poke()
 get_game_img_urls()
 scrape_game_imgs()
+# TODO: Many more menu sprites added, see notes inside menu_sprites file
 #get_menu_sprites()
