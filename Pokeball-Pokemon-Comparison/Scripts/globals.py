@@ -30,6 +30,7 @@ poke_num_start_from = 1
 # This is amount of pokemon to get info from after the starter pokemon
 pokemon_to_go_after_start = 50
 
+# TODO: Make this a JSON
 pokemon_img_urls = []
 
 # These are for back generation differences to be able to loop through and concatonate game name to filename
