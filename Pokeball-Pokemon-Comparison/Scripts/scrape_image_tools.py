@@ -5,7 +5,7 @@ import os   # For downloading those images to my computer
 from globals import starter_url
 import re   # For filtering what images to download
 
-def check_if_animated(link):
+def is_animated(link):
     # NOTE: Works on animated pngs
     # Converting URL image to PIL Image Object
     img = Image.open(requests.get(link, stream = True).raw)

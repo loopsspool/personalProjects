@@ -8,8 +8,6 @@ from scrape_image_tools import *
 from scrape_bulba_translators import potentially_adapt_game_in_filename
 from scrape_drawn_images import get_drawn_images
 
-# TODO: Run check first if files are missing so I'm not mindlessly going into each pokemon
-
 # NOTE: ALL DOWNLOADS MUST BE DONE IN THE FASHION BELOW
     # Otherwise bulba has a check on if the site is being web scraped and it will block the download
 # This is to mask the fact I'm webscraping
@@ -23,7 +21,6 @@ starter_url = "https://archives.bulbagarden.net"
 pokemon_starter_page = requests.get("https://archives.bulbagarden.net/wiki/Category:Pok%C3%A9mon_artwork")
 pokemon_starter_page_soup = BeautifulSoup(pokemon_starter_page.content, 'html.parser')
 
-# TODO: Have this factor in poke_start and to go after
 # TODO: Write this to file so this function only needs to be run once (so img urls get stored in a file (put into globals, see if it sticks after running))
 def get_game_img_urls():
     print("Starting reading of pokemon game sprite archive links...")
@@ -54,6 +51,7 @@ def get_game_img_urls():
             print("Reached end of pokemon archive links.")
             break
 
+
 def ani_check_and_download(img, filename):
     dl_destination = ""
     if "-Back" in filename and ("Gen1" in filename or "Gen2" in filename or "Gen3" in filename or "Gen4" in filename):
@@ -64,14 +62,13 @@ def ani_check_and_download(img, filename):
     file_ext = img.img['alt'][-4:]
     save_name = filename + file_ext
     if "-Animated" in save_name:
+        # TODO: Original filetype is preferred for color retention
         dl_destination = game_save_path + "animated_pngs_for_gifs\\pngs\\"
         if not os.path.exists(dl_destination + save_name):
             # NOTE: Keep this AFTER exist check, makes it run way quicker for skipping images
             img = get_largest_png(img)
-            if check_if_animated(img):
-                print("Downloading ", save_name)
-                filename, headers = opener.retrieve(img, dl_destination + save_name)
-                print(save_name, img)
+            if is_animated(img):
+                download_img(img, filename, save_name, dl_destination)
                 # Returning downloaded boolean
                 return True
             else:
@@ -84,22 +81,20 @@ def ani_check_and_download(img, filename):
         # Don't override the gen1 thru 4 save path if that's present
         if not dl_destination == gen1_thru_4_backs_save_path:
             dl_destination = game_save_path + "initial_downloads_for_border_removal\\"
-        # Making sure its NOT animated
         if not os.path.exists(dl_destination + save_name):
             # NOTE: Keep this AFTER exist check, makes it run way quicker for skipping images
             img = get_largest_png(img)
-            if not check_if_animated(img):
-                print("Downloading ", save_name)
-                filename, headers = opener.retrieve(img, dl_destination + save_name)
-                print(save_name, img)
+            # Making sure its NOT animated
+            if not is_animated(img):
+                download_img(img, filename, save_name, dl_destination)
                 # Returning downloaded boolean
                 return True
+            # If it is animated, save it anyways to take first frame for missing still
             else:
                 if not os.path.exists(dl_destination + "TO_BE_CONVERTED_TO_STILL_" + save_name):
-                    print("Downloading ", save_name)
                     # If it is animated, still download it with an obvious denoter to convert it to a static
-                    filename, headers = opener.retrieve(img, dl_destination + "TO_BE_CONVERTED_TO_STILL_" + save_name)
-                    print(save_name, img)
+                    # TODO: Make sure concat the string is valid
+                    download_img(img, filename, save_name, dl_destination + "TO_BE_CONVERTED_TO_STILL_")
                     # Returning downloaded boolean
                     return True
                 else:
@@ -109,22 +104,33 @@ def ani_check_and_download(img, filename):
             print(save_name, " already exists")
             return False
         
+def download_img(img, filename, save_name, dl_destination):
+    print("Downloading ", save_name)
+    filename, headers = opener.retrieve(img, dl_destination + save_name)
+    print(save_name, img)
+        
+# TODO: Have this factor in poke_start and to go after
+# Have to wait for JSON implementation since this parses pokemon_img_urls
 def scrape_game_imgs():
-    # TODO: Before running, uncomment all filename, headers = opener.retrieve(get_largest_png(img), gen8_menu_sprite_save_path + save_name)
+    # NOTE: Before running, uncomment all filename, headers = opener.retrieve(get_largest_png(img), gen8_menu_sprite_save_path + save_name)
     imgs_downloaded = 0
     imgs_still_missing = []
     pokemon_not_reached_yet = True
     poke_acc = 0
     print("Processing game sprite images...")
-    # TODO: Run this from starter poke num to go ofter poke num
+    
     for i in range(len(pokemon_img_urls)):
-        number += 1
         # Getting relevant pokemon data
         pokemon = pokedex[i]
         missing_imgs = pokemon.missing_imgs
         missing_gen1_thru_gen4_back_imgs = pokemon.missing_gen1_thru_gen4_back_imgs
+        # TODO: Add that if the above are zero AND THERE ARE NO MISSING DRAWN IMAGES, continue to not go into each page
+        # Or break out the drawn images from this function
+
+        # TODO: Add small images array when added?
         print(pokemon.name, " has ", len(missing_imgs) + len(missing_gen1_thru_gen4_back_imgs), " missing images...")
         # Fixing a bulba error here that adds a hyphen between unown number and form in gen4
+        # NOTE: This would probably make more sense to add to where I put the missing imgs in the array, but I'm not touching this hahaha
         if pokemon.name == "Unown":
             for img in missing_imgs:
                 if "Gen4" in img[0]:
@@ -132,19 +138,6 @@ def scrape_game_imgs():
             for img in missing_gen1_thru_gen4_back_imgs:
                 if "Gen4" in img[0]:
                     img = (img[0], img[1].replace(" 201", " 201-"))
-
-        # For only going after certain pokemon
-            # If the server kicks me, this'll pick up my place
-        # TODO: Uncomment
-        # if pokemon.num < poke_num_start_from and (pokemon_not_reached_yet or poke_acc >= pokemon_to_go_after_start):
-        #     continue
-        # else:
-        #     pokemon_not_reached_yet = False
-        #     # This is to speed up the file each time I have to run it because of a server boot
-        #     # Only goes n number after the starter poke
-        #     poke_acc += 1
-        if not pokemon.has_f_var or 10 <= int(pokemon.number) > 493 or int(pokemon.number) <= poke_num_start_from:
-            continue
 
         for img in missing_gen1_thru_gen4_back_imgs:
             print(img)
@@ -186,7 +179,6 @@ def scrape_game_imgs():
 
             # Getting Drawn images
             # Keep this here before the break for missing sprites so I can still get the drawn images even if there's no missing sprites
-            # TODO: Run check to see if drawn image actually missing
             for i, caption in enumerate(thumb_text):
                 if re.search("^\d\d\d[a-zA-Z]", caption) != None:
                     get_drawn_images(pokemon, thumbs[i])
@@ -198,14 +190,13 @@ def scrape_game_imgs():
                 break
 
             # Getting missing images
-            # TODO: Uncomment this... Was just getting gen1 thru 4 back sprites
-            # for missing in missing_imgs:
-            #     if missing[1] in thumb_text_wo_file_ext:
-            #         thumb_index = thumb_text_wo_file_ext.index(missing[1])
-            #         missing_imgs_that_exist.append((thumbs[thumb_index], missing[0]))
-            #     else:
-            #         if not missing in imgs_still_missing:
-            #             imgs_still_missing.append(missing)
+            for missing in missing_imgs:
+                if missing[1] in thumb_text_wo_file_ext:
+                    thumb_index = thumb_text_wo_file_ext.index(missing[1])
+                    missing_imgs_that_exist.append((thumbs[thumb_index], missing[0]))
+                else:
+                    if not missing in imgs_still_missing:
+                        imgs_still_missing.append(missing)
             
             # Getting missing back images
             for missing_back in missing_gen1_thru_gen4_back_imgs:
@@ -216,6 +207,8 @@ def scrape_game_imgs():
                     if missing_back not in imgs_still_missing:
                         imgs_still_missing.append(missing_back)
 
+            # Actually downloading and tracking counts
+            # A bit misleading with the "existing image" name because I have to check for animation first
             for existing_img in missing_imgs_that_exist:
                 downloaded = ani_check_and_download(existing_img[0], existing_img[1])
                 if downloaded:
