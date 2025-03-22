@@ -22,6 +22,21 @@ def get_col_number(sheet, col_name):
 def get_col_name(sheet, col_number):
     return(cell_value(sheet, 1, col_number))
 
+# Performs check to make sure JSON pokedex is up to date
+# TODO: Test
+# TODO: Add JSON stuff
+def check_pokedex_is_up_to_date():
+    print("Checking pokedex is up to date...")
+    num_col = get_col_number(pokemon_info_sheet, "#")
+    highest_pokedex_number_in_info_file = -1
+    row_acc = 2
+    # While pokemon number col isn't empty, traverse down to find highest pokemon num
+    while (isnt_empty(pokemon_info_sheet, row_acc, num_col)):
+        row_acc += 1
+    highest_pokedex_number_in_info_file = cell_value(pokemon_info_sheet, row_acc-1, num_col)  
+    # TODO: Check this against last element from JSON
+    # If they dont match run generate pokedex from spreadsheet from last highest  
+
 # TODO: Add pokemon start and to go after start, so this isnt running unecessarily
 def generate_pokedex_from_spreadsheet():
     print("Getting pokemon info from spreadsheet...")
