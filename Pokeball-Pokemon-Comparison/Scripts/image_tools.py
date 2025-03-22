@@ -2,7 +2,7 @@ from PIL import Image   # For converting URL image data to PIL Image object
 import requests # To retrieve webpages
 from bs4 import BeautifulSoup   # To parse webpages
 import os   # For downloading those images to my computer
-from globals import starter_url
+from app_globals import starter_url
 import re   # For filtering what images to download
 
 def is_animated(link):

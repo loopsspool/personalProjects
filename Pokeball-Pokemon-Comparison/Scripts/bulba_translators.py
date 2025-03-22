@@ -1,4 +1,4 @@
-from globals import types, uppers, creams, sweets, no_bulba_forms
+from app_globals import types, uppers, creams, sweets, no_bulba_forms
 
 # TODO: Read through this and break it up
 

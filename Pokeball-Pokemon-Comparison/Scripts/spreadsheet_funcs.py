@@ -1,7 +1,7 @@
 from bulba_translators import bulba_doesnt_have_this_form, determine_bulba_name
 from game_tools import combine_gen_and_game
 
-from globals import *
+from app_globals import *
 
 def cell_value(sheet, row, col):
     return (sheet.cell(row, col).value)

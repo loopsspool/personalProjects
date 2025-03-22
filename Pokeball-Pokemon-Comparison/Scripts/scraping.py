@@ -3,7 +3,7 @@ from bs4 import BeautifulSoup   # To parse webpages
 import urllib   # For downloading those images to my computer
 import re   # For filtering what images to download
 
-from globals import *
+from app_globals import *
 from image_tools import *
 from bulba_translators import potentially_adapt_game_in_filename
 from drawn_images import get_drawn_images
@@ -51,7 +51,7 @@ def get_game_img_urls():
             print("Reached end of pokemon archive links.")
             break
 
-
+# TODO: Uncomment download function
 def ani_check_and_download(img, filename):
     dl_destination = ""
     if "-Back" in filename and ("Gen1" in filename or "Gen2" in filename or "Gen3" in filename or "Gen4" in filename):
@@ -68,7 +68,7 @@ def ani_check_and_download(img, filename):
             # NOTE: Keep this AFTER exist check, makes it run way quicker for skipping images
             img = get_largest_png(img)
             if is_animated(img):
-                download_img(img, filename, save_name, dl_destination)
+                #download_img(img, filename, save_name, dl_destination)
                 # Returning downloaded boolean
                 return True
             else:
@@ -86,7 +86,7 @@ def ani_check_and_download(img, filename):
             img = get_largest_png(img)
             # Making sure its NOT animated
             if not is_animated(img):
-                download_img(img, filename, save_name, dl_destination)
+                #download_img(img, filename, save_name, dl_destination)
                 # Returning downloaded boolean
                 return True
             # If it is animated, save it anyways to take first frame for missing still
@@ -94,7 +94,7 @@ def ani_check_and_download(img, filename):
                 if not os.path.exists(dl_destination + "TO_BE_CONVERTED_TO_STILL_" + save_name):
                     # If it is animated, still download it with an obvious denoter to convert it to a static
                     # TODO: Make sure concat the string is valid
-                    download_img(img, filename, save_name, dl_destination + "TO_BE_CONVERTED_TO_STILL_")
+                    #download_img(img, filename, save_name, dl_destination + "TO_BE_CONVERTED_TO_STILL_")
                     # Returning downloaded boolean
                     return True
                 else:
@@ -177,11 +177,12 @@ def scrape_game_imgs():
                 print("No sprite files on this page. Moving to next pokemon...")
                 break
 
+            # TODO: Uncomment
             # Getting Drawn images
             # Keep this here before the break for missing sprites so I can still get the drawn images even if there's no missing sprites
-            for i, caption in enumerate(thumb_text):
-                if re.search("^\d\d\d[a-zA-Z]", caption) != None:
-                    get_drawn_images(pokemon, thumbs[i])
+            #for i, caption in enumerate(thumb_text):
+            #    if re.search("^\d\d\d[a-zA-Z]", caption) != None:
+            #        get_drawn_images(pokemon, thumbs[i])
 
             # Breaking the while loop if the pokemon already has all it's images
             if len(missing_imgs) == 0 and len(missing_gen1_thru_gen4_back_imgs) == 0:

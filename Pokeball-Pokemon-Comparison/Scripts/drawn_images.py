@@ -1,4 +1,4 @@
-from globals import *
+from app_globals import *
 from image_tools import get_img_from_string, get_largest_png
 import re   # For filtering what images to download
 
