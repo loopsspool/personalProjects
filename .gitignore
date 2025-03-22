@@ -9,6 +9,7 @@ Javascript/p5/*
 !Javascript/p5/Photo-Manipulation/
 Pokeball-Pokemon-Comparison/*
 !Pokeball-Pokemon-Comparison/Scripts/
+Pokeball-Pokemon-Comparison/Scripts/__pycache__/
 Python/*
 !Python/PythonScripts/
 !Python/LEDs/
