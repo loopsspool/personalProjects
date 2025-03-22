@@ -27,111 +27,70 @@ def get_col_name(sheet, col_number):
 # TODO: Add JSON stuff
 def check_pokedex_is_up_to_date():
     print("Checking pokedex is up to date...")
-    num_col = get_col_number(pokemon_info_sheet, "#")
     highest_pokedex_number_in_info_file = -1
     row_acc = 2
     # While pokemon number col isn't empty, traverse down to find highest pokemon num
-    while (isnt_empty(pokemon_info_sheet, row_acc, num_col)):
+    while (isnt_empty(pokemon_info_sheet, row_acc, poke_info_num_col)):
         row_acc += 1
-    highest_pokedex_number_in_info_file = cell_value(pokemon_info_sheet, row_acc-1, num_col)  
+    highest_pokedex_number_in_info_file = cell_value(pokemon_info_sheet, row_acc-1, poke_info_num_col)  
     # TODO: Check this against last element from JSON
     # If they dont match run generate pokedex from spreadsheet from last highest  
 
 # TODO: Add pokemon start and to go after start, so this isnt running unecessarily
+# TODO: This requires adding JSON, which I dont want to do until after I've got things running
 def generate_pokedex_from_spreadsheet():
     print("Getting pokemon info from spreadsheet...")
-    name_col = get_col_number(pokemon_info_sheet, "Name")
-    num_col = get_col_number(pokemon_info_sheet, "#")
-    gen_col = get_col_number(pokemon_info_sheet, "Gen")
-    f_col = get_col_number(pokemon_info_sheet, "Female Variation")
-    mega_col = get_col_number(pokemon_info_sheet, "Mega")
-    giganta_col = get_col_number(pokemon_info_sheet, "Gigantamax")
-    reg_forms_col = get_col_number(pokemon_info_sheet, "Regional Forms")
-    type_forms_col = get_col_number(pokemon_info_sheet, "Type Forms")
-    misc_forms_col = get_col_number(pokemon_info_sheet, "Misc Forms")
-    gen8_col = get_col_number(pokemon_info_sheet, "Available in Gen 8")
     
     # Getting poke specific relevant info
     for i in range(2, 900):
-        name = cell_value(pokemon_info_sheet, i, name_col)
-        num = cell_value(pokemon_info_sheet, i, num_col)
-        gen = int(cell_value(pokemon_info_sheet, i, gen_col))
-        has_f_var = isnt_empty(pokemon_info_sheet, i, f_col)
-        has_mega = isnt_empty(pokemon_info_sheet, i, mega_col)
-        has_giganta = isnt_empty(pokemon_info_sheet, i, giganta_col)
-        reg_forms = cell_value(pokemon_info_sheet, i, reg_forms_col)
-        has_type_forms = isnt_empty(pokemon_info_sheet, i, type_forms_col)
-        has_misc_forms = isnt_empty(pokemon_info_sheet, i, misc_forms_col)
-        is_in_gen8 = isnt_empty(pokemon_info_sheet, i, gen8_col)
+        name = cell_value(pokemon_info_sheet, i, poke_info_name_col)
+        num = cell_value(pokemon_info_sheet, i, poke_info_num_col)
+        gen = int(cell_value(pokemon_info_sheet, i, poke_info_gen_col))
+        has_f_var = isnt_empty(pokemon_info_sheet, i, poke_info_f_col)
+        has_mega = isnt_empty(pokemon_info_sheet, i, poke_info_mega_col)
+        has_giganta = isnt_empty(pokemon_info_sheet, i, poke_info_giganta_col)
+        reg_forms = cell_value(pokemon_info_sheet, i, poke_info_reg_forms_col)
+        has_type_forms = isnt_empty(pokemon_info_sheet, i, poke_info_type_forms_col)
+        has_misc_forms = isnt_empty(pokemon_info_sheet, i, poke_info_misc_forms_col)
+        is_in_gen8 = isnt_empty(pokemon_info_sheet, i, poke_info_gen8_col)
 
         # Adding to pokedex
         globals.pokedex.append(globals.Pokemon(name, num, gen, has_f_var, has_mega, has_giganta, reg_forms, has_type_forms, has_misc_forms, is_in_gen8))
 
-#  TODO: Should this be array not dict?
-missing_imgs = {}
-
+# TODO: When JSONs implementation complete, only run this when generating pokedex
+# TODO: When this happens this function should be redundant, as the poke
 # TODO: Break this into a shitload of functions so I can actually read it
 # TODO: This function is stupid slow
-# TODO: Add param for which poke num to start from
 # Reading the filecheck spreadsheet with the end goal of adding missing images
 def add_missing_images_to_poke():
     print("Getting missing images from spreadsheet...")
-
-    poke_num_col = get_col_number(pokemon_files_sheet, "#")
-    poke_name_col = get_col_number(pokemon_files_sheet, "Name")
-    tags_col = get_col_number(pokemon_files_sheet, "Tags")
-    filename_col = get_col_number(pokemon_files_sheet, "Filename")
 
     prev_row_poke_num = -1
     # TODO: Check poke_num_start_from + 1 is accurate (starts at bulbasaur for 1)
     for row in range(poke_num_start_from + 1, pokemon_files_sheet.max_row):
         # TODO: check this works too
-        if row > poke_num_start_from + 1:
-            prev_row_poke_num = poke_num
-        poke_num = int(cell_value(pokemon_files_sheet, row, poke_num_col))
-        poke_name = cell_value(pokemon_files_sheet, row, poke_name_col)
+        # Haven't reset poke_num yet, so it is the previous rows poke num
+        prev_row_poke_num = poke_num
+        poke_num = int(cell_value(pokemon_files_sheet, row, poke_files_num_col))
+        poke_name = cell_value(pokemon_files_sheet, row, poke_files_name_col)
+        #TODO: Test
+        poke_obj = pokedex[poke_num-1]
         # Only print getting missing images message if its a new pokemon
         if prev_row_poke_num != poke_num:
             print("Getting ", poke_name, " missing images")
-
-        poke_obj = -1
-        #TODO: Grab pokemon by number in array -1, not checking each poke object
-        # Getting pokemon object
-        for pokemon in pokedex:
-            # Num, not name for the likes of Flabebe (has apostrophe over e), Type: Null, etc
-            if int(pokemon.number) == poke_num:
-                poke_obj = pokemon
-                break
+        
         # Tags meaning shiny, animated, back, froms, etc
-        tags = cell_value(pokemon_files_sheet, row, tags_col)
+        tags = cell_value(pokemon_files_sheet, row, poke_files_tags_col)
         # If just regular front image
         if tags == None:
             tags = ""
         # This grabs my translated filename for the image from the spreadsheet
         # Includes all but gen&game, since those cols are to determine what is missing
-        filename = cell_value(pokemon_files_sheet, row, filename_col)
-
-        # For only going after certain pokemon
-            # If the server kicks me, this'll pick up my place
-        # TODO: Uncomment
-        # if poke_name != only_get_on_and_after() and (pokemon_not_reached_yet or pokemon_after >= pokemon_after_limit):
-        #     continue
-        # else:
-        #     pokemon_not_reached_yet = False
-        #     # This is to speed up the file each time I have to run it because of a server boot
-        #     # Only goes n number after the starter poke
-        #     # Checking if the previous pokemon name was different than the last
-        #     if poke_name != cell_value(pokemon_files_sheet, row-1, poke_name_col):
-        #         pokemon_after += 1
-        # NOTE: Change the last number to pick up where last left off
-        # TODO: Why greater than 493?
-        if not poke_obj.has_f_var or int(poke_obj.number) > 493 or int(poke_obj.number) <= poke_num_start_from:
-            continue
+        filename = cell_value(pokemon_files_sheet, row, poke_files_filename_col)
 
         if bulba_doesnt_have_this_form(filename):
             continue
 
-        # TODO: Should I skip gen1? Why?  Are the gen1 back sprites all the same?
         # This is to track generations and skip if it's a back sprite below gen 5
         # Those sprites are being pulled seperately in the row only loop above
         # To be sifted through to see if they're different by game for the given pokemon
@@ -142,7 +101,7 @@ def add_missing_images_to_poke():
         is_swsh = False
         # Only doing filename_col up because those are where the actual checks need to be made (missing for certain games)
         # And +1 at the end to be inclusive
-        for col in range(filename_col + 1, pokemon_files_sheet.max_column + 1):
+        for col in range(poke_files_filename_col + 1, pokemon_files_sheet.max_column + 1):
             col_name = get_col_name(pokemon_files_sheet, col)
 
             # Triggers at Platinum because excel file is reverse chronological, so Plat is first gen 4 game hit

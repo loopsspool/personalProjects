@@ -28,7 +28,7 @@ poke_num_start_from = 1
         # Each new pokemon would rewrite the line of the file where it picked up
         # And delete missing images that the script downloaded
 # This is amount of pokemon to get info from after the starter pokemon
-pokemon_to_go_after_start = 0
+pokemon_to_go_after_start = 50
 
 pokemon_img_urls = []
 
@@ -40,6 +40,24 @@ pokemon_img_urls = []
 # gen3_games = ["Ruby-Sapphire", "FireRed-LeafGreen", "Emerald"]
 # gen4_games = ["Platinum", "HGSS", "Diamond-Pearl"]
 # gen_1_thru_4_games = [gen1_games, gen2_games, gen3_games, gen4_games]
+
+# TODO: Put into JSON and adjust scrape_bulba_translators.bulba_doesn't_have_this_form() if needed
+# NOTE: Double check occasionally
+no_bulba_forms = []
+# Pikachu World Cap
+no_bulba_forms.append("-Form-Cap-World")
+# Cosplay Pikachu
+no_bulba_forms.append("-Form-Cosplay")
+# Overdrive Reshiram, Zekrom, and Kyurem
+no_bulba_forms.append("Overdrive")
+# Marshadow Zenith
+no_bulba_forms.append("-Form-Zenith")
+# Urshifu Forms
+no_bulba_forms.extend(["-Form-Rapid_Strike", "-Form-Single_Strike"])
+# Dada Zarude
+no_bulba_forms.append("-Form-Dada")
+# Calyrex Riders
+no_bulba_forms.extend(["-Form-Shadow_Rider", "-Form-Ice_Rider"])
 
 uppers = list(string.ascii_uppercase)
 types = ["Normal", "Fighting", "Flying", "Poison", "Ground", "Rock", "Bug", "Ghost", "Steel", "Fire", "Water", "Grass", "Electric", "Psychic", "Ice", "Dragon", "Dark", "Fairy", "Qmark"]
@@ -55,7 +73,22 @@ pokemon_info_sheet = pokemon_info.worksheets[0]
 # TODO: Add drawn and menu sprites
 pokemon_files = load_workbook(filename = 'C:\\Users\\ejone\\OneDrive\\Desktop\\Code\\Javascript\\p5\\projects\\Pokeball Pokemon Comparison\\Pokemon File-check.xlsx', data_only=True)
 pokemon_files_sheet = pokemon_files.worksheets[0]
-# TODO: Global frequently used column indices? Use get_col from spreadsheet tools and have them all defined here for use to save computing power?
+
+poke_info_name_col = get_col_number(pokemon_info_sheet, "Name")
+poke_info_num_col = get_col_number(pokemon_info_sheet, "#")
+poke_info_gen_col = get_col_number(pokemon_info_sheet, "Gen")
+poke_info_f_col = get_col_number(pokemon_info_sheet, "Female Variation")
+poke_info_mega_col = get_col_number(pokemon_info_sheet, "Mega")
+poke_info_giganta_col = get_col_number(pokemon_info_sheet, "Gigantamax")
+poke_info_reg_forms_col = get_col_number(pokemon_info_sheet, "Regional Forms")
+poke_info_type_forms_col = get_col_number(pokemon_info_sheet, "Type Forms")
+poke_info_misc_forms_col = get_col_number(pokemon_info_sheet, "Misc Forms")
+poke_info_gen8_col = get_col_number(pokemon_info_sheet, "Available in Gen 8")
+poke_files_num_col = get_col_number(pokemon_files_sheet, "#")
+poke_files_name_col = get_col_number(pokemon_files_sheet, "Name")
+poke_files_tags_col = get_col_number(pokemon_files_sheet, "Tags")
+poke_files_filename_col = get_col_number(pokemon_files_sheet, "Filename")
+
 
 save_path_starter = "C:\\Users\\ejone\\OneDrive\\Desktop\\Code\\Javascript\\p5\\projects\\Pokeball Pokemon Comparison\\Images\\Pokemon"
 game_save_path = save_path_starter + "\\Game Sprites\\"

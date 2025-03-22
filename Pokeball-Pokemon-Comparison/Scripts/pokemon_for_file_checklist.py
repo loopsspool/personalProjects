@@ -2,6 +2,11 @@ import xlrd     # For reading excel workbook
 import xlsxwriter   # For writing new form rows
 import os   # To check for files
 
+# TODO: This should always be run at the end of each scrape
+# Or, even better, update cells at time of download from scraping file
+# In that case this should only be run when the pokedex is not up to date (for unobtainables and whatnot, since missing_pokes func relies on that data)
+# and only on the newest added pokes
+
 # SPREADSHEET DATA
 pokemon_info = xlrd.open_workbook('C:\\Users\\ejone\\OneDrive\\Desktop\\Code\\Javascript\\p5\\projects\\Pokeball Pokemon Comparison\\Pokemon Info.xls')
 form_sheet = pokemon_info.sheet_by_name("Form Rows")

@@ -1,4 +1,4 @@
-from globals import types, uppers, creams, sweets
+from globals import types, uppers, creams, sweets, no_bulba_forms
 
 # TODO: Read through this and break it up
 
@@ -436,23 +436,7 @@ def form_translation(pokemon, computer_filename):
 
     return(bulba_code_form)
 
-# TODO: Put into globals
-# NOTE: Double check occasionally
-no_bulba_forms = []
-# Pikachu World Cap
-no_bulba_forms.append("-Form-Cap-World")
-# Cosplay Pikachu
-no_bulba_forms.append("-Form-Cosplay")
-# Overdrive Reshiram, Zekrom, and Kyurem
-no_bulba_forms.append("Overdrive")
-# Marshadow Zenith
-no_bulba_forms.append("-Form-Zenith")
-# Urshifu Forms
-no_bulba_forms.extend(["-Form-Rapid_Strike", "-Form-Single_Strike"])
-# Dada Zarude
-no_bulba_forms.append("-Form-Dada")
-# Calyrex Riders
-no_bulba_forms.extend(["-Form-Shadow_Rider", "-Form-Ice_Rider"])
+
 def bulba_doesnt_have_this_form(filename):
     for form in no_bulba_forms:
         if form in filename:
