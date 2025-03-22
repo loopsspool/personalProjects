@@ -17,3 +17,5 @@ R/*
 !R/Scripts/dailEreadR.R
 ShoWorks-Book-Integration-App/*
 Website/
+
+*.pyc
