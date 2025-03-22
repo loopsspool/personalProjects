@@ -2,6 +2,7 @@ import xlrd     # For reading excel workbook
 import xlsxwriter   # For writing new form rows
 import os   # To check for files
 
+# TODO: Add all new gen 8 (LA) and gen 9 (SV) games
 # TODO: This should always be run at the end of each scrape
 # Or, even better, update cells at time of download from scraping file (and delete from their object missing imgs array)
 # In that case this should only be run when the pokedex is not up to date (for unobtainables and whatnot, since missing_pokes func relies on that data)

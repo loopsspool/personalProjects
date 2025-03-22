@@ -1,3 +1,5 @@
+# TODO: Add all new gen 8 (LA) and gen 9 (SV) games
+
 # Determines if a pokemon can only be obtained in SM-USUM (so exclude XY-ORAS in filename)
 def sm_usum_exclusivity_test(poke_num, tags):
     if poke_num >= 722:
