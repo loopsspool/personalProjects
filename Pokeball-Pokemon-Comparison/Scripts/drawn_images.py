@@ -1,5 +1,5 @@
 from globals import *
-from scrape_image_tools import get_img_from_string, get_largest_png
+from image_tools import get_img_from_string, get_largest_png
 import re   # For filtering what images to download
 
 

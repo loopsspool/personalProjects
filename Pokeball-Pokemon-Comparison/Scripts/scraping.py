@@ -4,9 +4,9 @@ import urllib   # For downloading those images to my computer
 import re   # For filtering what images to download
 
 from globals import *
-from scrape_image_tools import *
-from scrape_bulba_translators import potentially_adapt_game_in_filename
-from scrape_drawn_images import get_drawn_images
+from image_tools import *
+from bulba_translators import potentially_adapt_game_in_filename
+from drawn_images import get_drawn_images
 
 # NOTE: ALL DOWNLOADS MUST BE DONE IN THE FASHION BELOW
     # Otherwise bulba has a check on if the site is being web scraped and it will block the download

@@ -1,5 +1,5 @@
-from scrape_bulba_translators import bulba_doesnt_have_this_form, determine_bulba_name
-from scrape_game_tools import combine_gen_and_game
+from bulba_translators import bulba_doesnt_have_this_form, determine_bulba_name
+from game_tools import combine_gen_and_game
 
 from globals import *
 
