@@ -13,8 +13,8 @@ import time
 
 from globals import *
 from spreadsheet_funcs import generate_pokedex_from_spreadsheet, add_missing_images_to_poke
-from scrape_drawn_images import get_drawn_images
-from scrape_menu_sprites import get_menu_sprites
+from drawn_images import get_drawn_images
+from menu_sprites import get_menu_sprites
 from scraping import get_game_img_urls, scrape_game_imgs
 
 
