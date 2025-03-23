@@ -86,7 +86,7 @@ def generate_pokedex_from_spreadsheet():
 
 def find_last_row_for_poke(num):
     # TODO: Test this
-    if num >= last_poke_num_in_dex:
+    if num >= last_poke_num_in_dex or num > pokemon_files_sheet.max_row:
         # TODO: Make sure this is inclusive too
         return pokemon_files_sheet.max_row
     for row in range(1, pokemon_files_sheet.max_row):
@@ -105,17 +105,14 @@ def add_missing_images_to_poke():
 
     prev_row_poke_num = -1
     stop = find_last_row_for_poke(poke_num_start_from + poke_to_go_after_start)
-    if stop > pokemon_files_sheet.max_row:
-        stop = pokemon_files_sheet.max_row
+
     for row in range(poke_num_start_from + 1, stop):
-        print(row)
         poke_num = int(cell_value(pokemon_files_sheet, row, poke_files_num_col))
         #TODO: Test
         poke_obj = pokedex[poke_num-1]
         # Only print getting missing images message if its a new pokemon
         if prev_row_poke_num != poke_num:
-            poke_name = cell_value(pokemon_files_sheet, row, poke_files_name_col)
-            print("Getting ", poke_name, " missing images")
+            print("Getting", poke_obj.name, "missing images...")
         # TODO: check this works too
         # Just setting here after the check to not deal with all the exceptions of the loop not continuing
         # If used farther down placement will have to be modified
@@ -133,76 +130,87 @@ def add_missing_images_to_poke():
         if bulba_doesnt_have_this_form(filename):
             continue
 
-        # This is to track generations and skip if it's a back sprite below gen 5
-        # To be sifted through to see if they're different by game for the given pokemon
-        is_below_gen5 = False
+        check_each_game_for_missing(row, poke_obj, filename, tags)
 
-        # Only doing filename_col up because those are where the actual checks need to be made (missing for certain games)
-        # And +1 at the end to be inclusive
-        for col in range(poke_files_filename_col + 1, pokemon_files_sheet.max_column + 1):
-            col_name = get_col_name(pokemon_files_sheet, col)
+        
+# TODO: Make sure poke_obj pulls correct
+def check_each_game_for_missing(row, poke_obj, filename, tags):
+    # This is to track generations and skip if it's a back sprite below gen 5
+    # To be sifted through to see if they're different by game for the given pokemon
+    is_below_gen5 = False
 
-            # Triggers at Platinum because excel file is reverse chronological, so Plat is first gen 4 game hit
-            # Every loop iteration after is_below_gen5 will be true
-            if col_name == "Platinum":
-                is_below_gen5 = True
+    # Only doing filename_col up because those are where the actual checks need to be made (missing for certain games)
+    # And +1 at the end to be inclusive
+    for col in range(poke_files_filename_col + 1, pokemon_files_sheet.max_column + 1):
+        col_name = get_col_name(pokemon_files_sheet, col)
 
-            # If pokemon image is unavailable, continue (don't add to missing images obviously)
-            if cell_value(pokemon_files_sheet, row, col) == "u":
-                continue
+        # Triggers at Platinum because excel file is reverse chronological, so Plat is first gen 4 game hit
+        # Every loop iteration after is_below_gen5 will be true
+        if col_name == "Platinum":
+            is_below_gen5 = True
 
-            # If it's a back image from a pokemon between gen1 and gen4
-            # Put all game images into special missing array
-            # This is so another script can go through these images and determine if there were differences in the sprites between games
-            # If there were, each file will be named differently
-            # Otherwise, they will all be lumped into a single gen# back img
-            is_back_below_gen5 = is_below_gen5 and "-Back" in filename
-            if is_empty(pokemon_files_sheet, row, col) or is_back_below_gen5:
-                # Where to insert the gen in the filename
-                gen_insert_index = filename.find(poke_name) + len(poke_name)
-                gen_and_game = combine_gen_and_game(col_name, poke_num, tags)
-                
-                # Back sprites have to be seperated due to:
-                # Below gen 5 all back sprites are being downloaded to a seperate folder to be sifted through
-                if "-Back" in tags:
-                    # Adding space because initially there was no space in spreadsheet
-                        # This was for sorting purposes because back sprites start with hyphen immediately after gen
-                        # But front sprites follow with a space so they come first in file order
-                    # This variable is necessary because bulba uses games to denote which back sprites are from where
-                        # In my filenaming convention (gen4 and below excluded due to actual sprite differences between games)
-                        # For backs I JUST use gen
-                        # But to scrape the image from bulba, I still need the game denoter, which this gets me
-                    back_filename_w_game_and_gen_for_bulba = filename[:gen_insert_index] + " " + gen_and_game + filename[gen_insert_index:]
-                    bulba_name = determine_bulba_name(back_filename_w_game_and_gen_for_bulba, poke_obj)
-                    actual_filename =""
-                    gen = ""
-                    game = ""
-                    if "Gen6" in gen_and_game:
-                        # This is because all Gen6 are shared with gen7
-                            # So denoter is Gen6-7
-                        gen = gen_and_game[:6]
-                        # Extra character to skip over space after gen
-                        game = gen_and_game[7:]
-                    else:
-                        gen = gen_and_game[:4]
-                        # Extra character to skip over space after gen
-                        game = gen_and_game[5:]
+        # If pokemon image is unavailable, continue (don't add to missing images obviously)
+        if cell_value(pokemon_files_sheet, row, col) == "u":
+            continue
 
-                    # filename[:3] gets pokemon number
-                    actual_filename = filename[:3] + " " + poke_name + " " + gen + filename[gen_insert_index:]
-                    if is_below_gen5:
-                        actual_filename += "-" + game
-                        poke_obj.missing_gen1_thru_gen4_back_imgs.append((actual_filename, bulba_name))
-                    else:
-                        poke_obj.missing_imgs.append((actual_filename, bulba_name))
-                else:
-                    # Going +1 after the insert index because there's a space for non-back sprites
-                    # This is to simulate in the spreadsheet the space between generation and games in the filenames
-                        # This determines sorting order, so is fairly important
-                            # Since the spreadsheet doesn't acknowledge games or gens in the "Filename" column (because each game gets it's own column)
-                                # The space must be included to sort the spreadsheet to match filenames
-                                    # And thus, must be accounted for here
-                    gen_insert_index += 1
-                    filename_w_gen = filename[:gen_insert_index] + gen_and_game + filename[gen_insert_index:]
-                    bulba_name = determine_bulba_name(filename_w_gen, poke_obj)
-                    poke_obj.missing_imgs.append((filename_w_gen, bulba_name))
+        # If it's a back image from a pokemon between gen1 and gen4
+        # Put all game images into special missing array
+        # This is so another script can go through these images and determine if there were differences in the sprites between games
+        # If there were, each file will be named differently
+        # Otherwise, they will all be lumped into a single gen# back img
+        is_back_below_gen5 = is_below_gen5 and "-Back" in filename
+        # If image is missing or is a gen 1-4 back sprite
+        if is_empty(pokemon_files_sheet, row, col) or is_back_below_gen5:
+            # Where to insert the gen in the filename
+            gen_insert_index = filename.find(poke_obj.name) + len(poke_obj.name)
+            gen_and_game = combine_gen_and_game(col_name, poke_obj.number, tags)
+            
+            # Back sprites have to be seperated due to:
+            # Below gen 5 all back sprites are being downloaded to a seperate folder to be sifted through
+            if "-Back" in tags:
+                determine_missing_back_filename(poke_obj, filename, gen_and_game, gen_insert_index, is_below_gen5)
+            else:
+                # Going +1 after the insert index because there's a space for non-back sprites
+                # This is to simulate in the spreadsheet the space between generation and games in the filenames
+                    # This determines sorting order, so is fairly important
+                        # Since the spreadsheet doesn't acknowledge games or gens in the "Filename" column (because each game gets it's own column)
+                            # The space must be included to sort the spreadsheet to match filenames
+                                # And thus, must be accounted for here
+                gen_insert_index += 1
+                filename_w_gen = filename[:gen_insert_index] + gen_and_game + filename[gen_insert_index:]
+                bulba_name = determine_bulba_name(filename_w_gen, poke_obj)
+                poke_obj.missing_imgs.append((filename_w_gen, bulba_name))
+
+
+def determine_missing_back_filename(poke_obj, filename, gen_and_game, gen_insert_index, is_below_gen5):
+    # Adding space because initially there was no space in spreadsheet
+        # This was for sorting purposes because back sprites start with hyphen immediately after gen
+        # But front sprites follow with a space so they come first in file order
+    # This variable is necessary because bulba uses games to denote which back sprites are from where
+        # In my filenaming convention (gen4 and below excluded due to actual sprite differences between games)
+        # For backs I JUST use gen
+        # But to scrape the image from bulba, I still need the game denoter, which this gets me
+    back_filename_w_game_and_gen_for_bulba = filename[:gen_insert_index] + " " + gen_and_game + filename[gen_insert_index:]
+    bulba_name = determine_bulba_name(back_filename_w_game_and_gen_for_bulba, poke_obj)
+    actual_filename =""
+    # TODO: This could probably be simplified by not initially combining gen and game? Or having a function that pulls gen from game?
+    gen = ""
+    game = ""
+    if "Gen6" in gen_and_game:
+        # This is because all Gen6 are shared with gen7
+            # So denoter is Gen6-7
+        gen = gen_and_game[:6]
+        # Extra character to skip over space after gen
+        game = gen_and_game[7:]
+    else:
+        gen = gen_and_game[:4]
+        # Extra character to skip over space after gen
+        game = gen_and_game[5:]
+
+    # filename[:3] gets pokemon number
+    actual_filename = filename[:3] + " " + poke_obj.name + " " + gen + filename[gen_insert_index:]
+    if is_below_gen5:
+        actual_filename += "-" + game
+        poke_obj.missing_gen1_thru_gen4_back_imgs.append((actual_filename, bulba_name))
+    else:
+        poke_obj.missing_imgs.append((actual_filename, bulba_name))
