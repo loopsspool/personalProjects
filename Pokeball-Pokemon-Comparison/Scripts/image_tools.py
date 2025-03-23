@@ -2,8 +2,8 @@ from PIL import Image   # For converting URL image data to PIL Image object
 import requests # To retrieve webpages
 from bs4 import BeautifulSoup   # To parse webpages
 import os   # For downloading those images to my computer
-from app_globals import starter_url
 import re   # For filtering what images to download
+from scraping import bulba_archives_starter_url
 
 def is_animated(link):
     # NOTE: Works on animated pngs
@@ -15,7 +15,7 @@ def is_animated(link):
 
 def get_largest_png(thumb):
     # Go into page of image
-    img_page = requests.get(starter_url + thumb.a.get("href"))
+    img_page = requests.get(bulba_archives_starter_url + thumb.a.get("href"))
     img_page_soup = BeautifulSoup(img_page.content, 'html.parser')
     # Find the biggest image location
     biggest_link = img_page_soup.find("div", "fullImageLink")

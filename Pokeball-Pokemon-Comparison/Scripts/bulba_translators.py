@@ -1,6 +1,7 @@
-from app_globals import types, uppers, creams, sweets, no_bulba_forms
+from app_globals import poke_types, uppers, creams, sweets, no_bulba_forms
 
 # TODO: Read through this and break it up
+# NOTE: Home sprites denoted HOME0001.png and menu 'Menu HOME 0001.png'
 
 def bulba_game_denoter_conversion(filename):
     if "Red-Blue" in filename:
@@ -40,7 +41,7 @@ def bulba_game_denoter_conversion(filename):
         return (" 7s")
     if "LGPE" in filename:
         return (" 7p")
-    if "Sword-Shield" in filename:
+    if "Sword-Shield" in filename or "BDSP" in filename:
         return (" 8s")
     
 # If the file contains lateral generation changes (black to black2, xy to oras) change the filename to accomodate my script
@@ -58,7 +59,7 @@ def check_for_form(plaintext_form, bulba_form_code, curr_bulba_form, computer_fi
         return (curr_bulba_form)
 
 def check_for_type(computer_filename):
-    for t in types:
+    for t in poke_types:
         poke_type = "-Form-" + t
         if poke_type in computer_filename:
             # Handling the ??? type used in gen4

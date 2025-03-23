@@ -1,6 +1,4 @@
 import string # To access letters easily without having to type them myself in an array
-from openpyxl import load_workbook
-from spreadsheet_funcs import get_col_number
 
 # Pokemon object
 class Pokemon:
@@ -28,7 +26,7 @@ poke_num_start_from = 1
         # Each new pokemon would rewrite the line of the file where it picked up
         # And delete missing images that the script downloaded
 # This is amount of pokemon to get info from after the starter pokemon
-pokemon_to_go_after_start = 50
+poke_to_go_after_start = 10
 
 # TODO: Make this a JSON
 pokemon_img_urls = []
@@ -61,37 +59,14 @@ no_bulba_forms.append("-Form-Dada")
 no_bulba_forms.extend(["-Form-Shadow_Rider", "-Form-Ice_Rider"])
 
 uppers = list(string.ascii_uppercase)
-types = ["Normal", "Fighting", "Flying", "Poison", "Ground", "Rock", "Bug", "Ghost", "Steel", "Fire", "Water", "Grass", "Electric", "Psychic", "Ice", "Dragon", "Dark", "Fairy", "Qmark"]
+poke_types = ["Normal", "Fighting", "Flying", "Poison", "Ground", "Rock", "Bug", "Ghost", "Steel", "Fire", "Water", "Grass", "Electric", "Psychic", "Ice", "Dragon", "Dark", "Fairy", "Qmark"]
 # Vanilla Cream is default, so no letter denoter
 creams = [("Caramel_Swirl", "CaS"), ("Lemon_Cream", "LeC"), ("Matcha_Cream", "MaC"), ("Mint_Cream", "MiC"), ("Rainbow_Swirl", "RaS"), ("Ruby_Cream", "RaC"), ("Ruby_Swirl", "RuS"), ("Salted_Cream", "SaC"), ("Vanilla_Cream", "")]
 # Strawberry Sweet is default, so no letter denoter
 sweets = [("Berry_Sweet", "B"), ("Clover_Sweet", "C"), ("Flower_Sweet", "F"), ("Love_Sweet", "L"), ("Ribbon_Sweet", "R"), ("Star_Sweet", "S"), ("Strawberry_Sweet", "")]
 
-# Spreadsheet For Pokedex Info
-pokemon_info = load_workbook(filename = 'C:\\Users\\ejone\\OneDrive\\Desktop\\Code\\Javascript\\p5\\projects\\Pokeball Pokemon Comparison\\Pokemon Info.xlsx', data_only=True)
-pokemon_info_sheet = pokemon_info.worksheets[0]
-# Spreadsheet for file tracking (what images I do/dont have)
-# TODO: Add drawn and menu sprites
-pokemon_files = load_workbook(filename = 'C:\\Users\\ejone\\OneDrive\\Desktop\\Code\\Javascript\\p5\\projects\\Pokeball Pokemon Comparison\\Pokemon File-check.xlsx', data_only=True)
-pokemon_files_sheet = pokemon_files.worksheets[0]
 
-poke_info_name_col = get_col_number(pokemon_info_sheet, "Name")
-poke_info_num_col = get_col_number(pokemon_info_sheet, "#")
-poke_info_gen_col = get_col_number(pokemon_info_sheet, "Gen")
-poke_info_f_col = get_col_number(pokemon_info_sheet, "Female Variation")
-poke_info_mega_col = get_col_number(pokemon_info_sheet, "Mega")
-poke_info_giganta_col = get_col_number(pokemon_info_sheet, "Gigantamax")
-poke_info_reg_forms_col = get_col_number(pokemon_info_sheet, "Regional Forms")
-poke_info_type_forms_col = get_col_number(pokemon_info_sheet, "Type Forms")
-poke_info_misc_forms_col = get_col_number(pokemon_info_sheet, "Misc Forms")
-poke_info_gen8_col = get_col_number(pokemon_info_sheet, "Available in Gen 8")
-poke_files_num_col = get_col_number(pokemon_files_sheet, "#")
-poke_files_name_col = get_col_number(pokemon_files_sheet, "Name")
-poke_files_tags_col = get_col_number(pokemon_files_sheet, "Tags")
-poke_files_filename_col = get_col_number(pokemon_files_sheet, "Filename")
-
-
-save_path_starter = "C:\\Users\\ejone\\OneDrive\\Desktop\\Code\\Javascript\\p5\\projects\\Pokeball Pokemon Comparison\\Images\\Pokemon"
+save_path_starter = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon"
 game_save_path = save_path_starter + "\\Game Sprites\\"
 gen6_menu_sprite_save_path = save_path_starter + "\\Menu Sprites\\Gen6\\"
 gen8_menu_sprite_save_path = save_path_starter + "\\Menu Sprites\\Gen8\\"

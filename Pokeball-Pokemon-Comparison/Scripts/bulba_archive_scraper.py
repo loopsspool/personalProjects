@@ -11,7 +11,6 @@ from openpyxl import load_workbook
 import string # To access letters easily without having to type them myself in an array
 import time
 
-from app_globals import *
 from spreadsheet_funcs import generate_pokedex_from_spreadsheet, add_missing_images_to_poke
 from drawn_images import get_drawn_images
 from menu_sprites import get_menu_sprites

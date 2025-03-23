@@ -36,7 +36,7 @@ def combine_gen_and_game(game, poke_num, tags):
             return ("Gen6-7 XY-ORAS-SM-USUM")
     if game == "LGPE":
         return ("Gen7 " + game)
-    if game == "Sword-Shield":
+    if game == "Sword-Shield" or game == "BDSP":
         return ("Gen8 " + game)
 
 # Get back gen from game

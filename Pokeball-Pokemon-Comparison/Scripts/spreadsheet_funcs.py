@@ -1,8 +1,20 @@
+from openpyxl import load_workbook
+
 from bulba_translators import bulba_doesnt_have_this_form, determine_bulba_name
 from game_tools import combine_gen_and_game
 
-from app_globals import *
+from app_globals import poke_num_start_from, poke_to_go_after_start, pokedex, Pokemon
 
+
+# Spreadsheet For Pokedex Info
+pokemon_info = load_workbook(filename = 'C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Pokemon Info.xlsx', data_only=True)
+pokemon_info_sheet = pokemon_info.worksheets[0]
+# Spreadsheet for file tracking (what images I do/dont have)
+# TODO: Add drawn and menu sprites
+pokemon_files = load_workbook(filename = 'C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Pokemon File-check.xlsx', data_only=True)
+pokemon_files_sheet = pokemon_files.worksheets[0]
+
+# TODO: Move these into global and adjust files accordingly? Causing circular import having globals import get_col_num
 def cell_value(sheet, row, col):
     return (sheet.cell(row, col).value)
 
@@ -21,6 +33,21 @@ def get_col_number(sheet, col_name):
 # Returns column name from column number
 def get_col_name(sheet, col_number):
     return(cell_value(sheet, 1, col_number))
+
+poke_info_name_col = get_col_number(pokemon_info_sheet, "Name")
+poke_info_num_col = get_col_number(pokemon_info_sheet, "#")
+poke_info_gen_col = get_col_number(pokemon_info_sheet, "Gen")
+poke_info_f_col = get_col_number(pokemon_info_sheet, "Female Variation")
+poke_info_mega_col = get_col_number(pokemon_info_sheet, "Mega")
+poke_info_giganta_col = get_col_number(pokemon_info_sheet, "Gigantamax")
+poke_info_reg_forms_col = get_col_number(pokemon_info_sheet, "Regional Forms")
+poke_info_type_forms_col = get_col_number(pokemon_info_sheet, "Type Forms")
+poke_info_misc_forms_col = get_col_number(pokemon_info_sheet, "Misc Forms")
+poke_info_gen8_col = get_col_number(pokemon_info_sheet, "Available in SwSh")
+poke_files_num_col = get_col_number(pokemon_files_sheet, "#")
+poke_files_name_col = get_col_number(pokemon_files_sheet, "Name")
+poke_files_tags_col = get_col_number(pokemon_files_sheet, "Tags")
+poke_files_filename_col = get_col_number(pokemon_files_sheet, "Filename")
 
 # Performs check to make sure JSON pokedex is up to date
 # TODO: Test
@@ -55,7 +82,7 @@ def generate_pokedex_from_spreadsheet():
         is_in_gen8 = isnt_empty(pokemon_info_sheet, i, poke_info_gen8_col)
 
         # Adding to pokedex
-        globals.pokedex.append(globals.Pokemon(name, num, gen, has_f_var, has_mega, has_giganta, reg_forms, has_type_forms, has_misc_forms, is_in_gen8))
+        pokedex.append(Pokemon(name, num, gen, has_f_var, has_mega, has_giganta, reg_forms, has_type_forms, has_misc_forms, is_in_gen8))
 
 # TODO: When JSONs implementation complete, only run this when generating pokedex
 # TODO: When this happens this function should be redundant, as the poke
@@ -65,11 +92,12 @@ def add_missing_images_to_poke():
     print("Getting missing images from spreadsheet...")
 
     prev_row_poke_num = -1
-    # TODO: Check poke_num_start_from + 1 is accurate (starts at bulbasaur for 1)
-    for row in range(poke_num_start_from + 1, pokemon_files_sheet.max_row):
-        # TODO: check this works too
-        # Haven't reset poke_num yet, so it is the previous rows poke num
-        prev_row_poke_num = poke_num
+    # TODO: Stop here is actually nat dex number, has to find first row with that number in order to get an accurate stopping point for this function
+    stop = poke_num_start_from + 1 + poke_to_go_after_start
+    if stop > pokemon_files_sheet.max_row:
+        stop = pokemon_files_sheet.max_row
+    for row in range(poke_num_start_from + 1, stop):
+        print(row)
         poke_num = int(cell_value(pokemon_files_sheet, row, poke_files_num_col))
         #TODO: Test
         poke_obj = pokedex[poke_num-1]
@@ -77,6 +105,10 @@ def add_missing_images_to_poke():
         if prev_row_poke_num != poke_num:
             poke_name = cell_value(pokemon_files_sheet, row, poke_files_name_col)
             print("Getting ", poke_name, " missing images")
+        # TODO: check this works too
+        # Just setting here after the check to not deal with all the exceptions of the loop not continuing
+        # If used farther down placement will have to be modified
+        prev_row_poke_num = poke_num
         
         # Tags meaning shiny, animated, back, froms, etc
         tags = cell_value(pokemon_files_sheet, row, poke_files_tags_col)

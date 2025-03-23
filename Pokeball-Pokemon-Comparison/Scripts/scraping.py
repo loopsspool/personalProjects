@@ -6,7 +6,6 @@ import re   # For filtering what images to download
 from app_globals import *
 from image_tools import *
 from bulba_translators import potentially_adapt_game_in_filename
-from drawn_images import get_drawn_images
 
 # NOTE: ALL DOWNLOADS MUST BE DONE IN THE FASHION BELOW
     # Otherwise bulba has a check on if the site is being web scraped and it will block the download
@@ -17,7 +16,7 @@ opener = urllib.request.URLopener()
 opener.addheader('User-Agent', 'Mozilla/5.0')
 
 # Origin page (list of pokes by national pokedex)
-starter_url = "https://archives.bulbagarden.net"
+bulba_archives_starter_url = "https://archives.bulbagarden.net"
 pokemon_starter_page = requests.get("https://archives.bulbagarden.net/wiki/Category:Pok%C3%A9mon_artwork")
 pokemon_starter_page_soup = BeautifulSoup(pokemon_starter_page.content, 'html.parser')
 
@@ -41,7 +40,7 @@ def get_game_img_urls():
         # Moving on to the next page
         try:
             next_page_url = curr_page_soup.find('a', string='next page').get('href')
-            next_page = requests.get(starter_url + next_page_url)
+            next_page = requests.get(bulba_archives_starter_url + next_page_url)
             next_page_soup = BeautifulSoup(next_page.content, 'html.parser')
             curr_page_soup = next_page_soup
             page_index += 1
@@ -142,7 +141,7 @@ def scrape_game_imgs():
         for img in missing_gen1_thru_gen4_back_imgs:
             print(img)
         # Getting pokemon archived image page information
-        curr_page = requests.get(starter_url + pokemon_img_urls[i])
+        curr_page = requests.get(bulba_archives_starter_url + pokemon_img_urls[i])
         curr_page_soup = BeautifulSoup(curr_page.content, 'html.parser')
 
         theres_a_next_page = True
@@ -177,7 +176,8 @@ def scrape_game_imgs():
                 print("No sprite files on this page. Moving to next pokemon...")
                 break
 
-            # TODO: Uncomment
+            # TODO: Will have to go in its own file to scrape, circular imports if I do it here
+            # Will pull a little more requests but really shouldn't be bad with proper tracking and stashed urls via JSON
             # Getting Drawn images
             # Keep this here before the break for missing sprites so I can still get the drawn images even if there's no missing sprites
             #for i, caption in enumerate(thumb_text):
@@ -220,7 +220,7 @@ def scrape_game_imgs():
             # Moving on to the next page
             try:
                 next_page_url = curr_page_soup.find('a', string='next page').get('href')
-                next_page = requests.get(starter_url + next_page_url)
+                next_page = requests.get(bulba_archives_starter_url + next_page_url)
                 next_page_soup = BeautifulSoup(next_page.content, 'html.parser')
                 curr_page_soup = next_page_soup
                 theres_a_next_page = True
