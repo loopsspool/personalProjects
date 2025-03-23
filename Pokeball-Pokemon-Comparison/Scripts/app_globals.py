@@ -17,7 +17,10 @@ class Pokemon:
         self.missing_gen1_thru_gen4_back_imgs = []
 
 pokedex = []
+# TODO: After implementing JSON, get this programatically
+last_poke_num_in_dex = 1025
 
+# TODO: Have all functions utilize the start and to go after start denoters
 # This is so when I get kicked from the server I only have to write once where to pick up
 poke_num_start_from = 1
 # TODO: Generating pokedex should only go to here too
@@ -25,6 +28,7 @@ poke_num_start_from = 1
     # So I don't even have to write this after each crash
         # Each new pokemon would rewrite the line of the file where it picked up
         # And delete missing images that the script downloaded
+# TODO: Write function to check this does not exceed last pokemon, if so set to last pokemon
 # This is amount of pokemon to get info from after the starter pokemon
 poke_to_go_after_start = 10
 

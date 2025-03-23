@@ -3,7 +3,7 @@ from openpyxl import load_workbook
 from bulba_translators import bulba_doesnt_have_this_form, determine_bulba_name
 from game_tools import combine_gen_and_game
 
-from app_globals import poke_num_start_from, poke_to_go_after_start, pokedex, Pokemon
+from app_globals import poke_num_start_from, poke_to_go_after_start, pokedex, Pokemon, last_poke_num_in_dex
 
 
 # Spreadsheet For Pokedex Info
@@ -84,6 +84,18 @@ def generate_pokedex_from_spreadsheet():
         # Adding to pokedex
         pokedex.append(Pokemon(name, num, gen, has_f_var, has_mega, has_giganta, reg_forms, has_type_forms, has_misc_forms, is_in_gen8))
 
+def find_last_row_for_poke(num):
+    # TODO: Test this
+    if num >= last_poke_num_in_dex:
+        # TODO: Make sure this is inclusive too
+        return pokemon_files_sheet.max_row
+    for row in range(1, pokemon_files_sheet.max_row):
+        # TODO: When update file-check to 4 leading zeros, these will need to be changed to zfill(4)
+        if cell_value(pokemon_files_sheet, row, poke_files_num_col)==str(num).zfill(3) and cell_value(pokemon_files_sheet, row+1, poke_files_num_col)!=str(num).zfill(3):
+            # +1 so its inclusive
+            return row+1
+    raise ValueError("Something went wrong in find_last_row_for_poke")
+
 # TODO: When JSONs implementation complete, only run this when generating pokedex
 # TODO: When this happens this function should be redundant, as the poke
 
@@ -92,8 +104,7 @@ def add_missing_images_to_poke():
     print("Getting missing images from spreadsheet...")
 
     prev_row_poke_num = -1
-    # TODO: Stop here is actually nat dex number, has to find first row with that number in order to get an accurate stopping point for this function
-    stop = poke_num_start_from + 1 + poke_to_go_after_start
+    stop = find_last_row_for_poke(poke_num_start_from + poke_to_go_after_start)
     if stop > pokemon_files_sheet.max_row:
         stop = pokemon_files_sheet.max_row
     for row in range(poke_num_start_from + 1, stop):
