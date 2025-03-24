@@ -102,14 +102,12 @@ def generate_pokedex_from_spreadsheet(last_poke_row):
 
 def find_last_row_for_poke(num):
     for row in range(1, pokemon_files_sheet.max_row):
-        # TODO: When update file-check to 4 leading zeros, these will need to be changed to zfill(4)
-        if cell_value(pokemon_files_sheet, row, poke_files_num_col)==str(num).zfill(3) and cell_value(pokemon_files_sheet, row+1, poke_files_num_col)!=str(num).zfill(3):
+        if cell_value(pokemon_files_sheet, row, poke_files_num_col)==str(num).zfill(4) and cell_value(pokemon_files_sheet, row+1, poke_files_num_col)!=str(num).zfill(4):
             # +1 so its inclusive
             return row+1
     raise ValueError("Something went wrong in find_last_row_for_poke")
 
-# TODO: When JSONs implementation complete, only run this when generating pokedex
-# TODO: When this happens this function should be redundant, as the poke
+
 # TODO: Test pokemon_files_sheet.max_row is inclusive (by doing last poke in the dex)
 
 # Reading the filecheck spreadsheet with the end goal of adding missing images
