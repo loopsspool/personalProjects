@@ -31,11 +31,16 @@ def add_leading_zero(path):
             print(new_full_path)
             os.rename(full_path, new_full_path)
 
-def change_to_SwSh(path):
+def replace_in_filename(path, replace, replace_with):
     files = os.listdir(path)
     for f in files:
         full_path = os.path.join(path, f)
         if os.path.isfile(full_path):
+            if replace in f:
+                new_f = f.replace(replace, replace_with)
+                new_full_path = os.path.join(path, new_f)
+                print(new_f)
+                os.rename(full_path, new_full_path)
             # TODO: have BDSP & SwSh share images, but not LA
 
 # Shiny tag first
