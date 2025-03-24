@@ -3,7 +3,7 @@ from openpyxl import load_workbook
 from bulba_translators import bulba_doesnt_have_this_form, determine_bulba_name
 from game_tools import combine_gen_and_game
 
-from app_globals import poke_num_start_from, poke_to_go_after_start, pokedex, Pokemon
+from app_globals import poke_num_start_from, poke_to_go_after_start, pokedex, Pokemon, save_pokedex
 
 
 # Spreadsheet For Pokedex Info
@@ -17,6 +17,11 @@ pokemon_files_sheet = pokemon_files.worksheets[0]
 # TODO: Move these into global and adjust files accordingly? Causing circular import having globals import get_col_num
 def cell_value(sheet, row, col):
     return (sheet.cell(row, col).value)
+
+# It would appear conditional formatting cells have some mystery value that is not None, and sometimes not an empty string
+# This function accomodates for those cases by instead testing for not an x
+def is_x(sheet, row, col):
+    return (cell_value(sheet, row, col) == "x")
 
 def isnt_empty(sheet, row, col):
     return (cell_value(sheet, row, col) != None)
@@ -43,7 +48,10 @@ poke_info_giganta_col = get_col_number(pokemon_info_sheet, "Gigantamax")
 poke_info_reg_forms_col = get_col_number(pokemon_info_sheet, "Regional Forms")
 poke_info_type_forms_col = get_col_number(pokemon_info_sheet, "Type Forms")
 poke_info_misc_forms_col = get_col_number(pokemon_info_sheet, "Misc Forms")
-poke_info_swsh_col = get_col_number(pokemon_info_sheet, "Available in SwSh")
+poke_info_swsh_col = get_col_number(pokemon_info_sheet, "SwSh")
+poke_info_bdsp_col = get_col_number(pokemon_info_sheet, "BDSP")
+poke_info_la_col = get_col_number(pokemon_info_sheet, "LA")
+poke_info_sv_col = get_col_number(pokemon_info_sheet, "SV")
 poke_files_num_col = get_col_number(pokemon_files_sheet, "#")
 poke_files_name_col = get_col_number(pokemon_files_sheet, "Name")
 poke_files_tags_col = get_col_number(pokemon_files_sheet, "Tags")
@@ -54,21 +62,37 @@ poke_files_filename_col = get_col_number(pokemon_files_sheet, "Filename")
 def generate_pokedex_from_spreadsheet(last_poke_row):
     print("Getting pokemon info from spreadsheet...")
     
+    # Clears pokedex so every pokemon isn't added again if JSON was populated
+    pokedex.clear()
     # Getting poke specific relevant info
     for i in range(2, last_poke_row + 1):
         num = cell_value(pokemon_info_sheet, i, poke_info_num_col)
         name = cell_value(pokemon_info_sheet, i, poke_info_name_col)
         gen = int(cell_value(pokemon_info_sheet, i, poke_info_gen_col))
-        has_f_var = isnt_empty(pokemon_info_sheet, i, poke_info_f_col)
-        has_mega = isnt_empty(pokemon_info_sheet, i, poke_info_mega_col)
-        has_giganta = isnt_empty(pokemon_info_sheet, i, poke_info_giganta_col)
+        has_f_var = is_x(pokemon_info_sheet, i, poke_info_f_col)
+        has_mega = is_x(pokemon_info_sheet, i, poke_info_mega_col)
+        has_giganta = is_x(pokemon_info_sheet, i, poke_info_giganta_col)
         reg_forms = cell_value(pokemon_info_sheet, i, poke_info_reg_forms_col)
         has_type_forms = isnt_empty(pokemon_info_sheet, i, poke_info_type_forms_col)
         has_misc_forms = isnt_empty(pokemon_info_sheet, i, poke_info_misc_forms_col)
-        is_in_swsh = isnt_empty(pokemon_info_sheet, i, poke_info_swsh_col)
+        is_in_swsh = is_x(pokemon_info_sheet, i, poke_info_swsh_col)
+        is_in_bdsp = is_x(pokemon_info_sheet, i, poke_info_bdsp_col)
+        is_in_la = is_x(pokemon_info_sheet, i, poke_info_la_col)
+        is_in_sv = is_x(pokemon_info_sheet, i, poke_info_sv_col)
+        
+        is_in_game = {
+            "SwSh": is_in_swsh,
+            "BDSP": is_in_bdsp,
+            "LA": is_in_la,
+            "SV": is_in_sv
+        }
 
         # Adding to pokedex
-        pokedex.append(Pokemon(num, name, gen, has_f_var, has_mega, has_giganta, reg_forms, has_type_forms, has_misc_forms, is_in_gen8))
+        # str(num) to preserve 4 digit numbers w/o leading zeros as strings
+        pokedex.append(Pokemon(str(num), name, gen, has_f_var, has_mega, has_giganta, reg_forms, has_type_forms, has_misc_forms, is_in_game))
+
+    print("Saving pokedex to JSON...")
+    save_pokedex()
 
 def find_last_row_for_poke(num):
     for row in range(1, pokemon_files_sheet.max_row):

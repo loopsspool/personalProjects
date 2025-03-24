@@ -3,7 +3,7 @@ from json_utils import save_json, load_json
 
 # Pokemon object
 class Pokemon:
-    def __init__(self, number, name, gen, has_f_var, has_mega, has_giganta, reg_forms, has_type_forms, has_misc_forms, is_in_gen8):
+    def __init__(self, number, name, gen, has_f_var, has_mega, has_giganta, reg_forms, has_type_forms, has_misc_forms, is_in_game):
         self.number = number
         self.name = name
         self.gen = gen
@@ -13,7 +13,7 @@ class Pokemon:
         self.reg_forms = reg_forms
         self.has_type_forms = has_type_forms
         self.has_misc_forms = has_misc_forms
-        self.is_in_gen8 = is_in_gen8
+        self.is_in_game = is_in_game
         self.missing_imgs = []
         self.missing_gen1_thru_gen4_back_imgs = []
 
@@ -26,13 +26,18 @@ def get_pokedex_info(num, info):
 
 # TODO: Anything that wrote to this as an array of pokemon objects will have to be rewritten
 print("Importing pokedex from JSON...")
-pokedex = load_json('pokedex.json')
+try:
+    pokedex = load_json('pokedex.json')
+except ValueError as e:
+    # If JSON is empty it will throw error trying to load
+    pokedex = []
 
 # TODO: Have all functions utilize the start and to go after start denoters
 # TODO: Need to test what happens when go_to_after_start=0, =1, and when start_from=898, after_start=0
 # This is so when I get kicked from the server I only have to write once where to pick up
 poke_num_start_from = 898
-if poke_num_start_from > len(pokedex):
+# If pokedex is empty, don't throw error so pokedex can populate
+if poke_num_start_from > len(pokedex) and len(pokedex) != 0:
     raise ValueError("Pokemon to start from must be within the pokedex")
 # TODO: Generating pokedex should only go to here too
 # TODO: This could be put in a text file, with all missing images too

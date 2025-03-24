@@ -1,11 +1,18 @@
 from app_globals import pokedex
 from spreadsheet_funcs import *
 
-def check_pokedex_is_current():
+# Force, if true, will rewrite the JSON and missing images spreadsheet even if the pokedex has the same last pokemon as the poke_info spreadsheet
+def check_pokedex_is_current(force=False):
     print("Confirming pokedex is up to date...")
 
-    if info_sheet_has_more_pokes_than_dex():
-        print("Pokemon Information sheet more current than pokedex, preparing to update pokedex and relevant files...")
+    if info_sheet_has_more_pokes_than_dex() or force:
+        if info_sheet_has_more_pokes_than_dex(): 
+            print("Pokemon Information sheet more current than pokedex, preparing to update pokedex and relevant files...")
+        if force:
+            print("Forcing through...")
+        # TODO: Mega column has 2 instead of x for charizard and mewtwo, 8 instead of x in female col for eevee... Figure out how to addess. 
+        # Conditional formatting prevents is_empty from properly working
+        # I was running =="x" to circumvent this, but of course doesnt fire for the numbers
         generate_pokedex_from_spreadsheet(find_last_poke_num_row_in_info_sheet())
         # Write new file checker file if one doesn't exist
         # If it does just add new rows for new pokes missing images

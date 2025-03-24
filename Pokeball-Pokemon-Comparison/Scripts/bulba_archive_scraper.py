@@ -32,7 +32,7 @@ from scraping import get_game_img_urls, scrape_game_imgs
 # Honestly yeah, write to pokedex JSON all small, non-animated images (bc bulba sux for animation (is this true? check), mostly coming from Wikidex)
 # When scraping bulba, search for higher quality ones
 # TODO: Or are bulbas just more pixels bc more whitespace, not necessarily higher res??? Check visually and see
-check_pokedex_is_current()
+check_pokedex_is_current(force=True)
 #generate_pokedex_from_spreadsheet()
 #add_missing_images_to_poke()
 #get_game_img_urls()
