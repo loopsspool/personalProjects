@@ -1,20 +1,22 @@
-import xlrd     # For reading excel workbook
 import xlsxwriter   # For writing new form rows
 import os   # To check for files
 
-from spreadsheet_funcs import cell_value
+from spreadsheet_funcs import pokemon_info_sheet, cell_value, is_x_or_num, poke_info_swsh_col, poke_info_bdsp_col, poke_info_la_col, poke_info_sv_col
 
-# TODO: Add all new gen 8 (LA) and gen 9 (SV) games
+######################################### TODO: This whole thing needs to be rewritten to use Pokemon objects #########################################
+# The redundant checks of already retrieved, available, and stored data is absurd
+
 # TODO: This should always be run at the end of each scrape
 # Or, even better, update cells at time of download from scraping file (and delete from their object missing imgs array)
 # In that case this should only be run when the pokedex is not up to date (for unobtainables and whatnot, since missing_pokes func relies on that data)
 # and only on the newest added pokes
 # Also when you run this you could have this run add missing imgs from spreadsheet_funcs as well
+# TODO: Add menu sprites, and drawn images
 
 # SPREADSHEET DATA
-pokemon_info = xlrd.open_workbook('C:\\Users\\ejone\\OneDrive\\Desktop\\Code\\Javascript\\p5\\projects\\Pokeball Pokemon Comparison\\Pokemon Info.xls')
-form_sheet = pokemon_info.sheet_by_name("Form Rows")
-info_sheet = pokemon_info.sheet_by_name("Summary")
+# pokemon_info = xlrd.open_workbook('C:\\Users\\ejone\\OneDrive\\Desktop\\Code\\Javascript\\p5\\projects\\Pokeball Pokemon Comparison\\Pokemon Info.xls')
+# form_sheet = pokemon_info.sheet_by_name("Form Rows")
+# info_sheet = pokemon_info.sheet_by_name("Summary")
 
 # TODO: Is this necessary? Can be pulled from pokemon object
 def gen_finder(num):
@@ -58,7 +60,7 @@ def game_finder_from_gen(gen):
     if gen == 7:
         return(["LGPE", "SM-USUM"])
     if gen == 8:
-        return(["Sword-Shield", "BDSP", "LA"])
+        return(["SwSh", "BDSP", "LA"])
     if gen == 9:
         return(["SV"])
 
@@ -68,12 +70,11 @@ for i in range(1, len(info_sheet.col(4))):
     # Pokemon name = is available in gen 8
     is_available_in_swsh[cell_value(info_sheet, i, 4)] = (cell_value(info_sheet, i, 15) == "x")
 
-# This is just to avoid using logic for finding what pokes are available in Lets Go lol
+# This is just to avoid using logic for finding what pokes are available in Lets Go
 poke_nums_available_in_LGPE = []
 for i in range(1, 152):
-    # TODO: This will need to be changed to 4
     # Converts int number to string with leading zeroes
-    poke_nums_available_in_LGPE.append(str(i).zfill(3))
+    poke_nums_available_in_LGPE.append(str(i).zfill(4))
 poke_nums_available_in_LGPE.extend(["808", "809"])
 
 # Decided to do tuples here so it's easier to troubleshoot why something was considered unobtainable
@@ -255,7 +256,7 @@ for i in range(1, len(form_sheet.col(0))):
 # for i in range(len(form_pokedex)):
 #     print(form_pokedex[i].number, form_pokedex[i].name, "\n", form_pokedex[i].variation, "\n")
 
-file_check_workbook = xlsxwriter.Workbook('C:\\Users\\ejone\\OneDrive\\Desktop\\Code\\Javascript\\p5\\projects\\Pokeball Pokemon Comparison\\Pokemon File-check.xlsx')
+file_check_workbook = xlsxwriter.Workbook('C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Pokemon Images Checklist.xlsx')
 file_check_worksheet = file_check_workbook.add_worksheet()
 
 
