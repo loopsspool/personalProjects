@@ -1,3 +1,4 @@
+import re
 from openpyxl import load_workbook
 
 from bulba_translators import bulba_doesnt_have_this_form, determine_bulba_name
@@ -19,9 +20,13 @@ def cell_value(sheet, row, col):
     return (sheet.cell(row, col).value)
 
 # It would appear conditional formatting cells have some mystery value that is not None, and sometimes not an empty string
-# This function accomodates for those cases by instead testing for not an x
-def is_x(sheet, row, col):
-    return (cell_value(sheet, row, col) == "x")
+# This function accomodates for those cases by instead regexing for one or more alphanumerics
+def is_x_or_num(sheet, row, col):
+    if cell_value(sheet, row, col) == None:
+        return False
+    if re.fullmatch(r"[A-Za-z0-9]+", str(cell_value(sheet, row, col))):
+        return True
+    return False
 
 def isnt_empty(sheet, row, col):
     return (cell_value(sheet, row, col) != None)
@@ -57,6 +62,7 @@ poke_files_name_col = get_col_number(pokemon_files_sheet, "Name")
 poke_files_tags_col = get_col_number(pokemon_files_sheet, "Tags")
 poke_files_filename_col = get_col_number(pokemon_files_sheet, "Filename")
 
+# TODO: Set blanks to empty string so they dont show null?
 # TODO: Add pokemon start and to go after start, so this isnt running unecessarily
 # TODO: This requires adding JSON, which I dont want to do until after I've got things running
 def generate_pokedex_from_spreadsheet(last_poke_row):
@@ -69,16 +75,16 @@ def generate_pokedex_from_spreadsheet(last_poke_row):
         num = cell_value(pokemon_info_sheet, i, poke_info_num_col)
         name = cell_value(pokemon_info_sheet, i, poke_info_name_col)
         gen = int(cell_value(pokemon_info_sheet, i, poke_info_gen_col))
-        has_f_var = is_x(pokemon_info_sheet, i, poke_info_f_col)
-        has_mega = is_x(pokemon_info_sheet, i, poke_info_mega_col)
-        has_giganta = is_x(pokemon_info_sheet, i, poke_info_giganta_col)
+        has_f_var = is_x_or_num(pokemon_info_sheet, i, poke_info_f_col)
+        has_mega = is_x_or_num(pokemon_info_sheet, i, poke_info_mega_col)
+        has_giganta = is_x_or_num(pokemon_info_sheet, i, poke_info_giganta_col)
         reg_forms = cell_value(pokemon_info_sheet, i, poke_info_reg_forms_col)
         has_type_forms = isnt_empty(pokemon_info_sheet, i, poke_info_type_forms_col)
         has_misc_forms = isnt_empty(pokemon_info_sheet, i, poke_info_misc_forms_col)
-        is_in_swsh = is_x(pokemon_info_sheet, i, poke_info_swsh_col)
-        is_in_bdsp = is_x(pokemon_info_sheet, i, poke_info_bdsp_col)
-        is_in_la = is_x(pokemon_info_sheet, i, poke_info_la_col)
-        is_in_sv = is_x(pokemon_info_sheet, i, poke_info_sv_col)
+        is_in_swsh = is_x_or_num(pokemon_info_sheet, i, poke_info_swsh_col)
+        is_in_bdsp = is_x_or_num(pokemon_info_sheet, i, poke_info_bdsp_col)
+        is_in_la = is_x_or_num(pokemon_info_sheet, i, poke_info_la_col)
+        is_in_sv = is_x_or_num(pokemon_info_sheet, i, poke_info_sv_col)
         
         is_in_game = {
             "SwSh": is_in_swsh,
