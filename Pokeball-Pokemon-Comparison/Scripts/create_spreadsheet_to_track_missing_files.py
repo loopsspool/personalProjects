@@ -2,6 +2,8 @@ import xlrd     # For reading excel workbook
 import xlsxwriter   # For writing new form rows
 import os   # To check for files
 
+from spreadsheet_funcs import cell_value
+
 # TODO: Add all new gen 8 (LA) and gen 9 (SV) games
 # TODO: This should always be run at the end of each scrape
 # Or, even better, update cells at time of download from scraping file (and delete from their object missing imgs array)
@@ -14,9 +16,7 @@ pokemon_info = xlrd.open_workbook('C:\\Users\\ejone\\OneDrive\\Desktop\\Code\\Ja
 form_sheet = pokemon_info.sheet_by_name("Form Rows")
 info_sheet = pokemon_info.sheet_by_name("Summary")
 
-def cell_value(sheet, row, col):
-    return (sheet.cell_value(row, col))
-
+# TODO: Is this necessary? Can be pulled from pokemon object
 def gen_finder(num):
     num = int(num)
     if num <= 151:
@@ -33,11 +33,13 @@ def gen_finder(num):
         return ("Gen6")
     if num > 721 and num <= 809:
         return ("Gen7")
-    if num > 809 and num <= 898:
+    if num > 809 and num <= 905:
         return ("Gen8")
+    if num > 906 and num <= 1025:
+        return ("Gen9")
 
 def game_finder_from_gen(gen):
-    # Index 4 instead of -1 because on Gen6-7 it would favor Gen7, excluding XY-ORAS
+    # Index 3 instead of -1 because on Gen6-7 it would favor Gen7, excluding XY-ORAS
     gen = int(gen[3])
 
     if gen == 1:
@@ -56,8 +58,11 @@ def game_finder_from_gen(gen):
     if gen == 7:
         return(["LGPE", "SM-USUM"])
     if gen == 8:
-        return(["BDSP", "Sword-Shield"])
+        return(["Sword-Shield", "BDSP", "LA"])
+    if gen == 9:
+        return(["SV"])
 
+# TODO: Use pokemon object instead
 is_available_in_swsh = {}
 for i in range(1, len(info_sheet.col(4))):
     # Pokemon name = is available in gen 8
@@ -66,6 +71,7 @@ for i in range(1, len(info_sheet.col(4))):
 # This is just to avoid using logic for finding what pokes are available in Lets Go lol
 poke_nums_available_in_LGPE = []
 for i in range(1, 152):
+    # TODO: This will need to be changed to 4
     # Converts int number to string with leading zeroes
     poke_nums_available_in_LGPE.append(str(i).zfill(3))
 poke_nums_available_in_LGPE.extend(["808", "809"])
