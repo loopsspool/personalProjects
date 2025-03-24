@@ -43,33 +43,19 @@ poke_info_giganta_col = get_col_number(pokemon_info_sheet, "Gigantamax")
 poke_info_reg_forms_col = get_col_number(pokemon_info_sheet, "Regional Forms")
 poke_info_type_forms_col = get_col_number(pokemon_info_sheet, "Type Forms")
 poke_info_misc_forms_col = get_col_number(pokemon_info_sheet, "Misc Forms")
-poke_info_gen8_col = get_col_number(pokemon_info_sheet, "Available in SwSh")
+poke_info_swsh_col = get_col_number(pokemon_info_sheet, "Available in SwSh")
 poke_files_num_col = get_col_number(pokemon_files_sheet, "#")
 poke_files_name_col = get_col_number(pokemon_files_sheet, "Name")
 poke_files_tags_col = get_col_number(pokemon_files_sheet, "Tags")
 poke_files_filename_col = get_col_number(pokemon_files_sheet, "Filename")
 
-# Performs check to make sure JSON pokedex is up to date
-# TODO: Test
-# TODO: Add JSON stuff
-def check_pokedex_is_up_to_date():
-    print("Checking pokedex is up to date...")
-    highest_pokedex_number_in_info_file = -1
-    row_acc = 2
-    # While pokemon number col isn't empty, traverse down to find highest pokemon num
-    while (isnt_empty(pokemon_info_sheet, row_acc, poke_info_num_col)):
-        row_acc += 1
-    highest_pokedex_number_in_info_file = cell_value(pokemon_info_sheet, row_acc-1, poke_info_num_col)  
-    # TODO: Check this against last element from JSON
-    # If they dont match run generate pokedex from spreadsheet from last highest  
-
 # TODO: Add pokemon start and to go after start, so this isnt running unecessarily
 # TODO: This requires adding JSON, which I dont want to do until after I've got things running
-def generate_pokedex_from_spreadsheet():
+def generate_pokedex_from_spreadsheet(last_poke_row):
     print("Getting pokemon info from spreadsheet...")
     
     # Getting poke specific relevant info
-    for i in range(2, 900):
+    for i in range(2, last_poke_row + 1):
         num = cell_value(pokemon_info_sheet, i, poke_info_num_col)
         name = cell_value(pokemon_info_sheet, i, poke_info_name_col)
         gen = int(cell_value(pokemon_info_sheet, i, poke_info_gen_col))
@@ -79,7 +65,7 @@ def generate_pokedex_from_spreadsheet():
         reg_forms = cell_value(pokemon_info_sheet, i, poke_info_reg_forms_col)
         has_type_forms = isnt_empty(pokemon_info_sheet, i, poke_info_type_forms_col)
         has_misc_forms = isnt_empty(pokemon_info_sheet, i, poke_info_misc_forms_col)
-        is_in_gen8 = isnt_empty(pokemon_info_sheet, i, poke_info_gen8_col)
+        is_in_swsh = isnt_empty(pokemon_info_sheet, i, poke_info_swsh_col)
 
         # Adding to pokedex
         pokedex.append(Pokemon(num, name, gen, has_f_var, has_mega, has_giganta, reg_forms, has_type_forms, has_misc_forms, is_in_gen8))

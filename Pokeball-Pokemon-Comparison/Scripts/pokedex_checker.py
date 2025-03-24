@@ -6,7 +6,7 @@ def check_pokedex_is_current():
 
     if info_sheet_has_more_pokes_than_dex():
         print("Pokemon Information sheet more current than pokedex, preparing to update pokedex and relevant files...")
-        # Generate new pokes from poke_info and add to pokedex
+        generate_pokedex_from_spreadsheet(find_last_poke_num_row_in_info_sheet())
         # Write new file checker file if one doesn't exist
         # If it does just add new rows for new pokes missing images
         # Append to missing images array for each
