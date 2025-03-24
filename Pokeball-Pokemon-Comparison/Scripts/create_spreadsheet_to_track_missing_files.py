@@ -270,7 +270,7 @@ file_check_worksheet.write(0, 2, "Tags")
 file_check_worksheet.write(0, 3, "Filename")
 # Games sorted by reverse chronological order for file sorting synchronization between excel and files
     # Also starting with newest game first so excel file doesn't look barren upon opening
-games = ["BDSP", "Sword-Shield", "LGPE", "SM-USUM", "XY-ORAS", "BW-B2W2", "Platinum", "HGSS", "Diamond-Pearl", "Ruby-Sapphire", "FireRed-LeafGreen", "Emerald", "Silver", "Gold", "Crystal", "Yellow", "Red-Green", "Red-Blue"]
+games = ["SV", "LA", "BDSP", "SwSh", "LGPE", "SM-USUM", "XY-ORAS", "BW-B2W2", "Platinum", "HGSS", "Diamond-Pearl", "Ruby-Sapphire", "FireRed-LeafGreen", "Emerald", "Silver", "Gold", "Crystal", "Yellow", "Red-Green", "Red-Blue"]
 game_cols = {}
 for i in range(len(games)):
     # Saving game columns
@@ -383,8 +383,8 @@ for i in range(len(game_sprite_files)):
     game_sprite_files[i] = game_sprite_files[i][:len(game_sprite_files[i])-4]
 
 # games = ["Sword-Shield", "SM-USUM", "XY-ORAS", "BW-B2W2", "Platinum", "HGSS", "Diamond-Pearl", "Ruby-Sapphire", "FireRed-LeafGreen", "Emerald", "Silver", "Gold", "Crystal", "Yellow", "Red-Green", "Red-Blue"]
-game_denotions = ["Gen8 BDSP", "Gen8 Sword-Shield", "Gen7 LGPE", "Gen7 SM-USUM", "Gen6-7 XY-ORAS-SM-USUM", "Gen5 BW-B2W2", "Gen4 Platinum", "Gen4 HGSS", "Gen4 Diamond-Pearl", "Gen3 Ruby-Sapphire", "Gen3 FireRed-LeafGreen", "Gen3 Emerald", "Gen2 Silver", "Gen2 Gold", "Gen2 Crystal", "Gen1 Yellow", "Gen1 Red-Green", "Gen1 Red-Blue"]
-back_gen_denotions = ["Gen8", "Gen7", "Gen6-7", "Gen5", "Gen4", "Gen3", "Gen2", "Gen1"]
+game_denotions = ["Gen9 SV", "Gen8 LA", "Gen8 SwSh-BDSP", "Gen7 LGPE", "Gen7 SM-USUM", "Gen6-7 XY-ORAS-SM-USUM", "Gen5 BW-B2W2", "Gen4 Platinum", "Gen4 HGSS", "Gen4 Diamond-Pearl", "Gen3 Ruby-Sapphire", "Gen3 FireRed-LeafGreen", "Gen3 Emerald", "Gen2 Silver", "Gen2 Gold", "Gen2 Crystal", "Gen1 Yellow", "Gen1 Red-Green", "Gen1 Red-Blue"]
+back_gen_denotions = ["Gen9", "Gen8", "Gen7", "Gen6-7", "Gen5", "Gen4", "Gen3", "Gen2", "Gen1"]
 
 # Centers "x" in cell and makes fill color green
 check_format = file_check_workbook.add_format({'align': 'center', 'bg_color': '#00cf37'})
