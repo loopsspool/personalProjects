@@ -1,70 +1,42 @@
 import os
 import re
-import xlrd
 
-# SPREADSHEET DATA
-# pokemon_info = xlrd.open_workbook('C:\\Users\\ejone\\OneDrive\\Desktop\\Code\\Javascript\\p5\\projects\\Pokeball Pokemon Comparison\\Pokemon Info.xls')
-# sheet = pokemon_info.sheet_by_index(0)
-
-# def cell_value(row, col):
-#     return (sheet.cell_value(row, col))
-
-# def isnt_empty(row, col):
-#     return (str(cell_value(row, col)) != "")
-
-# def is_empty(row, col):
-#     return (cell_value(row, col) == empty_cell.value)
-
-# # Returns column number from column name
-# def get_col_number(col_name):
-#     for col in range(sheet.ncols):
-#         if (cell_value(0, col) == col_name):
-#             return col
-
-# # Gets pokemon info from excel sheet
-# class Pokemon:
-#     def __init__(self, name, number, gen, has_f_var, has_mega, has_giganta, reg_forms, has_type_forms, has_misc_forms):
-#         self.name = name
-#         self.number = number
-#         self.gen = gen
-#         self.has_f_var = has_f_var
-#         self.has_mega = has_mega
-#         self.has_giganta = has_giganta
-#         self.reg_forms = reg_forms
-#         self.has_type_forms = has_type_forms
-#         self.has_misc_forms = has_misc_forms
-
-# # Gets column numbers from spreadsheet
-# name_col = get_col_number("Name")
-# num_col = get_col_number("#")
-# gen_col = get_col_number("Gen")
-# f_col = get_col_number("Female Variation")
-# mega_col = get_col_number("Mega")
-# giganta_col = get_col_number("Gigantamax")
-# reg_forms_col = get_col_number("Regional Forms")
-# type_forms_col = get_col_number("Type Forms")
-# misc_forms_col = get_col_number("Misc Forms")
-
-# # Adds pokemon info from spreadsheet to object array
-# print("Getting pokemon info from spreadsheet...")
-# pokedex = []
-# for i in range(1, 899):
-#     name = cell_value(i, name_col)
-#     num = cell_value(i, num_col)
-#     gen = int(cell_value(i, gen_col))
-#     has_f_var = isnt_empty(i, f_col)
-#     has_mega = isnt_empty(i, mega_col)
-#     has_giganta = isnt_empty(i, giganta_col)
-#     reg_forms = cell_value(i, reg_forms_col)
-#     has_type_forms = isnt_empty(i, type_forms_col)
-#     has_misc_forms = isnt_empty(i, misc_forms_col)
-
-#     pokedex.append(Pokemon(name, num, gen, has_f_var, has_mega, has_giganta, reg_forms, has_type_forms, has_misc_forms))
-
-
-game_sprite_path = "C:\\Users\\ejone\\OneDrive\\Desktop\\Code\\Javascript\\p5\\projects\\Pokeball Pokemon Comparison\\Images\\Pokemon\\Game Sprites\\"
-files = os.listdir(game_sprite_path)
+game_sprite_path = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Game Sprites\\"
+back_sprites_to_filter_path = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Game Sprites\\back_imgs_to_be_filtered"
+animated_pngs_pre_gif_conversion = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Game Sprites\\animated_pngs_for_gifs\\pngs\\Converted to gif"
+#files = os.listdir(game_sprite_path)
 file_ext = ""
+
+# For testing/slight correction in file names
+#for f in files:
+    #if not "-Region-Alola" in f and "Gen7" in f:
+        #print(f)
+        # old = f
+        # ext = old[len(old)-4:]
+        # new = old.replace(ext, "-SM-USUM" + ext)
+        # print(new)
+        #os.rename(game_sprite_path + f, game_sprite_path + new)
+    # full_path = os.path.join("C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Game Sprites\\back_imgs_to_be_filtered", f)
+    # if os.path.isfile(full_path):
+    #     new_full_path = os.path.join(game_sprite_path, "0"+f)
+    #     print(new_full_path)
+    #     os.rename(full_path, new_full_path)
+
+def add_leading_zero(path):
+    files = os.listdir(path)
+    for f in files:
+        full_path = os.path.join(path, f)
+        if os.path.isfile(full_path):
+            new_full_path = os.path.join(path, "0"+f)
+            print(new_full_path)
+            os.rename(full_path, new_full_path)
+
+def change_to_SwSh(path):
+    files = os.listdir(path)
+    for f in files:
+        full_path = os.path.join(path, f)
+        if os.path.isfile(full_path):
+            # TODO: have BDSP & SwSh share images, but not LA
 
 # Shiny tag first
 # Then form (AND add -Form-____ tag to misc/type forms)
@@ -227,16 +199,4 @@ file_ext = ""
     #     break
                 #print(poke.number, poke.name, ":", form)
 
-
-# For testing/slight correction in file names
-for f in files:
-    if not "-Region-Alola" in f and "Gen7" in f:
-        print(f)
-        # old = f
-        # ext = old[len(old)-4:]
-        # new = old.replace(ext, "-SM-USUM" + ext)
-        # print(new)
-        #os.rename(game_sprite_path + f, game_sprite_path + new)
-
-    # os.rename(game_sprite_path + f, game_sprite_path + new_filename)
 
