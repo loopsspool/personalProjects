@@ -3,7 +3,7 @@ from openpyxl import load_workbook
 from bulba_translators import bulba_doesnt_have_this_form, determine_bulba_name
 from game_tools import combine_gen_and_game
 
-from app_globals import poke_num_start_from, poke_to_go_after_start, pokedex, Pokemon, last_poke_num_in_dex
+from app_globals import poke_num_start_from, poke_to_go_after_start, pokedex, Pokemon
 
 
 # Spreadsheet For Pokedex Info
@@ -70,8 +70,8 @@ def generate_pokedex_from_spreadsheet():
     
     # Getting poke specific relevant info
     for i in range(2, 900):
-        name = cell_value(pokemon_info_sheet, i, poke_info_name_col)
         num = cell_value(pokemon_info_sheet, i, poke_info_num_col)
+        name = cell_value(pokemon_info_sheet, i, poke_info_name_col)
         gen = int(cell_value(pokemon_info_sheet, i, poke_info_gen_col))
         has_f_var = isnt_empty(pokemon_info_sheet, i, poke_info_f_col)
         has_mega = isnt_empty(pokemon_info_sheet, i, poke_info_mega_col)
@@ -82,13 +82,9 @@ def generate_pokedex_from_spreadsheet():
         is_in_gen8 = isnt_empty(pokemon_info_sheet, i, poke_info_gen8_col)
 
         # Adding to pokedex
-        pokedex.append(Pokemon(name, num, gen, has_f_var, has_mega, has_giganta, reg_forms, has_type_forms, has_misc_forms, is_in_gen8))
+        pokedex.append(Pokemon(num, name, gen, has_f_var, has_mega, has_giganta, reg_forms, has_type_forms, has_misc_forms, is_in_gen8))
 
 def find_last_row_for_poke(num):
-    # TODO: Test this
-    if num >= last_poke_num_in_dex or num > pokemon_files_sheet.max_row:
-        # TODO: Make sure this is inclusive too
-        return pokemon_files_sheet.max_row
     for row in range(1, pokemon_files_sheet.max_row):
         # TODO: When update file-check to 4 leading zeros, these will need to be changed to zfill(4)
         if cell_value(pokemon_files_sheet, row, poke_files_num_col)==str(num).zfill(3) and cell_value(pokemon_files_sheet, row+1, poke_files_num_col)!=str(num).zfill(3):
@@ -98,6 +94,7 @@ def find_last_row_for_poke(num):
 
 # TODO: When JSONs implementation complete, only run this when generating pokedex
 # TODO: When this happens this function should be redundant, as the poke
+# TODO: Test pokemon_files_sheet.max_row is inclusive (by doing last poke in the dex)
 
 # Reading the filecheck spreadsheet with the end goal of adding missing images
 def add_missing_images_to_poke():
