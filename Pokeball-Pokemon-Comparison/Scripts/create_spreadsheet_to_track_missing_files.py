@@ -77,6 +77,23 @@ for i in range(1, 152):
     poke_nums_available_in_LGPE.append(str(i).zfill(4))
 poke_nums_available_in_LGPE.extend(["808", "809"])
 
+
+# NOTE: 
+    #   - f variants not in mega, giga, or region (except a f hisui sneasel)
+    #   - No Hisuian variants in any other gen8 game, just LA and up
+    #   - No regional variants in BDSP
+    #   - No Galarian, alolan forms in LA at all except alolan vulpix, ninetails avail
+    #   - Taurus type forms only in Paldea
+    #   - Spiky eared Pichu only in 4h? 
+    #   - Primal Kyogre & Groudon only in gen 6-7 (does have alts tho)
+    #   - Origin Dialga & Palkia only in gen 8-9
+    #   - Darmanitan has both regular and galarian zen and standard form
+    #   - Reshiram, Zekrom, Kyurem Overdrive only in B2W2? See what sprites I have for it
+    #   - Ash Greninja only in gen 7
+    #   - Radiant Sun Solgaleo and Full Moon Lunala only available in SMUSUM
+    #   - Zenith Marshadow only in USUM
+    #   - Urshifu forms in SV idk about, look into
+
 # Decided to do tuples here so it's easier to troubleshoot why something was considered unobtainable
     # As oppsed to a bunch of print statements and seeing where it didn't print anymore bc of return
 def unobtainable_checker(filename, file_gen, poke_gen, poke_num, game):
@@ -112,9 +129,6 @@ def unobtainable_checker(filename, file_gen, poke_gen, poke_num, game):
     # If filename is searching for shinies in gen1
     if "-Shiny" in filename and file_gen == "Gen1":
         return tuple((True, "No shinies in Gen 1"))
-    # If filename is searching for females before gen4
-    if "-f" in filename and file_gen < "Gen4":
-        return tuple((True, "No female forms before Gen 4"))
     # If filename is searching for megas outside of gen 6
     if "-Mega" in filename and file_gen != "Gen6":
         return tuple((True, "No mega forms outside Gen 6"))
@@ -219,6 +233,9 @@ def prevent_overriding(filename, game):
 # TODO: tf is this?
 form_pokedex = []
 
+    # TODO: Depending on how you handle type forms maybe change them back from misc forms for applicable pokes in the spreadsheet?
+    
+
 def
 
 # Gets pokemon numbers, names, and forms
@@ -227,24 +244,7 @@ for i in range(1, len(form_sheet.col(0))):
     # Can do this with length of the first column since the name and number columns should be the same
     # Have to do form name keys so they're unique
         # (Pikachu-f and Pikachu-Cap share the same national dex number so there can't be repeat keys)
-    # TODO: Maybe keep track of images on a page that are downloaded and if another matches a pattern have an alt for it? (see primal kyogre gen6ORAS and gen7SM)
-    # TODO: Check Scarlet Violet pokedex additions in DLC... Minior not in my info sheet but appears available in SV?
-    # TODO: Depending on how you handle type forms maybe change them back from misc forms for applicable pokes in the spreadsheet?
-    # NOTE: 
-    #   - f variants not in mega, giga, or region (there is f hisui sneasel)
-    #   - No Hisuian variants in any other gen8 game, just LA and up
-    #   - No regional variants in BDSP
-    #   - No Galarian, alolan forms in LA at all except alolan vulpix, ninetails avail
-    #   - Taurus type forms only in Paldea
-    #   - Spiky eared Pichu only in 4h? 
-    #   - Primal Kyogre & Groudon only in gen 6-7 (does have alts tho)
-    #   - Origin Dialga & Palkia only in gen 8-9
-    #   - Darmanitan has both regular and galarian zen and standard form
-    #   - Reshiram, Zekrom, Kyurem Overdrive only in B2W2? See what sprites I have for it
-    #   - Ash Greninja only in gen 7
-    #   - Radiant Sun Solgaleo and Full Moon Lunala only available in SMUSUM
-    #   - Zenith Marshadow only in USUM
-    #   - Urshifu forms in SV idk about, look into
+
     name = cell_value(form_sheet, i, 1)
     number = cell_value(form_sheet, i, 0)
     variation = ""
