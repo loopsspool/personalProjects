@@ -1,7 +1,9 @@
 import xlsxwriter   # For writing new form rows
 import os   # To check for files
 
+from app_globals import pokedex
 from spreadsheet_funcs import pokemon_info_sheet, cell_value, is_x_or_num, poke_info_swsh_col, poke_info_bdsp_col, poke_info_la_col, poke_info_sv_col
+
 
 ######################################### TODO: This whole thing needs to be rewritten to use Pokemon objects #########################################
 # The redundant checks of already retrieved, available, and stored data is absurd
@@ -64,25 +66,11 @@ def game_finder_from_gen(gen):
     if gen == 9:
         return(["SV"])
 
-# TODO: Use pokemon object instead
-is_available_in_swsh = {}
-for i in range(1, len(info_sheet.col(4))):
-    # Pokemon name = is available in gen 8
-    is_available_in_swsh[cell_value(info_sheet, i, 4)] = (cell_value(info_sheet, i, 15) == "x")
-
-# This is just to avoid using logic for finding what pokes are available in Lets Go
-poke_nums_available_in_LGPE = []
-for i in range(1, 152):
-    # Converts int number to string with leading zeroes
-    poke_nums_available_in_LGPE.append(str(i).zfill(4))
-poke_nums_available_in_LGPE.extend(["808", "809"])
-
-
 # NOTE: 
-    #   - f variants not in mega, giga, or region (except a f hisui sneasel)
-    #   - No Hisuian variants in any other gen8 game, just LA and up
-    #   - No regional variants in BDSP
-    #   - No Galarian, alolan forms in LA at all except alolan vulpix, ninetails avail
+    #   - f variants not in mega, giga, or region (except a f hisui sneasel) -- This rule must be applied somewhere other than the unobtainability checker
+    #   x No Hisuian variants in any other gen8 game, just LA and up
+    #   x No regional variants in BDSP
+    #   x No Galarian, alolan forms in LA at all except alolan vulpix, ninetails avail
     #   - Taurus type forms only in Paldea
     #   - Spiky eared Pichu only in 4h? 
     #   - Primal Kyogre & Groudon only in gen 6-7 (does have alts tho)
@@ -96,28 +84,25 @@ poke_nums_available_in_LGPE.extend(["808", "809"])
 
 # Decided to do tuples here so it's easier to troubleshoot why something was considered unobtainable
     # As oppsed to a bunch of print statements and seeing where it didn't print anymore bc of return
-def unobtainable_checker(filename, file_gen, poke_gen, poke_num, game):
+def unobtainable_checker(filename, file_gen, poke, game):
     ###################     UNIVERSAL UNOBTAINABILITY     ###################
+    # TODO: Run through object dict of games to see if poke avail in that dex
     # If filename is searching gens before pokemon was introduced
-    if poke_gen > file_gen:
+    if poke.gen > file_gen:
         return tuple((True, "Pokemon introduced after this gen"))
-    # If pokemon isn't gen 1 or Meltan(808) or Melmetal(809) in Let's Go games
-    if game == "LGPE":
-        if not poke_num in poke_nums_available_in_LGPE:
-            return tuple((True, "Not in Let's Go"))
-    # If any pokemon other than the original 493 in BDSP
-    if game == "BDSP" and int(poke_num) > 493:
-        return tuple((True, "Not in BDSP pokedex"))
+    # If filename is searching for females before gen4 (no visual difference)
+    if "-f" in filename and file_gen < "Gen4":
+        return tuple((True, "No female form visual difference before Gen 4"))
     # If filename is searching for animations in games where there weren't any
     if "-Animated" in filename:
-        # Animated Back sprites before gen 5
+        # No animated Back sprites before gen 5
         if "-Back" in filename and file_gen < "Gen5":
             return tuple((True, "No animated back sprites before Gen 5"))
         # No animated sprites in gen 1
         if file_gen == "Gen1":
             return tuple((True, "No animated sprites in Gen 1"))
         # No animated sprites in these games
-        # Gen before game checked because stuff like "Gold" is in "Golduck"s name, etc
+        # Gen string before game string because stuff like "Gold" is in "Golduck"s name, etc
         no_animation_games = ["Gold", "Silver", "FireRed-LeafGreen", "Ruby-Sapphire"]
         for g in no_animation_games:
             s = file_gen + " " + g
@@ -132,13 +117,23 @@ def unobtainable_checker(filename, file_gen, poke_gen, poke_num, game):
     # If filename is searching for megas outside of gen 6
     if "-Mega" in filename and file_gen != "Gen6":
         return tuple((True, "No mega forms outside Gen 6"))
+    # If filename is searching for regional variants before gen 7
+    # By default this will catch Region-Alola
+    if "-Region" in filename and file_gen < "Gen7":
+        return tuple((True, "No regional forms before Gen 7"))
+    # No regional variants in BDSP
+    if "-Region" in filename and "BDSP" in filename:
+        return tuple((True, "No regional forms in BDSP"))
     # If looking for Galar variants before gen 8
     if "-Region-Galar" in filename and file_gen < "Gen8":
         return tuple((True, "No Galar forms before Gen 8"))
-    # If filename is searching for regional variants before gen 7
-        # By default this will catch Region-Alola
-    if "-Region" in filename and file_gen < "Gen7":
-        return tuple((True, "No regional forms before Gen 7"))
+    # If looking for Hisuian variants ouside of LA and SV
+    if "-Region-Hisui" in filename and not ("LA" in filename or "SV" in filename):
+        return tuple((True, "No Hisui forms outside of LA and SV"))
+    # If looking for other regional variants in LA
+    if "-Region" in filename and "LA" in filename:
+        if not "-Region-Hisui" in filename or not (poke.name=="Vulpix" or poke.name=="Ninetails"):
+            return tuple((True, "No regional forms in LA except Alolan Vulpix/Ninetails"))
     if "-Gigantamax" in filename and game != "Sword-Shield":
         return tuple((True, "No gigantamax outside of SwSh"))
 
