@@ -216,20 +216,10 @@ def prevent_overriding(filename, game):
 
     return False
 
-pokedex = {}
+# TODO: tf is this?
 form_pokedex = []
-class Pokemon:
-    def __init__(self, name, number, variation):
-        self.name = name
-        self.number = number
-        self.variation = variation
 
-print("Getting pokemon info from spreadsheet...")
-# Getting pokemon number and name
-# Starting at 1 skips header cell
-for i in range(1, len(info_sheet.col(3))):
-    # Pokedex number = Pokemon name
-    pokedex[cell_value(info_sheet, i, 3)] = cell_value(info_sheet, i, 4)
+def
 
 # Gets pokemon numbers, names, and forms
 # Starting at 1 skips header cell
@@ -237,6 +227,24 @@ for i in range(1, len(form_sheet.col(0))):
     # Can do this with length of the first column since the name and number columns should be the same
     # Have to do form name keys so they're unique
         # (Pikachu-f and Pikachu-Cap share the same national dex number so there can't be repeat keys)
+    # TODO: Maybe keep track of images on a page that are downloaded and if another matches a pattern have an alt for it? (see primal kyogre gen6ORAS and gen7SM)
+    # TODO: Check Scarlet Violet pokedex additions in DLC... Minior not in my info sheet but appears available in SV?
+    # TODO: Depending on how you handle type forms maybe change them back from misc forms for applicable pokes in the spreadsheet?
+    # NOTE: 
+    #   - f variants not in mega, giga, or region (there is f hisui sneasel)
+    #   - No Hisuian variants in any other gen8 game, just LA and up
+    #   - No regional variants in BDSP
+    #   - No Galarian, alolan forms in LA at all except alolan vulpix, ninetails avail
+    #   - Taurus type forms only in Paldea
+    #   - Spiky eared Pichu only in 4h? 
+    #   - Primal Kyogre & Groudon only in gen 6-7 (does have alts tho)
+    #   - Origin Dialga & Palkia only in gen 8-9
+    #   - Darmanitan has both regular and galarian zen and standard form
+    #   - Reshiram, Zekrom, Kyurem Overdrive only in B2W2? See what sprites I have for it
+    #   - Ash Greninja only in gen 7
+    #   - Radiant Sun Solgaleo and Full Moon Lunala only available in SMUSUM
+    #   - Zenith Marshadow only in USUM
+    #   - Urshifu forms in SV idk about, look into
     name = cell_value(form_sheet, i, 1)
     number = cell_value(form_sheet, i, 0)
     variation = ""
