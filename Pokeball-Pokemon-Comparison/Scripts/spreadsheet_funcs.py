@@ -53,6 +53,7 @@ poke_info_giganta_col = get_col_number(pokemon_info_sheet, "Gigantamax")
 poke_info_reg_forms_col = get_col_number(pokemon_info_sheet, "Regional Forms")
 poke_info_type_forms_col = get_col_number(pokemon_info_sheet, "Type Forms")
 poke_info_misc_forms_col = get_col_number(pokemon_info_sheet, "Misc Forms")
+poke_info_lgpe_col = get_col_number(pokemon_info_sheet, "LGPE")
 poke_info_swsh_col = get_col_number(pokemon_info_sheet, "SwSh")
 poke_info_bdsp_col = get_col_number(pokemon_info_sheet, "BDSP")
 poke_info_la_col = get_col_number(pokemon_info_sheet, "LA")
@@ -81,12 +82,14 @@ def generate_pokedex_from_spreadsheet(last_poke_row):
         reg_forms = cell_value(pokemon_info_sheet, i, poke_info_reg_forms_col)
         has_type_forms = isnt_empty(pokemon_info_sheet, i, poke_info_type_forms_col)
         has_misc_forms = isnt_empty(pokemon_info_sheet, i, poke_info_misc_forms_col)
+        is_in_lgpe = is_x_or_num(pokemon_info_sheet, i, poke_info_lgpe_col)
         is_in_swsh = is_x_or_num(pokemon_info_sheet, i, poke_info_swsh_col)
         is_in_bdsp = is_x_or_num(pokemon_info_sheet, i, poke_info_bdsp_col)
         is_in_la = is_x_or_num(pokemon_info_sheet, i, poke_info_la_col)
         is_in_sv = is_x_or_num(pokemon_info_sheet, i, poke_info_sv_col)
         
         is_in_game = {
+            "LGPE": is_in_lgpe,
             "SwSh": is_in_swsh,
             "BDSP": is_in_bdsp,
             "LA": is_in_la,
