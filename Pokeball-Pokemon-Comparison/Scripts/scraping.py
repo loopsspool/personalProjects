@@ -7,6 +7,9 @@ from app_globals import *
 from image_tools import *
 from bulba_translators import potentially_adapt_game_in_filename
 
+    # TODO: Maybe keep track of images on a page that are downloaded and if another matches a pattern have an alt for it? (see primal kyogre gen6ORAS and gen7SM)
+
+
 # NOTE: ALL DOWNLOADS MUST BE DONE IN THE FASHION BELOW
     # Otherwise bulba has a check on if the site is being web scraped and it will block the download
 # This is to mask the fact I'm webscraping

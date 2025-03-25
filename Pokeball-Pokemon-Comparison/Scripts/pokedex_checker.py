@@ -5,6 +5,7 @@ from spreadsheet_funcs import *
 def check_pokedex_is_current(force=False):
     print("Confirming pokedex is up to date...")
 
+    # TODO: Add a pokemon_info spreadsheet save datetime check? Save datetime of last spreadsheet save in a file and if when this function is run again it doesnt match, update pokedex
     if info_sheet_has_more_pokes_than_dex() or force:
         if info_sheet_has_more_pokes_than_dex(): 
             print("Pokemon Information sheet more current than pokedex, preparing to update pokedex and relevant files...")
