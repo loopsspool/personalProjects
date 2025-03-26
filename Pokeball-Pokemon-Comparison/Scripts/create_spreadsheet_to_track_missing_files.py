@@ -67,24 +67,21 @@ def game_finder_from_gen(gen):
         return(["SV"])
 
 # NOTE: 
-    #   - f variants not in mega, giga, or region (except a f hisui sneasel) -- This rule must be applied somewhere other than the unobtainability checker
+    #   - TODO: f variants not in mega, giga, or region (except a f hisui sneasel) -- This rule must be applied somewhere other than the unobtainability checker (perhaps a nonexistant checker?)
     #   x No Hisuian variants in any other gen8 game, just LA and up
     #   x No regional variants in BDSP
     #   x No Galarian, alolan forms in LA at all except alolan vulpix, ninetails avail
     #   - Taurus type forms only in Paldea
-    #   - Spiky eared Pichu only in 4h? 
-    #   - Primal Kyogre & Groudon only in gen 6-7 (does have alts tho)
     #   - Origin Dialga & Palkia only in gen 8-9
     #   - Darmanitan has both regular and galarian zen and standard form
-    #   - Reshiram, Zekrom, Kyurem Overdrive only in B2W2? See what sprites I have for it
-    #   - Ash Greninja only in gen 7
+    #   - Reshiram, Zekrom overdrive only in B2W2 ANIMATED (static is normal) & always, there is no non-overdrive animated form 
     #   - Radiant Sun Solgaleo and Full Moon Lunala only available in SMUSUM
     #   - Zenith Marshadow only in USUM
-    #   - Urshifu forms in SV idk about, look into
+    #   - No default forms checker for certain pokes
 
 # Decided to do tuples here so it's easier to troubleshoot why something was considered unobtainable
     # As oppsed to a bunch of print statements and seeing where it didn't print anymore bc of return
-def unobtainable_checker(filename, file_gen, poke, game):
+def unobtainability_check(filename, file_gen, poke, game):
     ###################     UNIVERSAL UNOBTAINABILITY     ###################
     # TODO: Run through object dict of games to see if poke avail in that dex
     # If filename is searching gens before pokemon was introduced
@@ -121,6 +118,8 @@ def unobtainable_checker(filename, file_gen, poke, game):
     # By default this will catch Region-Alola
     if "-Region" in filename and file_gen < "Gen7":
         return tuple((True, "No regional forms before Gen 7"))
+    if ("-Region" in filename and not "-Rgion-Alola" in filename) and "LGPE" in filename:
+        return tuple((True, "Only Alolan regional forms in LGPE")) 
     # No regional variants in BDSP
     if "-Region" in filename and "BDSP" in filename:
         return tuple((True, "No regional forms in BDSP"))
@@ -178,8 +177,8 @@ def unobtainable_checker(filename, file_gen, poke, game):
     if "Arceus" in filename and "Qmark" in filename and file_gen > "Gen4":
         return tuple((True, "??? Type Arceus only available in Gen4"))
     # Ash-Greninja only in SM-USUM
-    if "-Form-Ash" in filename and file_gen < "Gen7":
-        return tuple((True, "Ash Greninja not available before Gen 7"))
+    if "-Form-Ash" in filename and file_gen != "Gen7":
+        return tuple((True, "Ash Greninja only available in Gen 7"))
     # 10% and complete Zygarde forms only available in SM
     if ("10%" in filename or "Complete" in filename) and file_gen < "Gen7":
         return tuple((True, "Zygarde 10 percent and Complete forms not available before Gen 7"))
@@ -196,6 +195,7 @@ def unobtainable_checker(filename, file_gen, poke, game):
                 if avail == False:
                     return tuple((True, "Pokemon not in SwSh pokeDex"))
 
+    # If potential filename passes all the checks above, it is considered obtainable
     return tuple((False, "Pokemon is obtainable"))
     
 def prevent_overriding(filename, game):
@@ -228,7 +228,7 @@ def prevent_overriding(filename, game):
 # TODO: tf is this?
 form_pokedex = []
 
-    # TODO: Depending on how you handle type forms maybe change them back from misc forms for applicable pokes in the spreadsheet?
+# TODO: Depending on how you handle type forms maybe change them back from misc forms for applicable pokes in the spreadsheet?
     
 
 def
@@ -458,7 +458,7 @@ for i in range(len(filenames)):
                     continue
                 col = game_cols[game]
                 # Unobtainability checker
-                is_unobtainable = unobtainable_checker(curr_file, gen[:4], poke_gen, poke_num, game)
+                is_unobtainable = unobtainability_check(curr_file, gen[:4], poke_gen, poke_num, game)
                 if is_unobtainable[0]:
                     potential_wrong_continues.append(curr_file)
                     file_check_worksheet.write(row, col, "u", unobtainable_format)
@@ -480,7 +480,7 @@ for i in range(len(filenames)):
                         continue
                     col = game_cols[game]
                     # Unobtainability checker
-                    is_unobtainable = unobtainable_checker(curr_file, filegame[:4], poke_gen, poke_num, game)
+                    is_unobtainable = unobtainability_check(curr_file, filegame[:4], poke_gen, poke_num, game)
                     if is_unobtainable[0]:
                         potential_wrong_continues.append(curr_file)
                         file_check_worksheet.write(row, col, "u", unobtainable_format)
