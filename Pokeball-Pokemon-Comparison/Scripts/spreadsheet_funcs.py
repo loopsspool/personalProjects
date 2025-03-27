@@ -105,9 +105,6 @@ def generate_pokedex_from_spreadsheet(last_poke_row):
     print("Saving pokedex to JSON...")
     save_pokedex()
 
-def check_form_availability(poke):
-    
-
 def find_last_row_for_poke(num):
     for row in range(1, pokemon_files_sheet.max_row):
         if cell_value(pokemon_files_sheet, row, poke_files_num_col)==str(num).zfill(4) and cell_value(pokemon_files_sheet, row+1, poke_files_num_col)!=str(num).zfill(4):
