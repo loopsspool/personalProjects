@@ -14,6 +14,10 @@ class Pokemon:
         self.has_type_forms = has_type_forms
         self.has_misc_forms = has_misc_forms
         self.is_in_game = is_in_game
+        # dict
+        # "form-name": 
+        # "gen 1 avail": True
+        # etc...
         self.missing_imgs = []
         self.missing_gen1_thru_gen4_back_imgs = []
 

@@ -110,9 +110,8 @@ def find_last_row_for_poke(num):
             return row+1
     raise ValueError("Something went wrong in find_last_row_for_poke")
 
-
+# TODO: This should be obsolete when missing files get added during filecheck spreadsheet operation
 # TODO: Test pokemon_files_sheet.max_row is inclusive (by doing last poke in the dex)
-
 # Reading the filecheck spreadsheet with the end goal of adding missing images
 def add_missing_images_to_poke():
     print("Getting missing images from spreadsheet...")
