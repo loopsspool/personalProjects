@@ -3,7 +3,7 @@ from json_utils import save_json, load_json
 
 # Pokemon object
 class Pokemon:
-    def __init__(self, number, name, gen, has_f_var, has_mega, has_giganta, reg_forms, has_type_forms, has_misc_forms, is_in_game):
+    def __init__(self, number, name, gen, has_f_var, has_mega, has_giganta, reg_forms, misc_forms, is_in_game):
         self.number = number
         self.name = name
         self.gen = gen
@@ -11,9 +11,9 @@ class Pokemon:
         self.has_mega = has_mega
         self.has_giganta = has_giganta
         self.reg_forms = reg_forms
-        self.has_type_forms = has_type_forms
-        self.has_misc_forms = has_misc_forms
+        self.misc_forms = misc_forms
         self.is_in_game = is_in_game
+        self.form_availability = []
         # dict
         # "form-name": 
         # "gen 1 avail": True

@@ -51,7 +51,6 @@ poke_info_f_col = get_col_number(pokemon_info_sheet, "Female Variation")
 poke_info_mega_col = get_col_number(pokemon_info_sheet, "Mega")
 poke_info_giganta_col = get_col_number(pokemon_info_sheet, "Gigantamax")
 poke_info_reg_forms_col = get_col_number(pokemon_info_sheet, "Regional Forms")
-poke_info_type_forms_col = get_col_number(pokemon_info_sheet, "Type Forms")
 poke_info_misc_forms_col = get_col_number(pokemon_info_sheet, "Misc Forms")
 poke_info_lgpe_col = get_col_number(pokemon_info_sheet, "LGPE")
 poke_info_swsh_col = get_col_number(pokemon_info_sheet, "SwSh")
@@ -71,6 +70,7 @@ def generate_pokedex_from_spreadsheet(last_poke_row):
     
     # Clears pokedex so every pokemon isn't added again if JSON was populated
     pokedex.clear()
+    index = 0
     # Getting poke specific relevant info
     for i in range(2, last_poke_row + 1):
         num = cell_value(pokemon_info_sheet, i, poke_info_num_col)
@@ -80,8 +80,7 @@ def generate_pokedex_from_spreadsheet(last_poke_row):
         has_mega = is_x_or_num(pokemon_info_sheet, i, poke_info_mega_col)
         has_giganta = is_x_or_num(pokemon_info_sheet, i, poke_info_giganta_col)
         reg_forms = cell_value(pokemon_info_sheet, i, poke_info_reg_forms_col)
-        has_type_forms = isnt_empty(pokemon_info_sheet, i, poke_info_type_forms_col)
-        has_misc_forms = isnt_empty(pokemon_info_sheet, i, poke_info_misc_forms_col)
+        misc_forms = isnt_empty(pokemon_info_sheet, i, poke_info_misc_forms_col)
         is_in_lgpe = is_x_or_num(pokemon_info_sheet, i, poke_info_lgpe_col)
         is_in_swsh = is_x_or_num(pokemon_info_sheet, i, poke_info_swsh_col)
         is_in_bdsp = is_x_or_num(pokemon_info_sheet, i, poke_info_bdsp_col)
@@ -98,10 +97,16 @@ def generate_pokedex_from_spreadsheet(last_poke_row):
 
         # Adding to pokedex
         # str(num) to preserve 4 digit numbers w/o leading zeros as strings
-        pokedex.append(Pokemon(str(num), name, gen, has_f_var, has_mega, has_giganta, reg_forms, has_type_forms, has_misc_forms, is_in_game))
+        pokedex.append(Pokemon(str(num), name, gen, has_f_var, has_mega, has_giganta, reg_forms, misc_forms, is_in_game))
+
+        check_form_availability(pokedex[index])
+        index += 1
 
     print("Saving pokedex to JSON...")
     save_pokedex()
+
+def check_form_availability(poke):
+    
 
 def find_last_row_for_poke(num):
     for row in range(1, pokemon_files_sheet.max_row):

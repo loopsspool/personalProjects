@@ -78,6 +78,7 @@ def game_finder_from_gen(gen):
     #   - Radiant Sun Solgaleo and Full Moon Lunala only available in SMUSUM
     #   - Zenith Marshadow only in USUM
     #   - No default forms checker for certain pokes
+    #   - Eevee f form only after gen 8
 
 # Decided to do tuples here so it's easier to troubleshoot why something was considered unobtainable
     # As oppsed to a bunch of print statements and seeing where it didn't print anymore bc of return
