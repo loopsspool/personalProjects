@@ -7,6 +7,10 @@ PARENT_DIR = os.path.join(os.getcwd(), os.pardir)
 DB_NAME = "pokedex.db"
 DB_PATH = os.path.join(PARENT_DIR, DB_NAME)
 
+# TODO: For React Native, if certain forms are available outside of the game/gen selected, still display them and go to the first sprite instance, for example see below
+# Deoxys forms technically are one for each game in gen3, but just make all forms show
+# TODO: Also in RN will have to visually change 710 & 711 forms so gets rid of sorting number
+
 def create_db():
     print("Creating pokedex database...")
 
@@ -107,7 +111,11 @@ def populate_forms(cursor):
 def has_default_form(poke_num):
     # TODO: 854, 855, 1012, 1013 might be a bit odd since their default forms may be their front, and their other forms the back...
     # TODO: Write Alcremie forms in spreadsheet... Adjust all
-    no_default_form_poke_nums = [201, 412, 413, 421, 422, 423, 492, 493, 550, 555, 585, 586, 641, 642, 645, 647, 648, 666, 669, 670, 671, 681, 710, 711, 716, 718, 720, 741, 745, 746, 773, 774, 778, 849, 869, 875, 877, 888, 889, 892, 905, 925, 931, 964, 978, 982, 999, 1017, 1024]
+    # TODO: Wishiwashi had some default forms slip through in my saved files... Are they actually alts? Same thing with 849.
+    # TODO: Write script to find files that have a default sprite saved that shouldnt, like the above
+    # TODO: Minior 774 Form Core is for shiny... no matter core color all shinies are the same
+    # TODO: No 854, 855 form sprites saved prolly bc improper scrape script
+    no_default_form_poke_nums = [201, 412, 413, 421, 422, 423, 487, 492, 493, 550, 555, 585, 586, 641, 642, 645, 647, 648, 666, 669, 670, 671, 681, 710, 711, 716, 718, 720, 741, 745, 746, 773, 774, 778, 849, 869, 875, 877, 888, 889, 892, 905, 925, 931, 964, 978, 982, 999, 1017, 1024]
 
     if poke_num not in no_default_form_poke_nums: return True
 
