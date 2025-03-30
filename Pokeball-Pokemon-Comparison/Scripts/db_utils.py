@@ -98,23 +98,30 @@ def populate_forms(cursor):
     for row in range(2, pokemon_info_sheet.max_row + 1):
         forms.clear()
         poke_num = int(cell_value(pokemon_info_sheet, row, poke_info_num_col))
-        regional_form_field = cell_value(pokemon_info_sheet, row, poke_info_reg_forms_col)
         misc_form_field = cell_value(pokemon_info_sheet, row, poke_info_misc_forms_col)
         #misc_forms = [item.strip() for item in misc_form_field.split(",")]
 
+        # TODO: Determine usefulness of JSON after DB implementation and see if you'd like to keep the JSON
+            # If so, this can pull from that, looping through the pokedex.json, instead of populating the same info in 2 places
+        # TODO: Should I add hyphens before each? And -Form- and -Region- to their respectives? So I can just append this to potential filenames when generating?
         if has_default_form(poke_num): forms.append("Default")
         if is_x_or_num(pokemon_info_sheet, row, poke_info_f_col): forms.append("f")
         if is_x_or_num(pokemon_info_sheet, row, poke_info_mega_col): forms.append("Mega")
         if is_x_or_num(pokemon_info_sheet, row, poke_info_giganta_col): forms.append("Gigantamax")
+        # TODO: This is adding in empty string to the forms arr
+        if isnt_empty(pokemon_info_sheet, row, poke_info_reg_forms_col): forms.extend(cell_value(pokemon_info_sheet, row, poke_info_reg_forms_col).split(","))
+
+        print(poke_num, forms)
+            
 
 
 def has_default_form(poke_num):
     # TODO: 854, 855, 1012, 1013 might be a bit odd since their default forms may be their front, and their other forms the back...
-    # TODO: Write Alcremie forms in spreadsheet... Adjust all
     # TODO: Wishiwashi had some default forms slip through in my saved files... Are they actually alts? Same thing with 849.
-    # TODO: Write script to find files that have a default sprite saved that shouldnt, like the above
+        # TODO: Write script to find files that have a default sprite saved that shouldnt, like the above
     # TODO: Minior 774 Form Core is for shiny... no matter core color all shinies are the same
     # TODO: No 854, 855 form sprites saved prolly bc improper scrape script
+    # TODO: Be sure Arceus Qmark form only in gen4
     no_default_form_poke_nums = [201, 412, 413, 421, 422, 423, 487, 492, 493, 550, 555, 585, 586, 641, 642, 645, 647, 648, 666, 669, 670, 671, 681, 710, 711, 716, 718, 720, 741, 745, 746, 773, 774, 778, 849, 869, 875, 877, 888, 889, 892, 905, 925, 931, 964, 978, 982, 999, 1017, 1024]
 
     if poke_num not in no_default_form_poke_nums: return True
