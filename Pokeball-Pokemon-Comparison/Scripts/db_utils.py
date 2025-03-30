@@ -94,16 +94,22 @@ def populate_forms(cursor):
     for row in range(2, pokemon_info_sheet.max_row + 1):
         forms.clear()
         poke_num = int(cell_value(pokemon_info_sheet, row, poke_info_num_col))
-        female_field = cell_value(pokemon_info_sheet, row, poke_info_f_col)
-        mega_field = cell_value(pokemon_info_sheet, row, poke_info_mega_col)
-        giganta_field = cell_value(pokemon_info_sheet, row, poke_info_giganta_col)
         regional_form_field = cell_value(pokemon_info_sheet, row, poke_info_reg_forms_col)
         misc_form_field = cell_value(pokemon_info_sheet, row, poke_info_misc_forms_col)
         #misc_forms = [item.strip() for item in misc_form_field.split(",")]
 
-        if is_x_or_num(female_field): forms.append("f")
-        if is_x_or_num(mega_field): forms.append("Mega")
-        if is_x_or_num(giganta_field): forms.append("Gigantamax")
+        if has_default_form(poke_num): forms.append("Default")
+        if is_x_or_num(pokemon_info_sheet, row, poke_info_f_col): forms.append("f")
+        if is_x_or_num(pokemon_info_sheet, row, poke_info_mega_col): forms.append("Mega")
+        if is_x_or_num(pokemon_info_sheet, row, poke_info_giganta_col): forms.append("Gigantamax")
+
+
+def has_default_form(poke_num):
+    # TODO: 854, 855, 1012, 1013 might be a bit odd since their default forms may be their front, and their other forms the back...
+    # TODO: Write Alcremie forms in spreadsheet... Adjust all
+    no_default_form_poke_nums = [201, 412, 413, 421, 422, 423, 492, 493, 550, 555, 585, 586, 641, 642, 645, 647, 648, 666, 669, 670, 671, 681, 710, 711, 716, 718, 720, 741, 745, 746, 773, 774, 778, 849, 869, 875, 877, 888, 889, 892, 905, 925, 931, 964, 978, 982, 999, 1017, 1024]
+
+    if poke_num not in no_default_form_poke_nums: return True
 
 
 def populate_db():
