@@ -6,25 +6,21 @@ from openpyxl import load_workbook
 #from bulba_translators import bulba_doesnt_have_this_form, determine_bulba_name
 from game_tools import combine_gen_and_game
 
-
-def make_all_empty_cells_consistent():
-    for row in pokemon_info_sheet.iter_rows():
+def normalize_empty_in_sheet(sheet):
+    for row in sheet.iter_rows():
         for cell in row:
-            if not cell.value:
+            if cell.value is None or (isinstance(cell.value, str) and cell.value.strip() == ""):
                 cell.value = None
+
+def load_sheet_from_excel(wb_path, sheet_index=0):
+    workbook = load_workbook(filename = wb_path, data_only=True)
+    sheet = workbook.worksheets[sheet_index]
+    normalize_empty_in_sheet(sheet)
+    workbook.close()
+    return sheet
 
 def cell_value(sheet, row, col):
     return (sheet.cell(row, col).value)
-
-# It would appear conditional formatting cells have some mystery value that is not None, and sometimes not an empty string
-# This function accomodates for those cases by instead regexing for one or more alphanumerics
-# TODO: Check now that we have make_all_empty_cells_consistent
-def is_x_or_num(sheet, row, col):
-    if cell_value(sheet, row, col) == None:
-        return False
-    if re.fullmatch(r"[A-Za-z0-9]+", str(cell_value(sheet, row, col))):
-        return True
-    return False
 
 def isnt_empty(sheet, row, col):
     return (cell_value(sheet, row, col) != None)
@@ -46,13 +42,15 @@ def get_last_row(sheet):
     for row in reversed(range(1, sheet.max_row + 1)):
         if any(sheet.cell(row, col).value is not None for col in range(1, sheet.max_column + 1)):
             return row
+        
+def sheet_pretty_print(sheet):
+    for row in sheet.iter_rows(values_only=True):
+        print("\t".join(str(cell) if cell is not None else "None" for cell in row))
 
-# TODO: Find best practice way to execute this once, not each time for imports
 # Spreadsheet For Pokedex Info
-pokemon_info = load_workbook(filename = 'C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Pokemon Info.xlsx', data_only=True)
-pokemon_info_sheet = pokemon_info.worksheets[0]
-# TODO: Does this call on each imported instance? Does it even apply to my var and not some inside function local copy?
-make_all_empty_cells_consistent()
+pokemon_info_sheet_path = 'C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Pokemon Info.xlsx'
+pokemon_info_sheet = load_sheet_from_excel(pokemon_info_sheet_path)
+
 # Spreadsheet for file tracking (what images I do/dont have)
 # TODO: Add drawn and menu sprites
 pokemon_files = load_workbook(filename = 'C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Pokemon File-check.xlsx', data_only=True)
@@ -76,6 +74,7 @@ poke_files_name_col = get_col_number(pokemon_files_sheet, "Name")
 poke_files_tags_col = get_col_number(pokemon_files_sheet, "Tags")
 poke_files_filename_col = get_col_number(pokemon_files_sheet, "Filename")
 
+
 # TODO: Add pokemon start and to go after start, so this isnt running unecessarily
 # def generate_pokedex_from_spreadsheet():
 #     print("Getting pokemon info from spreadsheet...")
@@ -88,16 +87,16 @@ poke_files_filename_col = get_col_number(pokemon_files_sheet, "Filename")
 #         num = cell_value(pokemon_info_sheet, i, poke_info_num_col)
 #         name = cell_value(pokemon_info_sheet, i, poke_info_name_col)
 #         gen = int(cell_value(pokemon_info_sheet, i, poke_info_gen_col))
-#         has_f_var = is_x_or_num(pokemon_info_sheet, i, poke_info_f_col)
-#         has_mega = is_x_or_num(pokemon_info_sheet, i, poke_info_mega_col)
-#         has_giganta = is_x_or_num(pokemon_info_sheet, i, poke_info_giganta_col)
+#         has_f_var = isnt_empty(pokemon_info_sheet, i, poke_info_f_col)
+#         has_mega = isnt_empty(pokemon_info_sheet, i, poke_info_mega_col)
+#         has_giganta = isnt_empty(pokemon_info_sheet, i, poke_info_giganta_col)
 #         reg_forms = cell_value(pokemon_info_sheet, i, poke_info_reg_forms_col)
 #         misc_forms = isnt_empty(pokemon_info_sheet, i, poke_info_misc_forms_col)
-#         is_in_lgpe = is_x_or_num(pokemon_info_sheet, i, poke_info_lgpe_col)
-#         is_in_swsh = is_x_or_num(pokemon_info_sheet, i, poke_info_swsh_col)
-#         is_in_bdsp = is_x_or_num(pokemon_info_sheet, i, poke_info_bdsp_col)
-#         is_in_la = is_x_or_num(pokemon_info_sheet, i, poke_info_la_col)
-#         is_in_sv = is_x_or_num(pokemon_info_sheet, i, poke_info_sv_col)
+#         is_in_lgpe = isnt_empty(pokemon_info_sheet, i, poke_info_lgpe_col)
+#         is_in_swsh = isnt_empty(pokemon_info_sheet, i, poke_info_swsh_col)
+#         is_in_bdsp = isnt_empty(pokemon_info_sheet, i, poke_info_bdsp_col)
+#         is_in_la = isnt_empty(pokemon_info_sheet, i, poke_info_la_col)
+#         is_in_sv = isnt_empty(pokemon_info_sheet, i, poke_info_sv_col)
         
 #         is_in_game = {
 #             "LGPE": is_in_lgpe,
