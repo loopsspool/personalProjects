@@ -11,7 +11,7 @@ from openpyxl import load_workbook
 import string # To access letters easily without having to type them myself in an array
 import time
 
-from app_globals import pokedex, retrieve_json_pokedex, get_pokedex_info
+from app_globals import pokedex, get_pokedex_info
 from pokedex_checker import check_pokedex_is_current
 from spreadsheet_funcs import generate_pokedex_from_spreadsheet, add_missing_images_to_poke, make_all_empty_cells_consistent
 from drawn_images import get_drawn_images
@@ -33,7 +33,6 @@ from scraping import get_game_img_urls, scrape_game_imgs
 # When scraping bulba, search for higher quality ones
 # TODO: Or are bulbas just more pixels bc more whitespace, not necessarily higher res??? Check visually and see
 make_all_empty_cells_consistent()
-retrieve_json_pokedex()
 check_pokedex_is_current(force=True)
 #generate_pokedex_from_spreadsheet()
 #add_missing_images_to_poke()

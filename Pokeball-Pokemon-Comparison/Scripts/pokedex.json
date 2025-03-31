@@ -20478,5 +20478,25 @@
         "form_availability": [],
         "missing_imgs": [],
         "missing_gen1_thru_gen4_back_imgs": []
+    },
+    {
+        "number": "1025",
+        "name": "Pecharunt",
+        "gen": 9,
+        "has_f_var": false,
+        "has_mega": false,
+        "has_giganta": false,
+        "reg_forms": null,
+        "misc_forms": false,
+        "is_in_game": {
+            "LGPE": false,
+            "SwSh": false,
+            "BDSP": false,
+            "LA": false,
+            "SV": true
+        },
+        "form_availability": [],
+        "missing_imgs": [],
+        "missing_gen1_thru_gen4_back_imgs": []
     }
 ]

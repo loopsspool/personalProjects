@@ -84,7 +84,7 @@ def generate_pokedex_from_spreadsheet():
     pokedex.clear()
     index = 0
     # Getting poke specific relevant info
-    for i in range(2, poke_info_last_row):
+    for i in range(2, poke_info_last_row + 1):
         num = cell_value(pokemon_info_sheet, i, poke_info_num_col)
         name = cell_value(pokemon_info_sheet, i, poke_info_name_col)
         gen = int(cell_value(pokemon_info_sheet, i, poke_info_gen_col))

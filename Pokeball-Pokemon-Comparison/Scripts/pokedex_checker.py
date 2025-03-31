@@ -22,6 +22,6 @@ def check_pokedex_is_current(force=False):
         print("Pokedex is current, moving on...")
 
 def info_sheet_has_more_pokes_than_dex():
-    # If the amount of pokemon in the pokedex is not equal 
+    # If the amount of pokemon in the pokedex is not equal
     if len(pokedex) != cell_value(pokemon_info_sheet, poke_info_last_row, poke_info_num_col):
         return True

@@ -1,7 +1,17 @@
 import string # To access letters easily without having to type them myself in an array
 from json_utils import save_json, load_json
 
+# NOTE: Must be like this to have it be global since value of variables is determined at time of import, 
+# TODO: Which means if pokedex is updated from another file its not actually a global......
+    # I think thats the final nail in the coffin for the JSON, think about it and see
+print("Importing pokedex from JSON...")
 pokedex = []
+try:
+    pokedex = load_json('pokedex.json')
+except ValueError as e:
+    # If JSON is empty it will throw error trying to load
+    pokedex = []
+
 
 # Pokemon object
 class Pokemon:
@@ -23,13 +33,6 @@ class Pokemon:
         self.missing_imgs = []
         self.missing_gen1_thru_gen4_back_imgs = []
 
-def retrieve_json_pokedex():
-    print("Importing pokedex from JSON...")
-    try:
-        pokedex = load_json('pokedex.json')
-    except ValueError as e:
-        # If JSON is empty it will throw error trying to load
-        pokedex = []
 
 def save_pokedex():
     print("Saving pokedex to JSON...")
