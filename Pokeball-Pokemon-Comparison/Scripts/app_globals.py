@@ -1,6 +1,8 @@
 import string # To access letters easily without having to type them myself in an array
 from json_utils import save_json, load_json
 
+pokedex = []
+
 # Pokemon object
 class Pokemon:
     def __init__(self, number, name, gen, has_f_var, has_mega, has_giganta, reg_forms, misc_forms, is_in_game):
@@ -21,20 +23,21 @@ class Pokemon:
         self.missing_imgs = []
         self.missing_gen1_thru_gen4_back_imgs = []
 
+def retrieve_json_pokedex():
+    print("Importing pokedex from JSON...")
+    try:
+        pokedex = load_json('pokedex.json')
+    except ValueError as e:
+        # If JSON is empty it will throw error trying to load
+        pokedex = []
+
 def save_pokedex():
+    print("Saving pokedex to JSON...")
     save_json(pokedex, 'pokedex.json')
 
 def get_pokedex_info(num, info):
     # -1 to account for array starting from zero
     return pokedex[num-1][info]
-
-# TODO: Anything that wrote to this as an array of pokemon objects will have to be rewritten
-print("Importing pokedex from JSON...")
-try:
-    pokedex = load_json('pokedex.json')
-except ValueError as e:
-    # If JSON is empty it will throw error trying to load
-    pokedex = []
 
 # TODO: Have all functions utilize the start and to go after start denoters
 # TODO: Need to test what happens when go_to_after_start=0, =1, and when start_from=898, after_start=0

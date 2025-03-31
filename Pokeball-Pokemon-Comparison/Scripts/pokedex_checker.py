@@ -7,11 +7,12 @@ def check_pokedex_is_current(force=False):
 
     # TODO: Add a pokemon_info spreadsheet save datetime check? Save datetime of last spreadsheet save in a file and if when this function is run again it doesnt match, update pokedex
     if info_sheet_has_more_pokes_than_dex() or force:
+        # TODO: For some reason both print statements activate
         if info_sheet_has_more_pokes_than_dex(): 
             print("Pokemon Information sheet more current than pokedex, preparing to update pokedex and relevant files...")
         if force:
             print("Forcing through...")
-        generate_pokedex_from_spreadsheet(find_last_poke_num_row_in_info_sheet())
+        generate_pokedex_from_spreadsheet()
         # Write new file checker file if one doesn't exist
         # If it does just add new rows for new pokes missing images
         # Append to missing images array for each
@@ -20,16 +21,7 @@ def check_pokedex_is_current(force=False):
     else:
         print("Pokedex is current, moving on...")
 
-    
-def find_last_poke_num_row_in_info_sheet():    
-    row = 1
-    # Finding first empty poke num cell
-    while(isnt_empty(pokemon_info_sheet, row, poke_info_num_col)):
-        row+=1
-    # Adjusting for last iteration that broke while loop
-    return row-1
-
 def info_sheet_has_more_pokes_than_dex():
     # If the amount of pokemon in the pokedex is not equal 
-    if len(pokedex) != cell_value(pokemon_info_sheet, find_last_poke_num_row_in_info_sheet(), poke_info_num_col):
+    if len(pokedex) != cell_value(pokemon_info_sheet, poke_info_last_row, poke_info_num_col):
         return True

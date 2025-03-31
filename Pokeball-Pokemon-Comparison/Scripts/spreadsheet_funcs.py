@@ -15,6 +15,12 @@ pokemon_info_sheet = pokemon_info.worksheets[0]
 pokemon_files = load_workbook(filename = 'C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Pokemon File-check.xlsx', data_only=True)
 pokemon_files_sheet = pokemon_files.worksheets[0]
 
+def make_all_empty_cells_consistent():
+    for row in pokemon_info_sheet.iter_rows():
+        for cell in row:
+            if not cell.value:
+                cell.value = None
+
 # TODO: Move these into global and adjust files accordingly? Causing circular import having globals import get_col_num
 def cell_value(sheet, row, col):
     return (sheet.cell(row, col).value)
@@ -44,6 +50,12 @@ def get_col_number(sheet, col_name):
 def get_col_name(sheet, col_number):
     return(cell_value(sheet, 1, col_number))
 
+def get_last_row(sheet):
+    for row in reversed(range(1, sheet.max_row + 1)):
+        if any(sheet.cell(row, col).value is not None for col in range(1, sheet.max_column + 1)):
+            return row
+
+poke_info_last_row = get_last_row(pokemon_info_sheet)
 poke_info_name_col = get_col_number(pokemon_info_sheet, "Name")
 poke_info_num_col = get_col_number(pokemon_info_sheet, "#")
 poke_info_gen_col = get_col_number(pokemon_info_sheet, "Gen")
@@ -65,14 +77,14 @@ poke_files_filename_col = get_col_number(pokemon_files_sheet, "Filename")
 # TODO: Set blanks to empty string so they dont show null?
 # TODO: Add pokemon start and to go after start, so this isnt running unecessarily
 # TODO: This requires adding JSON, which I dont want to do until after I've got things running
-def generate_pokedex_from_spreadsheet(last_poke_row):
+def generate_pokedex_from_spreadsheet():
     print("Getting pokemon info from spreadsheet...")
     
     # Clears pokedex so every pokemon isn't added again if JSON was populated
     pokedex.clear()
     index = 0
     # Getting poke specific relevant info
-    for i in range(2, last_poke_row + 1):
+    for i in range(2, poke_info_last_row):
         num = cell_value(pokemon_info_sheet, i, poke_info_num_col)
         name = cell_value(pokemon_info_sheet, i, poke_info_name_col)
         gen = int(cell_value(pokemon_info_sheet, i, poke_info_gen_col))
@@ -99,10 +111,9 @@ def generate_pokedex_from_spreadsheet(last_poke_row):
         # str(num) to preserve 4 digit numbers w/o leading zeros as strings
         pokedex.append(Pokemon(str(num), name, gen, has_f_var, has_mega, has_giganta, reg_forms, misc_forms, is_in_game))
 
-        check_form_availability(pokedex[index])
+        #check_form_availability(pokedex[index])
         index += 1
 
-    print("Saving pokedex to JSON...")
     save_pokedex()
 
 def find_last_row_for_poke(num):
