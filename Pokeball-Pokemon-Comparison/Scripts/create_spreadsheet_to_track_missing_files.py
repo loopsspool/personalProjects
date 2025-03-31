@@ -77,7 +77,7 @@ def game_finder_from_gen(gen):
     #   - Reshiram, Zekrom overdrive only in B2W2 ANIMATED (static is normal) & always, there is no non-overdrive animated form 
     #   - Radiant Sun Solgaleo and Full Moon Lunala only available in SMUSUM
     #   - Zenith Marshadow only in USUM
-    #   - No default forms checker for certain pokes
+    #   x No default forms checker for certain pokes
     #   - Eevee f form only after gen 8
 
 # Decided to do tuples here so it's easier to troubleshoot why something was considered unobtainable
@@ -230,9 +230,7 @@ def prevent_overriding(filename, game):
 form_pokedex = []
 
 # TODO: Depending on how you handle type forms maybe change them back from misc forms for applicable pokes in the spreadsheet?
-    
 
-def
 
 # Gets pokemon numbers, names, and forms
 # Starting at 1 skips header cell

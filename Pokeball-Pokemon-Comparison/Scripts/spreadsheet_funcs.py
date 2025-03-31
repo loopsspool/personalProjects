@@ -47,13 +47,15 @@ def sheet_pretty_print(sheet):
     for row in sheet.iter_rows(values_only=True):
         print("\t".join(str(cell) if cell is not None else "None" for cell in row))
 
+# TODO: Capitalize constants
+# TODO: Verify poke_info_last_row used instead of pokemon_files_sheet.max_row
 # Spreadsheet For Pokedex Info
 pokemon_info_sheet_path = 'C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Pokemon Info.xlsx'
 pokemon_info_sheet = load_sheet_from_excel(pokemon_info_sheet_path)
 
 pokemon_files = load_workbook(filename = 'C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Pokemon File-check.xlsx', data_only=True)
 pokemon_files_sheet = pokemon_files.worksheets[0]
-poke_info_last_row = get_last_row(pokemon_info_sheet)
+POKE_INFO_LAST_ROW = get_last_row(pokemon_info_sheet)
 poke_info_name_col = get_col_number(pokemon_info_sheet, "Name")
 poke_info_num_col = get_col_number(pokemon_info_sheet, "#")
 poke_info_gen_col = get_col_number(pokemon_info_sheet, "Gen")
@@ -82,7 +84,7 @@ poke_files_filename_col = get_col_number(pokemon_files_sheet, "Filename")
 #     pokedex.clear()
 #     index = 0
 #     # Getting poke specific relevant info
-#     for i in range(2, poke_info_last_row + 1):
+#     for i in range(2, POKE_INFO_LAST_ROW + 1):
 #         num = cell_value(pokemon_info_sheet, i, poke_info_num_col)
 #         name = cell_value(pokemon_info_sheet, i, poke_info_name_col)
 #         gen = int(cell_value(pokemon_info_sheet, i, poke_info_gen_col))
