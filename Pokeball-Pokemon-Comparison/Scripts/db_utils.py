@@ -111,7 +111,8 @@ def populate_forms(cursor):
         # TODO: This is adding in empty string to the forms arr
         if isnt_empty(pokemon_info_sheet, row, poke_info_reg_forms_col): forms.extend(cell_value(pokemon_info_sheet, row, poke_info_reg_forms_col).split(","))
 
-        print(poke_num, forms)
+        # TODO: reg forms still pulling empty strings
+        #print(poke_num, forms)
             
 
 
@@ -145,4 +146,12 @@ def populate_db():
     finally:
         connection.close()
 
-populate_db()
+def get_last_poke_num():
+    connection = sqlite3.connect(DB_PATH)
+    cursor = connection.cursor()
+    cursor.execute("SELECT MAX(num) FROM pokemon")
+    max_num = cursor.fetchone()[0]
+    connection.close()
+    return max_num
+
+#populate_db()

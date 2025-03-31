@@ -1,68 +1,24 @@
 import string # To access letters easily without having to type them myself in an array
-from json_utils import save_json, load_json
-
-# NOTE: Must be like this to have it be global since value of variables is determined at time of import, 
-# TODO: Which means if pokedex is updated from another file its not actually a global......
-    # I think thats the final nail in the coffin for the JSON, think about it and see
-print("Importing pokedex from JSON...")
-pokedex = []
-try:
-    pokedex = load_json('pokedex.json')
-except ValueError as e:
-    # If JSON is empty it will throw error trying to load
-    pokedex = []
-
-
-# Pokemon object
-class Pokemon:
-    def __init__(self, number, name, gen, has_f_var, has_mega, has_giganta, reg_forms, misc_forms, is_in_game):
-        self.number = number
-        self.name = name
-        self.gen = gen
-        self.has_f_var = has_f_var
-        self.has_mega = has_mega
-        self.has_giganta = has_giganta
-        self.reg_forms = reg_forms
-        self.misc_forms = misc_forms
-        self.is_in_game = is_in_game
-        self.form_availability = []
-        # dict
-        # "form-name": 
-        # "gen 1 avail": True
-        # etc...
-        self.missing_imgs = []
-        self.missing_gen1_thru_gen4_back_imgs = []
-
-
-def save_pokedex():
-    print("Saving pokedex to JSON...")
-    save_json(pokedex, 'pokedex.json')
-
-def get_pokedex_info(num, info):
-    # -1 to account for array starting from zero
-    return pokedex[num-1][info]
+from db_utils import get_last_poke_num, populate_db
 
 # TODO: Have all functions utilize the start and to go after start denoters
-# TODO: Need to test what happens when go_to_after_start=0, =1, and when start_from=898, after_start=0
+# TODO: This could be put in a text file, So I don't even have to write this after each crash. Each new pokemon would rewrite the line of the file where it picked up
 # This is so when I get kicked from the server I only have to write once where to pick up
-poke_num_start_from = 898
-# If pokedex is empty, don't throw error so pokedex can populate
-if poke_num_start_from > len(pokedex) and len(pokedex) != 0:
-    raise ValueError("Pokemon to start from must be within the pokedex")
-# TODO: Generating pokedex should only go to here too
-# TODO: This could be put in a text file, with all missing images too
-    # So I don't even have to write this after each crash
-        # Each new pokemon would rewrite the line of the file where it picked up
-        # And delete missing images that the script downloaded
-# TODO: Write function to check this does not exceed last pokemon, if so set to last pokemon
-# This is amount of pokemon to get info from after the starter pokemon
-poke_to_go_after_start = 10
-# Adjusts poke to go after start if it exceeds amount of pokemon in the pokedex, to the amount to the last pokemon
-if poke_num_start_from + poke_to_go_after_start > len(pokedex):
-    poke_to_go_after_start = len(pokedex) - poke_num_start_from
+POKE_NUM_START_FROM = 1
+POKE_TO_GO_AFTER_START = 10000
+LAST_POKE_NUM = -1
+try: LAST_POKE_NUM = get_last_poke_num()
+except:
+    populate_db()
+    LAST_POKE_NUM = get_last_poke_num()
 
-# TODO: Make this a JSON
-pokemon_img_urls = []
+if POKE_NUM_START_FROM < 1: POKE_NUM_START_FROM=1
+if POKE_NUM_START_FROM > LAST_POKE_NUM: POKE_NUM_START_FROM = LAST_POKE_NUM
+if POKE_TO_GO_AFTER_START < 1: POKE_TO_GO_AFTER_START=0
+if POKE_NUM_START_FROM + POKE_TO_GO_AFTER_START > LAST_POKE_NUM: POKE_TO_GO_AFTER_START = LAST_POKE_NUM - POKE_NUM_START_FROM
+POKE_NUM_END_AT = POKE_NUM_START_FROM + POKE_TO_GO_AFTER_START
+
+# TODO: Should the following 3 sections really be here?
 
 # These are for back generation differences to be able to loop through and concatonate game name to filename
 # TODO: Make this a dict?
