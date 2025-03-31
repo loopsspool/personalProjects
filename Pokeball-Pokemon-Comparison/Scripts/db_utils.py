@@ -77,41 +77,76 @@ def populate_pokes(cursor):
     print("Populating Pokemon into database...")
 
     # Grabbing information from pokemon info spreadsheet
-    for row in range(2, pokemon_info_sheet.max_row + 1):
+    for row in range(2, POKE_INFO_LAST_ROW):
         num = row - 1
         num_as_str = str(cell_value(pokemon_info_sheet, row, poke_info_num_col))
         name = cell_value(pokemon_info_sheet, row, poke_info_name_col)
         gen = cell_value(pokemon_info_sheet, row, poke_info_gen_col)
         insert_poke(cursor, num, num_as_str, name, gen)
 
+
 def insert_forms(cursor, poke_num, form_name):
     cursor.execute("""
-        INSERT OR IGNORE INTO forms (poke_num, form_name)
+        INSERT OR IGNORE INTO forms (pokemon_num, form_name)
         VALUES (?, ?);
     """, (poke_num, form_name))
+
+
+def denote_forms(forms, denotion):
+    forms_arr = forms.split(", ")
+    denoted_arr = []
+    for form in forms_arr:
+        form_no_spaces = form.replace(" ", "_")
+        denoted_form = denotion + form_no_spaces
+        denoted_arr.append(denoted_form)
+    return denoted_arr
+
+
+def get_forms_from_excel(row):
+    forms = []
+    poke_num = int(cell_value(pokemon_info_sheet, row, poke_info_num_col))
+    regional_form_field = cell_value(pokemon_info_sheet, row, poke_info_reg_forms_col)
+    misc_form_field = cell_value(pokemon_info_sheet, row, poke_info_misc_forms_col)
+
+    if has_default_form(poke_num): forms.append("Default")
+    if isnt_empty(pokemon_info_sheet, row, poke_info_f_col): forms.append("-f")
+    if isnt_empty(pokemon_info_sheet, row, poke_info_mega_col): forms.append("-Mega")
+    if isnt_empty(pokemon_info_sheet, row, poke_info_giganta_col): forms.append("-Gigantamax")
+    if isnt_empty(pokemon_info_sheet, row, poke_info_reg_forms_col): forms.extend(denote_forms(regional_form_field, "-Region-"))
+    if isnt_empty(pokemon_info_sheet, row, poke_info_misc_forms_col): forms.extend(denote_forms(misc_form_field, "-Form-"))
+
+    return forms
+
+
+# Poke_num: ({"remove_this, "and_this"}, ["replace_with_this", "and_this"])
+FORM_EXCEPTION_POKEMON = {
+    6: ({"-Mega"}, ["-Mega_X", "-Mega_Y"]),  # Charizard has two mega forms
+    128: ({"-Region-Paldea", "-Form-Combat", "-Form-Blaze", "-Form-Aqua"}, ["-Region-Paldea-Form-Combat", "-Region-Paldea-Form-Blaze", "-Region-Paldea-Form-Aqua"]),     # Only Paldean Tauros has misc forms
+    150: ({"-Mega"}, ["-Mega_X", "-Mega_Y"]),  # Mewtwo has two mega forms
+    215: (set(), ["-Region-Hisui-f"]),   # *Just adding* Sneasel's female Hisuian form 
+    555: ({"-Region-Galar"}, ["-Region-Galar-Form-Standard", "-Region-Galar-Form-Zen"]),     # Galarian Darmanitan has his misc forms too
+    892: ({"-Gigantamax"}, ["-Gigantamax-Form-Single_Strike", "-Gigantamax-Form-Rapid_Strike"])     # Urshifu forms impact gigantamax appearance
+    }
+
+def adjust_forms_for_exceptions(poke_num, forms):
+    if poke_num not in FORM_EXCEPTION_POKEMON:
+        return forms
+    
+    to_remove, replacements = FORM_EXCEPTION_POKEMON[poke_num]
+    filtered_forms = [form for form in forms if form not in to_remove]
+    filtered_forms.extend(replacements)
+
+    return filtered_forms
+
 
 def populate_forms(cursor):
     print("Populating forms into database...")
 
-    forms = []
-    # TODO: Here is where you'll have to import all the hardcoded exceptions and pokemon-by-pokemon individualities
-    for row in range(2, pokemon_info_sheet.max_row + 1):
-        forms.clear()
-        poke_num = int(cell_value(pokemon_info_sheet, row, poke_info_num_col))
-        misc_form_field = cell_value(pokemon_info_sheet, row, poke_info_misc_forms_col)
-        #misc_forms = [item.strip() for item in misc_form_field.split(",")]
-
-        # TODO: Should I add hyphens before each? And -Form- and -Region- to their respectives? So I can just append this to potential filenames when generating?
-        if has_default_form(poke_num): forms.append("Default")
-        if isnt_empty(pokemon_info_sheet, row, poke_info_f_col): forms.append("f")
-        if isnt_empty(pokemon_info_sheet, row, poke_info_mega_col): forms.append("Mega")
-        if isnt_empty(pokemon_info_sheet, row, poke_info_giganta_col): forms.append("Gigantamax")
-        # TODO: This is adding in empty string to the forms arr
-        if isnt_empty(pokemon_info_sheet, row, poke_info_reg_forms_col): forms.extend(cell_value(pokemon_info_sheet, row, poke_info_reg_forms_col).split(","))
-
-        # TODO: reg forms still pulling empty strings
-        print(poke_num, forms)
-            
+    for row in range(2, POKE_INFO_LAST_ROW + 1): 
+        forms = get_forms_from_excel(row)
+        forms = adjust_forms_for_exceptions(row-1, forms)
+        for form in forms:
+            insert_forms(cursor, row-1, form)            
 
 
 def has_default_form(poke_num):
