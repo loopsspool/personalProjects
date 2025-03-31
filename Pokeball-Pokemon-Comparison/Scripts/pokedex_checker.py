@@ -2,7 +2,7 @@ from app_globals import LAST_POKE_NUM
 from spreadsheet_funcs import *
 from db_utils import populate_db
 
-# Force, if true, will rewrite the JSON and missing images spreadsheet even if the pokedex has the same last pokemon as the poke_info spreadsheet
+# Force, if true, will update the db even if the db has the same last pokemon as the poke_info spreadsheet
 def check_pokedex_db_is_current(force=False):
     print("Confirming pokedex database is up to date...")
 

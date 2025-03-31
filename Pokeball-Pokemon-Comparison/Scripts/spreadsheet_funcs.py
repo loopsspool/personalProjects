@@ -51,8 +51,6 @@ def sheet_pretty_print(sheet):
 pokemon_info_sheet_path = 'C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Pokemon Info.xlsx'
 pokemon_info_sheet = load_sheet_from_excel(pokemon_info_sheet_path)
 
-# Spreadsheet for file tracking (what images I do/dont have)
-# TODO: Add drawn and menu sprites
 pokemon_files = load_workbook(filename = 'C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Pokemon File-check.xlsx', data_only=True)
 pokemon_files_sheet = pokemon_files.worksheets[0]
 poke_info_last_row = get_last_row(pokemon_info_sheet)
@@ -69,6 +67,7 @@ poke_info_swsh_col = get_col_number(pokemon_info_sheet, "SwSh")
 poke_info_bdsp_col = get_col_number(pokemon_info_sheet, "BDSP")
 poke_info_la_col = get_col_number(pokemon_info_sheet, "LA")
 poke_info_sv_col = get_col_number(pokemon_info_sheet, "SV")
+# TODO: Add drawn and menu sprites
 poke_files_num_col = get_col_number(pokemon_files_sheet, "#")
 poke_files_name_col = get_col_number(pokemon_files_sheet, "Name")
 poke_files_tags_col = get_col_number(pokemon_files_sheet, "Tags")

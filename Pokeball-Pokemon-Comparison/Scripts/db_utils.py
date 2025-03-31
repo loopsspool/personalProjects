@@ -101,18 +101,16 @@ def populate_forms(cursor):
         misc_form_field = cell_value(pokemon_info_sheet, row, poke_info_misc_forms_col)
         #misc_forms = [item.strip() for item in misc_form_field.split(",")]
 
-        # TODO: Determine usefulness of JSON after DB implementation and see if you'd like to keep the JSON
-            # If so, this can pull from that, looping through the pokedex.json, instead of populating the same info in 2 places
         # TODO: Should I add hyphens before each? And -Form- and -Region- to their respectives? So I can just append this to potential filenames when generating?
         if has_default_form(poke_num): forms.append("Default")
-        if is_x_or_num(pokemon_info_sheet, row, poke_info_f_col): forms.append("f")
-        if is_x_or_num(pokemon_info_sheet, row, poke_info_mega_col): forms.append("Mega")
-        if is_x_or_num(pokemon_info_sheet, row, poke_info_giganta_col): forms.append("Gigantamax")
+        if isnt_empty(pokemon_info_sheet, row, poke_info_f_col): forms.append("f")
+        if isnt_empty(pokemon_info_sheet, row, poke_info_mega_col): forms.append("Mega")
+        if isnt_empty(pokemon_info_sheet, row, poke_info_giganta_col): forms.append("Gigantamax")
         # TODO: This is adding in empty string to the forms arr
         if isnt_empty(pokemon_info_sheet, row, poke_info_reg_forms_col): forms.extend(cell_value(pokemon_info_sheet, row, poke_info_reg_forms_col).split(","))
 
         # TODO: reg forms still pulling empty strings
-        #print(poke_num, forms)
+        print(poke_num, forms)
             
 
 
@@ -154,4 +152,4 @@ def get_last_poke_num():
     connection.close()
     return max_num
 
-#populate_db()
+populate_db()
