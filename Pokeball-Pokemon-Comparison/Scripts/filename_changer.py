@@ -44,6 +44,12 @@ def replace_in_filename(path, replace, replace_with):
                 print(new_f)
                 os.rename(full_path, new_full_path)
 
+def replace_filename_in_all_dirs(replace, replace_with):
+    replace_in_filename(game_sprite_path, replace, replace_with)
+    replace_in_filename(back_sprites_to_filter_path, replace, replace_with)
+    replace_in_filename(animated_pngs_pre_gif_conversion, replace, replace_with)
+
+
 # Shiny tag first
 # Then form (AND add -Form-____ tag to misc/type forms)
     # So they aren't sorted below shinies
