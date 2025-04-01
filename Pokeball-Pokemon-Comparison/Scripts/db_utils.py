@@ -85,7 +85,7 @@ def populate_pokes(cursor):
         insert_poke(cursor, num, num_as_str, name, gen)
 
 
-def insert_forms(cursor, poke_num, form_name):
+def insert_form(cursor, poke_num, form_name):
     cursor.execute("""
         INSERT OR IGNORE INTO forms (pokemon_num, form_name)
         VALUES (?, ?);
@@ -146,7 +146,7 @@ def populate_forms(cursor):
         forms = get_forms_from_excel(row)
         forms = adjust_forms_for_exceptions(row-1, forms)
         for form in forms:
-            insert_forms(cursor, row-1, form)            
+            insert_form(cursor, row-1, form)            
 
 
 def has_default_form(poke_num):
@@ -161,6 +161,42 @@ def has_default_form(poke_num):
     if poke_num not in no_default_form_poke_nums: return True
 
 
+def insert_game(cursor, game, gen):
+    cursor.execute("""
+        INSERT OR IGNORE INTO games (name, gen)
+        VALUES (?, ?);
+    """, (game, gen))
+
+
+def populate_games(cursor):
+    print("Populating games...")
+    # TODO: Should I follow my file naming convention or list out each game?
+    GAMES = (
+        ("Red-Green", 1),
+        ("Red-Blue", 1),
+        ("Yellow", 1),
+        ("Gold", 2),
+        ("Silver", 2),
+        ("Crystal", 2),
+        ("Ruby-Sapphire", 3),
+        ("Emerald", 3),
+        ("FRLG", 3),
+        ("Diamond-Pearl", 4),
+        ("Platinum", 4),
+        ("HGSS", 4),
+        ("BW-B2W2", 5),
+        ("XY-ORAS", 6),
+        ("SM-USUM", 7),
+        ("LGPE", 7),
+        ("SwSh", 8),
+        ("BDSP", 8),
+        ("LA", 8),
+        ("SV", 9)
+    )
+    for game in GAMES:
+        insert_game(cursor, game[0], game[1])
+
+
 def populate_db():
     if not db_exists():
         create_db()
@@ -171,6 +207,7 @@ def populate_db():
     try:
         populate_pokes(cursor)
         populate_forms(cursor)
+        populate_games(cursor)
 
         connection.commit()
     except Exception as e:
