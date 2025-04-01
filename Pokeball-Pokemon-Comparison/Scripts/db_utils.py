@@ -48,6 +48,7 @@ def create_db():
         form_id INTEGER NOT NULL,
         available_from_gen INTEGER NOT NULL,
         available_until_gen INTEGER DEFAULT NULL,
+        PRIMARY KEY (form_id)
         FOREIGN KEY (form_id) REFERENCES forms(id)
     );
     """)
@@ -56,6 +57,8 @@ def create_db():
     CREATE TABLE IF NOT EXISTS form_game_availability (
         form_id INTEGER NOT NULL,
         game_id INTEGER NOT NULL,
+        is_available BOOLEAN NOT NULL,
+        PRIMARY KEY (form_id, game_id)
         FOREIGN KEY (form_id) REFERENCES forms(id),
         FOREIGN KEY (game_id) REFERENCES games(id)
     );
@@ -146,7 +149,13 @@ def populate_forms(cursor):
         forms = get_forms_from_excel(row)
         forms = adjust_forms_for_exceptions(row-1, forms)
         for form in forms:
-            insert_form(cursor, row-1, form)            
+            insert_form(cursor, row-1, form)
+
+
+def get_form_records(cursor):
+    cursor.execute(f"SELECT * FROM forms")
+    records = cursor.fetchall()
+    return records
 
 
 def has_default_form(poke_num):
@@ -167,34 +176,41 @@ def insert_game(cursor, game, gen):
         VALUES (?, ?);
     """, (game, gen))
 
-
+# TODO: Should I follow my file naming convention or list out each game?
+GAMES = (
+    ("Red-Green", 1),
+    ("Red-Blue", 1),
+    ("Yellow", 1),
+    ("Gold", 2),
+    ("Silver", 2),
+    ("Crystal", 2),
+    ("Ruby-Sapphire", 3),
+    ("Emerald", 3),
+    ("FRLG", 3),
+    ("Diamond-Pearl", 4),
+    ("Platinum", 4),
+    ("HGSS", 4),
+    ("BW-B2W2", 5),
+    ("XY-ORAS", 6),
+    ("SM-USUM", 7),
+    ("LGPE", 7),
+    ("SwSh", 8),
+    ("BDSP", 8),
+    ("LA", 8),
+    ("SV", 9)
+)
 def populate_games(cursor):
-    print("Populating games...")
-    # TODO: Should I follow my file naming convention or list out each game?
-    GAMES = (
-        ("Red-Green", 1),
-        ("Red-Blue", 1),
-        ("Yellow", 1),
-        ("Gold", 2),
-        ("Silver", 2),
-        ("Crystal", 2),
-        ("Ruby-Sapphire", 3),
-        ("Emerald", 3),
-        ("FRLG", 3),
-        ("Diamond-Pearl", 4),
-        ("Platinum", 4),
-        ("HGSS", 4),
-        ("BW-B2W2", 5),
-        ("XY-ORAS", 6),
-        ("SM-USUM", 7),
-        ("LGPE", 7),
-        ("SwSh", 8),
-        ("BDSP", 8),
-        ("LA", 8),
-        ("SV", 9)
-    )
+    print("Populating games into database...")
+
     for game in GAMES:
         insert_game(cursor, game[0], game[1])
+
+
+# TODO: These will have to be pulled from old create spreadsheet to track missing files file
+def populate_form_game_availability(cursor):
+    forms = get_form_records(cursor)
+    for form in forms:
+        print(form)
 
 
 def populate_db():
@@ -208,6 +224,7 @@ def populate_db():
         populate_pokes(cursor)
         populate_forms(cursor)
         populate_games(cursor)
+        populate_form_game_availability(cursor)
 
         connection.commit()
     except Exception as e:
