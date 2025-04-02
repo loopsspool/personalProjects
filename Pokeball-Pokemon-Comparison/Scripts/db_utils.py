@@ -43,15 +43,16 @@ def create_db():
     );
     """)
 
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS form_gen_availability (
-        form_id INTEGER NOT NULL,
-        available_from_gen INTEGER NOT NULL,
-        available_until_gen INTEGER DEFAULT NULL,
-        PRIMARY KEY (form_id)
-        FOREIGN KEY (form_id) REFERENCES forms(id)
-    );
-    """)
+    # This can all be pulled by a join of form game availability and games tables, seeing what games belong to what gen
+    # cursor.execute("""
+    # CREATE TABLE IF NOT EXISTS form_gen_availability (
+    #     form_id INTEGER NOT NULL,
+    #     available_from_gen INTEGER NOT NULL,
+    #     available_until_gen INTEGER DEFAULT NULL,
+    #     PRIMARY KEY (form_id)
+    #     FOREIGN KEY (form_id) REFERENCES forms(id)
+    # );
+    # """)
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS form_game_availability (
@@ -80,7 +81,7 @@ def populate_pokes(cursor):
     print("Populating Pokemon into database...")
 
     # Grabbing information from pokemon info spreadsheet
-    for row in range(2, POKE_INFO_LAST_ROW):
+    for row in range(2, POKE_INFO_LAST_ROW + 1):
         num = row - 1
         num_as_str = str(cell_value(pokemon_info_sheet, row, poke_info_num_col))
         name = cell_value(pokemon_info_sheet, row, poke_info_name_col)
@@ -151,11 +152,21 @@ def populate_forms(cursor):
         for form in forms:
             insert_form(cursor, row-1, form)
 
-
 def get_form_records(cursor):
-    cursor.execute(f"SELECT * FROM forms")
-    records = cursor.fetchall()
-    return records
+    cursor.execute("""
+        SELECT f.id, f.form_name, p.num, p.name, p.gen
+        FROM forms f
+        JOIN pokemon p ON f.pokemon_num = p.num
+    """)
+    forms = {}
+    for row in cursor.fetchall():
+        # form id maps to form info
+        forms[row[0]] = { "name" : row[1],
+                          "poke num" : row[2],
+                          "poke name" : row[3],
+                          "poke gen" : row[4]
+                        }
+    return forms
 
 
 def has_default_form(poke_num):
@@ -168,6 +179,16 @@ def has_default_form(poke_num):
     no_default_form_poke_nums = [201, 412, 413, 421, 422, 423, 487, 492, 493, 550, 555, 585, 586, 641, 642, 645, 647, 648, 666, 669, 670, 671, 681, 710, 711, 716, 718, 720, 741, 745, 746, 773, 774, 778, 849, 869, 875, 877, 888, 889, 892, 905, 925, 931, 964, 978, 982, 999, 1017, 1024]
 
     if poke_num not in no_default_form_poke_nums: return True
+
+
+def get_game_records(cursor):
+    cursor.execute("SELECT * FROM GAMES")
+    games = {}
+    for row in cursor.fetchall():
+        # Game id maps to game info
+        games[row[0]] = {"name" : row[1], 
+                         "gen" : row[2]}
+    return games
 
 
 def insert_game(cursor, game, gen):
@@ -206,11 +227,40 @@ def populate_games(cursor):
         insert_game(cursor, game[0], game[1])
 
 
-# TODO: These will have to be pulled from old create spreadsheet to track missing files file
+def insert_form_game_availability(cursor, form_id, game_id, bool):
+    cursor.execute("""
+        INSERT OR IGNORE INTO form_game_availability (form_id, game_id, is_available)
+        VALUES (?, ?, ?);
+    """, (form_id, game_id, bool))
+
+
+FORM_EXCLUSIONS = {
+    "no_f_form_visual_differences_before_gen4": lambda form, game, poke_num: form["name"] == "-f" and game["gen"] < 4
+}
+def is_form_available(form, game, poke_num):
+    for condition in FORM_EXCLUSIONS.values():
+        if condition(form, game, poke_num):
+            return False
+    return True
+
+
+# TODO: Add ON CONFLICT to INSERT OR IGNORE statements to update values? See where relevant
 def populate_form_game_availability(cursor):
+    print("Populating game availability for forms into database...")
+
+
     forms = get_form_records(cursor)
-    for form in forms:
-        print(form)
+    games = get_game_records(cursor)
+
+    for form_id, form_info in forms.items():
+        for game_id, game_info in games.items():
+            if form_info["poke gen"] > game_info["gen"]:
+                continue                
+            
+            available = is_form_available(form_info, game_info, form_info["poke num"])
+            if not available: 
+                print(form_info["poke name"], form_info["name"], "not available in", game_info["name"])                
+   
 
 
 def populate_db():
