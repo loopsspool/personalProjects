@@ -119,7 +119,7 @@ def unobtainability_check(filename, file_gen, poke, game):
     # By default this will catch Region-Alola
     if "-Region" in filename and file_gen < "Gen7":
         return tuple((True, "No regional forms before Gen 7"))
-    if ("-Region" in filename and not "-Rgion-Alola" in filename) and "LGPE" in filename:
+    if ("-Region" in filename and not "-Region-Alola" in filename) and "LGPE" in filename:
         return tuple((True, "Only Alolan regional forms in LGPE")) 
     # No regional variants in BDSP
     if "-Region" in filename and "BDSP" in filename:
