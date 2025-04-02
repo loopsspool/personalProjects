@@ -43,22 +43,20 @@ def create_db():
     );
     """)
 
-    # This can all be pulled by a join of form game availability and games tables, seeing what games belong to what gen
-    # cursor.execute("""
-    # CREATE TABLE IF NOT EXISTS form_gen_availability (
-    #     form_id INTEGER NOT NULL,
-    #     available_from_gen INTEGER NOT NULL,
-    #     available_until_gen INTEGER DEFAULT NULL,
-    #     PRIMARY KEY (form_id)
-    #     FOREIGN KEY (form_id) REFERENCES forms(id)
-    # );
-    # """)
-
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS form_game_availability (
         form_id INTEGER NOT NULL,
         game_id INTEGER NOT NULL,
-        is_available BOOLEAN NOT NULL,
+        PRIMARY KEY (form_id, game_id)
+        FOREIGN KEY (form_id) REFERENCES forms(id),
+        FOREIGN KEY (game_id) REFERENCES games(id)
+    );
+    """)
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS unobtainable (
+        form_id INTEGER NOT NULL,
+        game_id INTEGER NOT NULL,
         PRIMARY KEY (form_id, game_id)
         FOREIGN KEY (form_id) REFERENCES forms(id),
         FOREIGN KEY (game_id) REFERENCES games(id)
@@ -227,17 +225,36 @@ def populate_games(cursor):
         insert_game(cursor, game[0], game[1])
 
 
-def insert_form_game_availability(cursor, form_id, game_id, bool):
+def insert_form_game_availability(cursor, form_id, game_id):
     cursor.execute("""
-        INSERT OR IGNORE INTO form_game_availability (form_id, game_id, is_available)
+        INSERT OR IGNORE INTO form_game_availability (form_id, game_id)
         VALUES (?, ?, ?);
-    """, (form_id, game_id, bool))
+    """, (form_id, game_id))
 
 
+# TODO: Test all these
 FORM_EXCLUSIONS = {
-    "no_f_form_visual_differences_before_gen4": lambda form, game, poke_num: form["name"] == "-f" and game["gen"] < 4
+    # Universal Rules
+    "no_pokemon_with_a_higher_generation_than_game_generation": lambda form, game, poke_num: form["poke gen"] > game["gen"],
+    "no_f_form_visual_differences_before_gen_4": lambda form, game, poke_num: form["name"] == "-f" and game["gen"] < 4,
+    "no_fairy_forms_before_gen_6": lambda form, game, poke_num: form["name"] == "-Form-Fairy" and game["gen"] < 6,
+    "no_megas_outside_gen_6_and_7": lambda form, game, poke_num: "-Mega" in form["name"] and game["gen"] not in (6, 7),
+    "no_gigantamax_outside_SwSh": lambda form, game, poke_num: form["name"] == "-Gigantamax" and game["name"] != "SwSh",
+    "no_regional_forms_before_gen_7": lambda form, game, poke_num: "-Region" in form["name"] and game["gen"] < 7,
+    "no_regional_forms_other_than_alola_allowed_in_LGPE": lambda form, game, poke_num: game["name"] == "LGPE" and "-Region" in form["name"] and form["name"] != "-Region-Alola",
+    "no_regional_forms_in_BDSP": lambda form, game, poke_num: game["name"] == "BDSP" and "-Region" in form["name"],
+    "no_galarian_forms_before_gen_8": lambda form, game, poke_num: form["name"] == "-Region-Galar" and game["gen"] < 8,
+    "no_hisuian_forms_outside_certain_games": lambda form, game, poke_num: form["name"] == "-Region-Hisui" and game["name"] not in ("LA, SV"),
+    "no_regional_forms_in_LA_other_than_hisui_and_alola_kitties": lambda form, game, poke_num: game["name"] == "LA" and "-Region" in form["name"] and form["name"] != "-Region-Hisui" and form["poke name"] not in ("Vulpix", "Ninetails"),
+
+    # Specific pokemon
+    # TODO: You may have to add extra logic here since youve got cosplay filenames listed from gen 6-7
+    "no_cosplay_pikachu_outside_ORAS": lambda form, game, poke_num: form["name"] == "-Form-Cosplay" and game["name"] != "XY-ORAS",
+    "no_cap_pikachu_before_gen_7": lambda form, game, poke_num: "-Form-Cap" in form["name"] and game["gen"] < 7,
+    "no_cap_pikachu_outside_of_these_games": lambda form, game, poke_num: "-Form-Cap" in form["name"] and game["name"] not in ("SM-USUM", "SwSh", "SV"),
+    "no_world_cap_pikachu_outside_of_these_games": lambda form, game, poke_num: form["name"] == "-Form-Cap-World" and game not in ("SwSh", "SV")
 }
-def is_form_available(form, game, poke_num):
+def is_form_obtainable(form, game, poke_num):
     for condition in FORM_EXCLUSIONS.values():
         if condition(form, game, poke_num):
             return False
@@ -248,20 +265,39 @@ def is_form_available(form, game, poke_num):
 def populate_form_game_availability(cursor):
     print("Populating game availability for forms into database...")
 
-
     forms = get_form_records(cursor)
     games = get_game_records(cursor)
 
+    unobtainables = []
+    obtainables = []
+
     for form_id, form_info in forms.items():
         for game_id, game_info in games.items():
-            if form_info["poke gen"] > game_info["gen"]:
-                continue                
-            
-            available = is_form_available(form_info, game_info, form_info["poke num"])
-            if not available: 
-                print(form_info["poke name"], form_info["name"], "not available in", game_info["name"])                
+            obtainable = is_form_obtainable(form_info, game_info, form_info["poke num"])
+
+            if not obtainable: 
+                print(form_info["poke name"], form_info["name"], "not available in", game_info["name"])
+                unobtainables.append((form_id, game_id))               
+            else:
+                obtainables.append((form_id, game_id))
    
 
+def insert_unobtainable(cursor, form_id, game_id):
+    cursor.execute("""
+        INSERT OR IGNORE INTO unobtainable (form_id, game_id)
+        VALUES (?, ?);
+    """, (form_id, game_id))
+
+
+# TODO: Will need to add filename spreadsheet per forms and games
+    # TODO: Should loop through shiny, back, animated, etc. those will need their own obtainability checks & added to the unobtainability table
+# TODO:
+#   - No shinies in gen 1
+#   - No animated in gen 1
+#   - No animated back sprites below gen 5
+#   - No animated sprites in "Gold", "Silver", "FireRed-LeafGreen", "Ruby-Sapphire"?
+#   - No shiny cosplay pikachu
+#   - No shiny cap pikachu
 
 def populate_db():
     if not db_exists():
