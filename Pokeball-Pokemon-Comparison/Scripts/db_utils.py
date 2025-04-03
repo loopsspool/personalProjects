@@ -147,6 +147,7 @@ def populate_forms(cursor):
     for row in range(2, POKE_INFO_LAST_ROW + 1): 
         forms = get_forms_from_excel(row)
         forms = adjust_forms_for_exceptions(row-1, forms)
+
         for form in forms:
             insert_form(cursor, row-1, form)
 
@@ -173,7 +174,7 @@ def has_default_form(poke_num):
         # TODO: Write script to find files that have a default sprite saved that shouldnt, like the above
     # TODO: Minior 774 Form Core is for shiny... no matter core color all shinies are the same
     # TODO: No 854, 855 form sprites saved prolly bc improper scrape script
-    # TODO: Be sure Arceus Qmark form only in gen4
+    # TODO: Radiant Sun Solgaleo and Full Moon Lunala sprites are wrong too
     no_default_form_poke_nums = [201, 412, 413, 421, 422, 423, 487, 492, 493, 550, 555, 585, 586, 641, 642, 645, 647, 648, 666, 669, 670, 671, 681, 710, 711, 716, 718, 720, 741, 745, 746, 773, 774, 778, 849, 869, 875, 877, 888, 889, 892, 905, 925, 931, 964, 978, 982, 999, 1017, 1024]
 
     if poke_num not in no_default_form_poke_nums: return True
@@ -234,6 +235,9 @@ def insert_form_game_availability(cursor, form_id, game_id):
 
 # TODO: Test all these
 FORM_EXCLUSIONS = {
+    # Species game availability
+    # TODO: Run game availability columns from excel sheet here too (if run elsewhere, some forms may get added here that you'd have to delete when running it elsewhere)
+
     # Universal Rules
     "no_pokemon_with_a_higher_generation_than_game_generation": lambda form, game, poke_num: form["poke gen"] > game["gen"],
     "no_f_form_visual_differences_before_gen_4": lambda form, game, poke_num: form["name"] == "-f" and game["gen"] < 4,
@@ -249,10 +253,25 @@ FORM_EXCLUSIONS = {
 
     # Specific pokemon
     # TODO: You may have to add extra logic here since youve got cosplay filenames listed from gen 6-7
-    "no_cosplay_pikachu_outside_ORAS": lambda form, game, poke_num: form["name"] == "-Form-Cosplay" and game["name"] != "XY-ORAS",
-    "no_cap_pikachu_before_gen_7": lambda form, game, poke_num: "-Form-Cap" in form["name"] and game["gen"] < 7,
-    "no_cap_pikachu_outside_of_these_games": lambda form, game, poke_num: "-Form-Cap" in form["name"] and game["name"] not in ("SM-USUM", "SwSh", "SV"),
-    "no_world_cap_pikachu_outside_of_these_games": lambda form, game, poke_num: form["name"] == "-Form-Cap-World" and game not in ("SwSh", "SV")
+    "no_cosplay_pikachu_outside_ORAS": lambda form, game, poke_num: poke_num == 25 and form["name"] == "-Form-Cosplay" and game["name"] != "XY-ORAS",
+    "no_cap_pikachu_before_gen_7": lambda form, game, poke_num: poke_num == 25 and "-Form-Cap" in form["name"] and game["gen"] < 7,
+    "no_cap_pikachu_outside_of_these_games": lambda form, game, poke_num: poke_num == 25 and "-Form-Cap" in form["name"] and game["name"] not in ("SM-USUM", "SwSh", "SV"),
+    "no_world_cap_pikachu_outside_of_these_games": lambda form, game, poke_num: poke_num == 25 and form["name"] == "-Form-Cap-World" and game["name"] not in ("SwSh", "SV"),
+    "no_paldean_form_tauros_in_older_games": lambda form, game, poke_num: poke_num == 128 and form["name"] != "Default" and game["name"] != "SV",
+    "no_female_form_eevees_until_gen_8": lambda form, game, poke_num: poke_num == 133 and form["name"] == "-f" and game["gen"] < 8,
+    "no_spiky_eared_pichu_outside_gen_4": lambda form, game, poke_num: poke_num == 172 and form["name"] == "-Form-Spiky_Eared" and game["gen"] != 4,
+    "no_unown_punctuation_before_gen_3": lambda form, game, poke_num: poke_num == 201 and form["name"] in ("-Form-!", "-Form-Qmark") and game["gen"] < 3,
+    "no_primal_kyogre_or_groudon_outside_gen_6_and_7": lambda form, game, poke_num: (poke_num in (382, 383)) and form["name"] == "-Form-Primal" and game["gen"] not in (6, 7),
+    "no_rotom_forms_until_after_platinum": lambda form, game, poke_num: poke_num == 479 and form["name"] != "Default" and game["name"] == "Diamond-Pearl",
+    "no_origin_dialga_palkia_forms_until_after_LA": lambda form, game, poke_num: poke_num in (483, 484) and form["name"] == "-Form-Origin" and game["name"] not in ("LA", "SV"),
+    "no_origin_form_giratina_until_after_platinum": lambda form, game, poke_num: poke_num == 487 and form["name"] == "-Form-Origin" and game["name"] == "Diamond-Pearl",
+    "no_sky_form_shaymin_until_after_platinum": lambda form, game, poke_num: poke_num == 492 and form["name"] == "-Form-Sky" and game["name"] == "Diamond-Pearl",
+    "no_???_arceus_form_outside_of_gen_4": lambda form, game, poke_num: poke_num == 493 and form["name"] == "-Form-Qmark" and game["gen"] != 4,
+    "no_ash_greninja_outside_of_gen_7": lambda form, game, poke_num: poke_num == 658 and form["name"] == "-Form-Ash" and game["gen"] != 7,
+    "no_zygarde_forms_until_gen_7": lambda form, game, poke_num: poke_num == 718 and form["name"] != "-Form-50%" and game["gen"] < 7,
+    "no_solgaleo_lunala_forms_outside_SM-USUM": lambda form, game, poke_num: poke_num in (791, 792) and form["name"] != "Default" and game["name"] != "SM-USUM",
+    "no_zenith_marshadow_form_outside_gen_SM-USUM": lambda form, game, poke_num: poke_num == 802 and form["name"] != "Default" and game["name"] != "SM-USUM",
+    "no_meltan_or melmetal_until_gen_8": lambda form, game, poke_num: poke_num in (808, 809) and game["gen"] < 8    # Technically these are gen 7 pokemon, that weren't available until gen 8 
 }
 def is_form_obtainable(form, game, poke_num):
     for condition in FORM_EXCLUSIONS.values():
@@ -261,6 +280,7 @@ def is_form_obtainable(form, game, poke_num):
     return True
 
 
+# TODO: Filter by game availability column in excel
 # TODO: Add ON CONFLICT to INSERT OR IGNORE statements to update values? See where relevant
 def populate_form_game_availability(cursor):
     print("Populating game availability for forms into database...")
@@ -276,7 +296,7 @@ def populate_form_game_availability(cursor):
             obtainable = is_form_obtainable(form_info, game_info, form_info["poke num"])
 
             if not obtainable: 
-                print(form_info["poke name"], form_info["name"], "not available in", game_info["name"])
+                #print(form_info["poke name"], form_info["name"], "not available in", game_info["name"])
                 unobtainables.append((form_id, game_id))               
             else:
                 obtainables.append((form_id, game_id))
@@ -298,6 +318,7 @@ def insert_unobtainable(cursor, form_id, game_id):
 #   - No animated sprites in "Gold", "Silver", "FireRed-LeafGreen", "Ruby-Sapphire"?
 #   - No shiny cosplay pikachu
 #   - No shiny cap pikachu
+#   - Reshiram, Zekrom overdrive only in B2W2 ANIMATED (static is normal) & always, there is no non-overdrive animated form 
 
 def populate_db():
     if not db_exists():
