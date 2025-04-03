@@ -67,18 +67,17 @@ def game_finder_from_gen(gen):
         return(["SV"])
 
 # NOTE: 
-    #   - TODO: f variants not in mega, giga, or region (except a f hisui sneasel) -- This rule must be applied somewhere other than the unobtainability checker (perhaps a nonexistant checker?)
+    #   x TODO: f variants not in mega, giga, or region (except a f hisui sneasel) -- This rule must be applied somewhere other than the unobtainability checker (perhaps a nonexistant checker?)
     #   x No Hisuian variants in any other gen8 game, just LA and up
     #   x No regional variants in BDSP
     #   x No Galarian, alolan forms in LA at all except alolan vulpix, ninetails avail
-    #   - Taurus type forms only in Paldea
-    #   - Origin Dialga & Palkia only in gen 8-9
-    #   - Darmanitan has both regular and galarian zen and standard form
-    #   - Reshiram, Zekrom overdrive only in B2W2 ANIMATED (static is normal) & always, there is no non-overdrive animated form 
-    #   - Radiant Sun Solgaleo and Full Moon Lunala only available in SMUSUM
-    #   - Zenith Marshadow only in USUM
+    #   x Taurus type forms only in Paldea
+    #   x Origin Dialga & Palkia only in gen 8-9
+    #   x Darmanitan has both regular and galarian zen and standard form
+    #   x Radiant Sun Solgaleo and Full Moon Lunala only available in SMUSUM
+    #   x Zenith Marshadow only in USUM
     #   x No default forms checker for certain pokes
-    #   - Eevee f form only after gen 8
+    #   x Eevee f form only after gen 8
 
 # Decided to do tuples here so it's easier to troubleshoot why something was considered unobtainable
     # As oppsed to a bunch of print statements and seeing where it didn't print anymore bc of return
