@@ -87,6 +87,7 @@ def populate_pokes(cursor):
         insert_poke(cursor, num, num_as_str, name, gen)
 
 
+# TODO: Looks like the IGNORE part isnt working? Adds forms everytime script is run
 def insert_form(cursor, poke_num, form_name):
     cursor.execute("""
         INSERT OR IGNORE INTO forms (pokemon_num, form_name)
@@ -175,7 +176,7 @@ def has_default_form(poke_num):
     # TODO: Minior 774 Form Core is for shiny... no matter core color all shinies are the same
     # TODO: No 854, 855 form sprites saved prolly bc improper scrape script
     # TODO: Radiant Sun Solgaleo and Full Moon Lunala sprites are wrong too
-    no_default_form_poke_nums = [201, 412, 413, 421, 422, 423, 487, 492, 493, 550, 555, 585, 586, 641, 642, 645, 647, 648, 666, 669, 670, 671, 681, 710, 711, 716, 718, 720, 741, 745, 746, 773, 774, 778, 849, 869, 875, 877, 888, 889, 892, 905, 925, 931, 964, 978, 982, 999, 1017, 1024]
+    no_default_form_poke_nums = {201, 412, 413, 421, 422, 423, 487, 492, 493, 550, 555, 585, 586, 641, 642, 645, 647, 648, 666, 669, 670, 671, 681, 710, 711, 716, 718, 720, 741, 745, 746, 773, 774, 778, 849, 869, 875, 877, 888, 889, 892, 905, 925, 931, 964, 978, 982, 999, 1017, 1024}
 
     if poke_num not in no_default_form_poke_nums: return True
 
@@ -233,10 +234,14 @@ def insert_form_game_availability(cursor, form_id, game_id):
     """, (form_id, game_id))
 
 
-# TODO: Test all these
+# TODO: Test all these... Maxes out terminal window so will have to print to txt file and make sure each rule excludes something
 FORM_EXCLUSIONS = {
     # Species game availability
-    # TODO: Run game availability columns from excel sheet here too (if run elsewhere, some forms may get added here that you'd have to delete when running it elsewhere)
+    "filtering_for_LGPE_dex_if_needed": lambda form, game, poke_num: game["name"] == "LGPE" and poke_isnt_in_game(form["poke num"], "LGPE"),
+    "filtering_for_SwSh_dex_if_needed": lambda form, game, poke_num: game["name"] == "SwSh" and poke_isnt_in_game(form["poke num"], "SwSh"),
+    "filtering_for_BDSP_dex_if_needed": lambda form, game, poke_num: game["name"] == "BDSP" and poke_isnt_in_game(form["poke num"], "BDSP"),
+    "filtering_for_LA_dex_if_needed": lambda form, game, poke_num: game["name"] == "LA" and poke_isnt_in_game(form["poke num"], "LA"),
+    "filtering_for_SV_dex_if_needed": lambda form, game, poke_num: game["name"] == "SV" and poke_isnt_in_game(form["poke num"], "SV"),
 
     # Universal Rules
     "no_pokemon_with_a_higher_generation_than_game_generation": lambda form, game, poke_num: form["poke gen"] > game["gen"],
@@ -274,8 +279,8 @@ FORM_EXCLUSIONS = {
     "no_meltan_or melmetal_until_gen_8": lambda form, game, poke_num: poke_num in (808, 809) and game["gen"] < 8    # Technically these are gen 7 pokemon, that weren't available until gen 8 
 }
 def is_form_obtainable(form, game, poke_num):
-    for condition in FORM_EXCLUSIONS.values():
-        if condition(form, game, poke_num):
+    for exclusion in FORM_EXCLUSIONS.values():
+        if exclusion(form, game, poke_num):
             return False
     return True
 
@@ -296,10 +301,11 @@ def populate_form_game_availability(cursor):
             obtainable = is_form_obtainable(form_info, game_info, form_info["poke num"])
 
             if not obtainable: 
-                #print(form_info["poke name"], form_info["name"], "not available in", game_info["name"])
+                print(form_info["poke name"], form_info["name"], "not available in", game_info["name"])
                 unobtainables.append((form_id, game_id))               
             else:
                 obtainables.append((form_id, game_id))
+
    
 
 def insert_unobtainable(cursor, form_id, game_id):
