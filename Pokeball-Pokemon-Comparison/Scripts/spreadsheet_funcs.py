@@ -47,6 +47,17 @@ def sheet_pretty_print(sheet):
     for row in sheet.iter_rows(values_only=True):
         print("\t".join(str(cell) if cell is not None else "None" for cell in row))
 
+
+def is_poke_in_game(poke_num, game):
+    if isinstance(poke_num, int): poke_num = str(poke_num).zfill(4)
+    game_availability_col = get_col_number(pokemon_info_sheet, game)
+    for row in range(2, POKE_INFO_LAST_ROW+1):
+        if str(cell_value(pokemon_info_sheet, row, poke_info_num_col)) == poke_num:
+            return isnt_empty(pokemon_info_sheet, row, game_availability_col)
+        
+def poke_isnt_in_game(poke_num, game):
+    return not is_poke_in_game(poke_num, game)
+
 # TODO: Capitalize constants
 # TODO: Verify poke_info_last_row used instead of pokemon_files_sheet.max_row
 # Spreadsheet For Pokedex Info
