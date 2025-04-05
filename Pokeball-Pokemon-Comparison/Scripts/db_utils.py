@@ -323,17 +323,18 @@ def populate_form_game_availability(cursor):
 
     for poke_form_id, poke_form_info in poke_forms.items():
         poke_num = poke_form_id[0]
+        check_num = 3
         #print(form_id, form_info)
         for game_id, game_info in games.items():
             obtainable = is_form_obtainable(poke_form_info, game_info, poke_num)
 
             if not obtainable:
-                if poke_num == 494:
+                if poke_num == check_num:
                     print(poke_form_info["poke name"], poke_form_info["form name"], "not available in", game_info["name"])
 
                 unobtainables.append((poke_form_id, game_id))               
             else:
-                if poke_num == 494:
+                if poke_num == check_num:
                     print(poke_form_info["poke name"], poke_form_info["form name"], "available in", game_info["name"])
 
                 obtainables.append((poke_form_id, game_id))
