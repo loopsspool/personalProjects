@@ -29,9 +29,17 @@ def create_db():
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS forms (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        pokemon_num INTEGER NOT NULL,
-        form_name TEXT NOT NULL,
-        FOREIGN KEY (pokemon_num) REFERENCES pokemon(num)
+        form_name TEXT NOT NULL UNIQUE
+    );
+    """)
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS poke_forms (
+        poke_num INTEGER NOT NULL,
+        form_id INTEGER NOT NULL,
+        PRIMARY KEY (poke_num, form_id),
+        FOREIGN KEY (poke_num) REFERENCES pokemon(num),
+        FOREIGN KEY (form_id) REFERENCES forms(id)
     );
     """)
 
@@ -45,20 +53,22 @@ def create_db():
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS form_game_availability (
+        poke_num INTEGER NOT NULL,
         form_id INTEGER NOT NULL,
         game_id INTEGER NOT NULL,
-        PRIMARY KEY (form_id, game_id)
-        FOREIGN KEY (form_id) REFERENCES forms(id),
+        PRIMARY KEY (poke_num, form_id, game_id),
+        FOREIGN KEY (poke_num, form_id) REFERENCES poke_forms (poke_num, form_id),
         FOREIGN KEY (game_id) REFERENCES games(id)
     );
     """)
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS unobtainable (
+        poke_num INTEGER NOT NULL,
         form_id INTEGER NOT NULL,
         game_id INTEGER NOT NULL,
-        PRIMARY KEY (form_id, game_id)
-        FOREIGN KEY (form_id) REFERENCES forms(id),
+        PRIMARY KEY (poke_num, game_id, form_id),
+        FOREIGN KEY (poke_num, form_id) REFERENCES poke_forms (poke_num, form_id),
         FOREIGN KEY (game_id) REFERENCES games(id)
     );
     """)
@@ -87,12 +97,17 @@ def populate_pokes(cursor):
         insert_poke(cursor, num, num_as_str, name, gen)
 
 
-# TODO: Looks like the IGNORE part isnt working? Adds forms everytime script is run
-def insert_form(cursor, poke_num, form_name):
+def insert_form(cursor, form_name):
     cursor.execute("""
-        INSERT OR IGNORE INTO forms (pokemon_num, form_name)
+        INSERT OR IGNORE INTO forms (form_name)
+        VALUES (?);
+    """, (form_name,))
+
+def insert_poke_form(cursor, poke_num, form_id):
+    cursor.execute("""
+        INSERT OR IGNORE INTO poke_forms (poke_num, form_id)
         VALUES (?, ?);
-    """, (poke_num, form_name))
+    """, (poke_num, form_id))
 
 
 def denote_forms(forms, denotion):
@@ -142,21 +157,33 @@ def adjust_forms_for_exceptions(poke_num, forms):
     return filtered_forms
 
 
+def find_form_id(cursor, form):
+    cursor.execute("SELECT id FROM forms WHERE form_name=?", (form,))
+    result = cursor.fetchone()
+
+    if result: return result[0]
+    else: return None
+
+
 def populate_forms(cursor):
     print("Populating forms into database...")
 
     for row in range(2, POKE_INFO_LAST_ROW + 1): 
+        poke_num = row-1
         forms = get_forms_from_excel(row)
         forms = adjust_forms_for_exceptions(row-1, forms)
 
         for form in forms:
-            insert_form(cursor, row-1, form)
+            insert_form(cursor, form)
+            form_id = find_form_id(cursor, form)
+            insert_poke_form(cursor, poke_num, form_id)
 
 def get_form_records(cursor):
     cursor.execute("""
         SELECT f.id, f.form_name, p.num, p.name, p.gen
-        FROM forms f
-        JOIN pokemon p ON f.pokemon_num = p.num
+        FROM poke_forms pf
+        JOIN forms f ON pf.form_id = f.id
+        JOIN pokemon p ON pf.poke_num = p.num
     """)
     forms = {}
     for row in cursor.fetchall():
@@ -227,11 +254,11 @@ def populate_games(cursor):
         insert_game(cursor, game[0], game[1])
 
 
-def insert_form_game_availability(cursor, form_id, game_id):
+def insert_form_game_availability(cursor, poke_id, form_id, game_id):
     cursor.execute("""
-        INSERT OR IGNORE INTO form_game_availability (form_id, game_id)
+        INSERT OR IGNORE INTO form_game_availability (poke_id, form_id, game_id)
         VALUES (?, ?, ?);
-    """, (form_id, game_id))
+    """, (poke_id, form_id, game_id))
 
 
 # TODO: Test all these... Maxes out terminal window so will have to print to txt file and make sure each rule excludes something
@@ -308,10 +335,10 @@ def populate_form_game_availability(cursor):
 
    
 
-def insert_unobtainable(cursor, form_id, game_id):
+def insert_unobtainable(cursor, poke_id, form_id, game_id):
     cursor.execute("""
-        INSERT OR IGNORE INTO unobtainable (form_id, game_id)
-        VALUES (?, ?);
+        INSERT OR IGNORE INTO unobtainable (poke_id, form_id, game_id)
+        VALUES (?, ?, ?);
     """, (form_id, game_id))
 
 
