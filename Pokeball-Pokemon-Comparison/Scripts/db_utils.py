@@ -300,11 +300,11 @@ FORM_EXCLUSIONS = {
     "no_regional_forms_in_BDSP": lambda poke_form, game: game["name"] == "BDSP" and "-Region" in poke_form["form name"],
     "no_galarian_forms_before_gen_8": lambda poke_form, game: poke_form["form name"] == "-Region-Galar" and game["gen"] < 8,
     "no_hisuian_forms_outside_certain_games": lambda poke_form, game: poke_form["form name"] == "-Region-Hisui" and game["name"] not in ("LA, SV"),
-    "no_regional_forms_in_LA_other_than_hisui_and_alola_kitties": lambda poke_form, game: game["name"] == "LA" and "-Region" in poke_form["form name"] and poke_form["form name"] != "-Region-Hisui" and poke_form["poke name"] not in ("Vulpix", "Ninetails"),
+    "no_regional_forms_in_LA_other_than_hisui_and_alola_kitties": lambda poke_form, game: game["name"] == "LA" and "-Region" in poke_form["form name"] and poke_form["form name"] != "-Region-Hisui" and poke_form["poke name"] not in ("Vulpix", "Ninetales"),
 
     # Specific pokemon
     # TODO: You may have to add extra logic here since youve got cosplay filenames listed from gen 6-7
-    "no_cosplay_pikachu_outside_ORAS": lambda poke_form, game: poke_form["poke num"] == 25 and poke_form["form name"] == "-Form-Cosplay" and game["name"] != "XY-ORAS",
+    "no_cosplay_pikachu_outside_ORAS": lambda poke_form, game: poke_form["poke num"] == 25 and "-Form-Cosplay" in poke_form["form name"] and game["name"] != "XY-ORAS",
     "no_cap_pikachu_before_gen_7": lambda poke_form, game: poke_form["poke num"] == 25 and "-Form-Cap" in poke_form["form name"] and game["gen"] < 7,
     "no_cap_pikachu_outside_of_these_games": lambda poke_form, game: poke_form["poke num"] == 25 and "-Form-Cap" in poke_form["form name"] and game["name"] not in ("SM-USUM", "SwSh", "SV"),
     "no_world_cap_pikachu_outside_of_these_games": lambda poke_form, game: poke_form["poke num"] == 25 and poke_form["form name"] == "-Form-Cap-World" and game["name"] not in ("SwSh", "SV"),
