@@ -63,7 +63,7 @@ def create_db():
     """)
 
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS unobtainable (
+    CREATE TABLE IF NOT EXISTS unobtainable_pokes (
         poke_num INTEGER NOT NULL,
         form_id INTEGER NOT NULL,
         game_id INTEGER NOT NULL,
@@ -81,17 +81,19 @@ def get_form_id(form_name):
     connection = sqlite3.connect(DB_PATH)
     cursor = connection.cursor()
     cursor.execute("SELECT id FROM forms WHERE form_name=?", (form_name,))
-    form_id = cursor.fetchone()[0]
+    form_id = cursor.fetchone()
     connection.close()
-    return form_id
+    if form_id: return form_id[0]
+    else: return None
 
 def get_game_id(game_name):
     connection = sqlite3.connect(DB_PATH)
     cursor = connection.cursor()
     cursor.execute("SELECT id FROM games WHERE name=?", (game_name,))
-    game_id = cursor.fetchone()[0]
+    game_id = cursor.fetchone()
     connection.close()
-    return game_id
+    if game_id: return game_id[0]
+    else: return None
 
 
 def db_exists():
@@ -175,14 +177,6 @@ def adjust_forms_for_exceptions(poke_num, forms):
     return filtered_forms
 
 
-def find_form_id(cursor, form):
-    cursor.execute("SELECT id FROM forms WHERE form_name=?", (form,))
-    result = cursor.fetchone()
-
-    if result: return result[0]
-    else: return None
-
-
 def populate_forms(cursor):
     print("Populating forms into database...")
 
@@ -193,7 +187,7 @@ def populate_forms(cursor):
 
         for form in forms:
             insert_form(cursor, form)
-            form_id = find_form_id(cursor, form)
+            form_id = get_form_id(form)
             insert_poke_form(cursor, poke_num, form_id)
 
 def get_poke_form_records(cursor):
@@ -349,15 +343,11 @@ def populate_form_game_availability(cursor):
             obtainable = is_form_obtainable(poke_form_info, game_info)
 
             if not obtainable:
-                if poke_num == check_num:
-                    print(poke_form_info["poke name"], poke_form_info["form name"], "not available in", game_info["name"])
-
                 unobtainables.append((poke_form_id, game_id))               
             else:
-                if poke_num == check_num:
-                    print(poke_form_info["poke name"], poke_form_info["form name"], "available in", game_info["name"])
-
                 obtainables.append((poke_form_id, game_id))
+
+    
 
    
 
