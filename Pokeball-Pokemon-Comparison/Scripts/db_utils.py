@@ -322,7 +322,7 @@ FORM_EXCLUSIONS = {
     "no_zygarde_forms_until_gen_7": lambda poke_form, game: poke_form["poke num"] == 718 and poke_form["form name"] != "-Form-50%" and game["gen"] < 7,
     "no_solgaleo_lunala_forms_outside_SM-USUM": lambda poke_form, game: poke_form["poke num"] in (791, 792) and poke_form["form name"] != "Default" and game["name"] != "SM-USUM",
     "no_zenith_marshadow_form_outside_gen_SM-USUM": lambda poke_form, game: poke_form["poke num"] == 802 and poke_form["form name"] != "Default" and game["name"] != "SM-USUM",
-    "no_meltan_or melmetal_until_gen_8": lambda poke_form, game: poke_form["poke num"] in (808, 809) and game["gen"] < 8    # Technically these are gen 7 pokemon, that weren't available until gen 8 
+    "no_meltan_or_melmetal_until_gen_8": lambda poke_form, game: poke_form["poke num"] in (808, 809) and (game["name"] != "LGPE" and game["gen"] < 8)    # Technically these are gen 7 pokemon, that weren't available until gen 8 (excluding LGPE)
 }
 def is_form_obtainable(form, game):
     for exclusion in FORM_EXCLUSIONS.values():
