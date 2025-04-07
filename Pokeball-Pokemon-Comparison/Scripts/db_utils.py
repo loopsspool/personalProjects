@@ -76,6 +76,24 @@ def create_db():
     connection.commit()
     connection.close()
 
+
+def get_form_id(form_name):
+    connection = sqlite3.connect(DB_PATH)
+    cursor = connection.cursor()
+    cursor.execute("SELECT id FROM forms WHERE form_name=?", (form_name,))
+    form_id = cursor.fetchone()[0]
+    connection.close()
+    return form_id
+
+def get_game_id(game_name):
+    connection = sqlite3.connect(DB_PATH)
+    cursor = connection.cursor()
+    cursor.execute("SELECT id FROM games WHERE name=?", (game_name,))
+    game_id = cursor.fetchone()[0]
+    connection.close()
+    return game_id
+
+
 def db_exists():
     return os.path.exists(DB_PATH)
 
