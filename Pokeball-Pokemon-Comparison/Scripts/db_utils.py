@@ -275,7 +275,7 @@ FORM_EXCLUSIONS = {
     "no_pokemon_with_a_higher_generation_than_game_generation": lambda poke_form, game: poke_form["poke gen"] > game["gen"],
     "no_f_form_visual_differences_before_gen_4": lambda poke_form, game: poke_form["form name"] == "-f" and game["gen"] < 4,
     "no_fairy_forms_before_gen_6": lambda poke_form, game: poke_form["form name"] == "-Form-Fairy" and game["gen"] < 6,
-    "no_megas_outside_gen_6_and_7": lambda poke_form, game: "-Mega" in poke_form["form name"] and (game["gen"] not in (6, 7) or game["name"] == "LGPE"),
+    "no_megas_outside_gen_6_and_7_excluding_LGPE": lambda poke_form, game: "-Mega" in poke_form["form name"] and (game["gen"] not in (6, 7) or game["name"] == "LGPE"),
     "no_gigantamax_outside_SwSh": lambda poke_form, game: poke_form["form name"] == "-Gigantamax" and game["name"] != "SwSh",
     "no_regional_forms_before_gen_7": lambda poke_form, game: "-Region" in poke_form["form name"] and game["gen"] < 7,
     "no_regional_forms_other_than_alola_allowed_in_LGPE": lambda poke_form, game: game["name"] == "LGPE" and "-Region" in poke_form["form name"] and poke_form["form name"] != "-Region-Alola",
