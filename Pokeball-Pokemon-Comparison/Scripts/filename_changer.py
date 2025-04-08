@@ -49,6 +49,14 @@ def replace_filename_in_all_dirs(replace, replace_with):
     replace_in_filename(back_sprites_to_filter_path, replace, replace_with)
     replace_in_filename(animated_pngs_pre_gif_conversion, replace, replace_with)
 
+def print_files_with(path, s):
+    files = os.listdir(path)
+    for f in files:
+        if s in f:
+            print(f)
+
+
+print_files_with(game_sprite_path, "-Alt2")
 
 # Shiny tag first
 # Then form (AND add -Form-____ tag to misc/type forms)
