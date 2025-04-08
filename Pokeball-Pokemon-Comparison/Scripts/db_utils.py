@@ -52,7 +52,7 @@ def create_db():
     """)
 
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS form_game_availability (
+    CREATE TABLE IF NOT EXISTS obtainable_forms_game_availability (
         poke_num INTEGER NOT NULL,
         form_id INTEGER NOT NULL,
         game_id INTEGER NOT NULL,
@@ -63,7 +63,7 @@ def create_db():
     """)
 
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS unobtainable_pokes (
+    CREATE TABLE IF NOT EXISTS unobtainable_forms (
         poke_num INTEGER NOT NULL,
         form_id INTEGER NOT NULL,
         game_id INTEGER NOT NULL,
@@ -77,21 +77,15 @@ def create_db():
     connection.close()
 
 
-def get_form_id(form_name):
-    connection = sqlite3.connect(DB_PATH)
-    cursor = connection.cursor()
+def get_form_id(cursor, form_name):
     cursor.execute("SELECT id FROM forms WHERE form_name=?", (form_name,))
     form_id = cursor.fetchone()
-    connection.close()
     if form_id: return form_id[0]
     else: return None
 
-def get_game_id(game_name):
-    connection = sqlite3.connect(DB_PATH)
-    cursor = connection.cursor()
+def get_game_id(cursor, game_name):
     cursor.execute("SELECT id FROM games WHERE name=?", (game_name,))
     game_id = cursor.fetchone()
-    connection.close()
     if game_id: return game_id[0]
     else: return None
 
@@ -180,6 +174,10 @@ def adjust_forms_for_exceptions(poke_num, forms):
 def populate_forms(cursor):
     print("Populating forms into database...")
 
+    # This is to store the forms with their associated pokemon
+    # Forms must be committed to the db first before I can retrieve their ID
+    poke_form_arr = []
+
     for row in range(2, POKE_INFO_LAST_ROW + 1): 
         poke_num = row-1
         forms = get_forms_from_excel(row)
@@ -187,7 +185,7 @@ def populate_forms(cursor):
 
         for form in forms:
             insert_form(cursor, form)
-            form_id = get_form_id(form)
+            form_id = get_form_id(cursor, form)
             insert_poke_form(cursor, poke_num, form_id)
 
 def get_poke_form_records(cursor):
@@ -266,11 +264,11 @@ def populate_games(cursor):
         insert_game(cursor, game[0], game[1])
 
 
-def insert_form_game_availability(cursor, poke_id, form_id, game_id):
+def insert_obtainable_forms(cursor, poke_num, form_id, game_id):
     cursor.execute("""
-        INSERT OR IGNORE INTO form_game_availability (poke_id, form_id, game_id)
+        INSERT OR IGNORE INTO obtainable_forms_game_availability (poke_num, form_id, game_id)
         VALUES (?, ?, ?);
-    """, (poke_id, form_id, game_id))
+    """, (poke_num, form_id, game_id))
 
 
 # NOTE: if you wanted, you could add poke_num into poke_form so you didnt need a 3rd variable
@@ -332,30 +330,29 @@ def populate_form_game_availability(cursor):
     poke_forms = get_poke_form_records(cursor)
     games = get_game_records(cursor)
 
-    unobtainables = []
-    obtainables = []
+    unobtainable_forms = []
+    obtainable_forms = []
 
+    # Running all pokemon forms through all games to check if its obtainable
     for poke_form_id, poke_form_info in poke_forms.items():
-        poke_num = poke_form_id[0]
-        check_num = 3
-        #print(form_id, form_info)
         for game_id, game_info in games.items():
             obtainable = is_form_obtainable(poke_form_info, game_info)
 
             if not obtainable:
-                unobtainables.append((poke_form_id, game_id))               
+                unobtainable_forms.append((poke_form_id, game_id))               
             else:
-                obtainables.append((poke_form_id, game_id))
+                obtainable_forms.append((poke_form_id, game_id))
 
+    for form_info in unobtainable_forms: insert_unobtainable_forms(cursor, form_info[0][0], form_info[0][1], form_info[1])
+    for form_info in obtainable_forms: insert_obtainable_forms(cursor, form_info[0][0], form_info[0][1], form_info[1])
     
-
    
 
-def insert_unobtainable(cursor, poke_id, form_id, game_id):
+def insert_unobtainable_forms(cursor, poke_num, form_id, game_id):
     cursor.execute("""
-        INSERT OR IGNORE INTO unobtainable (poke_id, form_id, game_id)
+        INSERT OR IGNORE INTO unobtainable_forms (poke_num, form_id, game_id)
         VALUES (?, ?, ?);
-    """, (form_id, game_id))
+    """, (poke_num, form_id, game_id))
 
 
 # TODO: Will need to add filename spreadsheet per forms and games
