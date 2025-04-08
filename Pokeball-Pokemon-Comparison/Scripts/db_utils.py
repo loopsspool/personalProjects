@@ -73,6 +73,13 @@ def create_db():
     );
     """)
 
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS sprite_types (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL UNIQUE
+    );
+    """)
+
     connection.commit()
     connection.close()
 
@@ -271,8 +278,6 @@ def insert_obtainable_forms(cursor, poke_num, form_id, game_id):
     """, (poke_num, form_id, game_id))
 
 
-# NOTE: if you wanted, you could add poke_num into poke_form so you didnt need a 3rd variable
-# TODO: Test all these... Maxes out terminal window so will have to print to txt file and make sure each rule excludes something
 FORM_EXCLUSIONS = {
     # Species game availability
     "filtering_for_LGPE_dex_if_needed": lambda poke_form, game: game["name"] == "LGPE" and poke_isnt_in_game(poke_form["poke num"], "LGPE"),
@@ -355,6 +360,29 @@ def insert_unobtainable_forms(cursor, poke_num, form_id, game_id):
     """, (poke_num, form_id, game_id))
 
 
+SPRITE_TYPES = ["-Shiny", "-Back", "-Animated", "-Shiny-Back", "-Shiny-Animated", "-Shiny-Back-Animated", "-Back-Animated"]
+def populate_sprite_types(cursor):
+    print("Populating sprite types into database...")
+    for type in SPRITE_TYPES:
+        cursor.execute("INSERT OR IGNORE INTO sprite_types (name) VALUES (?)", (type,))
+    generate_filename(cursor)
+
+def get_sprite_types(cursor):
+    cursor.execute("SELECT * FROM sprite_types")
+    sprite_types = {}
+    for row in cursor.fetchall():
+        sprite_types[row[0]] = row[1]
+    return sprite_types
+
+def generate_filename(cursor):
+    # TODO: This should actually just run through form gave availability... Already has only accessible poke_forms and for what games
+    poke_forms = get_poke_form_records(cursor)
+    games = get_game_records(cursor)
+    sprite_types = get_sprite_types(cursor)
+    print(sprite_types)
+
+
+
 # TODO: Will need to add filename spreadsheet per forms and games
     # TODO: Should loop through shiny, back, animated, etc. those will need their own obtainability checks & added to the unobtainability table
 # TODO:
@@ -365,6 +393,7 @@ def insert_unobtainable_forms(cursor, poke_num, form_id, game_id):
 #   - No shiny cosplay pikachu
 #   - No shiny cap pikachu
 #   - Reshiram, Zekrom overdrive only in B2W2 ANIMATED (static is normal) & always, there is no non-overdrive animated form 
+# TODO: Determine Alts elsewhere, perhaps in filename table having a boolean field for Alt
 
 def populate_db():
     if not db_exists():
@@ -378,6 +407,7 @@ def populate_db():
         populate_forms(cursor)
         populate_games(cursor)
         populate_form_game_availability(cursor)
+        populate_sprite_types(cursor)
 
         connection.commit()
     except Exception as e:
