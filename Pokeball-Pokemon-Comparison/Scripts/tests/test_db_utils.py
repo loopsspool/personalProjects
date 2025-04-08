@@ -10,13 +10,8 @@ sys.path.append(parent_dir)
 from db_utils import DB_PATH, FORM_EXCLUSIONS, is_form_obtainable, get_poke_form_records, get_game_records, get_form_id, get_game_id
 
 # Setting up connection to db
-@pytest.fixture
-def cursor():
-    connection = sqlite3.connect(DB_PATH)
-    cur = connection.cursor()
-    yield cur
-    connection.close()
-
+connection = sqlite3.connect(DB_PATH)
+cursor = connection.cursor()
 # Getting necessary info for testing
 default_form_id = get_form_id(cursor, "Default")
 poke_forms = get_poke_form_records(cursor)
@@ -130,3 +125,5 @@ games = get_game_records(cursor)
 def test_is_form_obtainable(poke_form_id, game_id, expected):
     # Getting the dict values that holds poke_form_info and game_info, respectively, to check obtainability
     assert is_form_obtainable(poke_forms[poke_form_id], games[game_id]) == expected
+
+connection.close()
