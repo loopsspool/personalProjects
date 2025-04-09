@@ -52,22 +52,12 @@ def create_db():
     """)
 
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS obtainable_forms_game_availability (
+    CREATE TABLE IF NOT EXISTS form_game_obtainability (
         poke_num INTEGER NOT NULL,
         form_id INTEGER NOT NULL,
         game_id INTEGER NOT NULL,
+        obtainable BOOLEAN NOT NULL,
         PRIMARY KEY (poke_num, form_id, game_id),
-        FOREIGN KEY (poke_num, form_id) REFERENCES poke_forms (poke_num, form_id),
-        FOREIGN KEY (game_id) REFERENCES games(id)
-    );
-    """)
-
-    cursor.execute("""
-    CREATE TABLE IF NOT EXISTS unobtainable_forms (
-        poke_num INTEGER NOT NULL,
-        form_id INTEGER NOT NULL,
-        game_id INTEGER NOT NULL,
-        PRIMARY KEY (poke_num, game_id, form_id),
         FOREIGN KEY (poke_num, form_id) REFERENCES poke_forms (poke_num, form_id),
         FOREIGN KEY (game_id) REFERENCES games(id)
     );
@@ -77,6 +67,19 @@ def create_db():
     CREATE TABLE IF NOT EXISTS sprite_types (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL UNIQUE
+    );
+    """)
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS sprite_obtainability (
+        poke_num INTEGER NOT NULL,
+        form_id INTEGER NOT NULL,
+        game_id INTEGER NOT NULL,
+        sprite_id INTEGER NOT NULL,
+        obtainable BOOLEAN NOT NULL,
+        PRIMARY KEY (poke_num, form_id, game_id, sprite_id),
+        FOREIGN KEY (poke_num, form_id, game_id) REFERENCES obtainable_forms,
+        FOREIGN KEY (sprite_id) REFERENCES sprite_types(id)      
     );
     """)
 
@@ -214,13 +217,16 @@ def get_poke_form_records(cursor):
 
 
 def has_default_form(poke_num):
-    # TODO: 854, 855, 1012, 1013 might be a bit odd since their default forms may be their front, and their other forms the back...
     # TODO: Wishiwashi had some default forms slip through in my saved files... Are they actually alts? Same thing with 849.
         # TODO: Write script to find files that have a default sprite saved that shouldnt, like the above
-    # TODO: Minior 774 Form Core is for shiny... no matter core color all shinies are the same
     # TODO: No 854, 855 form sprites saved prolly bc improper scrape script
     # TODO: Radiant Sun Solgaleo and Full Moon Lunala sprites are wrong too
-    no_default_form_poke_nums = {201, 412, 413, 421, 422, 423, 487, 492, 493, 550, 555, 585, 586, 641, 642, 645, 647, 648, 666, 669, 670, 671, 681, 710, 711, 716, 718, 720, 741, 745, 746, 773, 774, 778, 849, 869, 875, 877, 888, 889, 892, 905, 925, 931, 964, 978, 982, 999, 1017, 1024}
+    no_default_form_poke_nums = {201, 412, 413, 421, 422, 423, 487, 492, 493, 
+                                 550, 555, 585, 586, 641, 642, 645, 647, 648, 
+                                 666, 669, 670, 671, 681, 710, 711, 716, 718, 
+                                 720, 741, 745, 746, 773, 774, 778, 849, 869, 
+                                 875, 877, 888, 889, 892, 905, 925, 931, 964, 
+                                 978, 982, 999, 1017, 1024}
 
     if poke_num not in no_default_form_poke_nums: return True
 
@@ -241,7 +247,7 @@ def insert_game(cursor, game, gen):
         VALUES (?, ?);
     """, (game, gen))
 
-# TODO: Should I follow my file naming convention or list out each game?
+
 GAMES = (
     ("Red-Green", 1),
     ("Red-Blue", 1),
@@ -271,11 +277,11 @@ def populate_games(cursor):
         insert_game(cursor, game[0], game[1])
 
 
-def insert_obtainable_forms(cursor, poke_num, form_id, game_id):
+def insert_form_game_obtainability(cursor, poke_num, form_id, game_id, obtainability):
     cursor.execute("""
-        INSERT OR IGNORE INTO obtainable_forms_game_availability (poke_num, form_id, game_id)
-        VALUES (?, ?, ?);
-    """, (poke_num, form_id, game_id))
+        INSERT OR IGNORE INTO form_game_obtainability (poke_num, form_id, game_id, obtainable)
+        VALUES (?, ?, ?, ?);
+    """, (poke_num, form_id, game_id, obtainability))
 
 
 FORM_EXCLUSIONS = {
@@ -329,55 +335,62 @@ def is_form_obtainable(form, game):
 
 
 # TODO: Add ON CONFLICT to INSERT OR IGNORE statements to update values? See where relevant
-def populate_form_game_availability(cursor):
+def populate_form_game_obtainability(cursor):
     print("Populating game availability for forms into database...")
 
     poke_forms = get_poke_form_records(cursor)
     games = get_game_records(cursor)
 
-    unobtainable_forms = []
-    obtainable_forms = []
+    form_game_obtainability = {}
 
     # Running all pokemon forms through all games to check if its obtainable
     for poke_form_id, poke_form_info in poke_forms.items():
         for game_id, game_info in games.items():
             obtainable = is_form_obtainable(poke_form_info, game_info)
+            form_game_obtainability[(poke_form_id, game_id)] = {"poke_num": poke_form_id[0], 
+                                                                    "form_id": poke_form_id[1],
+                                                                    "game_id": game_id,
+                                                                    "obtainable": obtainable}
 
-            if not obtainable:
-                unobtainable_forms.append((poke_form_id, game_id))               
-            else:
-                obtainable_forms.append((poke_form_id, game_id))
-
-    for form_info in unobtainable_forms: insert_unobtainable_forms(cursor, form_info[0][0], form_info[0][1], form_info[1])
-    for form_info in obtainable_forms: insert_obtainable_forms(cursor, form_info[0][0], form_info[0][1], form_info[1])
-    
-   
-
-def insert_unobtainable_forms(cursor, poke_num, form_id, game_id):
-    cursor.execute("""
-        INSERT OR IGNORE INTO unobtainable_forms (poke_num, form_id, game_id)
-        VALUES (?, ?, ?);
-    """, (poke_num, form_id, game_id))
+    for form_info in form_game_obtainability.values(): insert_form_game_obtainability(cursor, form_info["poke_num"], form_info["form_id"], form_info["game_id"], form_info["obtainable"])
 
 
+# TODO: Add "" for front, normal color, static
 SPRITE_TYPES = ["-Shiny", "-Back", "-Animated", "-Shiny-Back", "-Shiny-Animated", "-Shiny-Back-Animated", "-Back-Animated"]
 def populate_sprite_types(cursor):
     print("Populating sprite types into database...")
     for type in SPRITE_TYPES:
         cursor.execute("INSERT OR IGNORE INTO sprite_types (name) VALUES (?)", (type,))
-    generate_filename(cursor)
+
 
 def get_sprite_types(cursor):
     cursor.execute("SELECT * FROM sprite_types")
-    sprite_types = {}
+    sprite_types = []
     for row in cursor.fetchall():
-        sprite_types[row[0]] = row[1]
+        sprite_types.append((row[0], row[1]))
     return sprite_types
 
-def generate_filename(cursor):
+
+def get_poke_form_records(cursor):
+    cursor.execute("""
+        SELECT p.num, f.id, f.form_name, pf.poke_num, p.name, p.gen
+        FROM poke_forms pf
+        JOIN forms f ON pf.form_id = f.id
+        JOIN pokemon p ON pf.poke_num = p.num
+    """)
+    forms = {}
+    for row in cursor.fetchall():
+        # (poke num, form id) maps to form/poke info
+        forms[(row[0], row[1])] = { "form name" : row[2],
+                                    "poke num" : row[3],
+                                    "poke name" : row[4],
+                                    "poke gen" : row[5]
+                        }
+    return forms
+
+
+def populate_sprite_availability(cursor):
     # TODO: This should actually just run through form gave availability... Already has only accessible poke_forms and for what games
-    poke_forms = get_poke_form_records(cursor)
-    games = get_game_records(cursor)
     sprite_types = get_sprite_types(cursor)
     print(sprite_types)
 
@@ -393,6 +406,8 @@ def generate_filename(cursor):
 #   - No shiny cosplay pikachu
 #   - No shiny cap pikachu
 #   - Reshiram, Zekrom overdrive only in B2W2 ANIMATED (static is normal) & always, there is no non-overdrive animated form 
+# TODO: 854, 855, 1012, 1013 might be a bit odd since their default forms may be their front, and their other forms the back...
+# TODO: Minior 774 Form Core is for shiny... no matter core color all shinies are the same
 # TODO: Determine Alts elsewhere, perhaps in filename table having a boolean field for Alt
 
 def populate_db():
@@ -406,8 +421,9 @@ def populate_db():
         populate_pokes(cursor)
         populate_forms(cursor)
         populate_games(cursor)
-        populate_form_game_availability(cursor)
+        populate_form_game_obtainability(cursor)
         populate_sprite_types(cursor)
+        populate_sprite_availability(cursor)
 
         connection.commit()
     except Exception as e:
