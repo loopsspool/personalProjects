@@ -8,8 +8,8 @@ DB_NAME = "pokedex.db"
 DB_PATH = os.path.join(PARENT_DIR, DB_NAME)
 
 # TODO: For React Native, if certain forms are available outside of the game/gen selected, still display them and go to the first sprite instance, for example see below
-# Deoxys forms technically are one for each game in gen3, but just make all forms show
-# TODO: Also in RN will have to visually change 710 & 711 forms so gets rid of sorting number
+# Deoxys forms technically are one for each game in gen3, but just make all forms show, maybe in parenthesis put game it pulled from
+# TODO: Also in RN will have to visually change 710 & 711 forms so gets rid of sorting number, and replace Qmark with ??? (Arceus) or ? (Unown)
 
 def create_db():
     print("Creating pokedex database...")
@@ -340,7 +340,6 @@ def populate_form_game_obtainability(cursor):
 
     poke_forms = get_poke_form_records(cursor)
     games = get_game_records(cursor)
-
     form_game_obtainability = {}
 
     # Running all pokemon forms through all games to check if its obtainable
@@ -355,8 +354,8 @@ def populate_form_game_obtainability(cursor):
     for form_info in form_game_obtainability.values(): insert_form_game_obtainability(cursor, form_info["poke_num"], form_info["form_id"], form_info["game_id"], form_info["obtainable"])
 
 
-# TODO: Add "" for front, normal color, static
-SPRITE_TYPES = ["-Shiny", "-Back", "-Animated", "-Shiny-Back", "-Shiny-Animated", "-Shiny-Back-Animated", "-Back-Animated"]
+# Default meaning front, normal color, static sprite
+SPRITE_TYPES = ["Default", "-Shiny", "-Back", "-Animated", "-Shiny-Back", "-Shiny-Animated", "-Shiny-Back-Animated", "-Back-Animated"]
 def populate_sprite_types(cursor):
     print("Populating sprite types into database...")
     for type in SPRITE_TYPES:
@@ -371,6 +370,7 @@ def get_sprite_types(cursor):
     return sprite_types
 
 
+# TODO: Modify this to pull from form game obtainability for sprite obtainability
 def get_poke_form_records(cursor):
     cursor.execute("""
         SELECT p.num, f.id, f.form_name, pf.poke_num, p.name, p.gen
@@ -389,7 +389,7 @@ def get_poke_form_records(cursor):
     return forms
 
 
-def populate_sprite_availability(cursor):
+def populate_sprite_obtainability(cursor):
     # TODO: This should actually just run through form gave availability... Already has only accessible poke_forms and for what games
     sprite_types = get_sprite_types(cursor)
     print(sprite_types)
@@ -423,7 +423,7 @@ def populate_db():
         populate_games(cursor)
         populate_form_game_obtainability(cursor)
         populate_sprite_types(cursor)
-        populate_sprite_availability(cursor)
+        populate_sprite_obtainability(cursor)
 
         connection.commit()
     except Exception as e:
