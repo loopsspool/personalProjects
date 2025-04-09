@@ -345,11 +345,9 @@ def populate_form_game_obtainability(cursor):
     # Running all pokemon forms through all games to check if its obtainable
     for poke_form_id, poke_form_info in poke_forms.items():
         for game_id, game_info in games.items():
+            # NOTE: Getting dict values in tuples is where things are being slowed down... namedtuples can speed that up with some effort
             obtainable = is_form_obtainable(poke_form_info, game_info)
-            form_game_obtainability[(poke_form_id, game_id)] = {"poke_num": poke_form_id[0], 
-                                                                    "form_id": poke_form_id[1],
-                                                                    "game_id": game_id,
-                                                                    "obtainable": obtainable}
+            form_game_obtainability[(poke_form_id, game_id)] = {"poke_num": poke_form_id[0], "form_id": poke_form_id[1], "game_id": game_id, "obtainable": obtainable}
 
     for form_info in form_game_obtainability.values(): insert_form_game_obtainability(cursor, form_info["poke_num"], form_info["form_id"], form_info["game_id"], form_info["obtainable"])
 
@@ -364,50 +362,81 @@ def populate_sprite_types(cursor):
 
 def get_sprite_types(cursor):
     cursor.execute("SELECT * FROM sprite_types")
-    sprite_types = []
+    sprite_types = {}
     for row in cursor.fetchall():
-        sprite_types.append((row[0], row[1]))
+        sprite_types[row[0]] = row[1]
     return sprite_types
 
 
 # TODO: Modify this to pull from form game obtainability for sprite obtainability
-def get_poke_form_records(cursor):
+def get_poke_form_obtainability_records(cursor):
     cursor.execute("""
-        SELECT p.num, f.id, f.form_name, pf.poke_num, p.name, p.gen
-        FROM poke_forms pf
-        JOIN forms f ON pf.form_id = f.id
-        JOIN pokemon p ON pf.poke_num = p.num
+        SELECT p.num, f.id, g.id, f.form_name, fgo.poke_num, p.name, g.name, g.gen, fgo.obtainable
+        FROM form_game_obtainability fgo
+        JOIN forms f ON fgo.form_id = f.id
+        JOIN pokemon p ON fgo.poke_num = p.num
+        JOIN games g ON fgo.game_id = g.id
     """)
     forms = {}
     for row in cursor.fetchall():
-        # (poke num, form id) maps to form/poke info
-        forms[(row[0], row[1])] = { "form name" : row[2],
-                                    "poke num" : row[3],
-                                    "poke name" : row[4],
-                                    "poke gen" : row[5]
-                        }
+        # (poke num, form id, game id) maps to form/poke/game info
+        forms[(row[0], row[1], row[2])] = { "form name" : row[3],
+                                            "poke num" : row[4],
+                                            "poke name" : row[5],
+                                            "game name" : row[6],
+                                            "game gen" : row[7],
+                                            "obtainable" : row[8]
+        }
     return forms
 
+
+SPRITE_EXCLUSIONS = {
+    # UNIVERSAL EXCLUSIONS
+    "no_sprites_if_form_is_unavailable": lambda pfgo_info, sprite_type: pfgo_info["obtainable"] == 0,
+    "no_shiny_sprites_in_gen_1": lambda pfgo_info, sprite_type: pfgo_info["game gen"] == 1 and "Shiny" in sprite_type,
+    "no_animated_sprites_in_gen_1": lambda pfgo_info, sprite_type: pfgo_info["game gen"] == 1 and "Animated" in sprite_type,
+    "no_animated_back_sprites_below_gen_5": lambda pfgo_info, sprite_type: pfgo_info["game gen"] < 5 and "-Back-Animated" in sprite_type,
+    "no_animated_sprites_in_these_games": lambda pfgo_info, sprite_type: pfgo_info["game name"] in ("Gold", "Silver", "FRLG", "Ruby-Sapphire") and "Animated" in sprite_type,
+
+    # INDIVIDUAL POKES
+    "no_shiny_cosplay_pikachu": lambda pfgo_info, sprite_type: pfgo_info["poke num"] == 25 and "-Form-Cosplay" in pfgo_info["form name"] and "Shiny" in sprite_type,
+    "no_shiny_cap_pikachu": lambda pfgo_info, sprite_type: pfgo_info["poke num"] == 25 and "-Form-Cap" in pfgo_info["form name"] and "Shiny" in sprite_type,
+    "no_animated_default_reshiram_or_zekrom_in_gen_5": lambda pfgo_info, sprite_type: pfgo_info["poke num"] in (643, 644) and pfgo_info["game gen"] == 5 and pfgo_info["form name"] == "Default" and "Animated" in sprite_type,
+
+}
+def is_sprite_possible(pfgo_info, sprite_type):
+    for exclusion in SPRITE_EXCLUSIONS.values():
+        if exclusion(pfgo_info, sprite_type):
+            return False
+    return True
 
 def populate_sprite_obtainability(cursor):
     # TODO: This should actually just run through form gave availability... Already has only accessible poke_forms and for what games
     sprite_types = get_sprite_types(cursor)
-    print(sprite_types)
+    poke_form_game_obtainability = get_poke_form_obtainability_records(cursor)
+    sprite_obtainability = {}
 
+    for pfgo_id, pfgo_info in poke_form_game_obtainability.items():
+        for sprite_id, sprite_type in sprite_types.items():
+            sprite_possible = is_sprite_possible(pfgo_info, sprite_type)
+            sprite_obtainability[(pfgo_id, sprite_id)] = {"poke num": pfgo_id[0], "form id": pfgo_id[1], "game id": pfgo_id[2], "sprite id": sprite_id, "obtainable": sprite_possible}
+
+    # for k,v in sprite_obtainability.items(): 
+    #     if v["poke num"] == 3: print(k, ":", v)
+
+
+def insert_sprite_obtainability(cursor, poke_num, form_id, game_id, sprite_id, obtainability):
+    cursor.execute("""
+        INSERT OR IGNORE INTO sprite_obtainability (poke_num, form_id, game_id, sprite_id, obtainable)
+        VALUES (?, ?, ?, ?, ?);
+    """, (poke_num, form_id, game_id, sprite_id, obtainability))
 
 
 # TODO: Will need to add filename spreadsheet per forms and games
-    # TODO: Should loop through shiny, back, animated, etc. those will need their own obtainability checks & added to the unobtainability table
-# TODO:
-#   - No shinies in gen 1
-#   - No animated in gen 1
-#   - No animated back sprites below gen 5
-#   - No animated sprites in "Gold", "Silver", "FireRed-LeafGreen", "Ruby-Sapphire"?
-#   - No shiny cosplay pikachu
-#   - No shiny cap pikachu
-#   - Reshiram, Zekrom overdrive only in B2W2 ANIMATED (static is normal) & always, there is no non-overdrive animated form 
+
 # TODO: 854, 855, 1012, 1013 might be a bit odd since their default forms may be their front, and their other forms the back...
 # TODO: Minior 774 Form Core is for shiny... no matter core color all shinies are the same
+# TODO: Check just one alcremie gigantamax
 # TODO: Determine Alts elsewhere, perhaps in filename table having a boolean field for Alt
 
 def populate_db():
