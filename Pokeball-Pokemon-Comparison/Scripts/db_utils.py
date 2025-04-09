@@ -389,7 +389,7 @@ def get_poke_form_obtainability_records(cursor):
         }
     return forms
 
-
+# TODO: Make adjustments like how you did for forms for: Minior shiny form (all same regardless of core color) and alcremie shiny form (does not factor in creams, only sweets)
 SPRITE_EXCLUSIONS = {
     # UNIVERSAL EXCLUSIONS
     "no_sprites_if_form_is_unavailable": lambda pfgo_info, sprite_type: pfgo_info["obtainable"] == 0,
@@ -401,7 +401,7 @@ SPRITE_EXCLUSIONS = {
     # INDIVIDUAL POKES
     "no_shiny_cosplay_pikachu": lambda pfgo_info, sprite_type: pfgo_info["poke num"] == 25 and "-Form-Cosplay" in pfgo_info["form name"] and "Shiny" in sprite_type,
     "no_shiny_cap_pikachu": lambda pfgo_info, sprite_type: pfgo_info["poke num"] == 25 and "-Form-Cap" in pfgo_info["form name"] and "Shiny" in sprite_type,
-    "no_animated_default_reshiram_or_zekrom_in_gen_5": lambda pfgo_info, sprite_type: pfgo_info["poke num"] in (643, 644) and pfgo_info["game gen"] == 5 and pfgo_info["form name"] == "Default" and "Animated" in sprite_type,
+    "all_shiny_minior_cores_the_same": lambda pfgo_info, sprite_type: pfgo_info["poke num"] == 774 and "Shiny" in sprite_type and pfgo_info["form name"] not in ("-Form-Meteor", "-Form-Core")
 
 }
 def is_sprite_possible(pfgo_info, sprite_type):
@@ -411,7 +411,6 @@ def is_sprite_possible(pfgo_info, sprite_type):
     return True
 
 def populate_sprite_obtainability(cursor):
-    # TODO: This should actually just run through form gave availability... Already has only accessible poke_forms and for what games
     sprite_types = get_sprite_types(cursor)
     poke_form_game_obtainability = get_poke_form_obtainability_records(cursor)
     sprite_obtainability = {}
@@ -432,11 +431,8 @@ def insert_sprite_obtainability(cursor, poke_num, form_id, game_id, sprite_id, o
     """, (poke_num, form_id, game_id, sprite_id, obtainability))
 
 
-# TODO: Will need to add filename spreadsheet per forms and games
-
 # TODO: 854, 855, 1012, 1013 might be a bit odd since their default forms may be their front, and their other forms the back...
-# TODO: Minior 774 Form Core is for shiny... no matter core color all shinies are the same
-# TODO: Check just one alcremie gigantamax
+
 # TODO: Determine Alts elsewhere, perhaps in filename table having a boolean field for Alt
 
 def populate_db():
