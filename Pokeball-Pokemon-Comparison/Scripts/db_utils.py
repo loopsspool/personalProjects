@@ -409,12 +409,7 @@ SPRITE_EXCLUSIONS = {
     "no_shiny_sprites_in_gen_1": lambda pfgo_info, sprite_type: pfgo_info["game gen"] == 1 and "Shiny" in sprite_type,
     "no_animated_sprites_in_gen_1": lambda pfgo_info, sprite_type: pfgo_info["game gen"] == 1 and "Animated" in sprite_type,
     "no_animated_back_sprites_below_gen_5": lambda pfgo_info, sprite_type: pfgo_info["game gen"] < 5 and "-Back-Animated" in sprite_type,
-    "no_animated_sprites_in_these_games": lambda pfgo_info, sprite_type: pfgo_info["game name"] in ("Gold", "Silver", "FRLG", "Ruby-Sapphire") and "Animated" in sprite_type,
-
-    # INDIVIDUAL POKES
-    "no_shiny_cosplay_pikachu": lambda pfgo_info, sprite_type: pfgo_info["poke num"] == 25 and "-Form-Cosplay" in pfgo_info["form name"] and "Shiny" in sprite_type,
-    "no_shiny_cap_pikachu": lambda pfgo_info, sprite_type: pfgo_info["poke num"] == 25 and "-Form-Cap" in pfgo_info["form name"] and "Shiny" in sprite_type,
-    "all_shiny_minior_cores_the_same": lambda pfgo_info, sprite_type: pfgo_info["poke num"] == 774 and "Shiny" in sprite_type and pfgo_info["form name"] not in ("-Form-Meteor", "-Form-Core")
+    "no_animated_sprites_in_these_games": lambda pfgo_info, sprite_type: pfgo_info["game name"] in ("Gold", "Silver", "FRLG", "Ruby-Sapphire") and "Animated" in sprite_type
 }
 def is_sprite_possible(pfgo_info, sprite_type):
     for exclusion in SPRITE_EXCLUSIONS.values():
@@ -425,6 +420,8 @@ def is_sprite_possible(pfgo_info, sprite_type):
 
 # Sprites that don't exist. Shouldn't even be marked unobtainable, which is why theyre here not SPRITE_EXCLUSIONS
 NONEXISTANT_SPRITES={
+    "no_shiny_cosplay_pikachu": lambda poke_num, form_name, sprite_type: poke_num == 25 and "-Form-Cosplay" in form_name and "Shiny" in sprite_type,
+    "no_shiny_cap_pikachu": lambda poke_num, form_name, sprite_type: poke_num == 25 and "-Form-Cap" in form_name and "Shiny" in sprite_type,
     "skip_all_shared_shiny_forms_that_arent_adjusted_appropriately": lambda poke_num, form_name, sprite_type: poke_num in SHARED_SHINY_FORMS and "Shiny" in sprite_type and form_name not in SHARED_SHINY_FORMS[poke_num],
     "skip_all_non_shiny_sprites_for_shared_shinies_that_are_adjusted": lambda poke_num, form_name, sprite_type: poke_num in SHARED_SHINY_FORMS and "Shiny" not in sprite_type and form_name in SHARED_SHINY_FORMS[poke_num],
     "skip_show_stamp_sprite_if_not_applicable": lambda poke_num, form_name, sprite_type: poke_num not in (854, 855, 1012, 1013) and sprite_type == "-Show_Stamp"
@@ -462,7 +459,8 @@ def insert_sprite_obtainability(cursor, poke_num, form_id, game_id, sprite_id, o
 
 
 # TODO: Determine Alts elsewhere, perhaps in filename table having a boolean field for Alt
-
+# TODO: Change Cosplay Pikachu to Gen6 XY-ORAS, in fact write function to find any pokes ONLY available in XY-ORAS
+# TODO: Filenames have SwSh-BDSP in them.... sigh
 def populate_db():
     if not db_exists():
         create_db()
