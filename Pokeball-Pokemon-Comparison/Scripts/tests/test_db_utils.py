@@ -3,11 +3,13 @@ import os
 import sqlite3
 import pytest
 
+# TODO: To replace cursor arguments, in db_utils could pull game/form ids into a dict or something, then search that instead of the db
+
 # To go into parent directory to import db_utils
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 sys.path.append(parent_dir)
 
-from db_utils import DB_PATH, FORM_EXCLUSIONS, is_form_obtainable, get_poke_form_records, get_game_records, get_form_id, get_game_id
+from db_utils import DB_PATH, FORM_EXCLUSIONS, SHARED_SHINY_FORMS, is_form_obtainable, is_sprite_possible, should_skip_nonexistant_sprite, get_poke_form_records, get_poke_form_obtainability_records, get_game_records, get_form_id, get_game_id, get_sprite_types
 
 # Setting up connection to db
 connection = sqlite3.connect(DB_PATH)
@@ -16,6 +18,8 @@ cursor = connection.cursor()
 default_form_id = get_form_id(cursor, "Default")
 poke_forms = get_poke_form_records(cursor)
 games = get_game_records(cursor)
+pfgo = get_poke_form_obtainability_records(cursor)
+sprite_types = get_sprite_types(cursor)
 
 @pytest.mark.parametrize("poke_form_id, game_id, expected", [
     # Species game availability
@@ -121,9 +125,70 @@ games = get_game_records(cursor)
     ((809, default_form_id), get_game_id(cursor, "LGPE"), True),
     ((808, default_form_id), get_game_id(cursor, "SwSh"), True)
 ])
-
 def test_is_form_obtainable(poke_form_id, game_id, expected):
     # Getting the dict values that holds poke_form_info and game_info, respectively, to check obtainability
     assert is_form_obtainable(poke_forms[poke_form_id], games[game_id]) == expected
+
+
+@pytest.mark.parametrize("pfgo_id, sprite_type, expected", [
+    # Univeresal exclusions
+    ((1, default_form_id, get_game_id(cursor, "LA")), "-Shiny", False),
+    ((494, default_form_id, get_game_id(cursor, "Platinum")), "Default", False),
+    ((494, default_form_id, get_game_id(cursor, "BW-B2W2")), "Default", True),
+    ((1, default_form_id, get_game_id(cursor, "Yellow")), "-Shiny", False),
+    ((6, default_form_id, get_game_id(cursor, "Red-Blue")), "-Shiny-Back", False),
+    ((6, default_form_id, get_game_id(cursor, "Gold")), "-Shiny", True),
+    ((150, default_form_id, get_game_id(cursor, "Red-Green")), "-Animated", False),
+    ((150, default_form_id, get_game_id(cursor, "Crystal")), "-Animated", True),
+    ((151, default_form_id, get_game_id(cursor, "Emerald")), "-Shiny-Back-Animated", False),
+    ((493, get_form_id(cursor, "-Form-Steel"), get_game_id(cursor, "Diamond-Pearl")), "-Back-Animated", False),
+    ((493, get_form_id(cursor, "-Form-Steel"), get_game_id(cursor, "BW-B2W2")), "-Back-Animated", True),
+    ((152, default_form_id, get_game_id(cursor, "Gold")), "-Animated", False),
+    ((152, default_form_id, get_game_id(cursor, "Silver")), "-Animated", False),
+    ((152, default_form_id, get_game_id(cursor, "FRLG")), "-Animated", False),
+    ((152, default_form_id, get_game_id(cursor, "Ruby-Sapphire")), "-Animated", False)
+])
+def test_is_sprite_possible(pfgo_id, sprite_type, expected):
+    assert is_sprite_possible(pfgo[pfgo_id], sprite_type) == expected
+
+@pytest.mark.parametrize("poke_num, form_name, sprite_type, expected", [
+    (25, "-Form-Cosplay-PhD", "-Shiny", True),
+    (25, "-Form-Cosplay-Belle", "-Shiny-Back-Animated", True),
+    (25, "-Form-Cosplay-Libre", "-Back-Animated", False),
+    (25, "-Form-Cap-World", "-Shiny", True),
+    (25, "-Form-Cap-Hoenn", "-Shiny-Back", True),
+    (25, "-Form-Cap-Unova", "-Back", False),
+    (774, "-Form-Orange_Core", "-Shiny", True),
+    (774, "-Form-Red_Core", "-Shiny-Back", True),
+    (774, "-Form-Blue_Core", "-Shiny-Back-Animated", True),
+    (774, "-Form-Yellow_Core", "-Shiny-Animated", True),
+    (774, "-Form-Core", "-Shiny", False),
+    (774, "-Form-Core", "-Shiny-Back", False),
+    (774, "-Form-Core", "-Shiny-Back-Animated", False),
+    (774, "-Form-Core", "-Shiny-Animated", False),
+    (774, "-Form-Core", "Default", True),
+    (774, "-Form-Core", "-Back", True),
+    (774, "-Form-Core", "-Back-Animated", True),
+    (774, "-Form-Core", "-Animated", True),
+    (774, "-Form-Orange_Core", "Default", False),
+    (774, "-Form-Red_Core", "-Back", False),
+    (774, "-Form-Blue_Core", "-Back-Animated", False),
+    (774, "-Form-Yellow_Core", "-Animated", False),
+    (869, "-Form-Mint_Cream-Berry_Sweet", "-Shiny-Back", True),
+    (869, "-Form-Star_Sweet", "-Shiny-Back", False),
+    (869, "-Form-Ribbon_Sweet", "-Animated", True),
+    (869, "-Form-Matcha_Cream-Strawberry_Sweet", "-Back-Animated", False),
+    (1, "Default", "-Show_Stamp", True),
+    (151, "-Form-Mega_X", "-Show_Stamp", True),
+    (555, "-Form-Zen", "-Show_Stamp", True),
+    (854, "-Form-Antique", "-Show_Stamp", False),
+    (855, "-Form-Phony", "-Show_Stamp", False),
+    (1012, "-Form-Artisan", "-Show_Stamp", False),
+    (1013, "-Form-Masterpiece", "-Show_Stamp", False)
+])
+def test_should_skip_nonexistant_sprite(poke_num, form_name, sprite_type, expected):
+    assert should_skip_nonexistant_sprite(poke_num, form_name, sprite_type) == expected
+
+
 
 connection.close()
