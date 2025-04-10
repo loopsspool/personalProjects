@@ -71,7 +71,7 @@ def create_db():
     """)
 
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS sprite_obtainability (
+    CREATE TABLE IF NOT EXISTS sprite_obtainability ( 
         poke_num INTEGER NOT NULL,
         form_id INTEGER NOT NULL,
         game_id INTEGER NOT NULL,
@@ -181,6 +181,10 @@ def adjust_forms_for_exceptions(poke_num, forms):
     return filtered_forms
 
 
+# Minior and Alcremie have special "shared" forms for their shinies
+SHARED_SHINY_FORMS = {  774: ["-Form-Core"], 
+                        869: ["-Form-Berry_Sweet", "-Form-Clover_Sweet", "-Form-Flower_Sweet", "-Form-Love_Sweet", "-Form-Ribbon_Sweet", "-Form-Star_Sweet", "-Form-Strawberry_Sweet"]
+}
 def populate_forms(cursor):
     print("Populating forms into database...")
 
@@ -197,6 +201,14 @@ def populate_forms(cursor):
             insert_form(cursor, form)
             form_id = get_form_id(cursor, form)
             insert_poke_form(cursor, poke_num, form_id)
+
+        # Putting here so poke/forms stay in numerical order for speedy lookups
+        if poke_num in SHARED_SHINY_FORMS:
+            for form in SHARED_SHINY_FORMS[poke_num]:
+                insert_form(cursor, form)
+                form_id = get_form_id(cursor, form)
+                insert_poke_form(cursor, poke_num, form_id)
+    
 
 def get_poke_form_records(cursor):
     cursor.execute("""
@@ -336,7 +348,7 @@ def is_form_obtainable(form, game):
 
 # TODO: Add ON CONFLICT to INSERT OR IGNORE statements to update values? See where relevant
 def populate_form_game_obtainability(cursor):
-    print("Populating game availability for forms into database...")
+    print("Populating game obtainability for forms into database...")
 
     poke_forms = get_poke_form_records(cursor)
     games = get_game_records(cursor)
@@ -353,7 +365,8 @@ def populate_form_game_obtainability(cursor):
 
 
 # Default meaning front, normal color, static sprite
-SPRITE_TYPES = ["Default", "-Shiny", "-Back", "-Animated", "-Shiny-Back", "-Shiny-Animated", "-Shiny-Back-Animated", "-Back-Animated"]
+# Show stamp for the tea/matcha pokemon (854, 855, 1012, 1013)
+SPRITE_TYPES = ["Default", "-Shiny", "-Back", "-Animated", "-Shiny-Back", "-Shiny-Animated", "-Shiny-Back-Animated", "-Back-Animated", "-Show_Stamp"]
 def populate_sprite_types(cursor):
     print("Populating sprite types into database...")
     for type in SPRITE_TYPES:
@@ -368,7 +381,6 @@ def get_sprite_types(cursor):
     return sprite_types
 
 
-# TODO: Modify this to pull from form game obtainability for sprite obtainability
 def get_poke_form_obtainability_records(cursor):
     cursor.execute("""
         SELECT p.num, f.id, g.id, f.form_name, fgo.poke_num, p.name, g.name, g.gen, fgo.obtainable
@@ -389,7 +401,8 @@ def get_poke_form_obtainability_records(cursor):
         }
     return forms
 
-# TODO: Make adjustments like how you did for forms for: Minior shiny form (all same regardless of core color) and alcremie shiny form (does not factor in creams, only sweets)
+
+# Certain rules to be excluded but exist elsewhere, for nonexistant sprites, see NONEXISTANT_SPRITES
 SPRITE_EXCLUSIONS = {
     # UNIVERSAL EXCLUSIONS
     "no_sprites_if_form_is_unavailable": lambda pfgo_info, sprite_type: pfgo_info["obtainable"] == 0,
@@ -402,7 +415,6 @@ SPRITE_EXCLUSIONS = {
     "no_shiny_cosplay_pikachu": lambda pfgo_info, sprite_type: pfgo_info["poke num"] == 25 and "-Form-Cosplay" in pfgo_info["form name"] and "Shiny" in sprite_type,
     "no_shiny_cap_pikachu": lambda pfgo_info, sprite_type: pfgo_info["poke num"] == 25 and "-Form-Cap" in pfgo_info["form name"] and "Shiny" in sprite_type,
     "all_shiny_minior_cores_the_same": lambda pfgo_info, sprite_type: pfgo_info["poke num"] == 774 and "Shiny" in sprite_type and pfgo_info["form name"] not in ("-Form-Meteor", "-Form-Core")
-
 }
 def is_sprite_possible(pfgo_info, sprite_type):
     for exclusion in SPRITE_EXCLUSIONS.values():
@@ -410,18 +422,36 @@ def is_sprite_possible(pfgo_info, sprite_type):
             return False
     return True
 
+
+# Sprites that don't exist. Shouldn't even be marked unobtainable, which is why theyre here not SPRITE_EXCLUSIONS
+NONEXISTANT_SPRITES={
+    "skip_all_shared_shiny_forms_that_arent_adjusted_appropriately": lambda poke_num, form_name, sprite_type: poke_num in SHARED_SHINY_FORMS and "Shiny" in sprite_type and form_name not in SHARED_SHINY_FORMS[poke_num],
+    "skip_all_non_shiny_sprites_for_shared_shinies_that_are_adjusted": lambda poke_num, form_name, sprite_type: poke_num in SHARED_SHINY_FORMS and "Shiny" not in sprite_type and form_name in SHARED_SHINY_FORMS[poke_num],
+    "skip_show_stamp_sprite_if_not_applicable": lambda poke_num, form_name, sprite_type: poke_num not in (854, 855, 1012, 1013) and sprite_type == "-Show_Stamp"
+}
+def should_skip_nonexistant_sprite(poke_num, form_name, sprite_type):
+    for nonexistant in NONEXISTANT_SPRITES.values():
+        if nonexistant(poke_num, form_name, sprite_type):
+            return True
+    return False
+
+
 def populate_sprite_obtainability(cursor):
+    print("Populating sprite variations per poke into database...")
+
     sprite_types = get_sprite_types(cursor)
     poke_form_game_obtainability = get_poke_form_obtainability_records(cursor)
     sprite_obtainability = {}
 
     for pfgo_id, pfgo_info in poke_form_game_obtainability.items():
         for sprite_id, sprite_type in sprite_types.items():
+            if should_skip_nonexistant_sprite(pfgo_info["poke num"], pfgo_info["form name"], sprite_type):
+                continue
             sprite_possible = is_sprite_possible(pfgo_info, sprite_type)
             sprite_obtainability[(pfgo_id, sprite_id)] = {"poke num": pfgo_id[0], "form id": pfgo_id[1], "game id": pfgo_id[2], "sprite id": sprite_id, "obtainable": sprite_possible}
 
-    # for k,v in sprite_obtainability.items(): 
-    #     if v["poke num"] == 3: print(k, ":", v)
+    for spr_obt in sprite_obtainability.values():
+        insert_sprite_obtainability(cursor, spr_obt["poke num"], spr_obt["form id"], spr_obt["game id"], spr_obt["sprite id"], spr_obt["obtainable"])
 
 
 def insert_sprite_obtainability(cursor, poke_num, form_id, game_id, sprite_id, obtainability):
@@ -430,8 +460,6 @@ def insert_sprite_obtainability(cursor, poke_num, form_id, game_id, sprite_id, o
         VALUES (?, ?, ?, ?, ?);
     """, (poke_num, form_id, game_id, sprite_id, obtainability))
 
-
-# TODO: 854, 855, 1012, 1013 might be a bit odd since their default forms may be their front, and their other forms the back...
 
 # TODO: Determine Alts elsewhere, perhaps in filename table having a boolean field for Alt
 
