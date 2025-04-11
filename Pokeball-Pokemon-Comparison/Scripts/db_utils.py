@@ -83,6 +83,19 @@ def create_db():
     );
     """)
 
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS obtainable_filenames (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        filename TEXT NOT NULL UNIQUE
+        poke_num INTEGER NOT NULL,
+        form_id INTEGER NOT NULL,
+        game_id INTEGER NOT NULL,
+        sprite_id INTEGER NOT NULL,
+        obtainable BOOLEAN NOT NULL,
+        FOREIGN KEY (poke_num, form_id, game_id, sprite_id) REFERENCES sprite_obtainability,
+    );
+    """)
+
     connection.commit()
     connection.close()
 
@@ -458,6 +471,43 @@ def insert_sprite_obtainability(cursor, poke_num, form_id, game_id, sprite_id, o
     """, (poke_num, form_id, game_id, sprite_id, obtainability))
 
 
+def get_sprites_obtainability_records(cursor):
+    cursor.execute("""
+        SELECT p.num, f.id, g.id, s.id, so.poke_num, p.name, g.gen, g.name, f.form_name, s.name, so.obtainable
+        FROM sprite_obtainability so
+        JOIN forms f ON so.form_id = f.id
+        JOIN pokemon p ON so.poke_num = p.num
+        JOIN games g ON so.game_id = g.id
+        JOIN sprite_types s ON so.sprite_id = s.id
+    """)
+    sprites = {}
+    for row in cursor.fetchall():
+        # (poke num, form id, game id, sprite id) maps to form/poke/game/sprite info
+        sprites[(row[0], row[1], row[2], row[3])] = {   "poke num" : row[4],
+                                                        "poke name" : row[5],
+                                                        "game gen" : row[6],
+                                                        "game name" : row[7],
+                                                        "form name" : row[8],
+                                                        "sprite type": row[9],
+                                                        "obtainable" : row[10]
+        }
+    return sprites
+
+
+def populate_filenames(cursor):
+    print("Populating filenames into database...")
+    sprites = get_sprites_obtainability_records(cursor)
+
+    for sprite_id, sprite_info in sprites.items():
+        if sprite_info["obtainable"]:
+            poke_num = str(sprite_info["poke num"]).zfill(4)
+            form_name = "" if sprite_info["form name"] == "Default" else sprite_info["form name"]
+            sprite_name = "" if sprite_info["sprite type"] == "Default" else sprite_info["sprite type"]
+            # TODO: Looks like shiny is broken out seperate from sprite name and put before form name
+                # Evaluate old filename process and see what you did
+            print(f"{poke_num} {sprite_info["poke name"]} Gen{sprite_info["game gen"]} {sprite_info["game name"]}{form_name}{sprite_name}")
+
+
 # TODO: Determine Alts elsewhere, perhaps in filename table having a boolean field for Alt
 # TODO: Change Cosplay Pikachu to Gen6 XY-ORAS, in fact write function to find any pokes ONLY available in XY-ORAS
 # TODO: Filenames have SwSh-BDSP in them.... sigh
@@ -475,6 +525,7 @@ def populate_db():
         populate_form_game_obtainability(cursor)
         populate_sprite_types(cursor)
         populate_sprite_obtainability(cursor)
+        populate_filenames(cursor)
 
         connection.commit()
     except Exception as e:
