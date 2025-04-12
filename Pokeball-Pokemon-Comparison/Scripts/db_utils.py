@@ -7,9 +7,6 @@ PARENT_DIR = os.path.join(os.getcwd(), os.pardir)
 DB_NAME = "pokedex.db"
 DB_PATH = os.path.join(PARENT_DIR, DB_NAME)
 
-# TODO: For React Native, if certain forms are available outside of the game/gen selected, still display them and go to the first sprite instance, for example see below
-# Deoxys forms technically are one for each game in gen3, but just make all forms show, maybe in parenthesis put game it pulled from
-# TODO: Also in RN will have to visually change 710 & 711 forms so gets rid of sorting number, and replace Qmark with ??? (Arceus) or ? (Unown)
 
 def create_db():
     print("Creating pokedex database...")
@@ -242,10 +239,6 @@ def get_poke_form_records(cursor):
 
 
 def has_default_form(poke_num):
-    # TODO: Wishiwashi had some default forms slip through in my saved files... Are they actually alts? Same thing with 849.
-        # TODO: Write script to find files that have a default sprite saved that shouldnt, like the above
-    # TODO: No 854, 855 form sprites saved prolly bc improper scrape script
-    # TODO: Radiant Sun Solgaleo and Full Moon Lunala sprites are wrong too
     no_default_form_poke_nums = {201, 412, 413, 421, 422, 423, 487, 492, 493, 
                                  550, 555, 585, 586, 641, 642, 645, 647, 648, 
                                  666, 669, 670, 671, 681, 710, 711, 716, 718, 
@@ -331,7 +324,6 @@ FORM_EXCLUSIONS = {
     "no_regional_forms_in_LA_other_than_hisui_and_alola_kitties": lambda poke_form, game: game["name"] == "LA" and "-Region" in poke_form["form name"] and poke_form["form name"] != "-Region-Hisui" and poke_form["poke name"] not in ("Vulpix", "Ninetales"),
 
     # Specific pokemon
-    # TODO: You may have to add extra logic here since youve got cosplay filenames listed from gen 6-7
     "no_cosplay_pikachu_outside_ORAS": lambda poke_form, game: poke_form["poke num"] == 25 and "-Form-Cosplay" in poke_form["form name"] and game["name"] != "XY-ORAS",
     "no_cap_pikachu_before_gen_7": lambda poke_form, game: poke_form["poke num"] == 25 and "-Form-Cap" in poke_form["form name"] and game["gen"] < 7,
     "no_cap_pikachu_outside_of_these_games": lambda poke_form, game: poke_form["poke num"] == 25 and "-Form-Cap" in poke_form["form name"] and game["name"] not in ("SM-USUM", "SwSh", "SV"),
@@ -518,11 +510,10 @@ def generate_filename(cursor, all_sprites, sprite_id, sprite_info):
     form_name = "" if sprite_info["form name"] == "Default" else sprite_info["form name"]
     is_shiny, sprite_type = seperate_sprite_type_if_shiny(sprite_info["sprite type"])
     gen, game = determine_gen_and_game(cursor, all_sprites, sprite_id, sprite_info)
-    # TODO: Looks like shiny is broken out seperate from sprite name and put before form name
-        # Evaluate old filename process and see what you did
-    if gen in (6, 7):
-        print(sprite_id)
-        print(f"{poke_num} {sprite_info["poke name"]} Gen{gen} {game}{"-Shiny" if is_shiny else ""}{form_name}{sprite_type}")
+    # TODO: Account for gen 1-4 back sprites
+    filename = f"{poke_num} {sprite_info["poke name"]} Gen{gen}{str(" " + game) if "Back" not in sprite_type else ""}{"-Shiny" if is_shiny else ""}{form_name}{sprite_type}"
+    print(sprite_id)
+    print(filename)
 
 
 def populate_filenames(cursor):
@@ -535,8 +526,6 @@ def populate_filenames(cursor):
 
 
 # TODO: Determine Alts elsewhere, perhaps in filename table having a boolean field for Alt
-# TODO: Change Cosplay Pikachu to Gen6 XY-ORAS, in fact write function to find any pokes ONLY available in XY-ORAS
-# TODO: Filenames have SwSh-BDSP in them.... sigh
 def populate_db():
     if not db_exists():
         create_db()
