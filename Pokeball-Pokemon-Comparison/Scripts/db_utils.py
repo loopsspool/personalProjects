@@ -86,7 +86,7 @@ def create_db():
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS obtainable_filenames (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
-        filename TEXT NOT NULL UNIQUE
+        filename TEXT NOT NULL,
         poke_num INTEGER NOT NULL,
         form_id INTEGER NOT NULL,
         game_id INTEGER NOT NULL,
@@ -473,7 +473,7 @@ def insert_sprite_obtainability(cursor, poke_num, form_id, game_id, sprite_id, o
 
 def get_sprites_obtainability_records(cursor):
     cursor.execute("""
-        SELECT p.num, f.id, g.id, s.id, so.poke_num, p.name, g.gen, g.name, f.form_name, s.name, so.obtainable
+        SELECT p.num, f.id, g.id, s.id, so.poke_num, p.name, p.gen, g.gen, g.name, f.form_name, s.name, so.obtainable
         FROM sprite_obtainability so
         JOIN forms f ON so.form_id = f.id
         JOIN pokemon p ON so.poke_num = p.num
@@ -485,27 +485,53 @@ def get_sprites_obtainability_records(cursor):
         # (poke num, form id, game id, sprite id) maps to form/poke/game/sprite info
         sprites[(row[0], row[1], row[2], row[3])] = {   "poke num" : row[4],
                                                         "poke name" : row[5],
-                                                        "game gen" : row[6],
-                                                        "game name" : row[7],
-                                                        "form name" : row[8],
-                                                        "sprite type": row[9],
-                                                        "obtainable" : row[10]
+                                                        "poke gen" : row[6],
+                                                        "game gen" : row[7],
+                                                        "game name" : row[8],
+                                                        "form name" : row[9],
+                                                        "sprite type": row[10],
+                                                        "obtainable" : row[11]
         }
     return sprites
 
 
+def determine_gen_and_game(cursor, all_sprites, sprite_id, sprite_info):
+    gen = sprite_info["game gen"]
+    game = sprite_info["game name"]
+    # This accounts for Gen7 SM-USUM reusing Gen6 XY-ORAS sprites, and using Gen6 filenames
+    if sprite_info["game gen"] == 7 and sprite_info["poke gen"] < 7:
+        xy_oras_sprite_equivalent = all_sprites[(sprite_id[0], sprite_id[1], get_game_id(cursor, "XY-ORAS"), sprite_id[3])]
+        if xy_oras_sprite_equivalent["obtainable"]:
+            gen = 6
+            game = "XY-ORAS"
+    return gen, game
+
+
+def seperate_sprite_type_if_shiny(sprite_type):
+    if sprite_type == "Default": return False, ""
+    if "-Shiny" not in sprite_type: return False, sprite_type
+    else: return True, sprite_type.replace("-Shiny", "")
+
+
+def generate_filename(cursor, all_sprites, sprite_id, sprite_info):
+    poke_num = str(sprite_info["poke num"]).zfill(4)
+    form_name = "" if sprite_info["form name"] == "Default" else sprite_info["form name"]
+    is_shiny, sprite_type = seperate_sprite_type_if_shiny(sprite_info["sprite type"])
+    gen, game = determine_gen_and_game(cursor, all_sprites, sprite_id, sprite_info)
+    # TODO: Looks like shiny is broken out seperate from sprite name and put before form name
+        # Evaluate old filename process and see what you did
+    if gen in (6, 7):
+        print(sprite_id)
+        print(f"{poke_num} {sprite_info["poke name"]} Gen{gen} {game}{"-Shiny" if is_shiny else ""}{form_name}{sprite_type}")
+
+
 def populate_filenames(cursor):
     print("Populating filenames into database...")
-    sprites = get_sprites_obtainability_records(cursor)
+    all_sprites = get_sprites_obtainability_records(cursor)
 
-    for sprite_id, sprite_info in sprites.items():
+    for sprite_id, sprite_info in all_sprites.items():
         if sprite_info["obtainable"]:
-            poke_num = str(sprite_info["poke num"]).zfill(4)
-            form_name = "" if sprite_info["form name"] == "Default" else sprite_info["form name"]
-            sprite_name = "" if sprite_info["sprite type"] == "Default" else sprite_info["sprite type"]
-            # TODO: Looks like shiny is broken out seperate from sprite name and put before form name
-                # Evaluate old filename process and see what you did
-            print(f"{poke_num} {sprite_info["poke name"]} Gen{sprite_info["game gen"]} {sprite_info["game name"]}{form_name}{sprite_name}")
+            generate_filename(cursor, all_sprites, sprite_id, sprite_info)
 
 
 # TODO: Determine Alts elsewhere, perhaps in filename table having a boolean field for Alt
