@@ -487,6 +487,7 @@ def get_sprites_obtainability_records(cursor):
     return sprites
 
 
+# TODO: Glameow only poke sprite change between gen 6&7 (ie, Glameow has its own Gen7 SM-USUM Sprite)
 def determine_gen_and_game(cursor, all_sprites, sprite_id, sprite_info):
     gen = sprite_info["game gen"]
     game = sprite_info["game name"]
@@ -511,6 +512,12 @@ def generate_filename(cursor, all_sprites, sprite_id, sprite_info):
     is_shiny, sprite_type = seperate_sprite_type_if_shiny(sprite_info["sprite type"])
     gen, game = determine_gen_and_game(cursor, all_sprites, sprite_id, sprite_info)
     # TODO: Account for gen 1-4 back sprites
+        # I'm thinking just add a hyphen between Gen& Game instead of a space
+        # Gen 1 all 3, RB, RG, Yellow
+        # Gen 2 only Gold & Crystal, Silver should map to Gold
+        # Gen 3 it seems RS use the same as emerald, but e animated things, frlg definitely different sometimes, same other times
+        # Gen 4 is all over the place... Some use same across DP, Plat, and HGSS, some all different, any combo really
+        # Whatever you do with the old files keep the alts if there are any
     filename = f"{poke_num} {sprite_info["poke name"]} Gen{gen}{str(" " + game) if "Back" not in sprite_type else ""}{"-Shiny" if is_shiny else ""}{form_name}{sprite_type}"
     print(sprite_id)
     print(filename)
