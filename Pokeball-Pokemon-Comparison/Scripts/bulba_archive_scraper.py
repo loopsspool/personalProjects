@@ -39,6 +39,7 @@ from scraping import get_game_img_urls, scrape_game_imgs
 # TODO: No 854, 855 form sprites saved prolly bc improper scrape script
 # TODO: Radiant Sun Solgaleo and Full Moon Lunala sprites are wrong too
 # TODO: And Unown A, looks like in Bulba sometimes it has the A, sometimes its just 201
+# TODO: No form tags in drawn images
 def main():
     check_pokedex_db_is_current(force=False)
     #generate_pokedex_from_spreadsheet()
