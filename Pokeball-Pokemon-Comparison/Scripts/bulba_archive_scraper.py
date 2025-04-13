@@ -38,6 +38,7 @@ from scraping import get_game_img_urls, scrape_game_imgs
     # TODO: Write script to find files that have a default sprite saved that shouldnt, like the above
 # TODO: No 854, 855 form sprites saved prolly bc improper scrape script
 # TODO: Radiant Sun Solgaleo and Full Moon Lunala sprites are wrong too
+# TODO: And Unown A, looks like in Bulba sometimes it has the A, sometimes its just 201
 def main():
     check_pokedex_db_is_current(force=False)
     #generate_pokedex_from_spreadsheet()
