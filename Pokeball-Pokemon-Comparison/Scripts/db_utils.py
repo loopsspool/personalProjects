@@ -487,12 +487,11 @@ def get_sprites_obtainability_records(cursor):
     return sprites
 
 
-# TODO: Glameow only poke sprite change between gen 6&7 (ie, Glameow has its own Gen7 SM-USUM Sprite)
 def determine_gen_and_game(cursor, all_sprites, sprite_id, sprite_info):
     gen = sprite_info["game gen"]
     game = sprite_info["game name"]
-    # This accounts for Gen7 SM-USUM reusing Gen6 XY-ORAS sprites, and using Gen6 filenames
-    if sprite_info["game gen"] == 7 and sprite_info["poke gen"] < 7:
+    # This accounts for Gen7 SM-USUM reusing Gen6 XY-ORAS sprites (except Glameow), and using Gen6 filenames
+    if sprite_info["game gen"] == 7 and sprite_info["poke gen"] < 7 and sprite_info["poke num"] != 431:
         xy_oras_sprite_equivalent = all_sprites[(sprite_id[0], sprite_id[1], get_game_id(cursor, "XY-ORAS"), sprite_id[3])]
         if xy_oras_sprite_equivalent["obtainable"]:
             gen = 6
@@ -518,7 +517,8 @@ def generate_filename(cursor, all_sprites, sprite_id, sprite_info):
         # Gen 3 it seems RS use the same as emerald, but e animated things, frlg definitely different sometimes, same other times
         # Gen 4 is all over the place... Some use same across DP, Plat, and HGSS, some all different, any combo really
         # Whatever you do with the old files keep the alts if there are any
-    filename = f"{poke_num} {sprite_info["poke name"]} Gen{gen}{str(" " + game) if "Back" not in sprite_type else ""}{"-Shiny" if is_shiny else ""}{form_name}{sprite_type}"
+    # Hyphen before game allows for alphabetical sorting of back sprites below the front game sprites
+    filename = f"{poke_num} {sprite_info["poke name"]} Gen{gen}{str("-" + game) if "-Back" in sprite_type else str(" " + game)}{"-Shiny" if is_shiny else ""}{form_name}{sprite_type}"
     print(sprite_id)
     print(filename)
 
