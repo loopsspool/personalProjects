@@ -89,7 +89,7 @@ def create_db():
         game_id INTEGER NOT NULL,
         sprite_id INTEGER NOT NULL,
         obtainable BOOLEAN NOT NULL,
-        FOREIGN KEY (poke_num, form_id, game_id, sprite_id) REFERENCES sprite_obtainability,
+        FOREIGN KEY (poke_num, form_id, game_id, sprite_id) REFERENCES sprite_obtainability
     );
     """)
 
@@ -516,11 +516,17 @@ def generate_filename(cursor, all_sprites, sprite_id, sprite_info):
         # Gen 2 only Gold & Crystal, Silver should map to Gold
         # Gen 3 it seems RS use the same as emerald, but e animated things, frlg definitely different sometimes, same other times
         # Gen 4 is all over the place... Some use same across DP, Plat, and HGSS, some all different, any combo really
+            # Plat will always try plat first, then dp
+            # HGSS will always try hgss first, then plat, then dp
         # Whatever you do with the old files keep the alts if there are any
     # Hyphen before game allows for alphabetical sorting of back sprites below the front game sprites
     filename = f"{poke_num} {sprite_info["poke name"]} Gen{gen}{str("-" + game) if "-Back" in sprite_type else str(" " + game)}{"-Shiny" if is_shiny else ""}{form_name}{sprite_type}"
-    print(sprite_id)
-    print(filename)
+    #print(sprite_id)
+    #print(filename)
+    filename_w_ext = filename + ".png"
+    files = os.listdir("C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Game Sprites\\")
+    if filename_w_ext not in files:
+        print(filename_w_ext)
 
 
 def populate_filenames(cursor):
