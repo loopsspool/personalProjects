@@ -1,11 +1,12 @@
 import os
+import shutil
 
 
 game_sprite_path = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Game Sprites\\"
-back_sprites_to_filter_path = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Game Sprites\\back_imgs_to_be_filtered"
-animated_pngs_pre_gif_conversion = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Game Sprites\\animated_pngs_for_gifs\\pngs\\Converted to gif"
-test_path = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Test"
-staging_path = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Game Sprites\\staging"
+animated_pngs_pre_gif_conversion_path = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Game Sprites\\animated_pngs_for_gifs\\pngs\\Converted to gif\\"
+gifs_post_conversion_path = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Game Sprites\\animated_pngs_for_gifs\\gifs\\"
+test_path = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Test\\"
+staging_path = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Game Sprites\\staging\\"
 file_ext = ""
 
 
@@ -34,8 +35,9 @@ def replace_in_filename(path, replace, replace_with, just_print=False):
 
 def replace_filename_in_all_dirs(replace, replace_with, just_print=False):
     replace_in_filename(game_sprite_path, replace, replace_with, just_print)
-    replace_in_filename(back_sprites_to_filter_path, replace, replace_with, just_print)
-    replace_in_filename(animated_pngs_pre_gif_conversion, replace, replace_with, just_print)
+    replace_in_filename(staging_path, replace, replace_with, just_print)
+    replace_in_filename(animated_pngs_pre_gif_conversion_path, replace, replace_with, just_print)
+    replace_in_filename(gifs_post_conversion_path, replace, replace_with, just_print)
 
 
 def print_files_with(path, s):
