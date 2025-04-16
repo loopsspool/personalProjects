@@ -352,7 +352,7 @@ def is_form_obtainable(form, game):
 
 
 # TODO: Add ON CONFLICT to INSERT OR IGNORE statements to update values? See where relevant
-def populate_form_game_obtainability(cursor):
+def populate_form_game_obtainability(cursor, force):
     print("Populating game obtainability for forms into database...")
 
     poke_forms = get_poke_form_records(cursor)
@@ -362,11 +362,42 @@ def populate_form_game_obtainability(cursor):
     # Running all pokemon forms through all games to check if its obtainable
     for poke_form_id, poke_form_info in poke_forms.items():
         for game_id, game_info in games.items():
-            # NOTE: Getting dict values in tuples is where things are being slowed down... namedtuples can speed that up with some effort
-            obtainable = is_form_obtainable(poke_form_info, game_info)
-            form_game_obtainability[(poke_form_id, game_id)] = {"poke_num": poke_form_id[0], "form_id": poke_form_id[1], "game_id": game_id, "obtainable": obtainable}
+            # Quick workaround to make it run faster, only generating obtainability if forced or the record doesn't exist yet
+            if force or not entry_exists(cursor, "form_game_obtainability", map_keys_to_cols(cursor, poke_form_info), {"poke name"}):
+                # NOTE: Getting dict values in tuples is where things are being slowed down... namedtuples can speed that up with some effort
+                obtainable = is_form_obtainable(poke_form_info, game_info)
+                form_game_obtainability[(poke_form_id, game_id)] = {"poke_num": poke_form_id[0], "form_id": poke_form_id[1], "game_id": game_id, "obtainable": obtainable}
 
     for form_info in form_game_obtainability.values(): insert_form_game_obtainability(cursor, form_info["poke_num"], form_info["form_id"], form_info["game_id"], form_info["obtainable"])
+
+
+def map_keys_to_cols(cursor, input_dict):
+    # NOTE: This will skip any keys not listed below
+    key_map = {
+        "poke num": "poke_num",
+        # Name value gets converted to id when iterating thru input_dict
+        "form name": "form_id",
+        "game id": "game_id"
+    }
+    output = {}
+    for k,v in input_dict.items():
+        if k in key_map:
+            if k == "form name":
+                v = get_form_id(cursor, v)
+            output[key_map[k]] = v
+    return output
+
+
+def entry_exists(cursor, table, conditions, exclude_keys=None):
+    if exclude_keys:
+        conditions = {k: v for k, v in conditions.items() if k not in exclude_keys}
+
+    where_clause = " AND ".join(f"{k} = ?" for k in conditions)
+    values = list(conditions.values())
+
+    query = f"SELECT 1 FROM {table} WHERE {where_clause} LIMIT 1"
+    cursor.execute(query, values)
+    return cursor.fetchone() is not None
 
 
 # Default meaning front, normal color, static sprite
@@ -525,7 +556,7 @@ def generate_filename(cursor, all_sprites, sprite_id, sprite_info):
     #print(filename)
     filename_w_ext = filename + ".png"
     files = os.listdir("C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Game Sprites\\")
-    if filename_w_ext not in files:
+    if filename_w_ext not in files and not "-Animated" in filename_w_ext:
         print(filename_w_ext)
 
 
@@ -539,7 +570,7 @@ def populate_filenames(cursor):
 
 
 # TODO: Determine Alts elsewhere, perhaps in filename table having a boolean field for Alt
-def populate_db():
+def populate_db(force=False):
     if not db_exists():
         create_db()
 
@@ -550,7 +581,7 @@ def populate_db():
         populate_pokes(cursor)
         populate_forms(cursor)
         populate_games(cursor)
-        populate_form_game_obtainability(cursor)
+        populate_form_game_obtainability(cursor, force)
         populate_sprite_types(cursor)
         populate_sprite_obtainability(cursor)
         populate_filenames(cursor)
