@@ -536,6 +536,16 @@ def seperate_sprite_type_if_shiny(sprite_type):
     else: return True, sprite_type.replace("-Shiny", "")
 
 
+def file_exists_by_poke_num_prefix(dir, filename):
+    poke_num_prefix = filename[:4]
+    with os.scandir(dir) as entries:
+        for entry in entries:
+            if entry.is_file() and entry.name.startswith(poke_num_prefix):
+                if entry.name == filename:
+                    return True
+    return False
+
+
 def generate_filename(cursor, all_sprites, sprite_id, sprite_info):
     poke_num = str(sprite_info["poke num"]).zfill(4)
     form_name = "" if sprite_info["form name"] == "Default" else sprite_info["form name"]
@@ -555,8 +565,8 @@ def generate_filename(cursor, all_sprites, sprite_id, sprite_info):
     #print(sprite_id)
     #print(filename)
     filename_w_ext = filename + ".png"
-    files = os.listdir("C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Game Sprites\\")
-    if filename_w_ext not in files and not "-Animated" in filename_w_ext:
+    game_sprite_path = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Game Sprites\\"
+    if not "-Animated" in filename_w_ext and not file_exists_by_poke_num_prefix(game_sprite_path, filename_w_ext):
         print(filename_w_ext)
 
 
