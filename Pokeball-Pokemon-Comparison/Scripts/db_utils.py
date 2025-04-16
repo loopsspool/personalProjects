@@ -363,7 +363,7 @@ def populate_form_game_obtainability(cursor, force):
     for poke_form_id, poke_form_info in poke_forms.items():
         for game_id, game_info in games.items():
             # Quick workaround to make it run faster, only generating obtainability if forced or the record doesn't exist yet
-            if force or not entry_exists(cursor, "form_game_obtainability", map_keys_to_cols(cursor, poke_form_info), {"poke name"}):
+            if force or not entry_exists(cursor, "form_game_obtainability", {"poke_num": poke_form_id[0], "form_id": poke_form_id[1], "game_id": game_id}):
                 # NOTE: Getting dict values in tuples is where things are being slowed down... namedtuples can speed that up with some effort
                 obtainable = is_form_obtainable(poke_form_info, game_info)
                 form_game_obtainability[(poke_form_id, game_id)] = {"poke_num": poke_form_id[0], "form_id": poke_form_id[1], "game_id": game_id, "obtainable": obtainable}
@@ -371,29 +371,9 @@ def populate_form_game_obtainability(cursor, force):
     for form_info in form_game_obtainability.values(): insert_form_game_obtainability(cursor, form_info["poke_num"], form_info["form_id"], form_info["game_id"], form_info["obtainable"])
 
 
-def map_keys_to_cols(cursor, input_dict):
-    # NOTE: This will skip any keys not listed below
-    key_map = {
-        "poke num": "poke_num",
-        # Name value gets converted to id when iterating thru input_dict
-        "form name": "form_id",
-        "game id": "game_id"
-    }
-    output = {}
-    for k,v in input_dict.items():
-        if k in key_map:
-            if k == "form name":
-                v = get_form_id(cursor, v)
-            output[key_map[k]] = v
-    return output
-
-
-def entry_exists(cursor, table, conditions, exclude_keys=None):
-    if exclude_keys:
-        conditions = {k: v for k, v in conditions.items() if k not in exclude_keys}
-
-    where_clause = " AND ".join(f"{k} = ?" for k in conditions)
-    values = list(conditions.values())
+def entry_exists(cursor, table, cols):
+    where_clause = " AND ".join(f"{k} = ?" for k in cols)
+    values = tuple(cols.values())
 
     query = f"SELECT 1 FROM {table} WHERE {where_clause} LIMIT 1"
     cursor.execute(query, values)
@@ -566,8 +546,8 @@ def generate_filename(cursor, all_sprites, sprite_id, sprite_info):
     #print(filename)
     filename_w_ext = filename + ".png"
     game_sprite_path = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Game Sprites\\"
-    if not "-Animated" in filename_w_ext and not file_exists_by_poke_num_prefix(game_sprite_path, filename_w_ext):
-        print(filename_w_ext)
+    # if not "-Animated" in filename_w_ext and not file_exists_by_poke_num_prefix(game_sprite_path, filename_w_ext):
+    #     print(filename_w_ext)
 
 
 def populate_filenames(cursor):
