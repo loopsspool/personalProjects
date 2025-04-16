@@ -81,8 +81,8 @@ def create_db():
     """)
 
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS obtainable_filenames (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+    CREATE TABLE IF NOT EXISTS all_filenames (
+        file_id INTEGER PRIMARY KEY AUTOINCREMENT,
         filename TEXT NOT NULL,
         poke_num INTEGER NOT NULL,
         form_id INTEGER NOT NULL,
@@ -93,8 +93,32 @@ def create_db():
     );
     """)
 
+    # Seperating obtainable from all so scraping and RN doesn't have to query and filter unobtainable sprites
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS obtainable_filenames (
+        file_id INTEGER PRIMARY KEY,
+        filename TEXT NOT NULL,
+        poke_num INTEGER NOT NULL,
+        form_id INTEGER NOT NULL,
+        game_id INTEGER NOT NULL,
+        sprite_id INTEGER NOT NULL,
+        obtainable BOOLEAN NOT NULL,
+        FOREIGN KEY (file_id) REFERENCES all_filenames(file_id),
+        FOREIGN KEY (poke_num, form_id, game_id, sprite_id) REFERENCES sprite_obtainability
+    );
+    """)
+
     connection.commit()
     connection.close()
+
+
+def insert_into_table(cursor, table, **data):
+    cols = ", ".join(data.keys())
+    val_placeholders = ", ".join(["?"] * len(data))
+    vals = tuple(data.values())
+
+    query = f"INSERT OR IGNORE INTO {table} ({cols}) VALUES ({val_placeholders})"
+    cursor.execute(query, vals)
 
 
 def get_form_id(cursor, form_name):
@@ -113,11 +137,6 @@ def get_game_id(cursor, game_name):
 def db_exists():
     return os.path.exists(DB_PATH)
 
-def insert_poke(cursor, num, num_as_text, name, gen):
-    cursor.execute("""
-        INSERT OR IGNORE INTO pokemon (num, num_as_text, name, gen)
-        VALUES (?, ?, ?, ?);
-    """, (num, num_as_text, name, gen))
 
 def populate_pokes(cursor):
     print("Populating Pokemon into database...")
@@ -128,20 +147,13 @@ def populate_pokes(cursor):
         num_as_str = str(cell_value(pokemon_info_sheet, row, poke_info_num_col))
         name = cell_value(pokemon_info_sheet, row, poke_info_name_col)
         gen = cell_value(pokemon_info_sheet, row, poke_info_gen_col)
-        insert_poke(cursor, num, num_as_str, name, gen)
+        insert_into_table(cursor, "pokemon", **{"num": num, "num_as_text": num_as_str, "name": name, "gen": gen})
 
 
-def insert_form(cursor, form_name):
-    cursor.execute("""
-        INSERT OR IGNORE INTO forms (form_name)
-        VALUES (?);
-    """, (form_name,))
-
-def insert_poke_form(cursor, poke_num, form_id):
-    cursor.execute("""
-        INSERT OR IGNORE INTO poke_forms (poke_num, form_id)
-        VALUES (?, ?);
-    """, (poke_num, form_id))
+def insert_into_both_form_tables(cursor, form_name, poke_num):
+    insert_into_table(cursor, "forms", **{"form_name": form_name})
+    form_id = get_form_id(cursor, form_name)
+    insert_into_table(cursor, "poke_forms", **{"poke_num": poke_num, "form_id": form_id})
 
 
 def denote_forms(forms, denotion):
@@ -198,26 +210,18 @@ SHARED_SHINY_FORMS = {  774: ["-Form-Core"],
 def populate_forms(cursor):
     print("Populating forms into database...")
 
-    # This is to store the forms with their associated pokemon
-    # Forms must be committed to the db first before I can retrieve their ID
-    poke_form_arr = []
-
     for row in range(2, POKE_INFO_LAST_ROW + 1): 
         poke_num = row-1
         forms = get_forms_from_excel(row)
         forms = adjust_forms_for_exceptions(row-1, forms)
 
         for form in forms:
-            insert_form(cursor, form)
-            form_id = get_form_id(cursor, form)
-            insert_poke_form(cursor, poke_num, form_id)
+            insert_into_both_form_tables(cursor, form, poke_num)
 
         # Putting here so poke/forms stay in numerical order for speedy lookups
         if poke_num in SHARED_SHINY_FORMS:
             for form in SHARED_SHINY_FORMS[poke_num]:
-                insert_form(cursor, form)
-                form_id = get_form_id(cursor, form)
-                insert_poke_form(cursor, poke_num, form_id)
+                insert_into_both_form_tables(cursor, form, poke_num)
     
 
 def get_poke_form_records(cursor):
@@ -259,13 +263,6 @@ def get_game_records(cursor):
     return games
 
 
-def insert_game(cursor, game, gen):
-    cursor.execute("""
-        INSERT OR IGNORE INTO games (name, gen)
-        VALUES (?, ?);
-    """, (game, gen))
-
-
 GAMES = (
     ("Red_Green", 1),
     ("Red_Blue", 1),
@@ -292,14 +289,7 @@ def populate_games(cursor):
     print("Populating games into database...")
 
     for game in GAMES:
-        insert_game(cursor, game[0], game[1])
-
-
-def insert_form_game_obtainability(cursor, poke_num, form_id, game_id, obtainability):
-    cursor.execute("""
-        INSERT OR IGNORE INTO form_game_obtainability (poke_num, form_id, game_id, obtainable)
-        VALUES (?, ?, ?, ?);
-    """, (poke_num, form_id, game_id, obtainability))
+        insert_into_table(cursor, "games", **{"name": game[0], "gen": game[1]})
 
 
 FORM_EXCLUSIONS = {
@@ -368,7 +358,7 @@ def populate_form_game_obtainability(cursor, force):
                 obtainable = is_form_obtainable(poke_form_info, game_info)
                 form_game_obtainability[(poke_form_id, game_id)] = {"poke_num": poke_form_id[0], "form_id": poke_form_id[1], "game_id": game_id, "obtainable": obtainable}
 
-    for form_info in form_game_obtainability.values(): insert_form_game_obtainability(cursor, form_info["poke_num"], form_info["form_id"], form_info["game_id"], form_info["obtainable"])
+    for form_info in form_game_obtainability.values(): insert_into_table(cursor, "form_game_obtainability", **form_info)
 
 
 def entry_exists(cursor, table, cols):
@@ -461,17 +451,10 @@ def populate_sprite_obtainability(cursor):
             if should_skip_nonexistant_sprite(pfgo_info["poke num"], pfgo_info["form name"], sprite_type):
                 continue
             sprite_possible = is_sprite_possible(pfgo_info, sprite_type)
-            sprite_obtainability[(pfgo_id, sprite_id)] = {"poke num": pfgo_id[0], "form id": pfgo_id[1], "game id": pfgo_id[2], "sprite id": sprite_id, "obtainable": sprite_possible}
+            sprite_obtainability[(pfgo_id, sprite_id)] = {"poke_num": pfgo_id[0], "form_id": pfgo_id[1], "game_id": pfgo_id[2], "sprite_id": sprite_id, "obtainable": sprite_possible}
 
     for spr_obt in sprite_obtainability.values():
-        insert_sprite_obtainability(cursor, spr_obt["poke num"], spr_obt["form id"], spr_obt["game id"], spr_obt["sprite id"], spr_obt["obtainable"])
-
-
-def insert_sprite_obtainability(cursor, poke_num, form_id, game_id, sprite_id, obtainability):
-    cursor.execute("""
-        INSERT OR IGNORE INTO sprite_obtainability (poke_num, form_id, game_id, sprite_id, obtainable)
-        VALUES (?, ?, ?, ?, ?);
-    """, (poke_num, form_id, game_id, sprite_id, obtainability))
+        insert_into_table(cursor, "sprite_obtainability", **spr_obt)
 
 
 def get_sprites_obtainability_records(cursor):
@@ -516,9 +499,10 @@ def seperate_sprite_type_if_shiny(sprite_type):
     else: return True, sprite_type.replace("-Shiny", "")
 
 
-def file_exists_by_poke_num_prefix(dir, filename):
+def file_exists_by_poke_num_prefix(filename):
+    game_sprite_path = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Game Sprites\\"
     poke_num_prefix = filename[:4]
-    with os.scandir(dir) as entries:
+    with os.scandir(game_sprite_path) as entries:
         for entry in entries:
             if entry.is_file() and entry.name.startswith(poke_num_prefix):
                 if entry.name == filename:
@@ -526,7 +510,7 @@ def file_exists_by_poke_num_prefix(dir, filename):
     return False
 
 
-def generate_filename(cursor, all_sprites, sprite_id, sprite_info):
+def generate_filename(cursor, all_sprites, sprite_id, sprite_info, with_game=True):
     poke_num = str(sprite_info["poke num"]).zfill(4)
     form_name = "" if sprite_info["form name"] == "Default" else sprite_info["form name"]
     is_shiny, sprite_type = seperate_sprite_type_if_shiny(sprite_info["sprite type"])
@@ -541,13 +525,12 @@ def generate_filename(cursor, all_sprites, sprite_id, sprite_info):
             # HGSS will always try hgss first, then plat, then dp
         # Whatever you do with the old files keep the alts if there are any
     # Hyphen before game allows for alphabetical sorting of back sprites below the front game sprites
-    filename = f"{poke_num} {sprite_info["poke name"]} Gen{gen}{str("-" + game) if "-Back" in sprite_type else str(" " + game)}{"-Shiny" if is_shiny else ""}{form_name}{sprite_type}"
-    #print(sprite_id)
-    #print(filename)
-    filename_w_ext = filename + ".png"
-    game_sprite_path = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Game Sprites\\"
-    # if not "-Animated" in filename_w_ext and not file_exists_by_poke_num_prefix(game_sprite_path, filename_w_ext):
-    #     print(filename_w_ext)
+    if with_game:
+        filename_w_game = f"{poke_num} {sprite_info["poke name"]} Gen{gen}{str("-" + game) if "-Back" in sprite_type else str(" " + game)}{"-Shiny" if is_shiny else ""}{form_name}{sprite_type}.png"
+        return filename_w_game
+    if not with_game:
+        filename_wo_game = f"{poke_num} {sprite_info["poke name"]} {"-Shiny" if is_shiny else ""}{form_name}{sprite_type}.png"
+        return filename_wo_game
 
 
 def populate_filenames(cursor):
@@ -556,7 +539,17 @@ def populate_filenames(cursor):
 
     for sprite_id, sprite_info in all_sprites.items():
         if sprite_info["obtainable"]:
-            generate_filename(cursor, all_sprites, sprite_id, sprite_info)
+            filename = generate_filename(cursor, all_sprites, sprite_id, sprite_info)
+
+
+# all_filenames (
+#         file_id INTEGER PRIMARY KEY AUTOINCREMENT,
+#         filename TEXT NOT NULL,
+#         poke_num INTEGER NOT NULL,
+#         form_id INTEGER NOT NULL,
+#         game_id INTEGER NOT NULL,
+#         sprite_id INTEGER NOT NULL,
+#         obtainable BOOLEAN NOT NULL,
 
 
 # TODO: Determine Alts elsewhere, perhaps in filename table having a boolean field for Alt
