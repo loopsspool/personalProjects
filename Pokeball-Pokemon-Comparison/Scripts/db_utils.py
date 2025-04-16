@@ -82,8 +82,8 @@ def create_db():
 
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS all_filenames (
-        file_id INTEGER PRIMARY KEY AUTOINCREMENT,
-        filename TEXT NOT NULL,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        filename TEXT NOT NULL UNIQUE,
         poke_num INTEGER NOT NULL,
         form_id INTEGER NOT NULL,
         game_id INTEGER NOT NULL,
@@ -96,14 +96,14 @@ def create_db():
     # Seperating obtainable from all so scraping and RN doesn't have to query and filter unobtainable sprites
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS obtainable_filenames (
-        file_id INTEGER PRIMARY KEY,
-        filename TEXT NOT NULL,
+        id INTEGER PRIMARY KEY,
+        filename TEXT NOT NULL UNIQUE,
         poke_num INTEGER NOT NULL,
         form_id INTEGER NOT NULL,
         game_id INTEGER NOT NULL,
         sprite_id INTEGER NOT NULL,
         obtainable BOOLEAN NOT NULL,
-        FOREIGN KEY (file_id) REFERENCES all_filenames(file_id),
+        FOREIGN KEY (id) REFERENCES all_filenames(id),
         FOREIGN KEY (poke_num, form_id, game_id, sprite_id) REFERENCES sprite_obtainability
     );
     """)
@@ -121,6 +121,7 @@ def insert_into_table(cursor, table, **data):
     cursor.execute(query, vals)
 
 
+# TODO: Combine these get functions into one where you specify table and field
 def get_form_id(cursor, form_name):
     cursor.execute("SELECT id FROM forms WHERE form_name=?", (form_name,))
     form_id = cursor.fetchone()
@@ -131,6 +132,13 @@ def get_game_id(cursor, game_name):
     cursor.execute("SELECT id FROM games WHERE name=?", (game_name,))
     game_id = cursor.fetchone()
     if game_id: return game_id[0]
+    else: return None
+
+
+def get_filename_id(cursor, filename):
+    cursor.execute("SELECT id FROM all_filenames WHERE filename=?", (filename,))
+    file_id = cursor.fetchone()
+    if file_id: return file_id[0]
     else: return None
 
 
@@ -538,8 +546,14 @@ def populate_filenames(cursor):
     all_sprites = get_sprites_obtainability_records(cursor)
 
     for sprite_id, sprite_info in all_sprites.items():
+        filename = generate_filename(cursor, all_sprites, sprite_id, sprite_info)
+        file_ids = {"filename": filename, "poke_num": sprite_id[0], "form_id": sprite_id[1], "game_id": sprite_id[2], "sprite_id": sprite_id[3], "obtainable": sprite_info["obtainable"]}
+        # Inserting into all filenames table
+        insert_into_table(cursor, "all_filenames", **file_ids)
+        # Inserting into only obtainable filenames table
         if sprite_info["obtainable"]:
-            filename = generate_filename(cursor, all_sprites, sprite_id, sprite_info)
+            filename_id = get_filename_id(cursor, filename)
+            insert_into_table(cursor, "obtainable_filenames", **{"id": filename_id, **file_ids})
 
 
 # all_filenames (
