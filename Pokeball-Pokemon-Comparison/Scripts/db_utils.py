@@ -89,6 +89,7 @@ def create_db():
         game_id INTEGER NOT NULL,
         sprite_id INTEGER NOT NULL,
         obtainable BOOLEAN NOT NULL,
+        does_exist BOOLEAN,
         FOREIGN KEY (poke_num, form_id, game_id, sprite_id) REFERENCES sprite_obtainability
     );
     """)
@@ -103,6 +104,7 @@ def create_db():
         game_id INTEGER NOT NULL,
         sprite_id INTEGER NOT NULL,
         obtainable BOOLEAN NOT NULL,
+        does_exist BOOLEAN,
         FOREIGN KEY (id) REFERENCES all_filenames(id),
         FOREIGN KEY (poke_num, form_id, game_id, sprite_id) REFERENCES sprite_obtainability
     );
@@ -507,17 +509,12 @@ def seperate_sprite_type_if_shiny(sprite_type):
     else: return True, sprite_type.replace("-Shiny", "")
 
 
-def file_exists_by_poke_num_prefix(filename):
-    game_sprite_path = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Game Sprites\\"
-    poke_num_prefix = filename[:4]
-    with os.scandir(game_sprite_path) as entries:
-        for entry in entries:
-            if entry.is_file() and entry.name.startswith(poke_num_prefix):
-                if entry.name == filename:
-                    return True
-    return False
+def does_file_exist(filename, all_files):
+    if filename in all_files: return True
+    else: return False
 
 
+# TODO: Will need to adapt for animateds being potentially different filetypes
 def generate_filename(cursor, all_sprites, sprite_id, sprite_info, with_game=True):
     poke_num = str(sprite_info["poke num"]).zfill(4)
     form_name = "" if sprite_info["form name"] == "Default" else sprite_info["form name"]
@@ -544,26 +541,19 @@ def generate_filename(cursor, all_sprites, sprite_id, sprite_info, with_game=Tru
 def populate_filenames(cursor):
     print("Populating filenames into database...")
     all_sprites = get_sprites_obtainability_records(cursor)
+    game_sprite_path = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Game Sprites\\"
+    all_files = set(os.listdir(game_sprite_path))
 
     for sprite_id, sprite_info in all_sprites.items():
         filename = generate_filename(cursor, all_sprites, sprite_id, sprite_info)
-        file_ids = {"filename": filename, "poke_num": sprite_id[0], "form_id": sprite_id[1], "game_id": sprite_id[2], "sprite_id": sprite_id[3], "obtainable": sprite_info["obtainable"]}
+        file_exists = None if not sprite_info["obtainable"] else does_file_exist(filename, all_files)
+        file_ids = {"filename": filename, "poke_num": sprite_id[0], "form_id": sprite_id[1], "game_id": sprite_id[2], "sprite_id": sprite_id[3], "obtainable": sprite_info["obtainable"], "does_exist": file_exists}
         # Inserting into all filenames table
         insert_into_table(cursor, "all_filenames", **file_ids)
         # Inserting into only obtainable filenames table
         if sprite_info["obtainable"]:
             filename_id = get_filename_id(cursor, filename)
             insert_into_table(cursor, "obtainable_filenames", **{"id": filename_id, **file_ids})
-
-
-# all_filenames (
-#         file_id INTEGER PRIMARY KEY AUTOINCREMENT,
-#         filename TEXT NOT NULL,
-#         poke_num INTEGER NOT NULL,
-#         form_id INTEGER NOT NULL,
-#         game_id INTEGER NOT NULL,
-#         sprite_id INTEGER NOT NULL,
-#         obtainable BOOLEAN NOT NULL,
 
 
 # TODO: Determine Alts elsewhere, perhaps in filename table having a boolean field for Alt
