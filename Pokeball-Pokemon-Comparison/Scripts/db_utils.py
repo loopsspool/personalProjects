@@ -91,6 +91,7 @@ def create_db():
         sprite_id INTEGER NOT NULL,
         obtainable BOOLEAN NOT NULL,
         does_exist BOOLEAN,
+        substitution_id INTEGER,
         FOREIGN KEY (poke_num, form_id, game_id, sprite_id) REFERENCES sprite_obtainability
     );
     """)
@@ -106,6 +107,7 @@ def create_db():
         sprite_id INTEGER NOT NULL,
         obtainable BOOLEAN NOT NULL,
         does_exist BOOLEAN,
+        substitution_id INTEGER,
         FOREIGN KEY (id) REFERENCES all_filenames(id),
         FOREIGN KEY (poke_num, form_id, game_id, sprite_id) REFERENCES sprite_obtainability
     );
@@ -492,16 +494,16 @@ def get_sprites_obtainability_records(cursor):
     return sprites
 
 
-def determine_gen_and_game(cursor, all_sprites, sprite_id, sprite_info):
-    gen = sprite_info["game gen"]
-    game = sprite_info["game name"]
-    # This accounts for Gen7 SM_USUM reusing Gen6 XY_ORAS sprites (except Glameow), and using Gen6 filenames
-    if sprite_info["game gen"] == 7 and sprite_info["poke gen"] < 7 and sprite_info["poke num"] != 431:
-        xy_oras_sprite_equivalent = all_sprites[(sprite_id[0], sprite_id[1], get_game_id(cursor, "XY_ORAS"), sprite_id[3])]
-        if xy_oras_sprite_equivalent["obtainable"]:
-            gen = 6
-            game = "XY_ORAS"
-    return gen, game
+# def determine_gen_and_game(cursor, all_sprites, sprite_id, sprite_info):
+#     gen = sprite_info["game gen"]
+#     game = sprite_info["game name"]
+#     # This accounts for Gen7 SM_USUM reusing Gen6 XY_ORAS sprites (except Glameow), and using Gen6 filenames
+#     if sprite_info["game gen"] == 7 and sprite_info["poke gen"] < 7 and sprite_info["poke num"] != 431:
+#         xy_oras_sprite_equivalent = all_sprites[(sprite_id[0], sprite_id[1], get_game_id(cursor, "XY_ORAS"), sprite_id[3])]
+#         if xy_oras_sprite_equivalent["obtainable"]:
+#             gen = 6
+#             game = "XY_ORAS"
+#     return gen, game
 
 
 def seperate_sprite_type_if_shiny(sprite_type):
@@ -510,42 +512,63 @@ def seperate_sprite_type_if_shiny(sprite_type):
     else: return True, sprite_type.replace("-Shiny", "")
 
 
-def does_file_exist(filename, all_files):
-    if filename in all_files: 
-        return True
+def file_exists(filename):
+    if filename in ALL_GAME_SPRITE_FILES: return True
+    else: return False
+    
+
+def check_for_usable_file(filename, sprite_info):
+    if not sprite_info["obtainable"]:
+        return None, None
+    if file_exists(filename):
+        return True, None
     else:
-        return False
+        exists, substitution = check_for_file_substitution(filename)
+        return exists, substitution
+
+
+def check_for_file_substitution(filename):
+    for game in GAME_FALLBACKS:
+        game_adj = game_adjustment_for_back(filename, game)
+        if game_adj in filename:
+            for repl in GAME_FALLBACKS[game]:
+                repl = game_adjustment_for_back(filename, repl)
+                replacement_filename = filename.replace(game_adj, repl)
+                if file_exists(replacement_filename):
+                    return True, replacement_filename
+    return False, None
+
+
+def game_adjustment_for_back(filename, game):
+    if "-Back" in filename:
+        game = game.replace(" ", "_")
+    return game
 
 
 GAME_FALLBACKS = {
     # TODO: Gen1?
     # TODO: This should only be newest game to oldest, right?
         # Check and see if theres any missing in, say, diamond_pearl, that platinum has
-    "Silver": ["Gold", "Crystal"],
-    "Crystal": ["Gold"],
-    "Emerald": ["Ruby_Sapphire", "FRLG"],
-    "FRLG": ["Ruby_Sapphire"],
-    "HGSS": ["Platinum", "Diamond_Pearl"],
-    "Platinum": ["Diamond_Pearl"],
-    "SM_USUM": ["XY_ORAS"]
+    "Gen2 Silver": ["Gen2 Gold", "Gen2 Crystal"],
+    "Gen2 Crystal": ["Gen2 Gold"],
+    "Gen3 Emerald": ["Gen3 Ruby_Sapphire", "Gen3 FRLG"],
+    "Gen3 FRLG": ["Gen3 Ruby_Sapphire"],
+    "Gen4 HGSS": ["Gen4 Platinum", "Gen4 Diamond_Pearl"],
+    "Gen4 Platinum": ["Gen4 Diamond_Pearl"],
+    "Gen7 SM_USUM": ["Gen6 XY_ORAS"]
 }
 
 
+# TODO: If determine gen and game not needed, can delete cursor & all_sprites
 # TODO: Will need to adapt for animateds being potentially different filetypes
-def generate_filename(cursor, all_sprites, sprite_id, sprite_info, with_game=True):
+def generate_filename(cursor, sprite_id, sprite_info, with_game=True):
     poke_num = str(sprite_info["poke num"]).zfill(4)
     form_name = "" if sprite_info["form name"] == "Default" else sprite_info["form name"]
     is_shiny, sprite_type = seperate_sprite_type_if_shiny(sprite_info["sprite type"])
-    gen, game = determine_gen_and_game(cursor, all_sprites, sprite_id, sprite_info)
-    # TODO: Account for gen 1-4 back sprites
-        # I'm thinking just add a hyphen between Gen& Game instead of a space
-        # Gen 1 all 3, RB, RG, Yellow
-        # Gen 2 only Gold & Crystal, Silver should map to Gold
-        # Gen 3 it seems RS use the same as emerald, but e animated things, frlg definitely different sometimes, same other times
-        # Gen 4 is all over the place... Some use same across DP, Plat, and HGSS, some all different, any combo really
-            # Plat will always try plat first, then dp
-            # HGSS will always try hgss first, then plat, then dp
-        # Whatever you do with the old files keep the alts if there are any
+    #gen, game = determine_gen_and_game(cursor, all_sprites, sprite_id, sprite_info)
+    gen = sprite_info["game gen"]
+    game = sprite_info["game name"]
+
     # Hyphen before game allows for alphabetical sorting of back sprites below the front game sprites
     if with_game:
         filename_w_game = f"{poke_num} {sprite_info["poke name"]} Gen{gen}{str("_" + game) if "-Back" in sprite_type else str(" " + game)}{"-Shiny" if is_shiny else ""}{form_name}{sprite_type}.png"
@@ -554,22 +577,41 @@ def generate_filename(cursor, all_sprites, sprite_id, sprite_info, with_game=Tru
         filename_wo_game = f"{poke_num} {sprite_info["poke name"]} {"-Shiny" if is_shiny else ""}{form_name}{sprite_type}.png"
         return filename_wo_game
 
-
+ALL_GAME_SPRITE_FILES = set(os.listdir(game_sprite_path))
 def populate_filenames(cursor):
     print("Populating filenames into database...")
     all_sprites = get_sprites_obtainability_records(cursor)
-    all_files = set(os.listdir(game_sprite_path))
-
+    substitutions_to_convert_to_id = []
+    
     for sprite_id, sprite_info in all_sprites.items():
-        filename = generate_filename(cursor, all_sprites, sprite_id, sprite_info)
-        file_exists = None if not sprite_info["obtainable"] else does_file_exist(filename, all_files)
-        file_ids = {"filename": filename, "poke_num": sprite_id[0], "form_id": sprite_id[1], "game_id": sprite_id[2], "sprite_id": sprite_id[3], "obtainable": sprite_info["obtainable"], "does_exist": file_exists}
+        filename = generate_filename(cursor, sprite_id, sprite_info)
+        file_exists, substitution = check_for_usable_file(filename, sprite_info)
+        has_sub = 1 if substitution!=None else None
+        file_ids = {"filename": filename, "poke_num": sprite_id[0], "form_id": sprite_id[1], "game_id": sprite_id[2], "sprite_id": sprite_id[3], "obtainable": sprite_info["obtainable"], "does_exist": file_exists, "substitution_id": has_sub}
         # Inserting into all filenames table
         insert_into_table(cursor, "all_filenames", **file_ids)
+        filename_id = get_filename_id(cursor, filename)
+        if has_sub: substitutions_to_convert_to_id.append({"file_id": filename_id, "sub_name": substitution})
         # Inserting into only obtainable filenames table
         if sprite_info["obtainable"]:
-            filename_id = get_filename_id(cursor, filename)
             insert_into_table(cursor, "obtainable_filenames", **{"id": filename_id, **file_ids})
+
+    # This is pulled out seperate since it depends on file_ids from all_filenames table, which may not be present yet
+    # This is due to checking if the replacement filename exists in all files
+    # But that replacement filename may not be inserted into the database yet, hence it doesn't have an id
+    change_substitution_field_from_filename_to_file_id(cursor, substitutions_to_convert_to_id)
+
+
+def edit_substitution_field(cursor, record):
+    substitution_id = get_filename_id(cursor, record["sub_name"])
+    cursor.execute(f"UPDATE all_filenames SET substitution_id = {substitution_id} WHERE id = {record["file_id"]}")
+    cursor.execute(f"UPDATE obtainable_filenames SET substitution_id = {substitution_id} WHERE id = {record["file_id"]}")
+
+
+def change_substitution_field_from_filename_to_file_id(cursor, sub_names_to_convert):
+    print("Converting substitution filenames to ids...")
+    for record in sub_names_to_convert:
+        edit_substitution_field(cursor, record)
 
 
 # TODO: Determine Alts elsewhere, perhaps in filename table having a boolean field for Alt
