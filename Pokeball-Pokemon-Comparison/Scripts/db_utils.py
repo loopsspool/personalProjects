@@ -2,6 +2,7 @@ import sqlite3
 import os
 
 from spreadsheet_funcs import *
+from file_utils import game_sprite_path
 
 PARENT_DIR = os.path.join(os.getcwd(), os.pardir)
 DB_NAME = "pokedex.db"
@@ -510,8 +511,24 @@ def seperate_sprite_type_if_shiny(sprite_type):
 
 
 def does_file_exist(filename, all_files):
-    if filename in all_files: return True
-    else: return False
+    if filename in all_files: 
+        return True
+    else:
+        return False
+
+
+GAME_FALLBACKS = {
+    # TODO: Gen1?
+    # TODO: This should only be newest game to oldest, right?
+        # Check and see if theres any missing in, say, diamond_pearl, that platinum has
+    "Silver": ["Gold", "Crystal"],
+    "Crystal": ["Gold"],
+    "Emerald": ["Ruby_Sapphire", "FRLG"],
+    "FRLG": ["Ruby_Sapphire"],
+    "HGSS": ["Platinum", "Diamond_Pearl"],
+    "Platinum": ["Diamond_Pearl"],
+    "SM_USUM": ["XY_ORAS"]
+}
 
 
 # TODO: Will need to adapt for animateds being potentially different filetypes
@@ -541,7 +558,6 @@ def generate_filename(cursor, all_sprites, sprite_id, sprite_info, with_game=Tru
 def populate_filenames(cursor):
     print("Populating filenames into database...")
     all_sprites = get_sprites_obtainability_records(cursor)
-    game_sprite_path = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Game Sprites\\"
     all_files = set(os.listdir(game_sprite_path))
 
     for sprite_id, sprite_info in all_sprites.items():
