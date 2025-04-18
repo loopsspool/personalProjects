@@ -494,18 +494,6 @@ def get_sprites_obtainability_records(cursor):
     return sprites
 
 
-# def determine_gen_and_game(cursor, all_sprites, sprite_id, sprite_info):
-#     gen = sprite_info["game gen"]
-#     game = sprite_info["game name"]
-#     # This accounts for Gen7 SM_USUM reusing Gen6 XY_ORAS sprites (except Glameow), and using Gen6 filenames
-#     if sprite_info["game gen"] == 7 and sprite_info["poke gen"] < 7 and sprite_info["poke num"] != 431:
-#         xy_oras_sprite_equivalent = all_sprites[(sprite_id[0], sprite_id[1], get_game_id(cursor, "XY_ORAS"), sprite_id[3])]
-#         if xy_oras_sprite_equivalent["obtainable"]:
-#             gen = 6
-#             game = "XY_ORAS"
-#     return gen, game
-
-
 def seperate_sprite_type_if_shiny(sprite_type):
     if sprite_type == "Default": return False, ""
     if "-Shiny" not in sprite_type: return False, sprite_type
@@ -559,13 +547,11 @@ GAME_FALLBACKS = {
 }
 
 
-# TODO: If determine gen and game not needed, can delete cursor & all_sprites
 # TODO: Will need to adapt for animateds being potentially different filetypes
-def generate_filename(cursor, sprite_id, sprite_info, with_game=True):
+def generate_filename(sprite_info, with_game=True):
     poke_num = str(sprite_info["poke num"]).zfill(4)
     form_name = "" if sprite_info["form name"] == "Default" else sprite_info["form name"]
     is_shiny, sprite_type = seperate_sprite_type_if_shiny(sprite_info["sprite type"])
-    #gen, game = determine_gen_and_game(cursor, all_sprites, sprite_id, sprite_info)
     gen = sprite_info["game gen"]
     game = sprite_info["game name"]
 
@@ -584,7 +570,7 @@ def populate_filenames(cursor):
     substitutions_to_convert_to_id = []
     
     for sprite_id, sprite_info in all_sprites.items():
-        filename = generate_filename(cursor, sprite_id, sprite_info)
+        filename = generate_filename(sprite_info)
         file_exists, substitution = check_for_usable_file(filename, sprite_info)
         has_sub = 1 if substitution!=None else None
         file_ids = {"filename": filename, "poke_num": sprite_id[0], "form_id": sprite_id[1], "game_id": sprite_id[2], "sprite_id": sprite_id[3], "obtainable": sprite_info["obtainable"], "does_exist": file_exists, "substitution_id": has_sub}
