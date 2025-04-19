@@ -70,6 +70,8 @@ def poke_isnt_in_game(poke_num, game):
     return not is_poke_in_game(poke_num, game)
 
 
+# TODO: Check this lines up with last file check spreadsheet (minus animateds)
+# TODO: Skim through other files that accomplished this and make sure I didn't miss anything
 def create_file_checklist_spreadsheet():
     # This will always create a new file that overrides an existing one
     workbook = xlsxwriter.Workbook('C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Pokemon Images Checklist.xlsx')
@@ -77,14 +79,16 @@ def create_file_checklist_spreadsheet():
     worksheet.freeze_panes(1, 3)
 
     formats = {
-        "green": workbook.add_format({'align': 'center', 'bg_color': '#00cf37', 'font_color': '#00cf37'}),
-        "red": workbook.add_format({'align': 'center', 'bg_color': '#ff0000', 'font_color': '#ff0000'}),
-        "black": workbook.add_format({'align': 'center', 'bg_color': 'black', 'font_color': 'black'})
+        "new poke border": workbook.add_format({'top': 1}),
+        "green": workbook.add_format({'border': 1, 'align': 'center', 'bg_color': '#00cf37', 'font_color': '#00cf37'}),
+        "red": workbook.add_format({'border': 1, 'align': 'center', 'bg_color': '#ff0000', 'font_color': '#ff0000'}),
+        "black": workbook.add_format({'border': 1, 'align': 'center', 'bg_color': 'black', 'font_color': 'black'})
     }
 
     game_cols = generate_header_row(workbook, worksheet)
     write_availability(workbook, worksheet, formats, game_cols)
 
+    print("Done!")
     workbook.close()
 
 
@@ -108,22 +112,27 @@ def generate_header_row(workbook, worksheet):
 
 
 def write_availability(workbook, worksheet, formats, game_cols):
-    print("Writing availability of files...")
     from db_utils import get_all_filenames_info, get_poke_name, get_game_name
     
     all_file_info = get_all_filenames_info()
-    for row in all_file_info: print(row)
 
+    print("Writing availability of files...")
+    prev_poke_num = 1
     # Starting at 1 because row 0 is the header row
-    for i, row in enumerate(all_file_info, start=1):
-        poke_num = row["poke_num"]
+    for i, (poke_sprite_form_id, games) in enumerate(all_file_info.items(), start=1):
+        poke_num = poke_sprite_form_id[0]
         poke_name = get_poke_name(poke_num)
-        tags = get_poke_tags(poke_name, row["filename"])
-        game = get_game_name(row["game_id"])
-        worksheet.write(i, 0, poke_num)
-        worksheet.write(i, 1, poke_name)
-        worksheet.write(i, 2, tags)
-        write_sprite_status_for_game(workbook, worksheet, formats, i, game_cols, game, row["obtainable"], row["does_exist"], row["substitution_id"])
+        # Any game would work here for tags, just pulling it out of the next loop so it isn't rewritten for each game
+        tags = get_poke_tags(poke_name, games["SV"]["filename"])
+        # Putting a top border on if its a new poke
+        sprite_info_format = formats["new poke border"] if prev_poke_num != poke_num else None
+        worksheet.write(i, 0, poke_num, sprite_info_format)
+        worksheet.write(i, 1, poke_name, sprite_info_format)
+        worksheet.write(i, 2, tags, sprite_info_format)
+        for game_name, sprite_data in games.items():
+            write_sprite_status_for_game(workbook, worksheet, formats, i, game_cols, game_name, sprite_data["obtainable"], sprite_data["exists"], sprite_data["has_sub"])
+        
+        prev_poke_num = poke_num
         
 
 def write_sprite_status_for_game(workbook, worksheet, formats, row, game_cols, game, obtainable, exists, sub):
@@ -147,7 +156,7 @@ def denote_file_status(obtainable, exists, sub):
     else:
         if exists:
             # If image is substituted, denote that
-            if sub != None:
+            if sub:
                 text = "S"
             else:
                 text = "X"
@@ -161,7 +170,13 @@ def get_poke_tags(poke_name, filename):
     if "-" in poke_name:
         max_split = 2
     split_filename = filename.split("-", max_split)
-    tags = "-" + split_filename[len(split_filename)-1]
+    # If theres no tags in the filename, return an empty string
+    if len(split_filename) > 1:
+        tags = "-" + split_filename[len(split_filename)-1]
+        # Getting rid of file extenstion
+        tags = tags[:-4]
+    else:
+        tags = ""
     return tags
 
 create_file_checklist_spreadsheet()

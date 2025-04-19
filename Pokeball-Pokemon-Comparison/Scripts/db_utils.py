@@ -1,5 +1,6 @@
 import sqlite3
 import os
+from collections import defaultdict
 
 from file_utils import game_sprite_path
 
@@ -139,13 +140,10 @@ def get_game_id(cursor, game_name):
     if game_id: return game_id[0]
     else: return None
 
-# Running seperate connection so I can call this from spreadsheet_utils
-def get_game_name(game_id):
-    connection = sqlite3.connect(DB_PATH)
-    cursor = connection.cursor()
+
+def get_game_name(cursor, game_id):
     cursor.execute(f"SELECT name FROM games WHERE id={game_id}")
     game_name=cursor.fetchone()
-    connection.close()
     if game_name: return game_name[0]
     else: return None
 
@@ -170,16 +168,26 @@ def get_filename_id(cursor, filename):
 
 # Running seperate connection so I can call this from spreadsheet_utils
 def get_all_filenames_info():
+    print("Fetching file info from database...")
     connection = sqlite3.connect(DB_PATH)
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
 
     cursor.execute("SELECT * FROM all_filenames")
     rows = cursor.fetchall()
+    data = defaultdict(lambda: defaultdict(dict))
 
-    result_arr = [dict(row) for row in rows]
+    # Organizing database in more efficient way for order of processing for checklist spreadsheet
+    for row in rows:
+        main_key = (row["poke_num"], row["form_id"], row["sprite_id"])
+        game = get_game_name(cursor, row["game_id"])
+        data[main_key][game]["filename"] = row["filename"]
+        data[main_key][game]["obtainable"] = True if row["obtainable"] else False
+        data[main_key][game]["exists"] = True if row["does_exist"] else False
+        data[main_key][game]["has_sub"] = row["substitution_id"] != None
+
     connection.close()
-    return result_arr
+    return data
 
 
 def db_exists():
@@ -678,4 +686,4 @@ def get_last_poke_num():
     connection.close()
     return max_num
 
-populate_db()
+#populate_db()
