@@ -21,8 +21,7 @@ games = get_game_records(cursor)
 pfgo = get_poke_form_obtainability_records(cursor)
 sprite_types = get_sprite_types(cursor)
 
-# TODO: Add Deoxys Forms (different in sapp, em, frlg)
-# TODO: Adapt Pichu form so only in HGSS
+
 @pytest.mark.parametrize("poke_form_id, game_id, expected", [
     # Species game availability
     ((152, default_form_id), get_game_id(cursor, "LGPE"), False),
