@@ -1,5 +1,6 @@
 import sqlite3
 import os
+import importlib
 from collections import defaultdict
 
 from file_utils import game_sprite_path
@@ -190,6 +191,15 @@ def get_all_filenames_info():
     return data
 
 
+# To cache dynamically imported funcs from spreadsheet_utils so it only imports once
+# Necessary to avoid circular import
+_module_cache = {}
+def lazy_import(module_name):
+    if module_name not in _module_cache:
+        _module_cache[module_name] = importlib.import_module(module_name)
+    return _module_cache[module_name]
+
+
 def db_exists():
     return os.path.exists(DB_PATH)
 
@@ -354,11 +364,11 @@ def populate_games(cursor):
 # TODO: Check this still works since I put dependency inside a function
 FORM_EXCLUSIONS = {
     # Species game availability
-    "filtering_for_LGPE_dex_if_needed": lambda poke_form, game: game["name"] == "LGPE" and poke_isnt_in_game(poke_form["poke num"], "LGPE"),
-    "filtering_for_SwSh_dex_if_needed": lambda poke_form, game: game["name"] == "SwSh" and poke_isnt_in_game(poke_form["poke num"], "SwSh"),
-    "filtering_for_BDSP_dex_if_needed": lambda poke_form, game: game["name"] == "BDSP" and poke_isnt_in_game(poke_form["poke num"], "BDSP"),
-    "filtering_for_LA_dex_if_needed": lambda poke_form, game: game["name"] == "LA" and poke_isnt_in_game(poke_form["poke num"], "LA"),
-    "filtering_for_SV_dex_if_needed": lambda poke_form, game: game["name"] == "SV" and poke_isnt_in_game(poke_form["poke num"], "SV"),
+    "filtering_for_LGPE_dex_if_needed": lambda poke_form, game: game["name"] == "LGPE" and lazy_import("spreadsheet_funcs").poke_isnt_in_game(poke_form["poke num"], "LGPE"),
+    "filtering_for_SwSh_dex_if_needed": lambda poke_form, game: game["name"] == "SwSh" and lazy_import("spreadsheet_funcs").poke_isnt_in_game(poke_form["poke num"], "SwSh"),
+    "filtering_for_BDSP_dex_if_needed": lambda poke_form, game: game["name"] == "BDSP" and lazy_import("spreadsheet_funcs").poke_isnt_in_game(poke_form["poke num"], "BDSP"),
+    "filtering_for_LA_dex_if_needed": lambda poke_form, game: game["name"] == "LA" and lazy_import("spreadsheet_funcs").poke_isnt_in_game(poke_form["poke num"], "LA"),
+    "filtering_for_SV_dex_if_needed": lambda poke_form, game: game["name"] == "SV" and lazy_import("spreadsheet_funcs").poke_isnt_in_game(poke_form["poke num"], "SV"),
 
     # Universal Rules
     "no_pokemon_with_a_higher_generation_than_game_generation": lambda poke_form, game: poke_form["poke gen"] > game["gen"],
@@ -398,15 +408,10 @@ FORM_EXCLUSIONS = {
     "no_meltan_or_melmetal_until_gen_8": lambda poke_form, game: poke_form["poke num"] in (808, 809) and (game["name"] != "LGPE" and game["gen"] < 8)    # Technically these are gen 7 pokemon, that weren't available until gen 8 (excluding LGPE)
 }
 def is_form_obtainable(form, game):
-    load_spreadsheet_funcs_dependency()
     for exclusion in FORM_EXCLUSIONS.values():
         if exclusion(form, game):
             return False
     return True
-
-
-def load_spreadsheet_funcs_dependency():
-    from spreadsheet_funcs import poke_isnt_in_game
 
 
 # TODO: Add ON CONFLICT to INSERT OR IGNORE statements to update values? See where relevant
@@ -440,7 +445,7 @@ def entry_exists(cursor, table, cols):
 
 # Default meaning front, normal color, static sprite
 # Show stamp for the tea/matcha pokemon (854, 855, 1012, 1013)
-SPRITE_TYPES = ["Default", "-Shiny", "-Back", "-Animated", "-Shiny-Back", "-Shiny-Animated", "-Shiny-Back-Animated", "-Back-Animated", "-Show_Stamp"]
+SPRITE_TYPES = ["Default", "-Animated", "-Shiny", "-Shiny-Animated", "-Back", "-Back-Animated", "-Shiny-Back", "-Shiny-Back-Animated", "-Show_Stamp"]
 def populate_sprite_types(cursor):
     print("Populating sprite types into database...")
     for type in SPRITE_TYPES:
@@ -686,4 +691,4 @@ def get_last_poke_num():
     connection.close()
     return max_num
 
-#populate_db()
+populate_db()
