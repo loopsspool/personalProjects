@@ -135,7 +135,7 @@ def write_availability(workbook, worksheet, formats, game_cols):
         # Putting a top border on if its a new poke
         if prev_poke_num != poke_num:
             is_new_poke = True
-            print(f"\rWriting {poke_num} {poke_name} file availability...", end='', flush=True)
+            print(f"\rWriting pokemon #{poke_num} file availability...", end='', flush=True)
             sprite_info_format = formats["new poke info"]
         else:
             is_new_poke = False
@@ -147,6 +147,8 @@ def write_availability(workbook, worksheet, formats, game_cols):
             write_sprite_status_for_game(workbook, worksheet, formats, is_new_poke, i, game_cols, game_name, sprite_data["obtainable"], sprite_data["exists"], sprite_data["has_sub"])
         
         prev_poke_num = poke_num
+    # Resetting console line after updates from above
+    print('\r' + ' '*45 + '\r', end='')
         
 
 def write_sprite_status_for_game(workbook, worksheet, formats, is_new_poke, row, game_cols, game, obtainable, exists, sub):
@@ -196,7 +198,6 @@ def get_poke_tags(poke_name, filename):
     return tags
 
 
-create_file_checklist_spreadsheet()
 # TODO: Capitalize constants
 # TODO: Verify poke_info_last_row used instead of pokemon_files_sheet.max_row
 # Spreadsheet For Pokedex Info

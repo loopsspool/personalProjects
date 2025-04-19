@@ -180,12 +180,16 @@ def get_all_filenames_info():
 
     # Organizing database in more efficient way for order of processing for checklist spreadsheet
     for row in rows:
+        print(f"\rGetting pokemon #{row["poke_num"]} file availability...", end='', flush=True)
+        
         main_key = (row["poke_num"], row["form_id"], row["sprite_id"])
         game = get_game_name(cursor, row["game_id"])
         data[main_key][game]["filename"] = row["filename"]
         data[main_key][game]["obtainable"] = True if row["obtainable"] else False
         data[main_key][game]["exists"] = True if row["does_exist"] else False
         data[main_key][game]["has_sub"] = row["substitution_id"] != None
+    # Resetting console line after updates from above
+    print('\r' + ' '*45 + '\r', end='')
 
     connection.close()
     return data
@@ -340,8 +344,8 @@ GAMES = (
     ("Silver", 2),
     ("Crystal", 2),
     ("Ruby_Sapphire", 3),
-    ("Emerald", 3),
     ("FRLG", 3),
+    ("Emerald", 3),
     ("Diamond_Pearl", 4),
     ("Platinum", 4),
     ("HGSS", 4),
@@ -361,7 +365,6 @@ def populate_games(cursor):
         insert_into_table(cursor, "games", **{"name": game[0], "gen": game[1]})
 
 
-# TODO: Check this still works since I put dependency inside a function
 FORM_EXCLUSIONS = {
     # Species game availability
     "filtering_for_LGPE_dex_if_needed": lambda poke_form, game: game["name"] == "LGPE" and lazy_import("spreadsheet_funcs").poke_isnt_in_game(poke_form["poke num"], "LGPE"),
@@ -425,12 +428,15 @@ def populate_form_game_obtainability(cursor, force):
     # Running all pokemon forms through all games to check if its obtainable
     for poke_form_id, poke_form_info in poke_forms.items():
         for game_id, game_info in games.items():
+            print(f"\rChecking {poke_form_info["poke num"]} form obtainability...", end='', flush=True)
             # Quick workaround to make it run faster, only generating obtainability if forced or the record doesn't exist yet
             if force or not entry_exists(cursor, "form_game_obtainability", {"poke_num": poke_form_id[0], "form_id": poke_form_id[1], "game_id": game_id}):
                 # NOTE: Getting dict values in tuples is where things are being slowed down... namedtuples can speed that up with some effort
                 obtainable = is_form_obtainable(poke_form_info, game_info)
                 form_game_obtainability[(poke_form_id, game_id)] = {"poke_num": poke_form_id[0], "form_id": poke_form_id[1], "game_id": game_id, "obtainable": obtainable}
 
+    # Resetting console line after updates from above
+    print('\r' + ' '*60 + '\r', end='')
     for form_info in form_game_obtainability.values(): insert_into_table(cursor, "form_game_obtainability", **form_info)
 
 
@@ -629,6 +635,7 @@ def populate_filenames(cursor):
     substitutions_to_convert_to_id = []
     
     for sprite_id, sprite_info in all_sprites.items():
+        print(f"\rGenerating pokemon #{sprite_info["poke num"]} filename...", end='', flush=True)
         filename = generate_filename(sprite_info)
         file_exists, substitution = check_for_usable_file(filename, sprite_info)
         has_sub = 1 if substitution!=None else None
@@ -640,6 +647,9 @@ def populate_filenames(cursor):
         # Inserting into only obtainable filenames table
         if sprite_info["obtainable"]:
             insert_into_table(cursor, "obtainable_filenames", **{"id": filename_id, **file_ids})
+
+    # Resetting console line after updates from above
+    print('\r' + ' '*50 + '\r', end='')
 
     # This is pulled out seperate since it depends on file_ids from all_filenames table, which may not be present yet
     # This is due to checking if the replacement filename exists in all files
