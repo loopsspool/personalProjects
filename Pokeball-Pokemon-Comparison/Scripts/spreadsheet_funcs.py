@@ -6,7 +6,7 @@ from openpyxl import load_workbook
 # TODO: Add menu sprites and drawn images sheet to file checklist
 # TODO: Run file checklist at end of each scrape? update when image found?
 # TODO: Make sure run new file checklist if new pokes added to poke_info sheet
-# TODO: Check if there's any female backs missing where male backs are present... May only have visual difference in front and sprite is recycled for back
+
 
 # NOTE: Commented out to prevent circular import before refactoring
 #from bulba_translators import bulba_doesnt_have_this_form, determine_bulba_name

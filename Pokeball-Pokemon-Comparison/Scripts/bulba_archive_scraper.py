@@ -39,6 +39,7 @@ from scraping import get_game_img_urls, scrape_game_imgs
 # TODO: No 854, 855 form sprites saved prolly bc improper scrape script
 # TODO: Radiant Sun Solgaleo and Full Moon Lunala sprites are wrong too
 # TODO: And Unown A, looks like in Bulba sometimes it has the A, sometimes its just 201
+# TODO: Gorgeist small forms wrong somehow?
 # TODO: No form tags in drawn images
 # TODO: Wikidex has 2 images for each back sprite in gen4, see if there are any other games like this and figure out how to get them
 # TODO: Run analysis on Gen1-4 to see if theres any sprites missing from any individual game

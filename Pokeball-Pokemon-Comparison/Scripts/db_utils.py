@@ -9,6 +9,11 @@ PARENT_DIR = os.path.join(os.getcwd(), os.pardir)
 DB_NAME = "pokedex.db"
 DB_PATH = os.path.join(PARENT_DIR, DB_NAME)
 
+# TODO: Something wrong with 669 flabebe? Maybe the marks over the e's?
+# TODO: And 555 Region Galar?
+# TODO: White striped Basculin not in older games? Added in LA?
+# TODO: Check if there's any female backs missing where male backs are present... May only have visual difference in front and sprite is recycled for back
+# TODO: Gen3 Castform forms recorded as missing?
 
 def create_db():
     print("Creating pokedex database...")
@@ -503,6 +508,7 @@ def is_sprite_possible(pfgo_info, sprite_type):
     return True
 
 
+# TODO: Figure out what to do with 854, 855, 1012, 1013... Should antique/phony, etc forms only be allowed on show stamp sprites?
 # Sprites that don't exist. Shouldn't even be marked unobtainable, which is why theyre here not SPRITE_EXCLUSIONS
 NONEXISTANT_SPRITES={
     "no_shiny_cosplay_pikachu": lambda poke_num, form_name, sprite_type: poke_num == 25 and "-Form_Cosplay" in form_name and "Shiny" in sprite_type,
