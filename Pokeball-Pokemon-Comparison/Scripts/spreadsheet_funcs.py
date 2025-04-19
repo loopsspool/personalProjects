@@ -103,7 +103,7 @@ def generate_header_row(workbook, worksheet):
     print("Generating header row...")
     from db_utils import GAMES
     
-    h_format = workbook.add_format({'bold': True, 'align': 'center', 'bg_color': 'gray', 'border': 1})
+    h_format = workbook.add_format({'bold': True, 'align': 'center', 'bg_color': 'gray', 'bottom': 5, 'top': 1, 'left': 1, 'right': 1})
     worksheet.set_row(0, None, h_format)
     worksheet.write(0, 0, "#")
     worksheet.write(0, 1, "Name")
