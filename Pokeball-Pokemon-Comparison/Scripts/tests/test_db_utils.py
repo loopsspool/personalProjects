@@ -21,6 +21,8 @@ games = get_game_records(cursor)
 pfgo = get_poke_form_obtainability_records(cursor)
 sprite_types = get_sprite_types(cursor)
 
+# TODO: Add Deoxys Forms (different in sapp, em, frlg)
+# TODO: Adapt Pichu form so only in HGSS
 @pytest.mark.parametrize("poke_form_id, game_id, expected", [
     # Species game availability
     ((152, default_form_id), get_game_id(cursor, "LGPE"), False),
@@ -83,7 +85,8 @@ sprite_types = get_sprite_types(cursor)
     ((133, get_form_id(cursor, "-f")), get_game_id(cursor, "SM_USUM"), False),
     ((133, get_form_id(cursor, "-f")), get_game_id(cursor, "SwSh"), True),
     ((172, get_form_id(cursor, "-Form_Spiky_Eared")), get_game_id(cursor, "Emerald"), False),
-    ((172, get_form_id(cursor, "-Form_Spiky_Eared")), get_game_id(cursor, "Diamond_Pearl"), True),
+    ((172, get_form_id(cursor, "-Form_Spiky_Eared")), get_game_id(cursor, "Diamond_Pearl"), False),
+    ((172, get_form_id(cursor, "-Form_Spiky_Eared")), get_game_id(cursor, "HGSS"), True),
     ((201, get_form_id(cursor, "-Form_!")), get_game_id(cursor, "Gold"), False),
     ((201, get_form_id(cursor, "-Form_Qmark")), get_game_id(cursor, "Crystal"), False),
     ((201, get_form_id(cursor, "-Form_!")), get_game_id(cursor, "Ruby_Sapphire"), True),
@@ -102,6 +105,18 @@ sprite_types = get_sprite_types(cursor)
     ((487, get_form_id(cursor, "-Form_Origin")), get_game_id(cursor, "Diamond_Pearl"), False),
     ((487, get_form_id(cursor, "-Form_Origin")), get_game_id(cursor, "Platinum"), True),
     ((487, get_form_id(cursor, "-Form_Origin")), get_game_id(cursor, "BW_B2W2"), True),
+    ((386, default_form_id), get_game_id(cursor, "Ruby_Sapphire"), True),
+    ((386, get_form_id(cursor, "-Form_Attack")), get_game_id(cursor, "Ruby_Sapphire"), False),
+    ((386, get_form_id(cursor, "-Form_Defense")), get_game_id(cursor, "Ruby_Sapphire"), False),
+    ((386, get_form_id(cursor, "-Form_Speed")), get_game_id(cursor, "Ruby_Sapphire"), False),
+    ((386, default_form_id), get_game_id(cursor, "Emerald"), True),
+    ((386, get_form_id(cursor, "-Form_Attack")), get_game_id(cursor, "Emerald"), False),
+    ((386, get_form_id(cursor, "-Form_Defense")), get_game_id(cursor, "Emerald"), False),
+    ((386, get_form_id(cursor, "-Form_Speed")), get_game_id(cursor, "Emerald"), True),
+    ((386, default_form_id), get_game_id(cursor, "FRLG"), True),
+    ((386, get_form_id(cursor, "-Form_Attack")), get_game_id(cursor, "FRLG"), True),
+    ((386, get_form_id(cursor, "-Form_Defense")), get_game_id(cursor, "FRLG"), True),
+    ((386, get_form_id(cursor, "-Form_Speed")), get_game_id(cursor, "FRLG"), False),
     ((492, get_form_id(cursor, "-Form_Sky")), get_game_id(cursor, "Diamond_Pearl"), False),
     ((492, get_form_id(cursor, "-Form_Sky")), get_game_id(cursor, "Platinum"), True),
     ((492, get_form_id(cursor, "-Form_Sky")), get_game_id(cursor, "BW_B2W2"), True),

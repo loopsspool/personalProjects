@@ -333,9 +333,12 @@ FORM_EXCLUSIONS = {
     "no_world_cap_pikachu_outside_of_these_games": lambda poke_form, game: poke_form["poke num"] == 25 and poke_form["form name"] == "-Form_Cap_World" and game["name"] not in ("SwSh", "SV"),
     "no_paldean_form_tauros_in_older_games": lambda poke_form, game: poke_form["poke num"] == 128 and poke_form["form name"] != "Default" and game["name"] != "SV",
     "no_female_form_eevees_until_gen_8": lambda poke_form, game: poke_form["poke num"] == 133 and poke_form["form name"] == "-f" and game["gen"] < 8,
-    "no_spiky_eared_pichu_outside_gen_4": lambda poke_form, game: poke_form["poke num"] == 172 and poke_form["form name"] == "-Form_Spiky_Eared" and game["gen"] != 4,
+    "no_spiky_eared_pichu_outside_HGSS": lambda poke_form, game: poke_form["poke num"] == 172 and poke_form["form name"] == "-Form_Spiky_Eared" and game["name"] != "HGSS",
     "no_unown_punctuation_before_gen_3": lambda poke_form, game: poke_form["poke num"] == 201 and poke_form["form name"] in ("-Form_!", "-Form_Qmark") and game["gen"] < 3,
     "no_primal_kyogre_or_groudon_outside_gen_6_and_7": lambda poke_form, game: (poke_form["poke num"] in (382, 383)) and poke_form["form name"] == "-Form_Primal" and game["gen"] not in (6, 7),
+    "no_deoxys_non_normal_forms_in_ruby_sapphire": lambda poke_form, game: poke_form["poke num"] == 386 and game["name"] == "Ruby_Sapphire" and poke_form["form name"] != "Default",
+    "no_deoxys_speed_form_in_FRLG": lambda poke_form, game: poke_form["poke num"] == 386 and game["name"] == "FRLG" and poke_form["form name"] == "-Form_Speed",
+    "no_deoxys_attack_and_defense_form_in_emerald": lambda poke_form, game: poke_form["poke num"] == 386 and game["name"] == "Emerald" and poke_form["form name"] in ("-Form_Attack", "-Form_Defense"),
     "no_rotom_forms_until_after_platinum": lambda poke_form, game: poke_form["poke num"] == 479 and poke_form["form name"] != "Default" and game["name"] == "Diamond_Pearl",
     "no_origin_dialga_palkia_forms_until_after_LA": lambda poke_form, game: poke_form["poke num"] in (483, 484) and poke_form["form name"] == "-Form_Origin" and game["name"] not in ("LA", "SV"),
     "no_origin_form_giratina_until_after_platinum": lambda poke_form, game: poke_form["poke num"] == 487 and poke_form["form name"] == "-Form_Origin" and game["name"] == "Diamond_Pearl",
@@ -535,8 +538,6 @@ def game_adjustment_for_back(filename, game):
 
 GAME_FALLBACKS = {
     # TODO: Gen1?
-    # TODO: This should only be newest game to oldest, right?
-        # Check and see if theres any missing in, say, diamond_pearl, that platinum has
     "Gen2 Silver": ["Gen2 Gold", "Gen2 Crystal"],
     "Gen2 Crystal": ["Gen2 Gold"],
     "Gen3 Emerald": ["Gen3 Ruby_Sapphire", "Gen3 FRLG"],
@@ -562,6 +563,7 @@ def generate_filename(sprite_info, with_game=True):
     if not with_game:
         filename_wo_game = f"{poke_num} {sprite_info["poke name"]} {"-Shiny" if is_shiny else ""}{form_name}{sprite_type}.png"
         return filename_wo_game
+
 
 ALL_GAME_SPRITE_FILES = set(os.listdir(game_sprite_path))
 def populate_filenames(cursor):
