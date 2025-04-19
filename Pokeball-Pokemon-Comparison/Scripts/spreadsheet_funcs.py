@@ -1,4 +1,5 @@
 import re
+import xlsxwriter
 
 from openpyxl import load_workbook
 
@@ -6,11 +7,13 @@ from openpyxl import load_workbook
 #from bulba_translators import bulba_doesnt_have_this_form, determine_bulba_name
 from game_tools import combine_gen_and_game
 
+
 def normalize_empty_in_sheet(sheet):
     for row in sheet.iter_rows():
         for cell in row:
             if cell.value is None or (isinstance(cell.value, str) and cell.value.strip() == ""):
                 cell.value = None
+
 
 def load_sheet_from_excel(wb_path, sheet_index=0):
     workbook = load_workbook(filename = wb_path, data_only=True)
@@ -19,14 +22,18 @@ def load_sheet_from_excel(wb_path, sheet_index=0):
     workbook.close()
     return sheet
 
+
 def cell_value(sheet, row, col):
     return (sheet.cell(row, col).value)
+
 
 def isnt_empty(sheet, row, col):
     return (cell_value(sheet, row, col) != None)
 
+
 def is_empty(sheet, row, col):
     return (cell_value(sheet, row, col) == None)
+
 
 # Returns column number from column name
 def get_col_number(sheet, col_name):
@@ -34,15 +41,18 @@ def get_col_number(sheet, col_name):
         if (cell_value(sheet, 1, col) == col_name):
             return col
 
+
 # Returns column name from column number
 def get_col_name(sheet, col_number):
     return(cell_value(sheet, 1, col_number))
+
 
 def get_last_row(sheet):
     for row in reversed(range(1, sheet.max_row + 1)):
         if any(sheet.cell(row, col).value is not None for col in range(1, sheet.max_column + 1)):
             return row
         
+
 def sheet_pretty_print(sheet):
     for row in sheet.iter_rows(values_only=True):
         print("\t".join(str(cell) if cell is not None else "None" for cell in row))
@@ -55,9 +65,106 @@ def is_poke_in_game(poke_num, game):
         if str(cell_value(pokemon_info_sheet, row, poke_info_num_col)) == poke_num:
             return isnt_empty(pokemon_info_sheet, row, game_availability_col)
         
+
 def poke_isnt_in_game(poke_num, game):
     return not is_poke_in_game(poke_num, game)
 
+
+def create_file_checklist_spreadsheet():
+    # This will always create a new file that overrides an existing one
+    workbook = xlsxwriter.Workbook('C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Pokemon Images Checklist.xlsx')
+    worksheet = workbook.add_worksheet()
+    worksheet.freeze_panes(1, 3)
+
+    formats = {
+        "green": workbook.add_format({'align': 'center', 'bg_color': '#00cf37', 'font_color': '#00cf37'}),
+        "red": workbook.add_format({'align': 'center', 'bg_color': '#ff0000', 'font_color': '#ff0000'}),
+        "black": workbook.add_format({'align': 'center', 'bg_color': 'black', 'font_color': 'black'})
+    }
+
+    game_cols = generate_header_row(workbook, worksheet)
+    write_availability(workbook, worksheet, formats, game_cols)
+
+    workbook.close()
+
+
+def generate_header_row(workbook, worksheet):
+    print("Generating header row...")
+    from db_utils import GAMES
+    
+    h_format = workbook.add_format({'bold': True, 'align': 'center', 'bg_color': 'gray', 'border': 1})
+    worksheet.set_row(0, None, h_format)
+    worksheet.write(0, 0, "#")
+    worksheet.write(0, 1, "Name")
+    worksheet.write(0, 2, "Tags")
+    col_num = 3
+    game_cols = {}
+    for game in reversed(GAMES):
+        worksheet.write(0, col_num, game[0])
+        game_cols[game[0]] = col_num
+        col_num += 1
+
+    return game_cols
+
+
+def write_availability(workbook, worksheet, formats, game_cols):
+    print("Writing availability of files...")
+    from db_utils import get_all_filenames_info, get_poke_name, get_game_name
+    
+    all_file_info = get_all_filenames_info()
+    for row in all_file_info: print(row)
+
+    # Starting at 1 because row 0 is the header row
+    for i, row in enumerate(all_file_info, start=1):
+        poke_num = row["poke_num"]
+        poke_name = get_poke_name(poke_num)
+        tags = get_poke_tags(poke_name, row["filename"])
+        game = get_game_name(row["game_id"])
+        worksheet.write(i, 0, poke_num)
+        worksheet.write(i, 1, poke_name)
+        worksheet.write(i, 2, tags)
+        write_sprite_status_for_game(workbook, worksheet, formats, i, game_cols, game, row["obtainable"], row["does_exist"], row["substitution_id"])
+        
+
+def write_sprite_status_for_game(workbook, worksheet, formats, row, game_cols, game, obtainable, exists, sub):
+    game_col = game_cols[game]
+    text = denote_file_status(obtainable, exists, sub)
+    format = determine_format(text)
+
+    worksheet.write(row, game_col, text, formats[format])
+
+
+def determine_format(text):
+    if text == "U": return "black"
+    if text in ("S", "X"): return "green"
+    if text == "M": return "red"
+
+
+def denote_file_status(obtainable, exists, sub):
+    text = ""
+    if not obtainable:
+        text = "U"
+    else:
+        if exists:
+            # If image is substituted, denote that
+            if sub != None:
+                text = "S"
+            else:
+                text = "X"
+        else:
+            text = "M"
+    return text
+
+
+def get_poke_tags(poke_name, filename):
+    max_split = 1
+    if "-" in poke_name:
+        max_split = 2
+    split_filename = filename.split("-", max_split)
+    tags = "-" + split_filename[len(split_filename)-1]
+    return tags
+
+create_file_checklist_spreadsheet()
 # TODO: Capitalize constants
 # TODO: Verify poke_info_last_row used instead of pokemon_files_sheet.max_row
 # Spreadsheet For Pokedex Info

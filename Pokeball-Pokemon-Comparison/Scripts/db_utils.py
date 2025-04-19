@@ -1,7 +1,6 @@
 import sqlite3
 import os
 
-from spreadsheet_funcs import *
 from file_utils import game_sprite_path
 
 PARENT_DIR = os.path.join(os.getcwd(), os.pardir)
@@ -108,6 +107,7 @@ def create_db():
         obtainable BOOLEAN NOT NULL,
         does_exist BOOLEAN,
         substitution_id INTEGER,
+        FOREIGN KEY (substitution_id) REFERENCES all_filenames(id)
         FOREIGN KEY (id) REFERENCES all_filenames(id),
         FOREIGN KEY (poke_num, form_id, game_id, sprite_id) REFERENCES sprite_obtainability
     );
@@ -139,6 +139,27 @@ def get_game_id(cursor, game_name):
     if game_id: return game_id[0]
     else: return None
 
+# Running seperate connection so I can call this from spreadsheet_utils
+def get_game_name(game_id):
+    connection = sqlite3.connect(DB_PATH)
+    cursor = connection.cursor()
+    cursor.execute(f"SELECT name FROM games WHERE id={game_id}")
+    game_name=cursor.fetchone()
+    connection.close()
+    if game_name: return game_name[0]
+    else: return None
+
+
+# Running seperate connection so I can call this from spreadsheet_utils
+def get_poke_name(poke_id):
+    connection = sqlite3.connect(DB_PATH)
+    cursor = connection.cursor()
+    cursor.execute(f"SELECT name FROM pokemon WHERE num={poke_id}")
+    poke_name=cursor.fetchone()
+    connection.close()
+    if poke_name: return poke_name[0]
+    else: return None
+
 
 def get_filename_id(cursor, filename):
     cursor.execute("SELECT id FROM all_filenames WHERE filename=?", (filename,))
@@ -147,12 +168,27 @@ def get_filename_id(cursor, filename):
     else: return None
 
 
+# Running seperate connection so I can call this from spreadsheet_utils
+def get_all_filenames_info():
+    connection = sqlite3.connect(DB_PATH)
+    connection.row_factory = sqlite3.Row
+    cursor = connection.cursor()
+
+    cursor.execute("SELECT * FROM all_filenames")
+    rows = cursor.fetchall()
+
+    result_arr = [dict(row) for row in rows]
+    connection.close()
+    return result_arr
+
+
 def db_exists():
     return os.path.exists(DB_PATH)
 
 
 def populate_pokes(cursor):
     print("Populating Pokemon into database...")
+    from spreadsheet_funcs import POKE_INFO_LAST_ROW, cell_value, pokemon_info_sheet, poke_info_num_col, poke_info_name_col, poke_info_gen_col
 
     # Grabbing information from pokemon info spreadsheet
     for row in range(2, POKE_INFO_LAST_ROW + 1):
@@ -180,6 +216,7 @@ def denote_forms(forms, denotion):
 
 
 def get_forms_from_excel(row):
+    from spreadsheet_funcs import cell_value, isnt_empty, pokemon_info_sheet, poke_info_num_col, poke_info_reg_forms_col, poke_info_misc_forms_col, poke_info_f_col, poke_info_mega_col, poke_info_giganta_col
     forms = []
     poke_num = int(cell_value(pokemon_info_sheet, row, poke_info_num_col))
     regional_form_field = cell_value(pokemon_info_sheet, row, poke_info_reg_forms_col)
@@ -222,6 +259,7 @@ SHARED_SHINY_FORMS = {  774: ["-Form_Core"],
 }
 def populate_forms(cursor):
     print("Populating forms into database...")
+    from spreadsheet_funcs import POKE_INFO_LAST_ROW
 
     for row in range(2, POKE_INFO_LAST_ROW + 1): 
         poke_num = row-1
@@ -305,6 +343,7 @@ def populate_games(cursor):
         insert_into_table(cursor, "games", **{"name": game[0], "gen": game[1]})
 
 
+# TODO: Check this still works since I put dependency inside a function
 FORM_EXCLUSIONS = {
     # Species game availability
     "filtering_for_LGPE_dex_if_needed": lambda poke_form, game: game["name"] == "LGPE" and poke_isnt_in_game(poke_form["poke num"], "LGPE"),
@@ -351,10 +390,15 @@ FORM_EXCLUSIONS = {
     "no_meltan_or_melmetal_until_gen_8": lambda poke_form, game: poke_form["poke num"] in (808, 809) and (game["name"] != "LGPE" and game["gen"] < 8)    # Technically these are gen 7 pokemon, that weren't available until gen 8 (excluding LGPE)
 }
 def is_form_obtainable(form, game):
+    load_spreadsheet_funcs_dependency()
     for exclusion in FORM_EXCLUSIONS.values():
         if exclusion(form, game):
             return False
     return True
+
+
+def load_spreadsheet_funcs_dependency():
+    from spreadsheet_funcs import poke_isnt_in_game
 
 
 # TODO: Add ON CONFLICT to INSERT OR IGNORE statements to update values? See where relevant
