@@ -350,6 +350,8 @@ def get_game_records(cursor):
     return games
 
 
+# NOTE: These are in chronological order and that is IMPORTANT since I rely on game ids sometimes for form filtering (eg mid gen form introductions)
+# TODO: If putting pokemon HOME sprites here (which I recommend against, since it isnt a game), make sure its listed last so it can have all the forms available
 GAMES = (
     ("Red_Green", 1),
     ("Red_Blue", 1),
@@ -379,7 +381,6 @@ def populate_games(cursor):
         insert_into_table(cursor, "games", **{"name": game[0], "gen": game[1]})
 
 
-# TODO: Instead of doing game in for certain games, pass game id, or find from game name and only greater/less than that (then when new game added dont have to explicitly add it here)
 FORM_EXCLUSIONS = {
     # Species game availability
     "filtering_for_LGPE_dex_if_needed": lambda poke_form, game: game["name"] == "LGPE" and lazy_import("spreadsheet_funcs").poke_isnt_in_game(poke_form["poke num"], "LGPE"),
@@ -392,39 +393,41 @@ FORM_EXCLUSIONS = {
     "no_pokemon_with_a_higher_generation_than_game_generation": lambda poke_form, game: poke_form["poke gen"] > game["gen"],
     "no_f_form_visual_differences_before_gen_4": lambda poke_form, game: poke_form["form name"] == "-f" and game["gen"] < 4,
     "no_fairy_forms_before_gen_6": lambda poke_form, game: poke_form["form name"] == "-Form_Fairy" and game["gen"] < 6,
-    "no_megas_outside_gen_6_and_7_excluding_LGPE": lambda poke_form, game: "-Mega" in poke_form["form name"] and (game["gen"] not in (6, 7) or game["name"] == "LGPE"),
+    "no_megas_outside_XY_ORAS_and_SM_USUM": lambda poke_form, game: "-Mega" in poke_form["form name"] and game["name"] not in ("XY_ORAS", "SM_USUM"),
     "no_gigantamax_outside_SwSh": lambda poke_form, game: poke_form["form name"] == "-Gigantamax" and game["name"] != "SwSh",
     "no_regional_forms_before_gen_7": lambda poke_form, game: "-Region" in poke_form["form name"] and game["gen"] < 7,
-    "no_regional_forms_other_than_alola_allowed_in_LGPE": lambda poke_form, game: game["name"] == "LGPE" and "-Region" in poke_form["form name"] and poke_form["form name"] != "-Region_Alola",
+    # TODO: I dont think the below is needed... only region in gen 7 was alola
+    #"no_regional_forms_other_than_alola_allowed_in_LGPE": lambda poke_form, game: game["name"] == "LGPE" and "-Region" in poke_form["form name"] and poke_form["form name"] != "-Region_Alola",
+    "no_alolan_forms_before_SM_USUM": lambda poke_form, game: "-Region_Alola" in poke_form["form name"] and get_game_id(game["name"]) < get_game_id("SM_USUM"),
+    "no_galarian_forms_before_SwSh": lambda poke_form, game: "-Region_Galar" in poke_form["form name"] and get_game_id(game["name"]) < get_game_id("SwSh"),
+    "no_hisuian_forms_before_LA": lambda poke_form, game: "-Region_Hisui" in poke_form["form name"] and get_game_id(game["name"]) < get_game_id("LA"),
+    "no_paldean_forms_before_SV": lambda poke_form, game: "-Region_Paldea" in poke_form["form name"] and get_game_id(game["name"]) < get_game_id("SV"),
     "no_regional_forms_in_BDSP": lambda poke_form, game: game["name"] == "BDSP" and "-Region" in poke_form["form name"],
-    "no_galarian_forms_before_gen_8": lambda poke_form, game: poke_form["form name"] == "-Region_Galar" and game["gen"] < 8,
-    "no_hisuian_forms_outside_certain_games": lambda poke_form, game: poke_form["form name"] == "-Region_Hisui" and game["name"] not in ("LA, SV"),
-    "no_regional_forms_in_LA_other_than_hisui_and_alola_kitties": lambda poke_form, game: game["name"] == "LA" and "-Region" in poke_form["form name"] and poke_form["form name"] != "-Region_Hisui" and poke_form["poke name"] not in ("Vulpix", "Ninetales"),
+    "no_regional_forms_in_LA_other_than_hisui_and_alola_kitties": lambda poke_form, game: game["name"] == "LA" and "-Region" in poke_form["form name"] and poke_form["form name"] != "-Region_Hisui" and not (poke_form["poke name"] in ("Vulpix", "Ninetales") and poke_form["form name"] == "-Region_Alola"),
 
     # Specific pokemon
     "no_cosplay_pikachu_outside_ORAS": lambda poke_form, game: poke_form["poke num"] == 25 and "-Form_Cosplay" in poke_form["form name"] and game["name"] != "XY_ORAS",
     "no_cap_pikachu_before_gen_7": lambda poke_form, game: poke_form["poke num"] == 25 and "-Form_Cap" in poke_form["form name"] and game["gen"] < 7,
-    "no_cap_pikachu_outside_of_these_games": lambda poke_form, game: poke_form["poke num"] == 25 and "-Form_Cap" in poke_form["form name"] and game["name"] not in ("SM_USUM", "SwSh", "SV"),
-    "no_world_cap_pikachu_outside_of_these_games": lambda poke_form, game: poke_form["poke num"] == 25 and poke_form["form name"] == "-Form_Cap_World" and game["name"] not in ("SwSh", "SV"),
-    "no_paldean_form_tauros_in_older_games": lambda poke_form, game: poke_form["poke num"] == 128 and poke_form["form name"] != "Default" and game["name"] != "SV",
+    "no_cap_pikachu_in_these_games": lambda poke_form, game: poke_form["poke num"] == 25 and "-Form_Cap" in poke_form["form name"] and game["name"] in ("LGPE", "BDSP", "LA"),  # Don't have to add earlier games because line above filters out everything below gen 7
+    "no_world_cap_pikachu_in_SM_USUM": lambda poke_form, game: poke_form["poke num"] == 25 and poke_form["form name"] == "-Form_Cap_World" and game["name"] == "SM_USUM",
     "no_female_form_eevees_until_gen_8": lambda poke_form, game: poke_form["poke num"] == 133 and poke_form["form name"] == "-f" and game["gen"] < 8,
     "no_spiky_eared_pichu_outside_HGSS": lambda poke_form, game: poke_form["poke num"] == 172 and poke_form["form name"] == "-Form_Spiky_Eared" and game["name"] != "HGSS",
     "no_unown_punctuation_before_gen_3": lambda poke_form, game: poke_form["poke num"] == 201 and poke_form["form name"] in ("-Form_!", "-Form_Qmark") and game["gen"] < 3,
-    "no_primal_kyogre_or_groudon_outside_gen_6_and_7": lambda poke_form, game: (poke_form["poke num"] in (382, 383)) and poke_form["form name"] == "-Form_Primal" and game["gen"] not in (6, 7),
+    "no_primal_kyogre_or_groudon_outside_XY_ORAS_and_SM_USUM": lambda poke_form, game: (poke_form["poke num"] in (382, 383)) and poke_form["form name"] == "-Form_Primal" and game["name"] not in ("XY_ORAS", "SM_USUM"),
     "no_deoxys_non_normal_forms_in_ruby_sapphire": lambda poke_form, game: poke_form["poke num"] == 386 and game["name"] == "Ruby_Sapphire" and poke_form["form name"] != "Default",
     "no_deoxys_speed_form_in_FRLG": lambda poke_form, game: poke_form["poke num"] == 386 and game["name"] == "FRLG" and poke_form["form name"] == "-Form_Speed",
     "no_deoxys_attack_and_defense_form_in_emerald": lambda poke_form, game: poke_form["poke num"] == 386 and game["name"] == "Emerald" and poke_form["form name"] in ("-Form_Attack", "-Form_Defense"),
-    "no_rotom_forms_until_after_platinum": lambda poke_form, game: poke_form["poke num"] == 479 and poke_form["form name"] != "Default" and game["name"] == "Diamond_Pearl",
-    "no_origin_dialga_palkia_forms_until_after_LA": lambda poke_form, game: poke_form["poke num"] in (483, 484) and poke_form["form name"] == "-Form_Origin" and game["name"] not in ("LA", "SV"),
-    "no_origin_form_giratina_until_after_platinum": lambda poke_form, game: poke_form["poke num"] == 487 and poke_form["form name"] == "-Form_Origin" and game["name"] == "Diamond_Pearl",
-    "no_sky_form_shaymin_until_after_platinum": lambda poke_form, game: poke_form["poke num"] == 492 and poke_form["form name"] == "-Form_Sky" and game["name"] == "Diamond_Pearl",
+    "no_rotom_forms_until_after_platinum": lambda poke_form, game: poke_form["poke num"] == 479 and poke_form["form name"] != "Default" and get_game_id(game["name"]) < get_game_id("Platinum"),
+    "no_origin_dialga_palkia_forms_until_after_LA": lambda poke_form, game: poke_form["poke num"] in (483, 484) and poke_form["form name"] == "-Form_Origin" and get_game_id(game["name"]) < get_game_id("LA"),
+    "no_origin_form_giratina_until_after_platinum": lambda poke_form, game: poke_form["poke num"] == 487 and poke_form["form name"] == "-Form_Origin" and get_game_id(game["name"]) < get_game_id("Platinum"),
+    "no_sky_form_shaymin_until_after_platinum": lambda poke_form, game: poke_form["poke num"] == 492 and poke_form["form name"] == "-Form_Sky" and get_game_id(game["name"]) < get_game_id("Platinum"),
     "no_???_arceus_form_outside_of_gen_4": lambda poke_form, game: poke_form["poke num"] == 493 and poke_form["form name"] == "-Form_Qmark" and game["gen"] != 4,
-    "no_white_striped_basculin_until_LA"
-    "no_ash_greninja_outside_of_gen_7": lambda poke_form, game: poke_form["poke num"] == 658 and poke_form["form name"] == "-Form_Ash" and game["gen"] != 7,
+    "no_white_striped_basculin_until_LA": lambda poke_form, game: poke_form["poke num"] == 550 and poke_form["form name"] == "White_Striped" and get_game_id(game["name"]) < get_game_id(game["LA"]),
+    "no_ash_greninja_outside_of_SM_USUM": lambda poke_form, game: poke_form["poke num"] == 658 and poke_form["form name"] == "-Form_Ash" and game["name"] != "SM_USUM",
     "no_zygarde_forms_until_gen_7": lambda poke_form, game: poke_form["poke num"] == 718 and poke_form["form name"] != "-Form_50%" and game["gen"] < 7,
     "no_solgaleo_lunala_forms_outside_SM_USUM": lambda poke_form, game: poke_form["poke num"] in (791, 792) and poke_form["form name"] != "Default" and game["name"] != "SM_USUM",
     "no_zenith_marshadow_form_outside_gen_SM_USUM": lambda poke_form, game: poke_form["poke num"] == 802 and poke_form["form name"] != "Default" and game["name"] != "SM_USUM",
-    "no_meltan_or_melmetal_until_gen_8": lambda poke_form, game: poke_form["poke num"] in (808, 809) and (game["name"] != "LGPE" and game["gen"] < 8)    # Technically these are gen 7 pokemon, that weren't available until gen 8 (excluding LGPE)
+    "no_meltan_or_melmetal_until_LGPE": lambda poke_form, game: poke_form["poke num"] in (808, 809) and get_game_id(game["name"]) < get_game_id("LGPE")    # Technically these are gen 7 pokemon, but werent introduced until LGPE
 }
 def is_form_obtainable(form, game):
     for exclusion in FORM_EXCLUSIONS.values():
