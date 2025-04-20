@@ -9,8 +9,7 @@ PARENT_DIR = os.path.join(os.getcwd(), os.pardir)
 DB_NAME = "pokedex.db"
 DB_PATH = os.path.join(PARENT_DIR, DB_NAME)
 
-# TODO: Something wrong with 669 flabebe? Maybe the marks over the e's?
-# TODO: And 555 Region Galar?
+# TODO: Check 669, 710, 711 on checklist
 # TODO: White striped Basculin not in older games? Added in LA?
 # TODO: Check if there's any female backs missing where male backs are present... May only have visual difference in front and sprite is recycled for back
 # TODO: Gen3 Castform forms recorded as missing?
@@ -133,28 +132,36 @@ def insert_into_table(cursor, table, **data):
     cursor.execute(query, vals)
 
 
-# TODO: Combine these get functions into one where you specify table and field
-def get_form_id(cursor, form_name):
+# TODO: Remove cursor param, each func create its own
+def get_form_id(form_name):
+    connection = sqlite3.connect(DB_PATH)
+    cursor = connection.cursor()
     cursor.execute("SELECT id FROM forms WHERE form_name=?", (form_name,))
     form_id = cursor.fetchone()
+    connection.close()
     if form_id: return form_id[0]
     else: return None
 
-def get_game_id(cursor, game_name):
+def get_game_id(game_name):
+    connection = sqlite3.connect(DB_PATH)
+    cursor = connection.cursor()
     cursor.execute("SELECT id FROM games WHERE name=?", (game_name,))
     game_id = cursor.fetchone()
+    connection.close()
     if game_id: return game_id[0]
     else: return None
 
 
-def get_game_name(cursor, game_id):
+def get_game_name(game_id):
+    connection = sqlite3.connect(DB_PATH)
+    cursor = connection.cursor()
     cursor.execute(f"SELECT name FROM games WHERE id={game_id}")
     game_name=cursor.fetchone()
+    connection.close()
     if game_name: return game_name[0]
     else: return None
 
 
-# Running seperate connection so I can call this from spreadsheet_utils
 def get_poke_name(poke_id):
     connection = sqlite3.connect(DB_PATH)
     cursor = connection.cursor()
@@ -165,14 +172,16 @@ def get_poke_name(poke_id):
     else: return None
 
 
-def get_filename_id(cursor, filename):
+def get_filename_id(filename):
+    connection = sqlite3.connect(DB_PATH)
+    cursor = connection.cursor()
     cursor.execute("SELECT id FROM all_filenames WHERE filename=?", (filename,))
     file_id = cursor.fetchone()
+    connection.close()
     if file_id: return file_id[0]
     else: return None
 
 
-# Running seperate connection so I can call this from spreadsheet_utils
 def get_all_filenames_info():
     print("Fetching file info from database...")
     connection = sqlite3.connect(DB_PATH)
@@ -188,7 +197,7 @@ def get_all_filenames_info():
         print(f"\rGetting pokemon #{row["poke_num"]} file availability...", end='', flush=True)
         
         main_key = (row["poke_num"], row["form_id"], row["sprite_id"])
-        game = get_game_name(cursor, row["game_id"])
+        game = get_game_name(row["game_id"])
         data[main_key][game]["filename"] = row["filename"]
         data[main_key][game]["obtainable"] = True if row["obtainable"] else False
         data[main_key][game]["exists"] = True if row["does_exist"] else False
@@ -228,7 +237,7 @@ def populate_pokes(cursor):
 
 def insert_into_both_form_tables(cursor, form_name, poke_num):
     insert_into_table(cursor, "forms", **{"form_name": form_name})
-    form_id = get_form_id(cursor, form_name)
+    form_id = get_form_id(form_name)
     insert_into_table(cursor, "poke_forms", **{"poke_num": poke_num, "form_id": form_id})
 
 
@@ -370,6 +379,7 @@ def populate_games(cursor):
         insert_into_table(cursor, "games", **{"name": game[0], "gen": game[1]})
 
 
+# TODO: Instead of doing game in for certain games, pass game id, or find from game name and only greater/less than that (then when new game added dont have to explicitly add it here)
 FORM_EXCLUSIONS = {
     # Species game availability
     "filtering_for_LGPE_dex_if_needed": lambda poke_form, game: game["name"] == "LGPE" and lazy_import("spreadsheet_funcs").poke_isnt_in_game(poke_form["poke num"], "LGPE"),
@@ -409,6 +419,7 @@ FORM_EXCLUSIONS = {
     "no_origin_form_giratina_until_after_platinum": lambda poke_form, game: poke_form["poke num"] == 487 and poke_form["form name"] == "-Form_Origin" and game["name"] == "Diamond_Pearl",
     "no_sky_form_shaymin_until_after_platinum": lambda poke_form, game: poke_form["poke num"] == 492 and poke_form["form name"] == "-Form_Sky" and game["name"] == "Diamond_Pearl",
     "no_???_arceus_form_outside_of_gen_4": lambda poke_form, game: poke_form["poke num"] == 493 and poke_form["form name"] == "-Form_Qmark" and game["gen"] != 4,
+    "no_white_striped_basculin_until_LA"
     "no_ash_greninja_outside_of_gen_7": lambda poke_form, game: poke_form["poke num"] == 658 and poke_form["form name"] == "-Form_Ash" and game["gen"] != 7,
     "no_zygarde_forms_until_gen_7": lambda poke_form, game: poke_form["poke num"] == 718 and poke_form["form name"] != "-Form_50%" and game["gen"] < 7,
     "no_solgaleo_lunala_forms_outside_SM_USUM": lambda poke_form, game: poke_form["poke num"] in (791, 792) and poke_form["form name"] != "Default" and game["name"] != "SM_USUM",
@@ -648,7 +659,7 @@ def populate_filenames(cursor):
         file_ids = {"filename": filename, "poke_num": sprite_id[0], "form_id": sprite_id[1], "game_id": sprite_id[2], "sprite_id": sprite_id[3], "obtainable": sprite_info["obtainable"], "does_exist": file_exists, "substitution_id": has_sub}
         # Inserting into all filenames table
         insert_into_table(cursor, "all_filenames", **file_ids)
-        filename_id = get_filename_id(cursor, filename)
+        filename_id = get_filename_id(filename)
         if has_sub: substitutions_to_convert_to_id.append({"file_id": filename_id, "sub_name": substitution})
         # Inserting into only obtainable filenames table
         if sprite_info["obtainable"]:
@@ -664,7 +675,7 @@ def populate_filenames(cursor):
 
 
 def edit_substitution_field(cursor, record):
-    substitution_id = get_filename_id(cursor, record["sub_name"])
+    substitution_id = get_filename_id(record["sub_name"])
     cursor.execute(f"UPDATE all_filenames SET substitution_id = {substitution_id} WHERE id = {record["file_id"]}")
     cursor.execute(f"UPDATE obtainable_filenames SET substitution_id = {substitution_id} WHERE id = {record["file_id"]}")
 
