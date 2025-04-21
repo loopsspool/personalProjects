@@ -22,7 +22,6 @@ pfgo = get_poke_form_obtainability_records(cursor)
 sprite_types = get_sprite_types(cursor)
 
 
-# TODO: Add white striped basculin
 @pytest.mark.parametrize("poke_form_id, game_id, expected", [
     # Species game availability
     ((152, default_form_id), get_game_id("LGPE"), False),
@@ -68,6 +67,8 @@ sprite_types = get_sprite_types(cursor)
     ((59, get_form_id("-Region_Hisui")), get_game_id("LA"), True),
     ((37, get_form_id("-Region_Alola")), get_game_id("LA"), True),
     ((38, get_form_id("-Region_Alola")), get_game_id("LA"), True),
+    ((128, get_form_id("-Region_Paldea-Form_Blaze")), get_game_id("SwSh"), False),
+    ((128, get_form_id("-Region_Paldea-Form_Blaze")), get_game_id("SV"), True),
 
     # Specific Pokemon
     ((25, get_form_id("-Form_Cosplay_Belle")), get_game_id("BW_B2W2"), False),
@@ -78,10 +79,11 @@ sprite_types = get_sprite_types(cursor)
     ((25, get_form_id("-Form_Cap_Alola")), get_game_id("SM_USUM"), True),
     ((25, get_form_id("-Form_Cap_Unova")), get_game_id("SV"), True),
     ((25, get_form_id("-Form_Cap_World")), get_game_id("SM_USUM"), False),
+    ((25, get_form_id("-Form_Cap_World")), get_game_id("LGPE"), False),
+    ((25, get_form_id("-Form_Cap_World")), get_game_id("BDSP"), False),
+    ((25, get_form_id("-Form_Cap_World")), get_game_id("LA"), False),
     ((25, get_form_id("-Form_Cap_World")), get_game_id("SwSh"), True),
     ((25, get_form_id("-Form_Cap_World")), get_game_id("SV"), True),
-    ((128, get_form_id("-Region_Paldea-Form_Blaze")), get_game_id("SwSh"), False),
-    ((128, get_form_id("-Region_Paldea-Form_Blaze")), get_game_id("SV"), True),
     ((133, get_form_id("-f")), get_game_id("SM_USUM"), False),
     ((133, get_form_id("-f")), get_game_id("SwSh"), True),
     ((172, get_form_id("-Form_Spiky_Eared")), get_game_id("Emerald"), False),
@@ -122,6 +124,10 @@ sprite_types = get_sprite_types(cursor)
     ((492, get_form_id("-Form_Sky")), get_game_id("BW_B2W2"), True),
     ((493, get_form_id("-Form_Qmark")), get_game_id("BW_B2W2"), False),
     ((493, get_form_id("-Form_Qmark")), get_game_id("Diamond_Pearl"), True),
+    ((550, get_form_id("-Form_White_Striped")), get_game_id("BW_B2W2"), False),
+    ((550, get_form_id("-Form_White_Striped")), get_game_id("SwSh"), False),
+    ((550, get_form_id("-Form_White_Striped")), get_game_id("LA"), True),
+    ((550, get_form_id("-Form_White_Striped")), get_game_id("SV"), True),
     ((658, get_form_id("-Form_Ash")), get_game_id("XY_ORAS"), False),
     ((658, get_form_id("-Form_Ash")), get_game_id("SV"), False),
     ((658, get_form_id("-Form_Ash")), get_game_id("SM_USUM"), True),
