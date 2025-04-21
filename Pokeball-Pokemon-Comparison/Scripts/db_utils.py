@@ -9,10 +9,8 @@ PARENT_DIR = os.path.join(os.getcwd(), os.pardir)
 DB_NAME = "pokedex.db"
 DB_PATH = os.path.join(PARENT_DIR, DB_NAME)
 
-# TODO: Check 669, 710, 711 on checklist
-# TODO: White striped Basculin not in older games? Added in LA?
+
 # TODO: Check if there's any female backs missing where male backs are present... May only have visual difference in front and sprite is recycled for back
-# TODO: Gen3 Castform forms recorded as missing?
 
 def create_db():
     print("Creating pokedex database...")
@@ -130,17 +128,20 @@ def insert_into_table(cursor, table, **data):
 
     query = f"INSERT OR IGNORE INTO {table} ({cols}) VALUES ({val_placeholders})"
     cursor.execute(query, vals)
+    return cursor.lastrowid
 
 
-# TODO: Remove cursor param, each func create its own
-def get_form_id(form_name):
-    connection = sqlite3.connect(DB_PATH)
-    cursor = connection.cursor()
-    cursor.execute("SELECT id FROM forms WHERE form_name=?", (form_name,))
-    form_id = cursor.fetchone()
-    connection.close()
+def get_form_id(form_name, cur=None):
+    if cur == None:
+        connection = sqlite3.connect(DB_PATH)
+        cur = connection.cursor()
+    cur.execute("SELECT id FROM forms WHERE form_name=?", (form_name,))
+    form_id = cur.fetchone()
+    if cur == None:
+        connection.close()
     if form_id: return form_id[0]
     else: return None
+
 
 def get_game_id(game_name):
     connection = sqlite3.connect(DB_PATH)
@@ -152,6 +153,7 @@ def get_game_id(game_name):
     else: return None
 
 
+# TODO: Run this w default cursor like get_form_id cause its slow af now running inside get all poke info
 def get_game_name(game_id):
     connection = sqlite3.connect(DB_PATH)
     cursor = connection.cursor()
@@ -172,12 +174,10 @@ def get_poke_name(poke_id):
     else: return None
 
 
-def get_filename_id(filename):
-    connection = sqlite3.connect(DB_PATH)
-    cursor = connection.cursor()
+# Using cursor as a parameter here due to how this function is used... not a good way to cleanly commit to db before calling, so passing the connection that has the writes to here
+def get_filename_id(cursor, filename):
     cursor.execute("SELECT id FROM all_filenames WHERE filename=?", (filename,))
     file_id = cursor.fetchone()
-    connection.close()
     if file_id: return file_id[0]
     else: return None
 
@@ -237,7 +237,7 @@ def populate_pokes(cursor):
 
 def insert_into_both_form_tables(cursor, form_name, poke_num):
     insert_into_table(cursor, "forms", **{"form_name": form_name})
-    form_id = get_form_id(form_name)
+    form_id = get_form_id(form_name, cur=cursor)
     insert_into_table(cursor, "poke_forms", **{"poke_num": poke_num, "form_id": form_id})
 
 
@@ -396,8 +396,6 @@ FORM_EXCLUSIONS = {
     "no_megas_outside_XY_ORAS_and_SM_USUM": lambda poke_form, game: "-Mega" in poke_form["form name"] and game["name"] not in ("XY_ORAS", "SM_USUM"),
     "no_gigantamax_outside_SwSh": lambda poke_form, game: poke_form["form name"] == "-Gigantamax" and game["name"] != "SwSh",
     "no_regional_forms_before_gen_7": lambda poke_form, game: "-Region" in poke_form["form name"] and game["gen"] < 7,
-    # TODO: I dont think the below is needed... only region in gen 7 was alola
-    #"no_regional_forms_other_than_alola_allowed_in_LGPE": lambda poke_form, game: game["name"] == "LGPE" and "-Region" in poke_form["form name"] and poke_form["form name"] != "-Region_Alola",
     "no_alolan_forms_before_SM_USUM": lambda poke_form, game: "-Region_Alola" in poke_form["form name"] and get_game_id(game["name"]) < get_game_id("SM_USUM"),
     "no_galarian_forms_before_SwSh": lambda poke_form, game: "-Region_Galar" in poke_form["form name"] and get_game_id(game["name"]) < get_game_id("SwSh"),
     "no_hisuian_forms_before_LA": lambda poke_form, game: "-Region_Hisui" in poke_form["form name"] and get_game_id(game["name"]) < get_game_id("LA"),
@@ -422,12 +420,12 @@ FORM_EXCLUSIONS = {
     "no_origin_form_giratina_until_after_platinum": lambda poke_form, game: poke_form["poke num"] == 487 and poke_form["form name"] == "-Form_Origin" and get_game_id(game["name"]) < get_game_id("Platinum"),
     "no_sky_form_shaymin_until_after_platinum": lambda poke_form, game: poke_form["poke num"] == 492 and poke_form["form name"] == "-Form_Sky" and get_game_id(game["name"]) < get_game_id("Platinum"),
     "no_???_arceus_form_outside_of_gen_4": lambda poke_form, game: poke_form["poke num"] == 493 and poke_form["form name"] == "-Form_Qmark" and game["gen"] != 4,
-    "no_white_striped_basculin_until_LA": lambda poke_form, game: poke_form["poke num"] == 550 and poke_form["form name"] == "White_Striped" and get_game_id(game["name"]) < get_game_id(game["LA"]),
+    "no_white_striped_basculin_until_LA": lambda poke_form, game: poke_form["poke num"] == 550 and poke_form["form name"] == "-Form_White_Striped" and get_game_id(game["name"]) < get_game_id("LA"),
     "no_ash_greninja_outside_of_SM_USUM": lambda poke_form, game: poke_form["poke num"] == 658 and poke_form["form name"] == "-Form_Ash" and game["name"] != "SM_USUM",
     "no_zygarde_forms_until_gen_7": lambda poke_form, game: poke_form["poke num"] == 718 and poke_form["form name"] != "-Form_50%" and game["gen"] < 7,
     "no_solgaleo_lunala_forms_outside_SM_USUM": lambda poke_form, game: poke_form["poke num"] in (791, 792) and poke_form["form name"] != "Default" and game["name"] != "SM_USUM",
     "no_zenith_marshadow_form_outside_gen_SM_USUM": lambda poke_form, game: poke_form["poke num"] == 802 and poke_form["form name"] != "Default" and game["name"] != "SM_USUM",
-    "no_meltan_or_melmetal_until_LGPE": lambda poke_form, game: poke_form["poke num"] in (808, 809) and get_game_id(game["name"]) < get_game_id("LGPE")    # Technically these are gen 7 pokemon, but werent introduced until LGPE
+    "no_meltan_or_melmetal_until_LGPE": lambda poke_form, game: poke_form["poke num"] in (808, 809) and get_game_id(game["name"]) < get_game_id("LGPE")    # Technically these are gen 7 pokemon, they just werent introduced until LGPE
 }
 def is_form_obtainable(form, game):
     for exclusion in FORM_EXCLUSIONS.values():
@@ -450,7 +448,6 @@ def populate_form_game_obtainability(cursor, force):
             print(f"\rChecking {poke_form_info["poke num"]} form obtainability...", end='', flush=True)
             # Quick workaround to make it run faster, only generating obtainability if forced or the record doesn't exist yet
             if force or not entry_exists(cursor, "form_game_obtainability", {"poke_num": poke_form_id[0], "form_id": poke_form_id[1], "game_id": game_id}):
-                # NOTE: Getting dict values in tuples is where things are being slowed down... namedtuples can speed that up with some effort
                 obtainable = is_form_obtainable(poke_form_info, game_info)
                 form_game_obtainability[(poke_form_id, game_id)] = {"poke_num": poke_form_id[0], "form_id": poke_form_id[1], "game_id": game_id, "obtainable": obtainable}
 
@@ -459,6 +456,7 @@ def populate_form_game_obtainability(cursor, force):
     for form_info in form_game_obtainability.values(): insert_into_table(cursor, "form_game_obtainability", **form_info)
 
 
+# TODO: I dont know if this works... Try running it once & also clearing form_game_obtainability table and running populate_form_game_obtainability
 def entry_exists(cursor, table, cols):
     where_clause = " AND ".join(f"{k} = ?" for k in cols)
     values = tuple(cols.values())
@@ -513,7 +511,10 @@ SPRITE_EXCLUSIONS = {
     "no_shiny_sprites_in_gen_1": lambda pfgo_info, sprite_type: pfgo_info["game gen"] == 1 and "Shiny" in sprite_type,
     "no_animated_sprites_in_gen_1": lambda pfgo_info, sprite_type: pfgo_info["game gen"] == 1 and "Animated" in sprite_type,
     "no_animated_back_sprites_below_gen_5": lambda pfgo_info, sprite_type: pfgo_info["game gen"] < 5 and "-Back-Animated" in sprite_type,
-    "no_animated_sprites_in_these_games": lambda pfgo_info, sprite_type: pfgo_info["game name"] in ("Gold", "Silver", "FRLG", "Ruby_Sapphire") and "Animated" in sprite_type
+    "no_animated_sprites_in_these_games": lambda pfgo_info, sprite_type: pfgo_info["game name"] in ("Gold", "Silver", "FRLG", "Ruby_Sapphire") and "Animated" in sprite_type,
+
+    # INDIVIDUAL POKEMON
+    "no_shiny_castform_forms_until_gen_8": lambda pfgo_info, sprite_type: pfgo_info["poke num"] == 351 and pfgo_info["form name"] != "Default" and "Shiny" in sprite_type and pfgo_info["game gen"] < 8
 }
 def is_sprite_possible(pfgo_info, sprite_type):
     for exclusion in SPRITE_EXCLUSIONS.values():
@@ -655,14 +656,14 @@ def populate_filenames(cursor):
     substitutions_to_convert_to_id = []
     
     for sprite_id, sprite_info in all_sprites.items():
-        print(f"\rGenerating pokemon #{sprite_info["poke num"]} filename...", end='', flush=True)
+        print(f"\rGenerating pokemon #{sprite_info["poke num"]} filenames...", end='', flush=True)
         filename = generate_filename(sprite_info)
         file_exists, substitution = check_for_usable_file(filename, sprite_info)
-        has_sub = 1 if substitution!=None else None
+        has_sub = 1 if substitution!=None else None     # Temp marking to set in substitution field until I can get subs file id
         file_ids = {"filename": filename, "poke_num": sprite_id[0], "form_id": sprite_id[1], "game_id": sprite_id[2], "sprite_id": sprite_id[3], "obtainable": sprite_info["obtainable"], "does_exist": file_exists, "substitution_id": has_sub}
         # Inserting into all filenames table
         insert_into_table(cursor, "all_filenames", **file_ids)
-        filename_id = get_filename_id(filename)
+        filename_id = get_filename_id(cursor, filename)
         if has_sub: substitutions_to_convert_to_id.append({"file_id": filename_id, "sub_name": substitution})
         # Inserting into only obtainable filenames table
         if sprite_info["obtainable"]:
@@ -678,7 +679,7 @@ def populate_filenames(cursor):
 
 
 def edit_substitution_field(cursor, record):
-    substitution_id = get_filename_id(record["sub_name"])
+    substitution_id = get_filename_id(cursor, record["sub_name"])
     cursor.execute(f"UPDATE all_filenames SET substitution_id = {substitution_id} WHERE id = {record["file_id"]}")
     cursor.execute(f"UPDATE obtainable_filenames SET substitution_id = {substitution_id} WHERE id = {record["file_id"]}")
 
@@ -701,6 +702,7 @@ def populate_db(force=False):
         populate_pokes(cursor)
         populate_forms(cursor)
         populate_games(cursor)
+        connection.commit() # Committing here so form_game_obtainability can get form ids with from forms via a different connection
         populate_form_game_obtainability(cursor, force)
         populate_sprite_types(cursor)
         populate_sprite_obtainability(cursor)
@@ -721,4 +723,4 @@ def get_last_poke_num():
     connection.close()
     return max_num
 
-populate_db()
+#populate_db()
