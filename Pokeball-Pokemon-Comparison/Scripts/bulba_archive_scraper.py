@@ -40,12 +40,14 @@ from scraping import get_game_img_urls, scrape_game_imgs
 # TODO: Radiant Sun Solgaleo and Full Moon Lunala sprites are wrong too
 # TODO: And Unown A, looks like in Bulba sometimes it has the A, sometimes its just 201
 # TODO: Gorgeist small forms wrong somehow?
+# TODO: 555 Galarian Darmanitan wrong?
 # TODO: No form tags in drawn images
 # TODO: Wikidex has 2 images for each back sprite in gen4, see if there are any other games like this and figure out how to get them
 # TODO: Run analysis on Gen1-4 to see if theres any sprites missing from any individual game
     # Wont be reflected on checklist since it's going to assume it was recycled from other games in the same gen
 # TODO: Force yellow front sprite to be downloaded (they were originally gifs instead of png)
 # TODO: Wikidex animateds are all gifs, gen9 is webm.... determine if worthwhile to convert and color correct or keep as is. Consider RN and device compatibility
+# TODO: Evaluate if I should have forms for form-like transformations: https://bulbapedia.bulbagarden.net/wiki/List_of_Pok%C3%A9mon_with_form_differences#Form-like_transformations
 def main():
     check_pokedex_db_is_current(force=False)
     #generate_pokedex_from_spreadsheet()
