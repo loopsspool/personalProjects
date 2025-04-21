@@ -75,7 +75,6 @@ def poke_isnt_in_game(poke_num, game):
     return not is_poke_in_game(poke_num, game)
 
 
-# TODO: Skim through other files that accomplished this and make sure I didn't miss anything
 def create_file_checklist_spreadsheet():
     # This will always create a new file that overrides an existing one
     workbook = xlsxwriter.Workbook('C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Pokemon Images Checklist.xlsx')
@@ -85,12 +84,13 @@ def create_file_checklist_spreadsheet():
     green = '#40D073'
     red = '#C75451'
     grey = '#404040'
+    new_poke_top_border_color = '#D9D9D9'
     formats = {
         # New pokes have strong top border
-        "new poke info": workbook.add_format({'top': 5}),
-        "new poke green": workbook.add_format({'top': 5, 'left': 1, 'right': 1, 'bottom': 1, 'align': 'center', 'bg_color': green, 'font_color': green}),
-        "new poke red": workbook.add_format({'top': 5, 'left': 1, 'right': 1, 'bottom': 1, 'align': 'center', 'bg_color': red, 'font_color': red}),
-        "new poke grey": workbook.add_format({'top': 5, 'left': 1, 'right': 1, 'bottom': 1, 'align': 'center', 'bg_color': grey, 'font_color': grey}),
+        "new poke info": workbook.add_format({'top_color': new_poke_top_border_color, 'top': 5}),
+        "new poke green": workbook.add_format({'top_color': new_poke_top_border_color, 'top': 5, 'left': 1, 'right': 1, 'bottom': 1, 'align': 'center', 'bg_color': green, 'font_color': green}),
+        "new poke red": workbook.add_format({'top_color': new_poke_top_border_color, 'top': 5, 'left': 1, 'right': 1, 'bottom': 1, 'align': 'center', 'bg_color': red, 'font_color': red}),
+        "new poke grey": workbook.add_format({'top_color': new_poke_top_border_color, 'top': 5, 'left': 1, 'right': 1, 'bottom': 1, 'align': 'center', 'bg_color': grey, 'font_color': grey}),
         "green": workbook.add_format({'border': 1, 'align': 'center', 'bg_color': green, 'font_color': green}),
         "red": workbook.add_format({'border': 1, 'align': 'center', 'bg_color': red, 'font_color': red}),
         "grey": workbook.add_format({'border': 1, 'align': 'center', 'bg_color': grey, 'font_color': grey})
@@ -202,7 +202,7 @@ def get_poke_tags(poke_name, filename):
         tags = ""
     return tags
 
-
+create_file_checklist_spreadsheet()
 # TODO: Capitalize constants
 # TODO: Verify poke_info_last_row used instead of pokemon_files_sheet.max_row
 # Spreadsheet For Pokedex Info
