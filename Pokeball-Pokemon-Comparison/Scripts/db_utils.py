@@ -2,6 +2,7 @@ import sqlite3
 import os
 import importlib
 from collections import defaultdict
+from contextlib import contextmanager
 
 from file_utils import game_sprite_path
 
@@ -131,14 +132,24 @@ def insert_into_table(cursor, table, **data):
     return cursor.lastrowid
 
 
-def get_form_id(form_name, cur=None):
-    if cur == None:
+@contextmanager
+def get_cursor(passed_cur=None):
+    if passed_cur is not None:
+        yield passed_cur
+    else:
         connection = sqlite3.connect(DB_PATH)
         cur = connection.cursor()
-    cur.execute("SELECT id FROM forms WHERE form_name=?", (form_name,))
-    form_id = cur.fetchone()
-    if cur == None:
-        connection.close()
+        try:
+            yield cur
+        finally:
+            cur.close()
+            connection.close()
+
+
+def get_form_id(form_name, cursor=None):
+    with get_cursor(cursor) as cur:
+        cur.execute("SELECT id FROM forms WHERE form_name=?", (form_name,))
+        form_id = cur.fetchone()
     if form_id: return form_id[0]
     else: return None
 
@@ -153,13 +164,10 @@ def get_game_id(game_name):
     else: return None
 
 
-# TODO: Run this w default cursor like get_form_id cause its slow af now running inside get all poke info
-def get_game_name(game_id):
-    connection = sqlite3.connect(DB_PATH)
-    cursor = connection.cursor()
-    cursor.execute(f"SELECT name FROM games WHERE id={game_id}")
-    game_name=cursor.fetchone()
-    connection.close()
+def get_game_name(game_id, cursor=None):
+    with get_cursor(cursor) as cur:
+        cur.execute(f"SELECT name FROM games WHERE id={game_id}")
+        game_name=cur.fetchone()
     if game_name: return game_name[0]
     else: return None
 
@@ -197,7 +205,7 @@ def get_all_filenames_info():
         print(f"\rGetting pokemon #{row["poke_num"]} file availability...", end='', flush=True)
         
         main_key = (row["poke_num"], row["form_id"], row["sprite_id"])
-        game = get_game_name(row["game_id"])
+        game = get_game_name(row["game_id"], cursor)
         data[main_key][game]["filename"] = row["filename"]
         data[main_key][game]["obtainable"] = True if row["obtainable"] else False
         data[main_key][game]["exists"] = True if row["does_exist"] else False
