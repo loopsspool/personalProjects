@@ -75,6 +75,7 @@ def poke_isnt_in_game(poke_num, game):
     return not is_poke_in_game(poke_num, game)
 
 
+# TODO: Set cols to largest width of value in each
 def create_file_checklist_spreadsheet():
     # This will always create a new file that overrides an existing one
     workbook = xlsxwriter.Workbook('C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Pokemon Images Checklist.xlsx')
@@ -116,8 +117,10 @@ def generate_header_row(workbook, worksheet):
     col_num = 3
     game_cols = {}
     for game in reversed(GAMES):
-        worksheet.write(0, col_num, game[0])
-        game_cols[game[0]] = col_num
+        game_name = game[0]
+        worksheet.write(0, col_num, game_name)
+        game_cols[game_name] = col_num
+        worksheet.set_column(col_num, col_num, len(str(game_name)) + 1)    # Setting column width, 1 is for padding
         col_num += 1
 
     return game_cols
@@ -127,6 +130,7 @@ def write_availability(workbook, worksheet, formats, game_cols):
     from db_utils import get_all_filenames_info, get_poke_name, get_game_name
     
     all_file_info = get_all_filenames_info()
+    longest_values = {"num": 4, "name": 0, "tags": 0}
 
     print("Writing availability of files...")
     prev_poke_num = 0
@@ -137,6 +141,7 @@ def write_availability(workbook, worksheet, formats, game_cols):
         poke_name = get_poke_name(poke_num)
         # Any game would work here for tags, just pulling it out of the next loop so it isn't rewritten for each game
         tags = get_poke_tags(poke_name, games["SV"]["filename"])
+        longest_values = determine_if_longest_length_value_yet(longest_values, poke_name, tags)
         # Putting a top border on if its a new poke
         if prev_poke_num != poke_num:
             is_new_poke = True
@@ -152,8 +157,23 @@ def write_availability(workbook, worksheet, formats, game_cols):
             write_sprite_status_for_game(workbook, worksheet, formats, is_new_poke, i, game_cols, game_name, sprite_data["obtainable"], sprite_data["exists"], sprite_data["has_sub"])
         
         prev_poke_num = poke_num
+
+    # Setting column width
+    padding = 2
+    worksheet.set_column(0, 0, longest_values["num"] + padding)
+    worksheet.set_column(1, 1, longest_values["name"] + padding)
+    worksheet.set_column(2, 2, longest_values["tags"] + padding)
+
     # Resetting console line after updates from above
     print('\r' + ' '*45 + '\r', end='')
+
+
+def determine_if_longest_length_value_yet(longest_values_dict, name, tags):
+    name_len = len(str(name))
+    tags_len = len(str(tags))
+    if name_len > longest_values_dict["name"]: longest_values_dict["name"] = name_len
+    if tags_len > longest_values_dict["tags"]: longest_values_dict["tags"] = tags_len
+    return longest_values_dict
         
 
 def write_sprite_status_for_game(workbook, worksheet, formats, is_new_poke, row, game_cols, game, obtainable, exists, sub):
@@ -202,7 +222,7 @@ def get_poke_tags(poke_name, filename):
         tags = ""
     return tags
 
-create_file_checklist_spreadsheet()
+#create_file_checklist_spreadsheet()
 # TODO: Capitalize constants
 # TODO: Verify poke_info_last_row used instead of pokemon_files_sheet.max_row
 # Spreadsheet For Pokedex Info
