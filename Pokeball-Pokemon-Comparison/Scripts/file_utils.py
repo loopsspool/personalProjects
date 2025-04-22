@@ -45,3 +45,10 @@ def print_files_with(path, s):
     for f in files:
         if s in f:
             print(f)
+
+
+def print_files_with_from_all_dirs(s):
+    print_files_with(game_sprite_path, s)
+    print_files_with(staging_path, s)
+    print_files_with(animated_pngs_pre_gif_conversion_path, s)
+    print_files_with(gifs_post_conversion_path, s)
