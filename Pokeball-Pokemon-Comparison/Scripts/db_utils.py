@@ -94,6 +94,7 @@ def create_db():
         obtainable BOOLEAN NOT NULL,
         does_exist BOOLEAN,
         substitution_id INTEGER,
+        has_alt BOOLEAN,
         FOREIGN KEY (poke_num, form_id, game_id, sprite_id) REFERENCES sprite_obtainability
     );
     """)
@@ -110,6 +111,7 @@ def create_db():
         obtainable BOOLEAN NOT NULL,
         does_exist BOOLEAN,
         substitution_id INTEGER,
+        has_alt BOOLEAN,
         FOREIGN KEY (substitution_id) REFERENCES all_filenames(id)
         FOREIGN KEY (id) REFERENCES all_filenames(id),
         FOREIGN KEY (poke_num, form_id, game_id, sprite_id) REFERENCES sprite_obtainability
@@ -591,7 +593,7 @@ def seperate_sprite_type_if_shiny(sprite_type):
     else: return True, sprite_type.replace("-Shiny", "")
 
 
-def file_exists(filename):
+def file_does_exist(filename):
     file_ext = [".png"]
     for ext in file_ext:
         filename_w_ext = filename + ext
@@ -602,7 +604,7 @@ def file_exists(filename):
 def check_for_usable_file(filename, sprite_info):
     if not sprite_info["obtainable"]:
         return None, None
-    if file_exists(filename):
+    if file_does_exist(filename):
         return True, None
     else:
         exists, substitution = check_for_file_substitution(filename)
@@ -616,7 +618,7 @@ def check_for_file_substitution(filename):
             for repl in GAME_FALLBACKS[game]:
                 repl = game_adjustment_for_back(filename, repl)
                 replacement_filename = filename.replace(game_adj, repl)
-                if file_exists(replacement_filename):
+                if file_does_exist(replacement_filename):
                     return True, replacement_filename
     return False, None
 
@@ -663,7 +665,8 @@ def populate_filenames(cursor):
         filename = generate_filename(sprite_info)
         file_exists, substitution = check_for_usable_file(filename, sprite_info)
         has_sub = 1 if substitution!=None else None     # Temp marking to set in substitution field until I can get subs file id
-        file_ids = {"filename": filename, "poke_num": sprite_id[0], "form_id": sprite_id[1], "game_id": sprite_id[2], "sprite_id": sprite_id[3], "obtainable": sprite_info["obtainable"], "does_exist": file_exists, "substitution_id": has_sub}
+        has_alt = file_does_exist(substitution + "-Alt") if has_sub else file_does_exist(filename + "-Alt")
+        file_ids = {"filename": filename, "poke_num": sprite_id[0], "form_id": sprite_id[1], "game_id": sprite_id[2], "sprite_id": sprite_id[3], "obtainable": sprite_info["obtainable"], "does_exist": file_exists, "substitution_id": has_sub, "has_alt": has_alt}
         # Inserting into all filenames table
         insert_into_table(cursor, "all_filenames", **file_ids)
         filename_id = get_filename_id(cursor, filename)
@@ -693,7 +696,6 @@ def change_substitution_field_from_filename_to_file_id(cursor, sub_names_to_conv
         edit_substitution_field(cursor, record)
 
 
-# TODO: Determine Alts elsewhere, perhaps in filename table having a boolean field for Alt
 def populate_db(force=False):
     if not db_exists():
         create_db()
