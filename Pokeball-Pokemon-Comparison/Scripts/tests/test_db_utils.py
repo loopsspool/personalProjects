@@ -4,6 +4,7 @@ import sqlite3
 import pytest
 
 # TODO: To replace cursor arguments, in db_utils could pull game/form ids into a dict or something, then search that instead of the db
+# TODO: Add sprite exclusions
 
 # To go into parent directory to import db_utils
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
