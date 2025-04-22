@@ -11,8 +11,6 @@ DB_NAME = "pokedex.db"
 DB_PATH = os.path.join(PARENT_DIR, DB_NAME)
 
 
-# TODO: Check if there's any female backs missing where male backs are present... May only have visual difference in front and sprite is recycled for back
-
 def create_db():
     print("Creating pokedex database...")
 
@@ -245,7 +243,7 @@ def populate_pokes(cursor):
 
 def insert_into_both_form_tables(cursor, form_name, poke_num):
     insert_into_table(cursor, "forms", **{"form_name": form_name})
-    form_id = get_form_id(form_name, cur=cursor)
+    form_id = get_form_id(form_name, cursor)
     insert_into_table(cursor, "poke_forms", **{"poke_num": poke_num, "form_id": form_id})
 
 
@@ -442,7 +440,6 @@ def is_form_obtainable(form, game):
     return True
 
 
-# TODO: Add ON CONFLICT to INSERT OR IGNORE statements to update values? See where relevant
 def populate_form_game_obtainability(cursor, force):
     print("Populating game obtainability for forms into database...")
 
@@ -464,7 +461,6 @@ def populate_form_game_obtainability(cursor, force):
     for form_info in form_game_obtainability.values(): insert_into_table(cursor, "form_game_obtainability", **form_info)
 
 
-# TODO: I dont know if this works... Try running it once & also clearing form_game_obtainability table and running populate_form_game_obtainability
 def entry_exists(cursor, table, cols):
     where_clause = " AND ".join(f"{k} = ?" for k in cols)
     values = tuple(cols.values())
@@ -596,8 +592,11 @@ def seperate_sprite_type_if_shiny(sprite_type):
 
 
 def file_exists(filename):
-    if filename in ALL_GAME_SPRITE_FILES: return True
-    else: return False
+    file_ext = [".png"]
+    for ext in file_ext:
+        filename_w_ext = filename + ext
+        if filename_w_ext in ALL_GAME_SPRITE_FILES: return True
+    return False
     
 
 def check_for_usable_file(filename, sprite_info):
@@ -640,8 +639,7 @@ GAME_FALLBACKS = {
 }
 
 
-# TODO: Will need to adapt for animateds being potentially different filetypes
-def generate_filename(sprite_info, with_game=True):
+def generate_filename(sprite_info):
     poke_num = str(sprite_info["poke num"]).zfill(4)
     form_name = "" if sprite_info["form name"] == "Default" else sprite_info["form name"]
     is_shiny, sprite_type = seperate_sprite_type_if_shiny(sprite_info["sprite type"])
@@ -649,12 +647,9 @@ def generate_filename(sprite_info, with_game=True):
     game = sprite_info["game name"]
 
     # Hyphen before game allows for alphabetical sorting of back sprites below the front game sprites
-    if with_game:
-        filename_w_game = f"{poke_num} {sprite_info["poke name"]} Gen{gen}{str("_" + game) if "-Back" in sprite_type else str(" " + game)}{"-Shiny" if is_shiny else ""}{form_name}{sprite_type}.png"
-        return filename_w_game
-    if not with_game:
-        filename_wo_game = f"{poke_num} {sprite_info["poke name"]} {"-Shiny" if is_shiny else ""}{form_name}{sprite_type}.png"
-        return filename_wo_game
+    filename = f"{poke_num} {sprite_info["poke name"]} Gen{gen}{str("_" + game) if "-Back" in sprite_type else str(" " + game)}{"-Shiny" if is_shiny else ""}{form_name}{sprite_type}"
+    return filename
+
 
 
 ALL_GAME_SPRITE_FILES = set(os.listdir(game_sprite_path))
@@ -710,7 +705,7 @@ def populate_db(force=False):
         populate_pokes(cursor)
         populate_forms(cursor)
         populate_games(cursor)
-        connection.commit() # Committing here so form_game_obtainability can get form ids with from forms via a different connection
+        connection.commit() # Committing here so form_game_obtainability can get form ids from forms via a different connection
         populate_form_game_obtainability(cursor, force)
         populate_sprite_types(cursor)
         populate_sprite_obtainability(cursor)
@@ -731,4 +726,4 @@ def get_last_poke_num():
     connection.close()
     return max_num
 
-#populate_db()
+populate_db()
