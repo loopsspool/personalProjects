@@ -49,6 +49,8 @@ from scraping import get_game_img_urls, scrape_game_imgs
 # TODO: Wikidex animateds are all gifs, gen9 is webm.... determine if worthwhile to convert and color correct or keep as is. Consider RN and device compatibility
 # TODO: Evaluate if I should have forms for form-like transformations: https://bulbapedia.bulbagarden.net/wiki/List_of_Pok%C3%A9mon_with_form_differences#Form-like_transformations
 # TODO: Check if there's any female backs missing where male backs are present... May only have visual difference in front and sprite is recycled for back
+# TODO: Figure out what to do with 854, 855, 1012, 1013... Should antique/phony, etc forms only be allowed on show stamp sprites?
+    # Front sprites all same, back sprites all same, only difference will be on show stamp
 def main():
     check_pokedex_db_is_current(force=False)
     #generate_pokedex_from_spreadsheet()
