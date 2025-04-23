@@ -2,57 +2,76 @@ import requests # To retrieve webpages
 from bs4 import BeautifulSoup   # To parse webpages
 import urllib   # For downloading those images to my computer
 import re   # For filtering what images to download
+import os
 
-from app_globals import *
-from image_tools import *
-from bulba_translators import potentially_adapt_game_in_filename
+from json_utils import *
+# from app_globals import *
+# from image_tools import *
+# from bulba_translators import potentially_adapt_game_in_filename
 
-    # TODO: Maybe keep track of images on a page that are downloaded and if another matches a pattern have an alt for it? (see primal kyogre gen6ORAS and gen7SM)
+# TODO: Maybe keep track of images on a page that are downloaded and if another matches a pattern have an alt for it? (see primal kyogre gen6ORAS and gen7SM)
 
 
 # NOTE: ALL DOWNLOADS MUST BE DONE IN THE FASHION BELOW
     # Otherwise bulba has a check on if the site is being web scraped and it will block the download
 # This is to mask the fact I'm webscraping
     # To use, call
-        # filename, headers = opener.retrieve(get_largest_png(img), gen8_menu_sprite_save_path + save_name)
+    # filename, headers = opener.retrieve(get_largest_png(img), gen8_menu_sprite_save_path + save_name)
 opener = urllib.request.URLopener()
 opener.addheader('User-Agent', 'Mozilla/5.0')
 
-# Origin page (list of pokes by national pokedex)
-bulba_archives_starter_url = "https://archives.bulbagarden.net"
-pokemon_starter_page = requests.get("https://archives.bulbagarden.net/wiki/Category:Pok%C3%A9mon_artwork")
-pokemon_starter_page_soup = BeautifulSoup(pokemon_starter_page.content, 'html.parser')
+PARENT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+# Their links are only the info after this
+BULBA_ARCHIVES_STARTER_URL = "https://archives.bulbagarden.net"
 
-# TODO: Write this to file so this function only needs to be run once (so img urls get stored in a file (put into globals, see if it sticks after running))
-def get_game_img_urls():
-    print("Starting reading of pokemon game sprite archive links...")
 
-    page_index = 0
+def get_poke_game_img_urls():
+    pokemon_starter_page = requests.get("https://archives.bulbagarden.net/wiki/Category:Pok%C3%A9mon_artwork")
+    pokemon_starter_page_soup = BeautifulSoup(pokemon_starter_page.content, 'html.parser')
     curr_page_soup = pokemon_starter_page_soup
+    poke_img_urls = {}
 
-    # Loops through pages of archives of pokemon images
-    while True:
-        # Grabbing each individual pokemons archived image url
-        for list_div in curr_page_soup.find_all('div', {'class': 'mw-category-group'}):
-            for poke in list_div.find_all('li'):
-                # Skipping specific artwork I don't want
-                if page_index == 0 and (poke.a.get('href') == "/wiki/Category:Ken_Sugimori_Pok%C3%A9mon_artwork" or poke.a.get('href') == "/wiki/Category:Official_Pok%C3%A9mon_artwork"):
-                    continue
-                pokemon_img_urls.append(poke.a.get('href'))
+    while curr_page_soup:
+        print("Reading page of pokemon game archive links...")
+        poke_img_urls.update(get_all_urls_on_page(curr_page_soup))
+        curr_page_soup = get_next_page_soup(curr_page_soup)
 
-        # Moving on to the next page
-        try:
-            next_page_url = curr_page_soup.find('a', string='next page').get('href')
-            next_page = requests.get(bulba_archives_starter_url + next_page_url)
-            next_page_soup = BeautifulSoup(next_page.content, 'html.parser')
-            curr_page_soup = next_page_soup
-            page_index += 1
-            print("Reading next page of pokemon archive links...")
-        # Unless the end of the next pages is reached
-        except:
-            print("Reached end of pokemon archive links.")
-            break
+    print("Saving to json...")
+    json_path = os.path.join(PARENT_DIR, "game_sprite_urls_by_poke.json")
+    save_json(poke_img_urls, json_path)
+        
+        
+def get_all_urls_on_page(curr_page_soup):
+    page_urls = {}
+    for list_div in curr_page_soup.find_all('div', {'class': 'mw-category-group'}):
+        for poke in list_div.find_all('li'):
+            # Skipping specific artwork I don't want
+            if poke.a.get('href') == "/wiki/Category:Ken_Sugimori_Pok%C3%A9mon_artwork" or poke.a.get('href') == "/wiki/Category:Official_Pok%C3%A9mon_artwork":
+                continue
+            poke_name = cleanse_text(poke.a.text)
+            poke_url = BULBA_ARCHIVES_STARTER_URL + poke.a.get('href')
+            page_urls[poke_name] = poke_url
+    return page_urls
 
+
+def cleanse_text(txt):
+    # These are predetermined naming structures defined in the pokemon info spreadsheet
+    if "\u2640" in txt: return txt.replace("\u2640", " f")  # For 29, Nidoran f
+    if "\u2642" in txt: return txt.replace("\u2642", " m")  # For 32, Nidoran m
+    if "\u00e9" in txt: return txt.replace("\u00e9", "e")   # For 669, Flabebe
+    return txt
+
+    
+def get_next_page_soup(curr_page_soup):
+    try:
+        next_page_url = curr_page_soup.find('a', string='next page').get('href')
+        next_page = requests.get(BULBA_ARCHIVES_STARTER_URL + next_page_url)
+        next_page_soup = BeautifulSoup(next_page.content, 'html.parser')
+        return next_page_soup
+    except:
+        return None
+
+get_poke_game_img_urls()
 # TODO: Uncomment download function
 def ani_check_and_download(img, filename):
     dl_destination = ""
@@ -144,7 +163,7 @@ def scrape_game_imgs():
         for img in missing_gen1_thru_gen4_back_imgs:
             print(img)
         # Getting pokemon archived image page information
-        curr_page = requests.get(bulba_archives_starter_url + pokemon_img_urls[i])
+        curr_page = requests.get(BULBA_ARCHIVES_STARTER_URL + pokemon_img_urls[i])
         curr_page_soup = BeautifulSoup(curr_page.content, 'html.parser')
 
         theres_a_next_page = True
@@ -223,7 +242,7 @@ def scrape_game_imgs():
             # Moving on to the next page
             try:
                 next_page_url = curr_page_soup.find('a', string='next page').get('href')
-                next_page = requests.get(bulba_archives_starter_url + next_page_url)
+                next_page = requests.get(BULBA_ARCHIVES_STARTER_URL + next_page_url)
                 next_page_soup = BeautifulSoup(next_page.content, 'html.parser')
                 curr_page_soup = next_page_soup
                 theres_a_next_page = True
