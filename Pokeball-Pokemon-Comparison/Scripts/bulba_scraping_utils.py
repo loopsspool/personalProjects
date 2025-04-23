@@ -5,6 +5,7 @@ import re   # For filtering what images to download
 import os
 
 from json_utils import *
+from db_utils import get_missing_imgs_for_poke
 # from app_globals import *
 # from image_tools import *
 # from bulba_translators import potentially_adapt_game_in_filename
@@ -21,14 +22,13 @@ opener = urllib.request.URLopener()
 opener.addheader('User-Agent', 'Mozilla/5.0')
 
 PARENT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+POKE_URL_JSON_PATH = os.path.join(PARENT_DIR, "game_sprite_urls_by_poke.json")
 # Their links are only the info after this
 BULBA_ARCHIVES_STARTER_URL = "https://archives.bulbagarden.net"
 
 
 def get_poke_game_img_urls(force=False):
-    json_path = os.path.join(PARENT_DIR, "game_sprite_urls_by_poke.json")
-
-    if force or not os.path.exists(json_path):
+    if force or not os.path.exists(POKE_URL_JSON_PATH):
         pokemon_starter_page = requests.get("https://archives.bulbagarden.net/wiki/Category:Pok%C3%A9mon_artwork")
         pokemon_starter_page_soup = BeautifulSoup(pokemon_starter_page.content, 'html.parser')
         curr_page_soup = pokemon_starter_page_soup
@@ -40,7 +40,7 @@ def get_poke_game_img_urls(force=False):
             curr_page_soup = get_next_page_soup(curr_page_soup)
 
         print("Saving to json...")
-        save_json(poke_img_urls, json_path)
+        save_json(poke_img_urls, POKE_URL_JSON_PATH)
         
         
 def get_all_urls_on_page(curr_page_soup):
@@ -72,6 +72,47 @@ def get_next_page_soup(curr_page_soup):
         return next_page_soup
     except:
         return None
+
+
+def scrape(force=False):
+    get_poke_game_img_urls(force)
+    print("Reading JSON...")
+    poke_urls = load_json(POKE_URL_JSON_PATH)
+    
+    for poke, url in poke_urls.items():
+        missing_imgs = get_missing_imgs_for_poke(poke)
+        if len(missing_imgs)==0: continue
+    # Translate to bulba filenames (Don't forget to translate game denoters for back underscore)
+    # go to page and download
+    # NOTE: Maybe best to run to update db and spreadsheet after this finishes
+        # If I do it inline, it'll be hard to populate substitutes
+        # I guess I could write a function to do so, think about it
+
+scrape()
+
+############################# BULBA TRANSLATORS #############################
+GAME_MAP = {
+    # Gen included so Gold doesn't trigger Golduck, Yellow trigger Yellow Core Minior, etc
+    "Gen1 Red_Blue": "1b",
+    "Gen1 Red_Green": "1g",
+    "Gen1 Yellow": "1y",
+    "Gen2 Crystal": "2c",
+    "Gen2 Gold": "2g",
+    "Gen2 Silver": "2s",
+    "Gen3 Emerald": "3e",
+    "Gen3 FRLG": "3f",
+    "Gen3 Ruby_Sapphire": "3r",
+    "Gen4 Diamond_Pearl": "4d",
+    "Gen4 HGSS": "4h",
+    "Gen4 Platinum": "4p",
+    "Gen5 BW_B2W2": "5b",   # TODO: 5b2 may exist? Check on any missing after
+    "Gen6 XY_ORAS": "6x",   # TODO: 6o may exist? Check on any missing after
+    "Gen7 SM_USUM": "7s",
+    "Gen7 LGPE": "7p",
+    "Gen8 SwSh": "8s",
+    # Doesn't look like bulba has any BDSP sprites... Can confirm by checking pokes unavailable in SwSh & LA
+    "Gen8 LA": "8a"
+}
 
 # TODO: Uncomment download function
 def ani_check_and_download(img, filename):
