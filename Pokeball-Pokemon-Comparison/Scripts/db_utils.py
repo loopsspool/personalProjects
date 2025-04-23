@@ -529,7 +529,6 @@ def is_sprite_possible(pfgo_info, sprite_type):
     return True
 
 
-# TODO: Figure out what to do with 854, 855, 1012, 1013... Should antique/phony, etc forms only be allowed on show stamp sprites?
 # Sprites that don't exist. Shouldn't even be marked unobtainable, which is why theyre here not SPRITE_EXCLUSIONS
 NONEXISTANT_SPRITES={
     "no_shiny_cosplay_pikachu": lambda poke_num, form_name, sprite_type: poke_num == 25 and "-Form_Cosplay" in form_name and "Shiny" in sprite_type,
