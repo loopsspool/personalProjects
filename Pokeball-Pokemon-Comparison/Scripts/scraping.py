@@ -25,20 +25,22 @@ PARENT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 BULBA_ARCHIVES_STARTER_URL = "https://archives.bulbagarden.net"
 
 
-def get_poke_game_img_urls():
-    pokemon_starter_page = requests.get("https://archives.bulbagarden.net/wiki/Category:Pok%C3%A9mon_artwork")
-    pokemon_starter_page_soup = BeautifulSoup(pokemon_starter_page.content, 'html.parser')
-    curr_page_soup = pokemon_starter_page_soup
-    poke_img_urls = {}
-
-    while curr_page_soup:
-        print("Reading page of pokemon game archive links...")
-        poke_img_urls.update(get_all_urls_on_page(curr_page_soup))
-        curr_page_soup = get_next_page_soup(curr_page_soup)
-
-    print("Saving to json...")
+def get_poke_game_img_urls(force=False):
     json_path = os.path.join(PARENT_DIR, "game_sprite_urls_by_poke.json")
-    save_json(poke_img_urls, json_path)
+
+    if force or not os.path.exists(json_path):
+        pokemon_starter_page = requests.get("https://archives.bulbagarden.net/wiki/Category:Pok%C3%A9mon_artwork")
+        pokemon_starter_page_soup = BeautifulSoup(pokemon_starter_page.content, 'html.parser')
+        curr_page_soup = pokemon_starter_page_soup
+        poke_img_urls = {}
+
+        while curr_page_soup:
+            print("Reading page of pokemon game archive links...")
+            poke_img_urls.update(get_all_urls_on_page(curr_page_soup))
+            curr_page_soup = get_next_page_soup(curr_page_soup)
+
+        print("Saving to json...")
+        save_json(poke_img_urls, json_path)
         
         
 def get_all_urls_on_page(curr_page_soup):
@@ -71,7 +73,6 @@ def get_next_page_soup(curr_page_soup):
     except:
         return None
 
-get_poke_game_img_urls()
 # TODO: Uncomment download function
 def ani_check_and_download(img, filename):
     dl_destination = ""
