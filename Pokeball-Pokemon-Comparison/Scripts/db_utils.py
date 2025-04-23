@@ -146,6 +146,14 @@ def get_cursor(passed_cur=None):
             connection.close()
 
 
+def get_poke_num(poke_name, cursor=None):
+    with get_cursor(cursor) as cur:
+        cur.execute("SELECT num FROM pokemon WHERE name=?", (poke_name,))
+        form_id = cur.fetchone()
+    if form_id: return form_id[0]
+    else: return None
+
+
 def get_form_id(form_name, cursor=None):
     with get_cursor(cursor) as cur:
         cur.execute("SELECT id FROM forms WHERE form_name=?", (form_name,))
@@ -154,12 +162,10 @@ def get_form_id(form_name, cursor=None):
     else: return None
 
 
-def get_game_id(game_name):
-    connection = sqlite3.connect(DB_PATH)
-    cursor = connection.cursor()
-    cursor.execute("SELECT id FROM games WHERE name=?", (game_name,))
-    game_id = cursor.fetchone()
-    connection.close()
+def get_game_id(game_name, cursor=None):
+    with get_cursor(cursor) as cur:
+        cur.execute("SELECT id FROM games WHERE name=?", (game_name,))
+        game_id = cur.fetchone()
     if game_id: return game_id[0]
     else: return None
 
@@ -172,12 +178,10 @@ def get_game_name(game_id, cursor=None):
     else: return None
 
 
-def get_poke_name(poke_id):
-    connection = sqlite3.connect(DB_PATH)
-    cursor = connection.cursor()
-    cursor.execute(f"SELECT name FROM pokemon WHERE num={poke_id}")
-    poke_name=cursor.fetchone()
-    connection.close()
+def get_poke_name(poke_id, cursor=None):
+    with get_cursor(cursor) as cur:
+        cur.execute(f"SELECT name FROM pokemon WHERE num={poke_id}")
+        poke_name=cur.fetchone()
     if poke_name: return poke_name[0]
     else: return None
 
@@ -215,6 +219,15 @@ def get_all_filenames_info():
 
     connection.close()
     return data
+
+
+def get_missing_imgs_for_poke(poke_name, cursor=None):
+    poke_num = get_poke_num(poke_name)
+    
+    with get_cursor(cursor) as cur:
+        cur.execute(f"SELECT filename FROM obtainable_filenames WHERE poke_num={poke_num} AND does_exist=0")
+        missing = [row[0] for row in cur.fetchall()]
+    return missing
 
 
 # To cache dynamically imported funcs from spreadsheet_utils so it only imports once
@@ -727,4 +740,4 @@ def get_last_poke_num():
     connection.close()
     return max_num
 
-populate_db()
+#populate_db()
