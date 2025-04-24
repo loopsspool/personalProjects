@@ -25,21 +25,628 @@ BULBA_GAME_MAP = {
 }
 
 
+# TODO: This may not be needed depending on how you implement the FORM_MAP
 BULBA_DOUBLE_FORM_MAP = {
-    6: ({"-Mega"}, ["-Mega_X", "-Mega_Y"]),  # Charizard has two mega forms
-    128: ({"-Region_Paldea", "-Form_Combat", "-Form_Blaze", "-Form_Aqua"}, ["-Region_Paldea-Form_Combat", "-Region_Paldea-Form_Blaze", "-Region_Paldea-Form_Aqua"]),     # Only Paldean Tauros has misc forms
-    150: ({"-Mega"}, ["-Mega_X", "-Mega_Y"]),  # Mewtwo has two mega forms
-    215: (set(), ["-Region_Hisui-f"]),   # *Just adding* Sneasel's female Hisuian form 
+    128: {"-Region_Paldea-Form_Combat": "PC", 
+          "-Region_Paldea-Form_Blaze": "PB", 
+          "-Region_Paldea-Form_Aqua": "PA"
+    },
+    215: {"-Region_Hisui-f": "H f"},
     555: ({"-Region_Galar"}, ["-Region_Galar-Form_Standard", "-Region_Galar-Form_Zen"]),     # Galarian Darmanitan has his misc forms too
     892: ({"-Gigantamax"}, ["-Gigantamax-Form_Single_Strike", "-Gigantamax-Form_Rapid_Strike"])     # Urshifu forms impact gigantamax appearance
+}
+
+
+BULBA_INCONSISTENCIES = {
+    # Unown
+    201: {
+        "-Form_A": ["", "A", "-A"],
+        "-Form_B": ["-B", "B"],
+        "-Form_C": ["-C", "C"],
+        "-Form_D": ["-D", "D"],
+        "-Form_E": ["-E", "E"],
+        "-Form_F": ["-F", "F"],
+        "-Form_G": ["-G", "G"],
+        "-Form_H": ["-H", "H"],
+        "-Form_I": ["-I", "I"],
+        "-Form_J": ["-J", "J"],
+        "-Form_K": ["-K", "K"],
+        "-Form_L": ["-L", "L"],
+        "-Form_M": ["-M", "M"],
+        "-Form_N": ["-N", "N"],
+        "-Form_O": ["-O", "O"],
+        "-Form_P": ["-P", "P"],
+        "-Form_Q": ["-Q", "Q"],
+        "-Form_R": ["-R", "R"],
+        "-Form_S": ["-S", "S"],
+        "-Form_T": ["-T", "T"],
+        "-Form_U": ["-U", "U"],
+        "-Form_V": ["-V", "V"],
+        "-Form_W": ["-W", "W"],
+        "-Form_X": ["-X", "X"],
+        "-Form_Y": ["-Y", "Y"],
+        "-Form_Z": ["-Z", "Z"],
+        "-Form_Qmark": ["-QU", "QU"],
+        "-Form_!": ["-EX", "EX"]
     }
+
+}
+
+
+BULBA_UNIVERSAL_FORM_MAP = {
+    "-Mega": "M",
+    "-Mega_X": "X",
+    "-Mega_Y": "Y",
+    "-Gigantamax": "Gi",
+    "-Region_Alola": "A",
+    "-Region_Galar": "G",
+    "-Region_Hisui": "H",
+    "-Region_Paldea": "P"
+}
+
+
+BULBA_TYPE_FORM_MAP = {
+    "Form_Normal": "",  # Normal form considered default: so does not have a letter denoter
+    "Form_Fighting": "-Fighting", 
+    "Form_Flying": "-Flying", 
+    "Form_Poison": "-Poison", 
+    "Form_Ground": "-Ground", 
+    "Form_Rock": "-Rock", 
+    "Form_Bug": "-Bug", 
+    "Form_Ghost": "-Ghost", 
+    "Form_Steel": "-Steel", 
+    "Form_Fire": "-Fire", 
+    "Form_Water": "-Water", 
+    "Form_Grass": "-Grass", 
+    "Form_Electric": "-Electric", 
+    "Form_Psychic": "-Psychic", 
+    "Form_Ice": "-Ice", 
+    "Form_Dragon": "-Dragon", 
+    "Form_Dark": "-Dark", 
+    "Form_Fairy": "-Fairy", 
+    "Form_Qmark": "-Unknown"
+}
 
 
 BULBA_FORM_MAP = {
-    "-Mega": "M",
-    # MegaX&Y
-    "-Gigantamax": "Gi",
-    "-Region_Alola": "A",
-    "-Ragion_Galar": "G",
-    # Region Hisui, Paldea
+    #Pikachu
+    25: {
+        "-Form_Cap_Alola": "A",
+        "-Form_Cap_Hoenn": "H",
+        "-Form_Cap_Kalos": "K",
+        "-Form_Cap_Original": "O",
+        "-Form_Cap_Sinnoh": "S",
+        "-Form_Cap_Unova": "U",
+        "-Form_Cap_Partner": "P"
+        # No world cap sprite
+        # No Cosplay Sprites for on bulbapedia
+    },
+
+    # Tauros
+    128: {
+        "-Form_Combat": "C", 
+        "-Form_Blaze": "B", 
+        "-Form_Aqua": "A"
+    },
+
+    # Pichu
+    172: {"-Form_Spiky_Eared": "N"},
+
+    # Unown in inconsistencies dict
+
+    # Castform Weathers
+    351: {
+        "-Form_Rainy": "R",
+        "-Form_Snowy": "H",
+        "-Form_Sunny": "S"
+    },
+
+    # Primal Kyogre & Groudon
+    382: {"-Form_Primal": "P"},
+    383: {"-Form_Primal": "P"},
+
+    # Deoxys
+    386: {
+        "-Form_Attack": "A",
+        "-Form_Defense": "D",
+        "-Form_Speed": "S"
+    },
+
+    # Burmy & Wormadam Cloaks
+    412: {
+        "-Form_Plant_Cloak": "",    # Plant Cloak considered default, so does not have a letter denoter
+        "-Form_Sandy_Cloak": "G",
+        "-Form_Trash_Cloak": "S"
+    },
+    413: {
+        "-Form_Plant_Cloak": "",    # Plant Cloak considered default, so does not have a letter denoter
+        "-Form_Sandy_Cloak": "G",
+        "-Form_Trash_Cloak": "S"
+    },
+
+    # Cherrim
+    421: {
+        "-Form_Overcast": "",   # Overcast form considered default: so does not have a letter denoter
+        "-Form_Sunshine": "S"
+    },
+
+    # Shellos & Gastrodon East/West
+    422: {
+        "-Form_West": "",   # West form considered default: so does not have a letter denoter
+        "-Form_East": "E"
+    },
+    423: {
+        "-Form_West": "",   # West form considered default: so does not have a letter denoter
+        "-Form_East": "E"
+    },
+
+    # Rotom Appliances
+    479: {
+        "-Form_Fan": "F",
+        "-Form_Frost": "R",
+        "-Form_Heat": "O",
+        "-Form_Mow": "L",
+        "-Form_Wash": "W"
+    },
+
+    # Dialga & Palkia
+    483: {"-Form_Origin": "O"},
+    484: {"-Form_Origin": "O"},
+
+    # Giratina
+    487: {
+        "-Form_Altered": "",    # Altered form considered default: so does not have a letter denoter
+        "-Form_Origin": "O"
+    },
+
+    # Shaymin
+    492: {
+        "-Form_Land": "",   # Land form considered default: so does not have a letter denoter
+        "-Form_Sky": "S"
+    },
+
+    # Arceus Types
+    493: BULBA_TYPE_FORM_MAP,
+
+    # Basculin Stripes
+    550: {
+        "-Form_Red_Striped": "",    # Red Striped form considered default: so does not have a letter denoter
+        "-Form_Blue_Striped": "B",
+        "-White_Blue_Striped": "W"
+    },
+
+    # Darmanitan Modes
+    555: {
+        "-Form_Standard": "",   # Standard form considered default: so does not have a letter denoter
+        "-Form_Zen": "Z"
+    },
+
+    # Deerling & Sawsbuck Seasons
+    585: {
+        "-Form_Spring": "", # Spring form considered default: so does not have a letter denoter
+        "-Form_Autumn": "A",
+        "-Form_Summer": "S",
+        "-Form_Winter": "W"
+    },
+    586: {
+        "-Form_Spring": "", # Spring form considered default: so does not have a letter denoter
+        "-Form_Autumn": "A",
+        "-Form_Summer": "S",
+        "-Form_Winter": "W"
+    },
+
+    # Forces of nature forms
+    641: {
+        "-Form_Incarnate": "",  # Incarnate form considered default: so does not have a letter denoter
+        "-Form_Therian": "T"
+    },
+    642: {
+        "-Form_Incarnate": "",  # Incarnate form considered default: so does not have a letter denoter
+        "-Form_Therian": "T"
+    },
+    645: {
+        "-Form_Incarnate": "",  # Incarnate form considered default: so does not have a letter denoter
+        "-Form_Therian": "T"
+    },
+    
+    # Keldeo
+    647: {
+        "-Form_Ordinary": "",   # Ordinary form considered default: so does not have a letter denoter
+        "-Form_Resolute": "R"
+    },
+
+    # Meloetta
+    648: {
+        "-Form_Aria": "",
+        "-Form_Pirouette": "P"
+    },
+
+    # Genesect
+    649: {
+        "-Form_Douse_Drive": "B",
+        "-Form_Burn_Drive": "R",
+        "-Form_Chill_Drive": "W",
+        "-Form_Shock_Drive": "Y"
+    },
+
+    # Ash Greninja
+    658: {"-Form_Ash": "A"},
+
+    # Vivillon Patterns
+    666: {
+        "-Form_Meadow": ""  # Meadow form considered default: so does not have a letter denoter
+        "-Form_Archipelago": "Arc",
+        "-Form_Continental": "Con",
+        "-Form_Elegant": "Ele",
+        "-Form_Garden": "Gar",
+        "-Form_High_Plains": "Hig",
+        "-Form_Icy_Snow": "Icy",
+        "-Form_Jungle": "Jun",
+        "-Form_Marine": "Mar",
+        "-Form_Modern": "Mod",
+        "-Form_Monsoon": "Mon",
+        "-Form_Ocean": "Oce",
+        "-Form_Polar": "Pol",
+        "-Form_River": "Riv",
+        "-Form_Sandstorm": "San",
+        "-Form_Savanna": "Sav",
+        "-Form_Sun": "Sun",
+        "-Form_Tundra": "Tun",
+        "-Form_Poke_Ball": "Pok",
+        "-Form_Fancy": "Fan"
+    },
+    
+    # Flabebe: Floette: and Florges colors
+    669: {
+        "-Form_Red_Flower": "", # Red Flower form considered default: so does not have a letter denoter
+        "-Form_Blue_Flower": "B",
+        "-Form_Orange_Flower": "O",
+        "-Form_White_Flower": "W",
+        "-Form_Yellow_Flower": "Y"
+    },
+    670: {
+        "-Form_Red_Flower": "", # Red Flower form considered default: so does not have a letter denoter
+        "-Form_Blue_Flower": "B",
+        "-Form_Orange_Flower": "O",
+        "-Form_White_Flower": "W",
+        "-Form_Yellow_Flower": "Y",
+        "-Form_Eternal_Flower": "E"
+    },
+    671: {
+        "-Form_Red_Flower": "", # Red Flower form considered default: so does not have a letter denoter
+        "-Form_Blue_Flower": "B",
+        "-Form_Orange_Flower": "O",
+        "-Form_White_Flower": "W",
+        "-Form_Yellow_Flower": "Y"
+    },
+
+    # Furfrou Trims
+    676: {
+        "-Form_Dandy_Trim": "Da",
+        "-Form_Debutante_Trim": "De",
+        "-Form_Diamond_Trim": "Di",
+        "-Form_Heart_Trim": "He",
+        "-Form_Kabuki_Trim": "Ka",
+        "-Form_La_Reine_Trim": "La",
+        "-Form_Matron_Trim": "Ma",
+        "-Form_Pharaoh_Trim": "Ph",
+        "-Form_Star_Trim": "St"
+    },
+
+    # Aegislash
+    681: {
+        "-Form_Shield": "", # Shield form considered default: so does not have a letter denoter
+        "-Form_Blade": "B"
+    },
+
+    # Pumpkaboo and Gourgeist Sizes
+    710: {
+        "-Form_Average_Size": "", # Average Size form considered default: so does not have a letter denoter
+        "-Form_Small_Size": "Sm",
+        "-Form_Large_Size": "La",
+        "-Form_Super_Size": "Su"
+    },
+    711: {
+        "-Form_Average_Size": "", # Average Size form considered default: so does not have a letter denoter
+        "-Form_Small_Size": "Sm",
+        "-Form_Large_Size": "La",
+        "-Form_Super_Size": "Su"
+    }
+
+    # Xerneas
+    716: {
+        "-Form_Active": "", # Active form considered default: so does not have a letter denoter
+        "-Form_Neutral": "N"
+    },
+
+    # Zygarde
+    718: {
+        "-Form_50%": "",    # 50% form considered default: so does not have a letter denoter
+        "-Form_Complete": "C",
+        "-Form_10%": "T"
+    },
+
+    # Hoopa
+    720: {
+        "-Form_Confined": "",   # Confined form considered default: so does not have a letter denoter
+        "-Form_Unbound": "U"
+    },
+
+    # Oricorio
+    741: {
+        "-Form_Baile": "",   # Baile form considered default: so does not have a letter denoter
+        "-Form_Pa'u": "Pa",
+        "-Form_Pom_Pom": "Po",
+        "-Form_Sensu": "Se"
+    },
+
+    # Lycanroc
+    745: {
+        "-Form_Midday": "", # Midday form considered default: so does not have a letter denoter
+        "-Form_Dusk": "D",
+        "-Form_Midnight": "Mn"
+    },
+
+    # Wishiwashi
+    746: {
+        "-Form_Solo": "",   # Solo form considered default: so does not have a letter denoter
+        "-Form_School": "Sc"
+    },
+
+    # Silvally Types
+    773: BULBA_TYPE_FORM_MAP,
+
+    # Minior
+    774: {
+        "-Form_Meteor": "", # Meteor form considered default: so does not have a letter denoter
+        "-Form_Blue_Core": "B",
+        "-Form_Green_Core": "G",
+        "-Form_Indigo_Core": "I",
+        "-Form_Orange_Core": "O",
+        "-Form_Red_Core": "R",
+        "-Form_Violet_Core": "V",
+        "-Form_Yellow_Core": "Y",
+        "-Form_Core": "R"   # This is the shiny sprite, which bulba has labeled for Red
+    },
+
+    # Mimikyu
+    778: {
+        "-Form_Disguised": "",  # Disguised form considered default: so does not have a letter denoter
+        "-Form_Busted": "B"
+    },
+
+    # Solgaleo
+    791: {"-Form_Radiant_Sun": "R"},
+
+    # Lunala
+    792: {"-Form_Full_Moon": "F"},
+
+    # Necrozma
+    800: {
+        "-Form_Dawn_Wings": "DW",
+        "-Form_Dusk_Mane": "DM",
+        "-Form_Ultra": "U"
+    },
+
+    # Magearna
+    801: {"-Form_Original_Color": "O"},
+    
+    # Marshadow
+    # NOTE: Bulba does not have Zenith form
+    
+    # Cramorant
+    845: {
+        "-Form_Gorging": "Go",
+        "-Form_Gulping": "Gu"
+    },
+    
+    # Toxtricity
+    849: {
+        "-Form_Amped": "",   # Amped form considered default: so does not have a letter denoter
+        "-Form_Low_Key": "L"
+    }
+
+    # Sinistea & Polteageist
+    854 : {
+        "-Form_Phony": "",  # Phony form considered default: so does not have a letter denoter
+        "-Form_Antique": "A"
+    }
+    855 : {
+        "-Form_Phony": "",  # Phony form considered default: so does not have a letter denoter
+        "-Form_Antique": "A"
+    }
+
+    # Alcremie Creams & Sweets
+    869: {
+        "-Form_Caramel_Swirl_Berry_Sweet": "CaSB",
+        "-Form_Caramel_Swirl_Clover_Sweet": "CaSC",
+        "-Form_Caramel_Swirl_Flower_Sweet": "CaSF",
+        "-Form_Caramel_Swirl_Love_Sweet": "CaSL",
+        "-Form_Caramel_Swirl_Ribbon_Sweet": "CaSR",
+        "-Form_Caramel_Swirl_Star_Sweet": "CaSS",
+        "-Form_Caramel_Swirl_Strawberry_Sweet": "CaS",
+        "-Form_Lemon_Cream_Berry_Sweet": "LeCB",
+        "-Form_Lemon_Cream_Clover_Sweet": "LeCC",
+        "-Form_Lemon_Cream_Flower_Sweet": "LeCF",
+        "-Form_Lemon_Cream_Love_Sweet": "LeCL",
+        "-Form_Lemon_Cream_Ribbon_Sweet": "LeCR",
+        "-Form_Lemon_Cream_Star_Sweet": "LeCS",
+        "-Form_Lemon_Cream_Strawberry_Sweet": "LeC",
+        "-Form_Matcha_Cream_Berry_Sweet": "MaCB",
+        "-Form_Matcha_Cream_Clover_Sweet": "MaCC",
+        "-Form_Matcha_Cream_Flower_Sweet": "MaCF",
+        "-Form_Matcha_Cream_Love_Sweet": "MaCL",
+        "-Form_Matcha_Cream_Ribbon_Sweet": "MaCR",
+        "-Form_Matcha_Cream_Star_Sweet": "MaCS",
+        "-Form_Matcha_Cream_Strawberry_Sweet": "MaC",
+        "-Form_Mint_Cream_Berry_Sweet": "MiCB",
+        "-Form_Mint_Cream_Clover_Sweet": "MiCC",
+        "-Form_Mint_Cream_Flower_Sweet": "MiCF",
+        "-Form_Mint_Cream_Love_Sweet": "MiCL",
+        "-Form_Mint_Cream_Ribbon_Sweet": "MiCR",
+        "-Form_Mint_Cream_Star_Sweet": "MiCS",
+        "-Form_Mint_Cream_Strawberry_Sweet": "MiC",
+        "-Form_Rainbow_Swirl_Berry_Sweet": "RaSB",
+        "-Form_Rainbow_Swirl_Clover_Sweet": "RaSC",
+        "-Form_Rainbow_Swirl_Flower_Sweet": "RaSF",
+        "-Form_Rainbow_Swirl_Love_Sweet": "RaSL",
+        "-Form_Rainbow_Swirl_Ribbon_Sweet": "RaSR",
+        "-Form_Rainbow_Swirl_Star_Sweet": "RaSS",
+        "-Form_Rainbow_Swirl_Strawberry_Sweet": "RaS",
+        "-Form_Ruby_Cream_Berry_Sweet": "RaCB",
+        "-Form_Ruby_Cream_Clover_Sweet": "RaCC",
+        "-Form_Ruby_Cream_Flower_Sweet": "RaCF",
+        "-Form_Ruby_Cream_Love_Sweet": "RaCL",
+        "-Form_Ruby_Cream_Ribbon_Sweet": "RaCR",
+        "-Form_Ruby_Cream_Star_Sweet": "RaCS",
+        "-Form_Ruby_Cream_Strawberry_Sweet": "RaC",
+        "-Form_Ruby_Swirl_Berry_Sweet": "RuSB",
+        "-Form_Ruby_Swirl_Clover_Sweet": "RuSC",
+        "-Form_Ruby_Swirl_Flower_Sweet": "RuSF",
+        "-Form_Ruby_Swirl_Love_Sweet": "RuSL",
+        "-Form_Ruby_Swirl_Ribbon_Sweet": "RuSR",
+        "-Form_Ruby_Swirl_Star_Sweet": "RuSS",
+        "-Form_Ruby_Swirl_Strawberry_Sweet": "RuS",
+        "-Form_Salted_Cream_Berry_Sweet": "SaCB",
+        "-Form_Salted_Cream_Clover_Sweet": "SaCC",
+        "-Form_Salted_Cream_Flower_Sweet": "SaCF",
+        "-Form_Salted_Cream_Love_Sweet": "SaCL",
+        "-Form_Salted_Cream_Ribbon_Sweet": "SaCR",
+        "-Form_Salted_Cream_Star_Sweet": "SaCS",
+        "-Form_Salted_Cream_Strawberry_Sweet": "SaC",
+        # Vanilla Cream considered default Cream, so no letter denoter
+        "-Form_Vanilla_Cream_Berry_Sweet": "B",
+        "-Form_Vanilla_Cream_Clover_Sweet": "C",
+        "-Form_Vanilla_Cream_Flower_Sweet": "F",
+        "-Form_Vanilla_Cream_Love_Sweet": "L",
+        "-Form_Vanilla_Cream_Ribbon_Sweet": "R",
+        "-Form_Vanilla_Cream_Star_Sweet": "S",
+        # Strawberry Sweet considered default Sweet, so no letter denoter
+        "-Form_Vanilla_Cream_Strawberry_Sweet": "",
+        # Shinies (which have only berry differences)
+        "-Form_Berry_Sweet": "B",
+        "-Form_Clover_Sweet": "C",
+        "-Form_Flower_Sweet": "F",
+        "-Form_Love_Sweet": "L",
+        "-Form_Ribbon_Sweet": "R",
+        "-Form_Star_Sweet": "S",
+        "-Form_Strawberry_Sweet": "",
+    },
+
+    # Eiscue
+    875: {
+        "-Form_Ice_Face": "",   # Ice Face form considered default: so does not have a letter denoter
+        "-Form_Noice_Face": "N"
+    },
+    
+    # Morpeko
+    877: {
+        "-Form_Full_Belly": "", # Full Belly form considered default: so does not have a letter denoter
+        "-Form_Hangry": "H"
+    },
+
+    # Zacian
+    888: {
+        "-Form_Hero_of_Many_Battles": "",   # Hero form considered default: so does not have a letter denoter
+        "-Form_Crowned_Sword": "C"
+    },
+
+    # Zamazenta
+    889: {
+        "-Form_Hero_of_Many_Battles": "",   # Hero form considered default: so does not have a letter denoter
+        "-Form_Crowned_Shield": "C"
+    },
+
+    # Eternatus Eternamax
+    890: {"-Form_Eternamax": "E"}
+
+    # Urshifu
+    892: {
+        "-Form_Single_Strike": "",  # Single strike form considered default: so does not have a letter denoter
+        "-Form_Rapid_Strike": "R"
+    },
+
+    # Zarude
+    893: {"-Form_Dada": "D"},
+
+    # Calyrex Ridings
+    898: {
+        "-Form_Ice_Rider": "I",
+        "-Form_Shadow_Rider": "R"
+    },
+
+    # Ursaluna
+    901: {"-Form_Bloodmoon": "B",},
+
+    # Enamorus
+    905: {
+        "-Form_Incarnate": "",  # Incarnate form considered default: so does not have a letter denoter
+        "-Form_Therian": "T"
+    },
+
+    # Maushold
+    925: {
+        "-Form_Family-of-Three": "T",
+        "-Form_Family-of-Four": ""  # Family of Four considered default: so does not have a letter denoter
+    },
+
+    # Squawkabilly
+    931: {
+        "-Form_Blue_Plumage": "B", 
+        "-Form_Green_Plumage": "",  # Green form considered default: so does not have a letter denoter
+        "-Form_White_Plumage": "W", 
+        "-Form_Yellow_Plumage": "Y"
+    },
+
+    # Palafin
+    964: {
+        "-Form_Zero": "",   # Zero form considered default: so does not have a letter denoter
+        "-Form_Hero": "H"
+    },
+
+    # Tatsugiri
+    978 :{
+        "-Form_Curly": "",  # Curly form considered default: so does not have a letter denoter
+        "-Form_Droopy": "D", 
+        "-Form_Stretchy" : "S"
+    },
+
+    # Dudunsparce
+    982 : {
+        "-Form_Two_Segment": "",    # Two Segment form considered default: so does not have a letter denoter
+        "-Form_Three_Segment": "Th"
+    },
+
+    # Gimmighoul
+    999: {
+        "-Form_Chest": "",  # Chest form considered default: so does not have a letter denoter
+        "-Form_Roaming": "R"
+    },
+
+    # Poltchageist
+    1012: {
+        "-Form_Artisan": "A", 
+        "-Form_Counterfeit": ""     # Counterfeit form considered default: so does not have a letter denoter
+    },
+
+    # Sinistcha
+    1013: {
+        "-Form_Masterpiece": "M", 
+        "-Form_Unremarkable" : ""   # Unremarkable form considered default: so does not have a letter denoter
+    },
+
+    # Ogerpon
+    1017: {
+        "-Form_Cornerstone_Mask": "C", 
+        "-Form_Hearthflame_Mask": "H", 
+        "-Form_Teal_Mask": "",      # Teal Mask form considered default: so does not have a letter denoter
+        "-Form_Wellspring_Mask": "W"
+    },
+
+    # Terapagos
+    1024: {
+        "-Form_Normal": "",     # Normal form considered default: so does not have a letter denoter
+        "-Form_Terastal": "T", 
+        "-Form_Stellar": "S"
+    }
 }
