@@ -84,7 +84,7 @@ def create_db():
     """)
 
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS all_filenames (
+    CREATE TABLE IF NOT EXISTS all_game_filenames (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         filename TEXT NOT NULL UNIQUE,
         poke_num INTEGER NOT NULL,
@@ -101,7 +101,7 @@ def create_db():
 
     # Seperating obtainable from all so scraping and RN doesn't have to query and filter unobtainable sprites
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS obtainable_filenames (
+    CREATE TABLE IF NOT EXISTS obtainable_game_filenames (
         id INTEGER PRIMARY KEY,
         filename TEXT NOT NULL UNIQUE,
         poke_num INTEGER NOT NULL,
@@ -112,8 +112,8 @@ def create_db():
         does_exist BOOLEAN,
         substitution_id INTEGER,
         has_alt BOOLEAN,
-        FOREIGN KEY (substitution_id) REFERENCES all_filenames(id)
-        FOREIGN KEY (id) REFERENCES all_filenames(id),
+        FOREIGN KEY (substitution_id) REFERENCES all_game_filenames(id)
+        FOREIGN KEY (id) REFERENCES all_game_filenames(id),
         FOREIGN KEY (poke_num, form_id, game_id, sprite_id) REFERENCES sprite_obtainability
     );
     """)
@@ -188,19 +188,19 @@ def get_poke_name(poke_id, cursor=None):
 
 # Using cursor as a parameter here due to how this function is used... not a good way to cleanly commit to db before calling, so passing the connection that has the writes to here
 def get_filename_id(cursor, filename):
-    cursor.execute("SELECT id FROM all_filenames WHERE filename=?", (filename,))
+    cursor.execute("SELECT id FROM all_game_filenames WHERE filename=?", (filename,))
     file_id = cursor.fetchone()
     if file_id: return file_id[0]
     else: return None
 
 
-def get_all_filenames_info():
+def get_all_game_filenames_info():
     print("Fetching file info from database...")
     connection = sqlite3.connect(DB_PATH)
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
 
-    cursor.execute("SELECT * FROM all_filenames")
+    cursor.execute("SELECT * FROM all_game_filenames")
     rows = cursor.fetchall()
     data = defaultdict(lambda: defaultdict(dict))
 
@@ -221,11 +221,11 @@ def get_all_filenames_info():
     return data
 
 
-def get_missing_imgs_for_poke(poke_name, cursor=None):
+def get_missing_game_imgs_for_poke(poke_name, cursor=None):
     poke_num = get_poke_num(poke_name)
     
     with get_cursor(cursor) as cur:
-        cur.execute(f"SELECT filename FROM obtainable_filenames WHERE poke_num={poke_num} AND does_exist=0")
+        cur.execute(f"SELECT filename FROM obtainable_game_filenames WHERE poke_num={poke_num} AND does_exist=0")
         missing = [row[0] for row in cur.fetchall()]
     return missing
 
@@ -680,17 +680,17 @@ def populate_filenames(cursor):
         has_alt = file_does_exist(substitution + "-Alt") if has_sub else file_does_exist(filename + "-Alt")
         file_ids = {"filename": filename, "poke_num": sprite_id[0], "form_id": sprite_id[1], "game_id": sprite_id[2], "sprite_id": sprite_id[3], "obtainable": sprite_info["obtainable"], "does_exist": file_exists, "substitution_id": has_sub, "has_alt": has_alt}
         # Inserting into all filenames table
-        insert_into_table(cursor, "all_filenames", **file_ids)
+        insert_into_table(cursor, "all_game_filenames", **file_ids)
         filename_id = get_filename_id(cursor, filename)
         if has_sub: substitutions_to_convert_to_id.append({"file_id": filename_id, "sub_name": substitution})
         # Inserting into only obtainable filenames table
         if sprite_info["obtainable"]:
-            insert_into_table(cursor, "obtainable_filenames", **{"id": filename_id, **file_ids})
+            insert_into_table(cursor, "obtainable_game_filenames", **{"id": filename_id, **file_ids})
 
     # Resetting console line after updates from above
     print('\r' + ' '*50 + '\r', end='')
 
-    # This is pulled out seperate since it depends on file_ids from all_filenames table, which may not be present yet
+    # This is pulled out seperate since it depends on file_ids from all_game_filenames table, which may not be present yet
     # This is due to checking if the replacement filename exists in all files
     # But that replacement filename may not be inserted into the database yet, hence it doesn't have an id
     change_substitution_field_from_filename_to_file_id(cursor, substitutions_to_convert_to_id)
@@ -698,8 +698,8 @@ def populate_filenames(cursor):
 
 def edit_substitution_field(cursor, record):
     substitution_id = get_filename_id(cursor, record["sub_name"])
-    cursor.execute(f"UPDATE all_filenames SET substitution_id = {substitution_id} WHERE id = {record["file_id"]}")
-    cursor.execute(f"UPDATE obtainable_filenames SET substitution_id = {substitution_id} WHERE id = {record["file_id"]}")
+    cursor.execute(f"UPDATE all_game_filenames SET substitution_id = {substitution_id} WHERE id = {record["file_id"]}")
+    cursor.execute(f"UPDATE obtainable_game_filenames SET substitution_id = {substitution_id} WHERE id = {record["file_id"]}")
 
 
 def change_substitution_field_from_filename_to_file_id(cursor, sub_names_to_convert):

@@ -127,9 +127,9 @@ def generate_header_row(workbook, worksheet):
 
 
 def write_availability(workbook, worksheet, formats, game_cols):
-    from db_utils import get_all_filenames_info, get_poke_name, get_game_name
+    from db_utils import get_all_game_filenames_info, get_poke_name, get_game_name
     
-    all_file_info = get_all_filenames_info()
+    all_file_info = get_all_game_filenames_info()
     longest_values = {"num": 4, "name": 0, "tags": 0}
 
     print("Writing availability of files...")
