@@ -239,15 +239,24 @@ def get_all_game_filenames_info():
 
 def get_missing_game_imgs_by_poke(cursor=None):
     data = defaultdict(list)
+    print("Getting all missing images by pokemon...")
     
     with get_cursor(cursor) as cur:
-        cur.execute(f"SELECT poke_num, filename FROM obtainable_game_filenames WHERE does_exist=0")
+        cur.execute("SELECT poke_num, filename FROM obtainable_game_filenames WHERE does_exist=0")
         result = cur.fetchall()
         for row in result:
             poke_num = row[0]
             data[poke_num].append(row[1])
     # { poke_num : [missing imgs list] }
     return data
+
+
+def has_f_form(poke_num, cursor=None):
+    with get_cursor(cursor) as cur:
+        cur.execute(f"SELECT form_id FROM poke_forms WHERE poke_num={poke_num} AND form_id={get_form_id("-f")}")
+        result = cur.fetchone()
+    if result: return True
+    else: return False
 
 
 # To cache dynamically imported funcs from spreadsheet_utils so it only imports once
@@ -794,5 +803,3 @@ def get_last_poke_num():
     max_num = cursor.fetchone()[0]
     connection.close()
     return max_num
-
-#populate_db()
