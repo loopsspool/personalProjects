@@ -119,6 +119,7 @@ BULBA_FORM_MAP = {
         "-Form_Cap_Partner": "P",
         "-Form_Cap_World": "W",
         
+        # These aren't actually in bulba, I just don't want them to pull the default by returning an empty string
         "-Form_Cosplay_Belle": "B",
         "-Form_Cosplay_Libre": "L",
         "-Form_Cosplay_PhD": "PhD",
@@ -450,11 +451,13 @@ BULBA_FORM_MAP = {
     # Sinistea & Polteageist
     854 : {
         "-Form_Phony": "",  # Phony form considered default: so does not have a letter denoter
-        "-Form_Antique": "A"
+        "-Form_Antique": "A",
+        "-Show_Stamp": "DO_BY_HAND" # Just putting here so it doesn't download default
     },
     855 : {
         "-Form_Phony": "",  # Phony form considered default: so does not have a letter denoter
-        "-Form_Antique": "A"
+        "-Form_Antique": "A",
+        "-Show_Stamp": "DO_BY_HAND" # Just putting here so it doesn't download default
     },
 
     # Alcremie Creams & Sweets
@@ -627,13 +630,15 @@ BULBA_FORM_MAP = {
     # Poltchageist
     1012: {
         "-Form_Artisan": "A", 
-        "-Form_Counterfeit": ""     # Counterfeit form considered default: so does not have a letter denoter
+        "-Form_Counterfeit": "",     # Counterfeit form considered default: so does not have a letter denoter
+        "-Show_Stamp": "DO_BY_HAND" # Just putting here so it doesn't download default
     },
 
     # Sinistcha
     1013: {
         "-Form_Masterpiece": "M", 
-        "-Form_Unremarkable" : ""   # Unremarkable form considered default: so does not have a letter denoter
+        "-Form_Unremarkable" : "",   # Unremarkable form considered default: so does not have a letter denoter
+        "-Show_Stamp": "DO_BY_HAND" # Just putting here so it doesn't download default
     },
 
     # Ogerpon
