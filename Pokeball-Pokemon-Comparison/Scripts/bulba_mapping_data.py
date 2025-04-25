@@ -107,6 +107,7 @@ BULBA_TYPE_FORM_MAP = {
 }
 
 
+# TODO: Before actually downloading, make sure you have all these, cross reference w poke info spreadsheet
 BULBA_FORM_MAP = {
     #Pikachu
     25: {
@@ -252,6 +253,14 @@ BULBA_FORM_MAP = {
     645: {
         "-Form_Incarnate": "",  # Incarnate form considered default: so does not have a letter denoter
         "-Form_Therian": "T"
+    },
+
+    # Kyurem
+    646: {
+        "-Form_Black": "DO_BY_HAND",
+        "-Form_Black_Overdrive": "DO_BY_HAND",
+        "-Form_White": "DO_BY_HAND",
+        "-Form_White_Overdrive": "DO_BY_HAND",
     },
     
     # Keldeo
