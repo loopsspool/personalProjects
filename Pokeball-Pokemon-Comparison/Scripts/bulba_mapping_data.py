@@ -1,6 +1,16 @@
 # TODO: Put all these mappings in a seperate file, with static dicts and whatnot from db_utils
 # TODO: Also put db_utils exclusions and exceptions into a seperate file
 ############################# BULBA TRANSLATORS #############################
+# These will be excluded if tried to run through the game sprite image downloader
+BULBA_DOESNT_HAVE_GAME_IMGS_FOR = ["Gen9 SV", "Gen9_SV", "Gen8 BDSP", "Gen8_BDSP"]
+
+# Only allows male denoter on bulba translated file if these strings not in my filename
+# MUST KEEP SPACE AND UNDERSCORE -- No easy way to get gen when calling this, and dont want gen1 to filter gen10
+MALE_DENOTER_EXCLUSION_GENS = ["Gen1 ", "Gen1_", "Gen2 ", "Gen2_", "Gen3 ", "Gen3_"]
+
+# Allows universal forms (regions, mega, etc) to be paired w female forms (See Hisuian Sneasel)
+FEMALE_DENOTER_UNIVERSAL_FORM_EXCEPTION_POKEMON = ["0215"]
+
 BULBA_GAME_MAP = {
     # Gen included so Gold doesn't trigger Golduck, Yellow trigger Yellow Core Minior, etc
     "Gen1 Red_Blue": "1b",
