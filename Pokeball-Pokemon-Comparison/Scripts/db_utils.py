@@ -237,13 +237,17 @@ def get_all_game_filenames_info():
     return data
 
 
-def get_missing_game_imgs_for_poke(poke_name, cursor=None):
-    poke_num = get_poke_num(poke_name)
+def get_missing_game_imgs_for_poke(cursor=None):
+    data = defaultdict(list)
     
     with get_cursor(cursor) as cur:
-        cur.execute(f"SELECT filename FROM obtainable_game_filenames WHERE poke_num={poke_num} AND does_exist=0")
-        missing = [row[0] for row in cur.fetchall()]
-    return missing
+        cur.execute(f"SELECT poke_num, filename FROM obtainable_game_filenames WHERE does_exist=0")
+        result = cur.fetchall()
+        for row in result:
+            poke_num = row[0]
+            data[poke_num].append(row[1])
+    # { poke_num : [missing imgs list] }
+    return data
 
 
 # To cache dynamically imported funcs from spreadsheet_utils so it only imports once
@@ -724,11 +728,9 @@ def change_substitution_field_from_filename_to_file_id(cursor, sub_names_to_conv
         edit_substitution_field(cursor, record)
 
 
-# TODO: 
-# Add exclusions (Arceus, Silvally, probably Alcremie) -- and what to do (dream forms, nothing?)
-# Check all forms, see if exceptions
 def populate_drawn_filenames(cursor):
     from app_globals import drawn_save_path
+    print("Populating drawn filenames into database...")
 
     poke_forms = get_poke_form_records(cursor)
     for poke_form, poke_info in poke_forms.items():
@@ -759,11 +761,6 @@ def generate_drawn_filenames(poke_info):
     return filenames
 
 
-connection = sqlite3.connect(DB_PATH)
-cursor = connection.cursor()
-populate_drawn_filenames(cursor)
-connection.close()
-
 def populate_db(force=False):
     if not db_exists():
         create_db()
@@ -780,7 +777,8 @@ def populate_db(force=False):
         populate_sprite_types(cursor)
         populate_sprite_obtainability(cursor)
         populate_game_filenames(cursor)
-        populate_drawn_filenames(cursor)
+        # TODO: This says db is locked for some reason
+        #populate_drawn_filenames(cursor)
 
         connection.commit()
     except Exception as e:
