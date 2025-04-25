@@ -5,7 +5,8 @@ import re   # For filtering what images to download
 import os
 
 from json_utils import *
-from db_utils import get_missing_imgs_for_poke
+from db_utils import get_missing_game_imgs_for_poke
+from reference_data import *
 # from app_globals import *
 # from image_tools import *
 # from bulba_translators import potentially_adapt_game_in_filename
@@ -43,6 +44,7 @@ def get_poke_game_img_urls(force=False):
         save_json(poke_img_urls, POKE_URL_JSON_PATH)
         
         
+# TODO: Rewrite to get specific image url
 def get_all_urls_on_page(curr_page_soup):
     page_urls = {}
     for list_div in curr_page_soup.find_all('div', {'class': 'mw-category-group'}):
@@ -80,16 +82,33 @@ def scrape(force=False):
     poke_urls = load_json(POKE_URL_JSON_PATH)
     
     for poke, url in poke_urls.items():
-        missing_imgs = get_missing_imgs_for_poke(poke)
+        missing_imgs = get_missing_game_imgs_for_poke(poke)
         if len(missing_imgs)==0: continue
+
+    # TODO: If wanting to use this, will need to factor in filtering of Game, GO, Home, Menu, etc
+        for img in missing_imgs:
+            bulba_filename = bulba_translate(img)
     # Translate to bulba filenames (Don't forget to translate game denoters for back underscore)
-    # go to page and download
+    # try to go to image page and download
+    # Game Sprites
+    # Drawn
+    # Home
+    # Home menu sprites ONLY
+    # Any others?
     # NOTE: Maybe best to run to update db and spreadsheet after this finishes
         # If I do it inline, it'll be hard to populate substitutes
         # I guess I could write a function to do so, think about it
+        # *** If crashes, db wont be updated and this'll download them again
+            # AT VERY LEAST have update function for db get called before running this
 
 scrape()
 
+
+def bulba_translate(filename):
+    bulba_filename = ""
+    # Dont forget to factor in the underscore in gen/game if its a back sprite
+    # Include searching for -f and shiny here, must be last after reference_date
+    # If has a female counterpart, MAY have " m"
 
 
 # TODO: Uncomment download function
