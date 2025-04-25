@@ -11,10 +11,13 @@ from openpyxl import load_workbook
 import string # To access letters easily without having to type them myself in an array
 import time
 
-from pokedex_checker import check_pokedex_db_is_current
-from drawn_images import get_drawn_images
-from menu_sprites import get_menu_sprites
-from scraping import get_game_img_urls, scrape_game_imgs
+# from pokedex_checker import check_pokedex_db_is_current
+# from drawn_images import get_drawn_images
+# from menu_sprites import get_menu_sprites
+
+from db_utils import populate_db
+from spreadsheet_funcs import create_file_checklist_spreadsheet
+from bulba_scraping_utils import scrape
 
 
 ################################# TODO: Complete all TODOs here and from all files before running... please ########################
@@ -52,13 +55,17 @@ from scraping import get_game_img_urls, scrape_game_imgs
 # TODO: Figure out what to do with 854, 855, 1012, 1013... Should antique/phony, etc forms only be allowed on show stamp sprites?
     # Front sprites all same, back sprites all same, only difference will be on show stamp
 def main():
-    check_pokedex_db_is_current(force=False)
+    #check_pokedex_db_is_current(force=False)
     #generate_pokedex_from_spreadsheet()
     #add_missing_images_to_poke()
     #get_game_img_urls()
     #scrape_game_imgs()
     # TODO: Many more menu sprites added, see notes inside menu_sprites file
     #get_menu_sprites()
+
+    #populate_db()
+    #create_file_checklist_spreadsheet()
+    scrape()
     
 if __name__ == "__main__":
     main()
