@@ -184,6 +184,10 @@ def universal_form_in_filename(filename):
     for u_form in BULBA_UNIVERSAL_FORM_MAP:
         if u_form in filename:
             return True
+        
+    # Gigantamax pulled out of UNIVERRSAL_FORM_MAP for Urshifu
+    if "-Gigantamax" in filename: return True
+    
     return False
 
 
