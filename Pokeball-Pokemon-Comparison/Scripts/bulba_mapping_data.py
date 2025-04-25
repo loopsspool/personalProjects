@@ -25,18 +25,6 @@ BULBA_GAME_MAP = {
 }
 
 
-# TODO: This may not be needed depending on how you implement the FORM_MAP
-BULBA_DOUBLE_FORM_MAP = {
-    128: {"-Region_Paldea-Form_Combat": "PC", 
-          "-Region_Paldea-Form_Blaze": "PB", 
-          "-Region_Paldea-Form_Aqua": "PA"
-    },
-    215: {"-Region_Hisui-f": "H f"},
-    555: ({"-Region_Galar"}, ["-Region_Galar-Form_Standard", "-Region_Galar-Form_Zen"]),     # Galarian Darmanitan has his misc forms too
-    892: ({"-Gigantamax"}, ["-Gigantamax-Form_Single_Strike", "-Gigantamax-Form_Rapid_Strike"])     # Urshifu forms impact gigantamax appearance
-}
-
-
 BULBA_INCONSISTENCIES = {
     # Unown
     201: {
@@ -117,9 +105,11 @@ BULBA_FORM_MAP = {
         "-Form_Cap_Original": "O",
         "-Form_Cap_Sinnoh": "S",
         "-Form_Cap_Unova": "U",
-        "-Form_Cap_Partner": "P"
-        # No world cap sprite
-        # No Cosplay Sprites for on bulbapedia
+        "-Form_Cap_Partner": "P",
+        "-Form_Cap_World": "W",
+        
+        "-Form_Cosplay_PhD": "PhD",
+        "-Form_Cosplay_Rock_Star": "Ro"
     },
 
     # Tauros
@@ -274,7 +264,7 @@ BULBA_FORM_MAP = {
 
     # Vivillon Patterns
     666: {
-        "-Form_Meadow": ""  # Meadow form considered default: so does not have a letter denoter
+        "-Form_Meadow": "",  # Meadow form considered default: so does not have a letter denoter
         "-Form_Archipelago": "Arc",
         "-Form_Continental": "Con",
         "-Form_Elegant": "Ele",
@@ -351,7 +341,7 @@ BULBA_FORM_MAP = {
         "-Form_Small_Size": "Sm",
         "-Form_Large_Size": "La",
         "-Form_Super_Size": "Su"
-    }
+    },
 
     # Xerneas
     716: {
@@ -431,9 +421,6 @@ BULBA_FORM_MAP = {
     # Magearna
     801: {"-Form_Original_Color": "O"},
     
-    # Marshadow
-    # NOTE: Bulba does not have Zenith form
-    
     # Cramorant
     845: {
         "-Form_Gorging": "Go",
@@ -444,17 +431,17 @@ BULBA_FORM_MAP = {
     849: {
         "-Form_Amped": "",   # Amped form considered default: so does not have a letter denoter
         "-Form_Low_Key": "L"
-    }
+    },
 
     # Sinistea & Polteageist
     854 : {
         "-Form_Phony": "",  # Phony form considered default: so does not have a letter denoter
         "-Form_Antique": "A"
-    }
+    },
     855 : {
         "-Form_Phony": "",  # Phony form considered default: so does not have a letter denoter
         "-Form_Antique": "A"
-    }
+    },
 
     # Alcremie Creams & Sweets
     869: {
@@ -558,7 +545,7 @@ BULBA_FORM_MAP = {
     },
 
     # Eternatus Eternamax
-    890: {"-Form_Eternamax": "E"}
+    890: {"-Form_Eternamax": "E"},
 
     # Urshifu
     892: {
