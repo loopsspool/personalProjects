@@ -119,7 +119,10 @@ BULBA_FORM_MAP = {
         "-Form_Cap_Partner": "P",
         "-Form_Cap_World": "W",
         
+        "-Form_Cosplay_Belle": "B",
+        "-Form_Cosplay_Libre": "L",
         "-Form_Cosplay_PhD": "PhD",
+        "-Form_Cosplay_Pop_Star": "Pop",
         "-Form_Cosplay_Rock_Star": "Ro"
     },
 

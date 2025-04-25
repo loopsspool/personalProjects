@@ -30,6 +30,7 @@ PARENT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 POKE_URL_JSON_PATH = os.path.join(PARENT_DIR, "game_sprite_urls_by_poke.json")
 # Their links are only the info after this
 BULBA_ARCHIVES_STARTER_URL = "https://archives.bulbagarden.net"
+BULBA_FILE_STARTER_URL = "https://archives.bulbagarden.net/wiki/File:"
 # https://archives.bulbagarden.net/wiki/Category:Pok%C3%A9mon_artwork
 
 #         pokemon_starter_page = requests.get("")
@@ -57,9 +58,18 @@ def scrape(force=False):
             # Right now this filters out SV & BDSP Sprites since bulba doesnt have them
             if bulba_doesnt_have_game_images_for(missing_img):
                 continue
-            print(missing_img)
+            print(missing_img[:4])
+            if missing_img != "0025 Pikachu Gen6 XY_ORAS-Form_Cosplay_Rock_Star-Animated":
+                continue
             bulba_game_sprite_filename = bulba_game_sprite_translate(missing_img)
-            print(bulba_game_sprite_filename)
+            bulba_game_sprite_filename_for_url = BULBA_FILE_STARTER_URL + bulba_game_sprite_filename.replace(" ", "_")
+            print(bulba_game_sprite_filename_for_url)
+            img_page = requests.get(bulba_game_sprite_filename_for_url)
+            img_page_soup = BeautifulSoup(img_page.content, 'html.parser')
+            print(img_page_soup.findAll("p"))
+            break
+        if poke_num == 25:
+            break
 
     # try to go to image page and download
 
@@ -108,9 +118,11 @@ def get_bulba_translated_universal_form(filename):
     return ("")
 
 
+# TODO: Incorporate 201 Exception somehow
+# TODO: If pokemon in dict but form isnt will use default poke unfortunately... See cosplay pikachu
 def get_bulba_translated_specific_form(poke_num, filename):
-    if poke_num in BULBA_FORM_MAP.items():
-        for form, translation in BULBA_FORM_MAP[poke_num]:
+    if poke_num in BULBA_FORM_MAP:
+        for form, translation in BULBA_FORM_MAP[poke_num].items():
             if form in filename:
                 return(translation)
     return("")
@@ -168,13 +180,12 @@ def f_exception_poke_in_filename(filename):
 # TODO: Uncomment download function
 def ani_check_and_download(img, filename):
     dl_destination = ""
-    if "-Back" in filename and ("Gen1" in filename or "Gen2" in filename or "Gen3" in filename or "Gen4" in filename):
-        dl_destination = gen1_thru_4_backs_save_path
 
     # TODO: Put the opener retrieve inside of a lock loop... that's why you get errors most often
         # Trying to access the image too much in a short window (see stackoverflow)
     file_ext = img.img['alt'][-4:]
     save_name = filename + file_ext
+
     if "-Animated" in save_name:
         # TODO: Original filetype is preferred for color retention
         dl_destination = game_save_path + "animated_pngs_for_gifs\\pngs\\"
