@@ -7,6 +7,7 @@ animated_pngs_pre_gif_conversion_path = "C:\\Users\\ethan\\OneDrive\\Desktop\\Co
 gifs_post_conversion_path = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Game Sprites\\animated_pngs_for_gifs\\gifs\\"
 test_path = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Test\\"
 staging_path = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Game Sprites\\staging\\"
+drawn_path = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Drawn\\"
 file_ext = ""
 
 
