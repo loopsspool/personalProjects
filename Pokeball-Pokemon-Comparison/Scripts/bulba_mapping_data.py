@@ -74,8 +74,8 @@ BULBA_INCONSISTENCIES = {
 # NOTE: Gigantamax pulled out due to Urshifu bulba names, where forms are put before gigantamax
     # So this is done by hand in bulba_scraping_utils
 BULBA_UNIVERSAL_FORM_MAP = {
-    "-Mega_X": "X",
-    "-Mega_Y": "Y",
+    "-Mega_X": "MX",
+    "-Mega_Y": "MY",
     "-Mega": "M",   # This after X&Y so when looping through Mega wont trigger a form meant to be X or Y
     "-Region_Alola": "A",
     "-Region_Galar": "G",
