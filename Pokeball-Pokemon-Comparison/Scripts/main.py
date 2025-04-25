@@ -16,7 +16,7 @@ import time
 # from menu_sprites import get_menu_sprites
 
 from db_utils import populate_db
-from spreadsheet_funcs import create_file_checklist_spreadsheet
+#from spreadsheet_funcs import create_file_checklist_spreadsheet
 from bulba_scraping_utils import scrape
 
 
@@ -63,6 +63,7 @@ def main():
     # TODO: Many more menu sprites added, see notes inside menu_sprites file
     #get_menu_sprites()
 
+    # TODO: Gotta figure out dependencies between pop_db and create_checklist running... its ridiculous
     #populate_db()
     #create_file_checklist_spreadsheet()
     scrape()
