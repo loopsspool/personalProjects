@@ -5,7 +5,7 @@ import re   # For filtering what images to download
 import os
 
 from json_utils import *
-from db_utils import get_missing_game_imgs_by_poke
+from db_utils import get_missing_game_imgs_by_poke, has_f_form
 from bulba_mapping_data import *
 # from app_globals import *
 # from image_tools import *
@@ -87,6 +87,10 @@ def scrape(force=False):
     for poke_num, missing_imgs in missing_imgs_dict.items():
         if len(missing_imgs)==0: continue
         for missing_img in missing_imgs:
+            # Right now this filters out Scarlet Violet Sprites since bulba doesnt have them
+            if bulba_doesnt_have_game_images_for(missing_img):
+                continue
+            print(missing_img)
             bulba_game_sprite_filename = bulba_game_sprite_translate(missing_img)
             print(bulba_game_sprite_filename)
 
@@ -105,37 +109,89 @@ def scrape(force=False):
         # *** If crashes, db wont be updated and this'll download them again
             # AT VERY LEAST have update function for db get called before running this
 
-scrape()
+
+def bulba_doesnt_have_game_images_for(filename):
+    for exclusion in BULBA_DOESNT_HAVE_GAME_IMGS_FOR:
+        if exclusion in filename:
+            return True
+    return False
 
 
 def bulba_game_sprite_translate(filename):
     # Starting bulba filename w their format
-    bulba_filename = "Spr "
-    is_back_sprite = False
-    # Adding bulbapedia format of back, gen, and game
-    for game, bulba_v_game in BULBA_GAME_MAP.items():
+    bulba_filename = "Spr"
+    if "-Back" in filename: bulba_filename += " b"
+    bulba_game = get_bulba_translated_game(filename)    # Not just adding it so I can evaluate it later
+    bulba_filename += bulba_game
+    # TODO: always 3 digits total with leading zeros unless 4 digits used? check
+    poke_num_int = int(filename[:4])
+    poke_num_leading_zeros = str(poke_num_int).zfill(3)  # Converting from 4 total digits to 3
+    bulba_filename += f" {poke_num_leading_zeros}"
+    bulba_filename += get_bulba_translated_universal_form(filename)
+    bulba_filename += get_bulba_translated_specific_form(poke_num_int, filename)
+    if "-Gigantamax" in filename: bulba_filename += "Gi"    # Put here because of Urshifu, form before gigantamax denoter
+    bulba_filename += get_gender_denoter(poke_num_int, filename)
+    if "-Shiny" in filename: bulba_filename += " s"
+    bulba_filename += ".png"
+    return(bulba_filename)
+
+
+def get_bulba_translated_game(filename):
+    for game, translation in BULBA_GAME_MAP.items():
         if "-Back" in filename:
-            is_back_sprite = True
             game = game.replace(" ", "_")
         if game in filename:
-            if is_back_sprite: bulba_filename += "b "
-            bulba_filename += bulba_v_game + " "
-    # Adding poke num (TODO: always 3 digits total with leading zeros unless 4 digits used? check)
-    poke_num = str(int(filename[:4])).zfill(3)  # Converting from 4 total digits to 3
-    bulba_filename += poke_num
-    # Then Mega
-    # Then Regions
-    # Then Forms
-    # Then Giganta (After forms for Urshifu)
-    # TODO: if has f form, denote f or m for sprite (if after gen4)... may need to join some tables in SQL
-        # Add space before
-        # After Regions for Hisuian Sneasel
-    # Then shiny
+            return(f" {translation}")
+        
 
-    # Dont forget to factor in the underscore in gen/game if its a back sprite
-    # Include searching for -f and shiny here, must be last after reference_date
-    # If has a female counterpart, MAY have " m"
+# Mega and regional forms, not gigantamax (bc urshifu, see dict in file for more)
+def get_bulba_translated_universal_form(filename):
+    for u_form, translation in BULBA_UNIVERSAL_FORM_MAP.items():
+        if u_form in filename: return(translation)
+    return ("")
 
+
+def get_bulba_translated_specific_form(poke_num, filename):
+    if poke_num in BULBA_FORM_MAP.items():
+        for form, translation in BULBA_FORM_MAP[poke_num]:
+            if form in filename:
+                return(translation)
+    return("")
+
+
+def get_gender_denoter(poke_num, filename):
+    has_f_var = has_f_form(poke_num)
+    if "-f" in filename:
+        return(" f")
+    elif "-f" not in filename and has_f_var and include_male_denoter(filename):
+        return(" m")
+    else:
+        return("")
+    
+
+def include_male_denoter(filename):
+    # Checking file is gen4 or above (when f variations started)
+    for gen_exclusion in MALE_DENOTER_EXCLUSION_GENS:
+        if gen_exclusion in filename:
+            return False
+    # No universal forms w gender differences, except excpetions (Hisuian Sneasel f)
+    if universal_form_in_filename(filename) and not f_exception_poke_in_filename(filename):
+        return False
+    return True
+
+
+def universal_form_in_filename(filename):
+    for u_form in BULBA_UNIVERSAL_FORM_MAP:
+        if u_form in filename:
+            return True
+    return False
+
+
+def f_exception_poke_in_filename(filename):
+    for poke_num in FEMALE_DENOTER_UNIVERSAL_FORM_EXCEPTION_POKEMON:
+        if poke_num in filename:
+            return True
+    return False
 
 # Drawn images
 # TODO: 
