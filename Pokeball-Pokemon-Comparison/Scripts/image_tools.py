@@ -1,9 +1,7 @@
 from PIL import Image   # For converting URL image data to PIL Image object 
 import requests # To retrieve webpages
 from bs4 import BeautifulSoup   # To parse webpages
-import os   # For downloading those images to my computer
-import re   # For filtering what images to download
-from scraping import bulba_archives_starter_url
+
 
 def is_animated(link):
     # NOTE: Works on animated pngs
@@ -13,22 +11,14 @@ def is_animated(link):
     return(img.is_animated)
 
 
-def get_largest_png(thumb):
-    # Go into page of image
-    img_page = requests.get(bulba_archives_starter_url + thumb.a.get("href"))
-    img_page_soup = BeautifulSoup(img_page.content, 'html.parser')
+def save_first_frame(link, save_path):
+    img = Image.open(requests.get(link, stream = True).raw)
+    first_frame = img.copy()    # Returns just first frame
+    first_frame.save(save_path)
+
+
+def get_largest_png(img_page_soup):
     # Find the biggest image location
     biggest_link = img_page_soup.find("div", "fullImageLink")
     # Return its link
     return (biggest_link.a.get("href"))
-
-def get_img_from_string(thumb, s, save_path):
-    img_text = thumb.img['alt']
-    file_ext = img_text[len(img_text) - 4:]
-    save_name = save_path + file_ext
-    if re.search(s, img_text) != None and not os.path.exists(save_name):
-        save_img = get_largest_png(thumb)
-        print(img_text)
-        #print(save_img)
-        #print(s, " --- ", save_name)
-        #filename, headers = opener.retrieve(save_img, save_name)
