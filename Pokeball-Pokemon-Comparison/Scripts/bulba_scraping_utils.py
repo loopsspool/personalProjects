@@ -8,7 +8,7 @@ from json_utils import *
 from db_utils import get_missing_game_imgs_by_poke, has_f_form
 from bulba_mapping_data import *
 # from app_globals import *
-# from image_tools import *
+from image_tools import *
 # from bulba_translators import potentially_adapt_game_in_filename
 
 # TODO: Maybe keep track of images on a page that are downloaded and if another matches a pattern have an alt for it? (see primal kyogre gen6ORAS and gen7SM)
@@ -31,6 +31,7 @@ POKE_URL_JSON_PATH = os.path.join(PARENT_DIR, "game_sprite_urls_by_poke.json")
 # Their links are only the info after this
 BULBA_ARCHIVES_STARTER_URL = "https://archives.bulbagarden.net"
 BULBA_FILE_STARTER_URL = "https://archives.bulbagarden.net/wiki/File:"
+GAME_SPRITE_PATH = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Game Sprites\\"
 # https://archives.bulbagarden.net/wiki/Category:Pok%C3%A9mon_artwork
 
 #         pokemon_starter_page = requests.get("")
@@ -49,7 +50,7 @@ def get_next_page_soup(curr_page_soup):
         return None
 
 
-def scrape(force=False):
+def scrape(allow_download=False):
     missing_imgs_dict = get_missing_game_imgs_by_poke()
     
     for poke_num, missing_imgs in missing_imgs_dict.items():
@@ -58,23 +59,43 @@ def scrape(force=False):
             # Right now this filters out SV & BDSP Sprites since bulba doesnt have them
             if bulba_doesnt_have_game_images_for(missing_img):
                 continue
-            print(missing_img[:4])
-            if missing_img != "0025 Pikachu Gen6 XY_ORAS-Form_Cosplay_Rock_Star-Animated":
-                continue
             bulba_game_sprite_filename = bulba_game_sprite_translate(missing_img)
-            bulba_game_sprite_filename_for_url = BULBA_FILE_STARTER_URL + bulba_game_sprite_filename.replace(" ", "_")
-            print(bulba_game_sprite_filename_for_url)
-            img_page = requests.get(bulba_game_sprite_filename_for_url)
-            img_page_soup = BeautifulSoup(img_page.content, 'html.parser')
-            print(img_page_soup.findAll("p"))
+            bulba_game_sprite_filename_url = BULBA_FILE_STARTER_URL + bulba_game_sprite_filename.replace(" ", "_")
+            filename = missing_img + ".png"
+            save_path = os.path.join(GAME_SPRITE_PATH, filename)
+            get_img(bulba_game_sprite_filename_url, save_path, allow_download)
+
+        if poke_num == 5:
             break
-        if poke_num == 25:
-            break
-
-    # try to go to image page and download
 
 
+def get_img(url, save_path, allow_download):
+    img_page = requests.get(url)
+    img_page_soup = BeautifulSoup(img_page.content, 'html.parser')
+    img_exists = not img_page_soup.find("p", string=re.compile(r"No file by this name exists."))    # Negating a found non-existant statement on page
+    if not img_exists:
+        return ()
+    else:
+        # Printing filename
+        print(f"\r{save_path.split("\\")[-1]}", end='', flush=True)
+        # Resetting console line after updates from above
+        print('\r' + ' '*75 + '\r', end='')
 
+        img_url = get_largest_png(img_page_soup)
+        img_is_animated = is_animated(img_url)
+
+        if "-Animated" in save_path:
+            if img_is_animated:
+                if allow_download:
+                    filename, headers = opener.retrieve(img_url, save_path)
+        else: # Looking for still
+            if not img_is_animated:
+                if allow_download:
+                    filename, headers = opener.retrieve(img_url, save_path)
+            else: # Looking for still, but image is animated
+                if allow_download:
+                    # TODO: Test this
+                    save_first_frame(img_url, save_path)
 
 
 def bulba_doesnt_have_game_images_for(filename):
@@ -120,6 +141,7 @@ def get_bulba_translated_universal_form(filename):
 
 # TODO: Incorporate 201 Exception somehow
 # TODO: If pokemon in dict but form isnt will use default poke unfortunately... See cosplay pikachu
+    # return None w a try catch if form not found? But defaults...
 def get_bulba_translated_specific_form(poke_num, filename):
     if poke_num in BULBA_FORM_MAP:
         for form, translation in BULBA_FORM_MAP[poke_num].items():
