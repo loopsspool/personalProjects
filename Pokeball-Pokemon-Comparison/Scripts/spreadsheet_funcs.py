@@ -222,7 +222,7 @@ def get_poke_tags(poke_name, filename):
         tags = ""
     return tags
 
-#create_file_checklist_spreadsheet()
+
 # TODO: Capitalize constants
 # TODO: Verify poke_info_last_row used instead of pokemon_files_sheet.max_row
 # Spreadsheet For Pokedex Info
