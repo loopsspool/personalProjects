@@ -118,6 +118,22 @@ def create_db():
     );
     """)
 
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS drawn_filenames (
+        id INTEGER PRIMARY KEY,
+        filename TEXT NOT NULL UNIQUE,
+        poke_num INTEGER NOT NULL,
+        form_id INTEGER NOT NULL,
+        does_exist BOOLEAN NOT NULL,
+        FOREIGN KEY (poke_num, form_id) REFERENCES poke_forms
+    );
+    """)
+
+    # TODO: Add Drawn Filename Table
+    # TODO: Add Home Filename Table
+    # TODO: Add Home Menu Filename Table
+        # See whats missing to download from Gen8 (Just gigantamax?)
+
     connection.commit()
     connection.close()
 
@@ -187,7 +203,7 @@ def get_poke_name(poke_id, cursor=None):
 
 
 # Using cursor as a parameter here due to how this function is used... not a good way to cleanly commit to db before calling, so passing the connection that has the writes to here
-def get_filename_id(cursor, filename):
+def get_game_filename_id(cursor, filename):
     cursor.execute("SELECT id FROM all_game_filenames WHERE filename=?", (filename,))
     file_id = cursor.fetchone()
     if file_id: return file_id[0]
@@ -605,32 +621,32 @@ def seperate_sprite_type_if_shiny(sprite_type):
     else: return True, sprite_type.replace("-Shiny", "")
 
 
-def file_does_exist(filename):
+def file_does_exist(filename, path):
     file_ext = [".png"]
     for ext in file_ext:
         filename_w_ext = filename + ext
-        if filename_w_ext in ALL_GAME_SPRITE_FILES: return True
+        if filename_w_ext in path: return True
     return False
     
 
-def check_for_usable_file(filename, sprite_info):
+def check_for_usable_game_file(filename, sprite_info):
     if not sprite_info["obtainable"]:
         return None, None
-    if file_does_exist(filename):
+    if file_does_exist(filename, ALL_GAME_SPRITE_FILES):
         return True, None
     else:
-        exists, substitution = check_for_file_substitution(filename)
+        exists, substitution = check_for_game_file_substitution(filename)
         return exists, substitution
 
 
-def check_for_file_substitution(filename):
+def check_for_game_file_substitution(filename):
     for game in GAME_FALLBACKS:
         game_adj = game_adjustment_for_back(filename, game)
         if game_adj in filename:
             for repl in GAME_FALLBACKS[game]:
                 repl = game_adjustment_for_back(filename, repl)
                 replacement_filename = filename.replace(game_adj, repl)
-                if file_does_exist(replacement_filename):
+                if file_does_exist(replacement_filename, ALL_GAME_SPRITE_FILES):
                     return True, replacement_filename
     return False, None
 
@@ -653,7 +669,7 @@ GAME_FALLBACKS = {
 }
 
 
-def generate_filename(sprite_info):
+def generate_game_filename(sprite_info):
     poke_num = str(sprite_info["poke num"]).zfill(4)
     form_name = "" if sprite_info["form name"] == "Default" else sprite_info["form name"]
     is_shiny, sprite_type = seperate_sprite_type_if_shiny(sprite_info["sprite type"])
@@ -667,21 +683,21 @@ def generate_filename(sprite_info):
 
 
 ALL_GAME_SPRITE_FILES = set(os.listdir(game_sprite_path))
-def populate_filenames(cursor):
+def populate_game_filenames(cursor):
     print("Populating filenames into database...")
     all_sprites = get_sprites_obtainability_records(cursor)
     substitutions_to_convert_to_id = []
     
     for sprite_id, sprite_info in all_sprites.items():
         print(f"\rGenerating pokemon #{sprite_info["poke num"]} filenames...", end='', flush=True)
-        filename = generate_filename(sprite_info)
-        file_exists, substitution = check_for_usable_file(filename, sprite_info)
+        filename = generate_game_filename(sprite_info)
+        file_exists, substitution = check_for_usable_game_file(filename, sprite_info)
         has_sub = 1 if substitution!=None else None     # Temp marking to set in substitution field until I can get subs file id
-        has_alt = file_does_exist(substitution + "-Alt") if has_sub else file_does_exist(filename + "-Alt")
+        has_alt = file_does_exist(substitution + "-Alt", ALL_GAME_SPRITE_FILES) if has_sub else file_does_exist(filename + "-Alt", ALL_GAME_SPRITE_FILES)
         file_ids = {"filename": filename, "poke_num": sprite_id[0], "form_id": sprite_id[1], "game_id": sprite_id[2], "sprite_id": sprite_id[3], "obtainable": sprite_info["obtainable"], "does_exist": file_exists, "substitution_id": has_sub, "has_alt": has_alt}
         # Inserting into all filenames table
         insert_into_table(cursor, "all_game_filenames", **file_ids)
-        filename_id = get_filename_id(cursor, filename)
+        filename_id = get_game_filename_id(cursor, filename)
         if has_sub: substitutions_to_convert_to_id.append({"file_id": filename_id, "sub_name": substitution})
         # Inserting into only obtainable filenames table
         if sprite_info["obtainable"]:
@@ -697,7 +713,7 @@ def populate_filenames(cursor):
 
 
 def edit_substitution_field(cursor, record):
-    substitution_id = get_filename_id(cursor, record["sub_name"])
+    substitution_id = get_game_filename_id(cursor, record["sub_name"])
     cursor.execute(f"UPDATE all_game_filenames SET substitution_id = {substitution_id} WHERE id = {record["file_id"]}")
     cursor.execute(f"UPDATE obtainable_game_filenames SET substitution_id = {substitution_id} WHERE id = {record["file_id"]}")
 
@@ -707,6 +723,46 @@ def change_substitution_field_from_filename_to_file_id(cursor, sub_names_to_conv
     for record in sub_names_to_convert:
         edit_substitution_field(cursor, record)
 
+
+# TODO: 
+# Add exclusions (Arceus, Silvally, probably Alcremie) -- and what to do (dream forms, nothing?)
+# Check all forms, see if exceptions
+def populate_drawn_filenames(cursor):
+    from app_globals import drawn_save_path
+
+    poke_forms = get_poke_form_records(cursor)
+    for poke_form, poke_info in poke_forms.items():
+        for filename in generate_drawn_filenames(poke_info):
+            exists = file_does_exist(filename, drawn_save_path)
+            file_ids = {"filename": filename, "poke_num": poke_form[0], "form_id": poke_form[1], "does_exist": exists}
+            insert_into_table(cursor, "drawn_filenames", **file_ids)
+            print(filename)
+
+
+def generate_drawn_filenames(poke_info):
+    poke_num = str(poke_info["poke num"]).zfill(4)
+    form_name = poke_info["form name"]
+    filenames = []  # Needed bc if its female, I need to create a male filename too
+    # Removing Region and Form tags, leaving -values. And removing default
+    exclude_from_form = ["Region_", "Form_", "Default"]
+    for excl in exclude_from_form:
+        if excl in form_name: 
+            form_name = form_name.replace(excl, "")
+    # No drawn females until gen5, and then seperated by -Female/Male denoter
+    if poke_info["poke gen"] >= 5 and form_name == "-f":
+        form_name = "-Female"
+        filenames.append(f"{poke_num} {poke_info["poke name"]}-Male.png")
+    elif form_name == "-f":
+        form_name = ""
+
+    filenames.append(f"{poke_num} {poke_info["poke name"]}{form_name}.png")
+    return filenames
+
+
+connection = sqlite3.connect(DB_PATH)
+cursor = connection.cursor()
+populate_drawn_filenames(cursor)
+connection.close()
 
 def populate_db(force=False):
     if not db_exists():
@@ -723,7 +779,8 @@ def populate_db(force=False):
         populate_form_game_obtainability(cursor, force)
         populate_sprite_types(cursor)
         populate_sprite_obtainability(cursor)
-        populate_filenames(cursor)
+        populate_game_filenames(cursor)
+        populate_drawn_filenames(cursor)
 
         connection.commit()
     except Exception as e:
