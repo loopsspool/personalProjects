@@ -237,7 +237,7 @@ def get_all_game_filenames_info():
     return data
 
 
-def get_missing_game_imgs_for_poke(cursor=None):
+def get_missing_game_imgs_by_poke(cursor=None):
     data = defaultdict(list)
     
     with get_cursor(cursor) as cur:
