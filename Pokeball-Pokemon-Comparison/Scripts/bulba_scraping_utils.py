@@ -5,8 +5,8 @@ import re   # For filtering what images to download
 import os
 
 from json_utils import *
-from db_utils import get_missing_game_imgs_for_poke
-from reference_data import *
+from db_utils import get_missing_game_imgs_by_poke
+from bulba_mapping_data import *
 # from app_globals import *
 # from image_tools import *
 # from bulba_translators import potentially_adapt_game_in_filename
@@ -26,44 +26,45 @@ PARENT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
 POKE_URL_JSON_PATH = os.path.join(PARENT_DIR, "game_sprite_urls_by_poke.json")
 # Their links are only the info after this
 BULBA_ARCHIVES_STARTER_URL = "https://archives.bulbagarden.net"
+# https://archives.bulbagarden.net/wiki/Category:Pok%C3%A9mon_artwork
 
 
-def get_poke_game_img_urls(force=False):
-    if force or not os.path.exists(POKE_URL_JSON_PATH):
-        pokemon_starter_page = requests.get("https://archives.bulbagarden.net/wiki/Category:Pok%C3%A9mon_artwork")
-        pokemon_starter_page_soup = BeautifulSoup(pokemon_starter_page.content, 'html.parser')
-        curr_page_soup = pokemon_starter_page_soup
-        poke_img_urls = {}
+# def get_poke_game_img_urls(force=False):
+#     if force or not os.path.exists(POKE_URL_JSON_PATH):
+#         pokemon_starter_page = requests.get("")
+#         pokemon_starter_page_soup = BeautifulSoup(pokemon_starter_page.content, 'html.parser')
+#         curr_page_soup = pokemon_starter_page_soup
+#         poke_img_urls = {}
 
-        while curr_page_soup:
-            print("Reading page of pokemon game archive links...")
-            poke_img_urls.update(get_all_urls_on_page(curr_page_soup))
-            curr_page_soup = get_next_page_soup(curr_page_soup)
+#         while curr_page_soup:
+#             print("Reading page of pokemon game archive links...")
+#             poke_img_urls.update(get_all_urls_on_page(curr_page_soup))
+#             curr_page_soup = get_next_page_soup(curr_page_soup)
 
-        print("Saving to json...")
-        save_json(poke_img_urls, POKE_URL_JSON_PATH)
+#         print("Saving to json...")
+#         save_json(poke_img_urls, POKE_URL_JSON_PATH)
         
         
-# TODO: Rewrite to get specific image url
-def get_all_urls_on_page(curr_page_soup):
-    page_urls = {}
-    for list_div in curr_page_soup.find_all('div', {'class': 'mw-category-group'}):
-        for poke in list_div.find_all('li'):
-            # Skipping specific artwork I don't want
-            if poke.a.get('href') == "/wiki/Category:Ken_Sugimori_Pok%C3%A9mon_artwork" or poke.a.get('href') == "/wiki/Category:Official_Pok%C3%A9mon_artwork":
-                continue
-            poke_name = cleanse_text(poke.a.text)
-            poke_url = BULBA_ARCHIVES_STARTER_URL + poke.a.get('href')
-            page_urls[poke_name] = poke_url
-    return page_urls
+# # TODO: Rewrite to get specific image url
+# def get_all_urls_on_page(curr_page_soup):
+#     page_urls = {}
+#     for list_div in curr_page_soup.find_all('div', {'class': 'mw-category-group'}):
+#         for poke in list_div.find_all('li'):
+#             # Skipping specific artwork I don't want
+#             if poke.a.get('href') == "/wiki/Category:Ken_Sugimori_Pok%C3%A9mon_artwork" or poke.a.get('href') == "/wiki/Category:Official_Pok%C3%A9mon_artwork":
+#                 continue
+#             poke_name = cleanse_text(poke.a.text)
+#             poke_url = BULBA_ARCHIVES_STARTER_URL + poke.a.get('href')
+#             page_urls[poke_name] = poke_url
+#     return page_urls
 
 
-def cleanse_text(txt):
-    # These are predetermined naming structures defined in the pokemon info spreadsheet
-    if "\u2640" in txt: return txt.replace("\u2640", " f")  # For 29, Nidoran f
-    if "\u2642" in txt: return txt.replace("\u2642", " m")  # For 32, Nidoran m
-    if "\u00e9" in txt: return txt.replace("\u00e9", "e")   # For 669, Flabebe
-    return txt
+# def cleanse_text(txt):
+#     # These are predetermined naming structures defined in the pokemon info spreadsheet
+#     if "\u2640" in txt: return txt.replace("\u2640", " f")  # For 29, Nidoran f
+#     if "\u2642" in txt: return txt.replace("\u2642", " m")  # For 32, Nidoran m
+#     if "\u00e9" in txt: return txt.replace("\u00e9", "e")   # For 669, Flabebe
+#     return txt
 
     
 def get_next_page_soup(curr_page_soup):
@@ -77,17 +78,20 @@ def get_next_page_soup(curr_page_soup):
 
 
 def scrape(force=False):
-    get_poke_game_img_urls(force)
-    print("Reading JSON...")
-    poke_urls = load_json(POKE_URL_JSON_PATH)
+    # get_poke_game_img_urls(force)
+    # print("Reading JSON...")
+    # poke_urls = load_json(POKE_URL_JSON_PATH)
+    missing_imgs_dict = get_missing_game_imgs_by_poke()
     
-    for poke, url in poke_urls.items():
-        missing_imgs = get_missing_game_imgs_for_poke(poke)
+    # TODO: This shouldnt be needed anymore to access image directly, change to looping thru poke
+    for poke_num, missing_imgs in missing_imgs_dict.items():
         if len(missing_imgs)==0: continue
+        for missing_img in missing_imgs:
+            bulba_game_sprite_filename = bulba_game_sprite_translate(missing_img)
+            print(bulba_game_sprite_filename)
 
-    # TODO: If wanting to use this, will need to factor in filtering of Game, GO, Home, Menu, etc
-        for img in missing_imgs:
-            bulba_filename = bulba_translate(img)
+
+    # TODO: If wanting to use this, will need to factor in filtering of Game, GO, Home, Menu, etc  
     # Translate to bulba filenames (Don't forget to translate game denoters for back underscore)
     # try to go to image page and download
     # Game Sprites
@@ -104,11 +108,40 @@ def scrape(force=False):
 scrape()
 
 
-def bulba_translate(filename):
-    bulba_filename = ""
+def bulba_game_sprite_translate(filename):
+    # Starting bulba filename w their format
+    bulba_filename = "Spr "
+    is_back_sprite = False
+    # Adding bulbapedia format of back, gen, and game
+    for game, bulba_v_game in BULBA_GAME_MAP.items():
+        if "-Back" in filename:
+            is_back_sprite = True
+            game = game.replace(" ", "_")
+        if game in filename:
+            if is_back_sprite: bulba_filename += "b "
+            bulba_filename += bulba_v_game + " "
+    # Adding poke num (TODO: always 3 digits total with leading zeros unless 4 digits used? check)
+    poke_num = str(int(filename[:4])).zfill(3)  # Converting from 4 total digits to 3
+    bulba_filename += poke_num
+    # Then Mega
+    # Then Regions
+    # Then Forms
+    # Then Giganta (After forms for Urshifu)
+    # TODO: if has f form, denote f or m for sprite (if after gen4)... may need to join some tables in SQL
+        # Add space before
+        # After Regions for Hisuian Sneasel
+    # Then shiny
+
     # Dont forget to factor in the underscore in gen/game if its a back sprite
     # Include searching for -f and shiny here, must be last after reference_date
     # If has a female counterpart, MAY have " m"
+
+
+# Drawn images
+# TODO: 
+# Add exclusions (Arceus, Silvally, probably Alcremie) -- and what to do (dream forms, nothing?)
+# Check all forms, see if exceptions
+
 
 
 # TODO: Uncomment download function
