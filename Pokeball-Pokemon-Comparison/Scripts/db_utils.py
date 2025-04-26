@@ -634,11 +634,15 @@ def seperate_sprite_type_if_shiny(sprite_type):
     else: return True, sprite_type.replace("-Shiny", "")
 
 
-def file_does_exist(filename, path):
+def file_does_exist(filename, dir_file_list):
     file_ext = [".png"]
-    for ext in file_ext:
-        filename_w_ext = filename + ext
-        if filename_w_ext in path: return True
+    file_has_ext = filename[-4:] in file_ext
+    if file_has_ext :
+        if filename in dir_file_list: return True
+    else:   #  Checking all extensions in path
+        for ext in file_ext:
+            filename_w_ext = filename + ext
+            if filename_w_ext in dir_file_list: return True
     return False
     
 
@@ -739,22 +743,22 @@ def change_substitution_field_from_filename_to_file_id(cursor, sub_names_to_conv
 
 def populate_drawn_filenames(cursor):
     from app_globals import drawn_save_path
+    drawn_files = set(os.listdir(drawn_save_path))
     print("Populating drawn filenames into database...")
 
     poke_forms = get_poke_form_records(cursor)
     for poke_form, poke_info in poke_forms.items():
-        for filename in generate_drawn_filenames(poke_info):
-            exists = file_does_exist(filename, drawn_save_path)
+        for filename in generate_drawn_filenames(poke_info):    # generate_drawn_filenames actually returns a list, usually len==1, but if its a female it has to generate a male filename too
+            exists = file_does_exist(filename, drawn_files)
             file_ids = {"filename": filename, "poke_num": poke_form[0], "form_id": poke_form[1], "does_exist": exists}
             insert_into_table(cursor, "drawn_filenames", **file_ids)
-            print(filename)
 
 
 def generate_drawn_filenames(poke_info):
     poke_num = str(poke_info["poke num"]).zfill(4)
     form_name = poke_info["form name"]
     filenames = []  # Needed bc if its female, I need to create a male filename too
-    # Removing Region and Form tags, leaving -values. And removing default
+    # Removing Region, Form, and Default tags, leaving -values
     exclude_from_form = ["Region_", "Form_", "Default"]
     for excl in exclude_from_form:
         if excl in form_name: 
@@ -763,13 +767,14 @@ def generate_drawn_filenames(poke_info):
     if poke_info["poke gen"] >= 5 and form_name == "-f":
         form_name = "-Female"
         filenames.append(f"{poke_num} {poke_info["poke name"]}-Male.png")
-    elif form_name == "-f":
+    elif form_name == "-f": # Gen < 5
         form_name = ""
 
     filenames.append(f"{poke_num} {poke_info["poke name"]}{form_name}.png")
     return filenames
 
 
+# TODO: Add update function to update existing, sub, and alt status for all imgs
 def populate_db(force=False):
     if not db_exists():
         create_db()
@@ -786,8 +791,7 @@ def populate_db(force=False):
         populate_sprite_types(cursor)
         populate_sprite_obtainability(cursor)
         populate_game_filenames(cursor)
-        # TODO: This says db is locked for some reason
-        #populate_drawn_filenames(cursor)
+        populate_drawn_filenames(cursor)
 
         connection.commit()
     except Exception as e:
