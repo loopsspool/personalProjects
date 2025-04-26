@@ -35,6 +35,8 @@ BULBA_GAME_MAP = {
 }
 
 
+# NOTE: If poke num here, cannot also be in BULBA_FORM_MAP
+# NOTE: If there's spaces, replace them with an underscore for the url
 BULBA_INCONSISTENCIES = {
     # Unown
     201: {
@@ -72,7 +74,6 @@ BULBA_INCONSISTENCIES = {
 
 
 # NOTE: Gigantamax pulled out due to Urshifu bulba names, where forms are put before gigantamax
-    # So this is done by hand in bulba_scraping_utils
 BULBA_UNIVERSAL_FORM_MAP = {
     "-Mega_X": "MX",
     "-Mega_Y": "MY",
