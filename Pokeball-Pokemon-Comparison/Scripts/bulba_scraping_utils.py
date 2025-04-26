@@ -59,20 +59,20 @@ def scrape(allow_download=False):
             # Right now this filters out SV & BDSP Sprites since bulba doesnt have them
             if bulba_doesnt_have_game_images_for(missing_img):
                 continue
+            if poke_num != 201: continue
             bulba_game_sprite_filename = bulba_game_sprite_translate(missing_img)
             bulba_game_sprite_filename_url = BULBA_FILE_STARTER_URL + bulba_game_sprite_filename.replace(" ", "_")
+            bulba_game_sprite_filename_url = verify_translation_for_bulba_inconsistency(poke_num, bulba_game_sprite_filename_url, missing_img)
             filename = missing_img + ".png"
             save_path = os.path.join(GAME_SPRITE_PATH, filename)
-            get_img(bulba_game_sprite_filename_url, save_path, allow_download)
+            get_game_img(bulba_game_sprite_filename_url, save_path, allow_download)
 
-        if poke_num == 5:
+        if poke_num == 201:
             break
 
 
-def get_img(url, save_path, allow_download):
-    img_page = requests.get(url)
-    img_page_soup = BeautifulSoup(img_page.content, 'html.parser')
-    img_exists = not img_page_soup.find("p", string=re.compile(r"No file by this name exists."))    # Negating a found non-existant statement on page
+def get_game_img(url, save_path, allow_download):
+    img_exists, img_page_soup = bulba_img_exists(url)
     if not img_exists:
         return ()
     else:
@@ -98,11 +98,32 @@ def get_img(url, save_path, allow_download):
                     save_first_frame(img_url, save_path)
 
 
+def bulba_img_exists(url):
+    img_page = requests.get(url)
+    img_page_soup = BeautifulSoup(img_page.content, 'html.parser')
+    img_exists = not img_page_soup.find("p", string=re.compile(r"No file by this name exists."))    # Negating a found non-existant statement on page
+    return (img_exists, img_page_soup)
+
+
 def bulba_doesnt_have_game_images_for(filename):
     for exclusion in BULBA_DOESNT_HAVE_GAME_IMGS_FOR:
         if exclusion in filename:
             return True
     return False
+
+
+def verify_translation_for_bulba_inconsistency(poke_num, url, my_filename):
+    if poke_num in BULBA_INCONSISTENCIES:
+        poke_num_str = str(poke_num).zfill(3)
+        insert_index = re.search(poke_num_str, url).end()
+        for form, translation_list in BULBA_INCONSISTENCIES[poke_num].items():
+            if form in my_filename:
+                for translation in translation_list:
+                    new_url = url[:insert_index] + translation + url[insert_index:]
+                    exists, page_soup = bulba_img_exists(new_url)
+                    if exists:
+                        return (new_url)
+        return (url[:insert_index] + "-NOT_FOUND" + url[insert_index:])     # This prevents the default bulba image being downloaded for that form
 
 
 def bulba_game_sprite_translate(filename):
@@ -111,7 +132,6 @@ def bulba_game_sprite_translate(filename):
     if "-Back" in filename: bulba_filename += " b"
     bulba_game = get_bulba_translated_game(filename)    # Not just adding it so I can evaluate it later
     bulba_filename += bulba_game
-    # TODO: always 3 digits total with leading zeros unless 4 digits used? check
     poke_num_int = int(filename[:4])
     poke_num_leading_zeros = str(poke_num_int).zfill(3)  # Converting from 4 total digits to 3
     bulba_filename += f" {poke_num_leading_zeros}"
@@ -139,14 +159,13 @@ def get_bulba_translated_universal_form(filename):
     return ("")
 
 
-# TODO: Incorporate 201 Exception somehow
-# TODO: If pokemon in dict but form isnt will use default poke unfortunately... See cosplay pikachu
-    # return None w a try catch if form not found? But defaults...
 def get_bulba_translated_specific_form(poke_num, filename):
     if poke_num in BULBA_FORM_MAP:
         for form, translation in BULBA_FORM_MAP[poke_num].items():
             if form in filename:
                 return(translation)
+        if "-Form" in filename:     # This allows a default image to be downloaded for a default pokemon
+            return("FORM_NOT_IN_BULBA_FORM_MAP")    # This prevents a default image being downloaded for a pokemon with a form
     return("")
 
 
