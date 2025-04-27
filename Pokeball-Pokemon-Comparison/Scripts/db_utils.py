@@ -238,12 +238,12 @@ def get_all_game_filenames_info():
     return data
 
 
-def get_missing_game_imgs_by_poke(cursor=None):
+def get_missing_poke_imgs_by_table(table, cursor=None):
     data = defaultdict(list)
     print("Getting all missing images by pokemon...")
     
     with get_cursor(cursor) as cur:
-        cur.execute("SELECT poke_num, filename FROM obtainable_game_filenames WHERE does_exist=0")
+        cur.execute(f"SELECT poke_num, filename FROM {table} WHERE does_exist=0")
         result = cur.fetchall()
         for row in result:
             poke_num = row[0]

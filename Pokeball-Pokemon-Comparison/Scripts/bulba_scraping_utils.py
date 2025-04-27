@@ -5,7 +5,7 @@ import re   # For filtering what images to download
 import os
 
 from json_utils import *
-from db_utils import get_missing_game_imgs_by_poke, has_f_form
+from db_utils import get_missing_poke_imgs_by_table, has_f_form
 from bulba_mapping_data import *
 # from app_globals import *
 from image_tools import *
@@ -34,11 +34,6 @@ BULBA_FILE_STARTER_URL = "https://archives.bulbagarden.net/wiki/File:"
 GAME_SPRITE_PATH = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Game Sprites\\"
 # https://archives.bulbagarden.net/wiki/Category:Pok%C3%A9mon_artwork
 
-#         pokemon_starter_page = requests.get("")
-#         pokemon_starter_page_soup = BeautifulSoup(pokemon_starter_page.content, 'html.parser')
-#         curr_page_soup = pokemon_starter_page_soup
-
-
     
 def get_next_page_soup(curr_page_soup):
     try:
@@ -51,7 +46,11 @@ def get_next_page_soup(curr_page_soup):
 
 
 def scrape(allow_download=False):
-    missing_imgs_dict = get_missing_game_imgs_by_poke()
+    scrape_game_imgs(allow_download)
+
+
+def scrape_game_imgs(allow_download=False):
+    missing_imgs_dict = get_missing_poke_imgs_by_table("obtainable_game_filenames")
     
     for poke_num, missing_imgs in missing_imgs_dict.items():
         if len(missing_imgs)==0: continue
@@ -59,16 +58,16 @@ def scrape(allow_download=False):
             # Right now this filters out SV & BDSP Sprites since bulba doesnt have them
             if bulba_doesnt_have_game_images_for(missing_img):
                 continue
-            if poke_num != 201: continue
             bulba_game_sprite_filename = bulba_game_sprite_translate(missing_img)
-            bulba_game_sprite_filename_url = BULBA_FILE_STARTER_URL + bulba_game_sprite_filename.replace(" ", "_")
+            bulba_game_sprite_filename_url = convert_bulba_filename_to_url(bulba_game_sprite_filename)
             bulba_game_sprite_filename_url = verify_translation_for_bulba_inconsistency(poke_num, bulba_game_sprite_filename_url, missing_img)
             filename = missing_img + ".png"
             save_path = os.path.join(GAME_SPRITE_PATH, filename)
             get_game_img(bulba_game_sprite_filename_url, save_path, allow_download)
 
-        if poke_num == 201:
-            break
+
+def convert_bulba_filename_to_url(filename):
+    return (BULBA_FILE_STARTER_URL + filename.replace(" ", "_"))
 
 
 def get_game_img(url, save_path, allow_download):
@@ -87,15 +86,19 @@ def get_game_img(url, save_path, allow_download):
         if "-Animated" in save_path:
             if img_is_animated:
                 if allow_download:
-                    filename, headers = opener.retrieve(img_url, save_path)
+                    download_img(img_url, save_path)
         else: # Looking for still
             if not img_is_animated:
                 if allow_download:
-                    filename, headers = opener.retrieve(img_url, save_path)
+                    download_img(img_url, save_path)
             else: # Looking for still, but image is animated
                 if allow_download:
                     # TODO: Test this
                     save_first_frame(img_url, save_path)
+
+
+def download_img(url, save_path):
+    filename, headers = opener.retrieve(url, save_path)
 
 
 def bulba_img_exists(url):
@@ -113,10 +116,10 @@ def bulba_doesnt_have_game_images_for(filename):
 
 
 def verify_translation_for_bulba_inconsistency(poke_num, url, my_filename):
-    if poke_num in BULBA_INCONSISTENCIES:
+    if poke_num in BULBA_GAME_INCONSISTENCIES:
         poke_num_str = str(poke_num).zfill(3)
         insert_index = re.search(poke_num_str, url).end()
-        for form, translation_list in BULBA_INCONSISTENCIES[poke_num].items():
+        for form, translation_list in BULBA_GAME_INCONSISTENCIES[poke_num].items():
             if form in my_filename:
                 for translation in translation_list:
                     new_url = url[:insert_index] + translation + url[insert_index:]
@@ -136,7 +139,7 @@ def bulba_game_sprite_translate(filename):
     poke_num_leading_zeros = str(poke_num_int).zfill(3)  # Converting from 4 total digits to 3
     bulba_filename += f" {poke_num_leading_zeros}"
     bulba_filename += get_bulba_translated_universal_form(filename)
-    bulba_filename += get_bulba_translated_specific_form(poke_num_int, filename)
+    bulba_filename += get_bulba_translated_specific_form(poke_num_int, filename, BULBA_FORM_MAP)
     if "-Gigantamax" in filename: bulba_filename += "Gi"    # Put here because of Urshifu, form before gigantamax denoter
     bulba_filename += get_gender_denoter(poke_num_int, filename)
     if "-Shiny" in filename: bulba_filename += " s"
@@ -159,13 +162,13 @@ def get_bulba_translated_universal_form(filename):
     return ("")
 
 
-def get_bulba_translated_specific_form(poke_num, filename):
-    if poke_num in BULBA_FORM_MAP:
-        for form, translation in BULBA_FORM_MAP[poke_num].items():
+def get_bulba_translated_specific_form(poke_num, filename, mapping):
+    if poke_num in mapping:
+        for form, translation in mapping[poke_num].items():
             if form in filename:
                 return(translation)
-        if "-Form" in filename:     # This allows a default image to be downloaded for a default pokemon
-            return("FORM_NOT_IN_BULBA_FORM_MAP")    # This prevents a default image being downloaded for a pokemon with a form
+        if "-Form" in filename:     # This allows a default image to be downloaded for a default pokemon (will skip and go to empty string)
+            return("FORM_NOT_IN_MAP_SET")    # This prevents a default image being downloaded for a pokemon with a form
     return("")
 
 
@@ -208,10 +211,14 @@ def f_exception_poke_in_filename(filename):
     return False
 
 
+def scrape_drawn_imgs(allow_download=False):
+    filename = get_bulba_translated_specific_form()
+
 # Drawn
 # Home
 # Home menu sprites ONLY
+
 # Drawn images
 # TODO: 
-# Add exclusions (Arceus, Silvally, probably Alcremie) -- and what to do (dream forms, nothing?)
+# Remove space between poke num & name
 # Check all forms, see if exceptions
