@@ -37,10 +37,10 @@ BULBA_GAME_MAP = {
 
 # NOTE: If poke num here, cannot also be in BULBA_FORM_MAP
 # NOTE: If there's spaces, replace them with an underscore for the url
-BULBA_INCONSISTENCIES = {
+BULBA_GAME_INCONSISTENCIES = {
     # Unown
     201: {
-        "-Form_A": ["", "A", "-A"],
+        "-Form_A": ["A", "-A", ""],
         "-Form_B": ["-B", "B"],
         "-Form_C": ["-C", "C"],
         "-Form_D": ["-D", "D"],
@@ -665,4 +665,22 @@ BULBA_FORM_MAP = {
         "-Form_Terastal": "T", 
         "-Form_Stellar": "S"
     }
+}
+
+
+BULBA_DRAWN_DREAM_TYPE_MAP = {k.replace("-Form_", ""): v.replace("-"," ") + " Dream" for k,v in BULBA_FORM_MAP.items()}
+
+
+# my_filename_format: bulba_filename_format
+DRAWN_IMAGES_MAP = {
+    # Burmy & Wormadam
+    412: { "_Cloak": "" },
+    413: { "_Cloak": "" },
+
+    493: BULBA_DRAWN_DREAM_TYPE_MAP
+    # Add exclusions (Arceus, Silvally, furfrou, minior, Alcremie) -- and what to do (dream forms)
+    # Confirm the below in bulba
+    # Florges, etc remove _Flower
+    # Morpeko remove _Belly
+    # For pumpkaboo and gorgeist average_size ONLY remove to get drawn
 }
