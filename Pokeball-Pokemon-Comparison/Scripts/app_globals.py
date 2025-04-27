@@ -7,10 +7,11 @@ from db_utils import get_last_poke_num, populate_db
 POKE_NUM_START_FROM = 1
 POKE_TO_GO_AFTER_START = 10000
 LAST_POKE_NUM = -1
-try: LAST_POKE_NUM = get_last_poke_num()
-except:
-    populate_db()
-    LAST_POKE_NUM = get_last_poke_num()
+# TODO: Gotta figure out a better way to do this
+# try: LAST_POKE_NUM = get_last_poke_num()
+# except:
+#     populate_db()
+#     LAST_POKE_NUM = get_last_poke_num()
 
 if POKE_NUM_START_FROM < 1: POKE_NUM_START_FROM=1
 if POKE_NUM_START_FROM > LAST_POKE_NUM: POKE_NUM_START_FROM = LAST_POKE_NUM
