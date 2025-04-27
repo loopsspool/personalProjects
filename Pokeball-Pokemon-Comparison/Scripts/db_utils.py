@@ -755,7 +755,6 @@ def populate_drawn_filenames(cursor):
             insert_into_table(cursor, "drawn_filenames", **file_ids)
 
 
-
 NO_DRAWN_FORMS = {
     172: "-Form_Spiky_Eared",
     493: "-Form_Qmark",
@@ -766,6 +765,7 @@ NO_DRAWN_FORMS = {
     711: "-Form_Small_Size",
     711: "-Form_Large_Size",
     711: "-Form_Super_Size",
+    774: "-Form_Core",
     854: "-Form_Antique",
     854: "-Form_Phony",
     855: "-Form_Antique",
@@ -781,8 +781,7 @@ def generate_drawn_filenames(poke_info, cursor):
     filenames = []  # Needed bc if its female, I need to create a male filename too
     if int(poke_num) in NO_DRAWN_FORMS: return []
     # TODO: Something with the below has_f_form is getting a lock on the db
-    #if has_f_form(int(poke_num), cursor=cursor) and form_name == "Default": return []  # In bulba, default drawn for a poke w a female form is a pic of both m and f
-
+    if has_f_form(int(poke_num), cursor=cursor) and form_name == "Default": return []  # In bulba, default drawn for a poke w a female form is a pic of both m and f
     # Removing Region, Form, and Default tags, leaving -values
     exclude_from_form = ["Region_", "Form_", "Default"]
     for excl in exclude_from_form:
@@ -816,6 +815,7 @@ def populate_db(force=False):
         populate_sprite_types(cursor)
         populate_sprite_obtainability(cursor)
         populate_game_filenames(cursor)
+        connection.commit() # Committing because database was locked when populate_drawn_filenames trying to access with has_f_form
         populate_drawn_filenames(cursor)
 
         connection.commit()
