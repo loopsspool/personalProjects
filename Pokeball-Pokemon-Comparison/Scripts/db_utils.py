@@ -779,8 +779,9 @@ def generate_drawn_filenames(poke_info, cursor):
     poke_num = str(poke_info["poke num"]).zfill(4)
     form_name = poke_info["form name"]
     filenames = []  # Needed bc if its female, I need to create a male filename too
-    if int(poke_num) in NO_DRAWN_FORMS: return []
-    # TODO: Something with the below has_f_form is getting a lock on the db
+    if int(poke_num) in NO_DRAWN_FORMS: 
+        if NO_DRAWN_FORMS[int(poke_num)] == form_name: 
+            return []
     if has_f_form(int(poke_num), cursor=cursor) and form_name == "Default": return []  # In bulba, default drawn for a poke w a female form is a pic of both m and f
     # Removing Region, Form, and Default tags, leaving -values
     exclude_from_form = ["Region_", "Form_", "Default"]
