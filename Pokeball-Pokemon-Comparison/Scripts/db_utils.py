@@ -158,6 +158,7 @@ def get_cursor(passed_cur=None):
         try:
             yield cur
         finally:
+            connection.commit()
             cur.close()
             connection.close()
 
@@ -401,7 +402,6 @@ def get_game_records(cursor):
 
 
 # NOTE: These are in chronological order and that is IMPORTANT since I rely on game ids sometimes for form filtering (eg mid gen form introductions)
-# TODO: If putting pokemon HOME sprites here (which I recommend against, since it isnt a game), make sure its listed last so it can have all the forms available
 GAMES = (
     ("Red_Green", 1),
     ("Red_Blue", 1),
@@ -494,7 +494,7 @@ def populate_form_game_obtainability(cursor, force):
     # Running all pokemon forms through all games to check if its obtainable
     for poke_form_id, poke_form_info in poke_forms.items():
         for game_id, game_info in games.items():
-            print(f"\rChecking {poke_form_info["poke num"]} form obtainability...", end='', flush=True)
+            print(f"\rChecking #{poke_form_info["poke num"]} form obtainability...", end='', flush=True)
             # Quick workaround to make it run faster, only generating obtainability if forced or the record doesn't exist yet
             if force or not entry_exists(cursor, "form_game_obtainability", {"poke_num": poke_form_id[0], "form_id": poke_form_id[1], "game_id": game_id}):
                 obtainable = is_form_obtainable(poke_form_info, game_info)
@@ -701,7 +701,7 @@ def generate_game_filename(sprite_info):
 
 ALL_GAME_SPRITE_FILES = set(os.listdir(game_sprite_path))
 def populate_game_filenames(cursor):
-    print("Populating filenames into database...")
+    print("Populating game filenames into database...")
     all_sprites = get_sprites_obtainability_records(cursor)
     substitutions_to_convert_to_id = []
     
@@ -736,38 +736,63 @@ def edit_substitution_field(cursor, record):
 
 
 def change_substitution_field_from_filename_to_file_id(cursor, sub_names_to_convert):
-    print("Converting substitution filenames to ids...")
+    print("Converting substitution game filenames to ids...")
     for record in sub_names_to_convert:
         edit_substitution_field(cursor, record)
 
 
 def populate_drawn_filenames(cursor):
     from app_globals import drawn_save_path
-    drawn_files = set(os.listdir(drawn_save_path))
     print("Populating drawn filenames into database...")
 
+    drawn_files = set(os.listdir(drawn_save_path))
     poke_forms = get_poke_form_records(cursor)
     for poke_form, poke_info in poke_forms.items():
-        for filename in generate_drawn_filenames(poke_info):    # generate_drawn_filenames actually returns a list, usually len==1, but if its a female it has to generate a male filename too
+        filenames = generate_drawn_filenames(poke_info, cursor)    # generate_drawn_filenames actually returns a list, usually len==1, but if its a female it has to generate a male filename too
+        for filename in filenames:
             exists = file_does_exist(filename, drawn_files)
             file_ids = {"filename": filename, "poke_num": poke_form[0], "form_id": poke_form[1], "does_exist": exists}
             insert_into_table(cursor, "drawn_filenames", **file_ids)
 
 
-def generate_drawn_filenames(poke_info):
+
+NO_DRAWN_FORMS = {
+    172: "-Form_Spiky_Eared",
+    493: "-Form_Qmark",
+    # Only using Average Size for drawn 710-711
+    710: "-Form_Small_Size",
+    710: "-Form_Large_Size",
+    710: "-Form_Super_Size",
+    711: "-Form_Small_Size",
+    711: "-Form_Large_Size",
+    711: "-Form_Super_Size",
+    854: "-Form_Antique",
+    854: "-Form_Phony",
+    855: "-Form_Antique",
+    855: "-Form_Phony",
+    1012: "-Form_Artisan",
+    1012: "-Form-Counterfeit",
+    1013: "-Form-Masterpiece",
+    1013: "-Form-Unremarkable"
+}
+def generate_drawn_filenames(poke_info, cursor):
     poke_num = str(poke_info["poke num"]).zfill(4)
     form_name = poke_info["form name"]
     filenames = []  # Needed bc if its female, I need to create a male filename too
+    if int(poke_num) in NO_DRAWN_FORMS: return []
+    # TODO: Something with the below has_f_form is getting a lock on the db
+    #if has_f_form(int(poke_num), cursor=cursor) and form_name == "Default": return []  # In bulba, default drawn for a poke w a female form is a pic of both m and f
+
     # Removing Region, Form, and Default tags, leaving -values
     exclude_from_form = ["Region_", "Form_", "Default"]
     for excl in exclude_from_form:
         if excl in form_name: 
             form_name = form_name.replace(excl, "")
     # No drawn females until gen5, and then seperated by -Female/Male denoter
-    if poke_info["poke gen"] >= 5 and form_name == "-f":
+    if poke_info["poke gen"] >= 5 and "-f" in form_name:
         form_name = "-Female"
         filenames.append(f"{poke_num} {poke_info["poke name"]}-Male.png")
-    elif form_name == "-f": # Gen < 5
+    elif "-f" in form_name: # Gen < 5
         form_name = ""
 
     filenames.append(f"{poke_num} {poke_info["poke name"]}{form_name}.png")
