@@ -47,6 +47,7 @@ def get_next_page_soup(curr_page_soup):
 
 def scrape(allow_download=False):
     scrape_game_imgs(allow_download)
+    scrape_drawn_imgs(allow_download)
 
 
 def scrape_game_imgs(allow_download=False):
@@ -212,7 +213,13 @@ def f_exception_poke_in_filename(filename):
 
 
 def scrape_drawn_imgs(allow_download=False):
-    filename = get_bulba_translated_specific_form()
+    missing_imgs_dict = get_missing_poke_imgs_by_table("drawn_filenames")
+
+    for poke_num, missing_imgs in missing_imgs_dict.items():
+        if len(missing_imgs)==0: continue
+        for missing_img in missing_imgs:
+            bulba_filename = get_bulba_translated_specific_form(poke_num, missing_img, DRAWN_IMAGES_MAP)
+            print(bulba_filename)
 
 # Drawn
 # Home
