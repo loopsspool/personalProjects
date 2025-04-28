@@ -755,36 +755,25 @@ def populate_drawn_filenames(cursor):
             insert_into_table(cursor, "drawn_filenames", **file_ids)
 
 
-# TODO: Keys need to be unique, figure out better way to do this
 NO_DRAWN_FORMS = {
-    172: "-Form_Spiky_Eared",
-    493: "-Form_Qmark",
+    172: {"-Form_Spiky_Eared"},
+    493: {"-Form_Qmark"},
     # Only using Average Size for drawn 710-711
-    710: "-Form_Small_Size",
-    710: "-Form_Large_Size",
-    710: "-Form_Super_Size",
-    711: "-Form_Small_Size",
-    711: "-Form_Large_Size",
-    711: "-Form_Super_Size",
-    774: "-Form_Core",
-    854: "-Form_Antique",
-    854: "-Form_Phony",
-    855: "-Form_Antique",
-    855: "-Form_Phony",
-    1012: "-Form_Artisan",
-    1012: "-Form_Counterfeit",
-    1013: "-Form_Masterpiece",
-    1013: "-Form_Unremarkable"
+    710: {"-Form_Small_Size", "-Form_Large_Size", "-Form_Super_Size"},
+    711: {"-Form_Small_Size", "-Form_Large_Size", "-Form_Super_Size"},
+    774: {"-Form_Core"},
+    854: {"-Form_Antique", "-Form_Phony"},
+    855: {"-Form_Antique", "-Form_Phony"},
+    1012: {"-Form_Artisan", "-Form_Counterfeit"},
+    1013: {"-Form_Masterpiece", "-Form_Unremarkable"},
 }
 def generate_drawn_filenames(poke_info, cursor):
     poke_num_leading_zeros = str(poke_info["poke num"]).zfill(4)
     poke_num_int = poke_info["poke num"]
     form_name = poke_info["form name"]
     filenames = []  # Needed bc if its female, I need to create a male filename too
-    print(poke_num_int)
     if poke_num_int in NO_DRAWN_FORMS: 
-        print(NO_DRAWN_FORMS[poke_num_int], form_name, NO_DRAWN_FORMS[poke_num_int] == form_name)
-        if NO_DRAWN_FORMS[poke_num_int] == form_name: 
+        if form_name in NO_DRAWN_FORMS[poke_num_int]: 
             return []
     if has_f_form(poke_num_int, cursor=cursor) and form_name == "Default": return []  # In bulba, default drawn for a poke w a female form is a pic of both m and f
     # Removing Region, Form, and Default tags, leaving -values
