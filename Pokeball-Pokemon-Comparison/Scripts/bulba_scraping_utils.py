@@ -6,7 +6,7 @@ import os
 
 from json_utils import *
 from db_utils import get_missing_poke_imgs_by_table, has_f_form
-from bulba_mapping_data import *
+from bulba_translation_mapping import *
 # from app_globals import *
 from image_tools import *
 # from bulba_translators import potentially_adapt_game_in_filename
@@ -272,6 +272,7 @@ def scrape_drawn_imgs(allow_download=False):
 
 def drawn_translate(my_filename):
     bulba_drawn_filename = my_filename.replace(" ", "", 1)  # Replace first space (Between poke num and name)
+    # Change 29, 32 Nidoran f and m to just Nidoran
 
 
 # Drawn
