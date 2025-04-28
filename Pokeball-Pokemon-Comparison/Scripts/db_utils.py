@@ -243,12 +243,12 @@ def get_missing_poke_imgs_by_table(table, cursor=None):
     print(f"Getting all missing images from {table} by pokemon...")
     
     with get_cursor(cursor) as cur:
-        cur.execute(f"SELECT poke_num, filename FROM {table} WHERE does_exist=0")
+        cur.execute(f"SELECT poke_num, form_id, filename FROM {table} WHERE does_exist=0")
         result = cur.fetchall()
         for row in result:
-            poke_num = row[0]
-            data[poke_num].append(row[1])
-    # { poke_num : [missing imgs list] }
+            poke_info = (row[0], row[1])
+            data[poke_info].append(row[2])
+    # { (poke_num, form_id) : [missing imgs list] }
     return data
 
 
