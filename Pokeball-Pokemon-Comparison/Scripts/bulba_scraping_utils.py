@@ -63,19 +63,6 @@ def scrape_game_imgs(allow_download=False):
             save_path = os.path.join(GAME_SPRITE_PATH, my_filename)
             #get_game_img(bulba_game_sprite_filename_url, save_path, allow_download)
 
-    # for poke_num, missing_imgs in missing_imgs_dict.items():
-    #     if len(missing_imgs)==0: continue
-    #     for missing_img in missing_imgs:
-    #         # Right now this filters out SV & BDSP Sprites since bulba doesnt have them
-    #         if bulba_doesnt_have_game_images_for(missing_img):
-    #             continue
-    #         bulba_game_sprite_filename = bulba_game_sprite_translate(missing_img)
-    #         bulba_game_sprite_filename_url = convert_bulba_filename_to_url(bulba_game_sprite_filename)
-    #         bulba_game_sprite_filename_url = verify_translation_for_bulba_inconsistency(poke_num, bulba_game_sprite_filename_url, missing_img)
-    #         my_filename = missing_img + ".png"
-    #         save_path = os.path.join(GAME_SPRITE_PATH, my_filename)
-    #         get_game_img(bulba_game_sprite_filename_url, save_path, allow_download)
-
 
 def translate_all_filenames_to_bulba_url(filename_dict, translate_func):
     for poke_num, files in filename_dict.items():
@@ -195,11 +182,42 @@ def get_bulba_translated_specific_form(poke_num, filename, mapping):
     if poke_num in mapping:
         for form, translation in mapping[poke_num].items():
             if form in filename:
-                # If 201 and 4 in filename, add hyphen
+                # If Unown, adjust bulba translation as needed, see NOTE above function if need more info
+                if poke_num == 201:
+                    translation = adjust_translation_for_unown(filename, translation)
                 return(translation)
         if "-Form" in filename:     # This allows a default image to be downloaded for a default pokemon (will skip and go to empty string)
             return("FORM_NOT_IN_MAP_SET")    # This prevents a default image being downloaded for a pokemon with a form
     return("")
+
+
+# NOTE: I hate to hardcode it this way, but attempting 2-3 page opens just to find the right name (via verify_bulba_inconsistency func)
+# AND THEN ANOTHER to download FOR EACH game AND sprite type was way too taxing for bulba resources and my time
+# This may break in the future if someone (ie me) ever fixes their naming convention on bulba
+# But in the meantime this is like 1000x faster than doing it programatically 
+def adjust_translation_for_unown(filename, translation):
+    # Gen4 has hyphens, A is always blank
+    if "Gen4" in filename and "-Form_A" not in filename:
+        # Regular color back doesn't have the hyphen, but the shiny backs do (ARRRAAAAGHHH)
+        if "-Back" in filename and "-Shiny" not in filename:
+            return translation
+        adj_translation = "-" + translation
+        return adj_translation
+    # TODO: When implementing Home Menu Sprites, adjust the conditionals to reflect whatever I do
+    # Home Menu Sprites have hyphen AND use "Exclamatioin" & "Question" instead of EX & QU
+    if "HOME MS" in filename and "-Form_A" not in filename:
+        adj_translation = "-"
+        if "-Form_!" in filename: 
+            adj_translation += "Exclamation"
+            return adj_translation
+        if "-Form_Qmark" in filename:
+            adj_translation += "Question"
+            return adj_translation
+        adj_translation += translation
+        return adj_translation
+    # If neither condition is met, just return the letter
+    return translation
+
 
 
 def get_gender_denoter(poke_num, filename):

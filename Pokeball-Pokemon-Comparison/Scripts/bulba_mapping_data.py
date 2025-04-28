@@ -35,41 +35,12 @@ BULBA_GAME_MAP = {
 }
 
 
+
 # NOTE: If poke num here, cannot also be in BULBA_FORM_MAP
 # NOTE: If there's spaces, replace them with an underscore for the url
 BULBA_GAME_INCONSISTENCIES = {
-    # Unown
-    201: {
-        "-Form_A": ["A", "-A", ""],
-        "-Form_B": ["-B", "B"],
-        "-Form_C": ["-C", "C"],
-        "-Form_D": ["-D", "D"],
-        "-Form_E": ["-E", "E"],
-        "-Form_F": ["-F", "F"],
-        "-Form_G": ["-G", "G"],
-        "-Form_H": ["-H", "H"],
-        "-Form_I": ["-I", "I"],
-        "-Form_J": ["-J", "J"],
-        "-Form_K": ["-K", "K"],
-        "-Form_L": ["-L", "L"],
-        "-Form_M": ["-M", "M"],
-        "-Form_N": ["-N", "N"],
-        "-Form_O": ["-O", "O"],
-        "-Form_P": ["-P", "P"],
-        "-Form_Q": ["-Q", "Q"],
-        "-Form_R": ["-R", "R"],
-        "-Form_S": ["-S", "S"],
-        "-Form_T": ["-T", "T"],
-        "-Form_U": ["-U", "U"],
-        "-Form_V": ["-V", "V"],
-        "-Form_W": ["-W", "W"],
-        "-Form_X": ["-X", "X"],
-        "-Form_Y": ["-Y", "Y"],
-        "-Form_Z": ["-Z", "Z"],
-        "-Form_Qmark": ["-QU", "QU"],
-        "-Form_!": ["-EX", "EX"]
-    }
-
+    # Just an example for formatting, will try to find which image exists between A, -A, and ""
+    #201: { "-Form_A": ["A", "-A", ""]}
 }
 
 
@@ -139,7 +110,38 @@ BULBA_FORM_MAP = {
     # Pichu
     172: {"-Form_Spiky_Eared": "N"},
 
-    # Unown in inconsistencies dict
+    # Unown
+    # Hyphens and one-off differences handled in bulba_scraping_utils where needed
+    201: {
+        "-Form_A": "",
+        "-Form_B": "B",
+        "-Form_C": "C",
+        "-Form_D": "D",
+        "-Form_E": "E",
+        "-Form_F": "F",
+        "-Form_G": "G",
+        "-Form_H": "H",
+        "-Form_I": "I",
+        "-Form_J": "J",
+        "-Form_K": "K",
+        "-Form_L": "L",
+        "-Form_M": "M",
+        "-Form_N": "N",
+        "-Form_O": "O",
+        "-Form_P": "P",
+        "-Form_Q": "Q",
+        "-Form_R": "R",
+        "-Form_S": "S",
+        "-Form_T": "T",
+        "-Form_U": "U",
+        "-Form_V": "V",
+        "-Form_W": "W",
+        "-Form_X": "X",
+        "-Form_Y": "Y",
+        "-Form_Z": "Z",
+        "-Form_Qmark": "QU",
+        "-Form_!": "EX"
+    },
 
     # Castform Weathers
     351: {
@@ -668,7 +670,7 @@ BULBA_FORM_MAP = {
 }
 
 
-BULBA_DRAWN_DREAM_TYPE_MAP = {k.replace("-Form_", ""): v.replace("-"," ") + " Dream" for k,v in BULBA_FORM_MAP.items()}
+#BULBA_DRAWN_DREAM_TYPE_MAP = {k.replace("-Form_", ""): v.replace("-"," ") + " Dream" for k,v in BULBA_FORM_MAP.items()}
 
 
 # my_filename_format: bulba_filename_format
@@ -677,8 +679,9 @@ DRAWN_IMAGES_MAP = {
     412: { "_Cloak": "" },
     413: { "_Cloak": "" },
 
-    493: BULBA_DRAWN_DREAM_TYPE_MAP
+    #493: BULBA_DRAWN_DREAM_TYPE_MAP
     # Add exclusions (Arceus, Silvally, furfrou, minior, Alcremie) -- and what to do (dream forms)
+    # Unowns must be dream (A marked like rest, ! is Exclamation, ? is question)
     # Confirm the below in bulba
     # Florges, etc remove _Flower
     # Morpeko remove _Belly
