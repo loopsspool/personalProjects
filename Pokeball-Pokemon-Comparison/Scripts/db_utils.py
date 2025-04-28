@@ -240,7 +240,7 @@ def get_all_game_filenames_info():
 
 def get_missing_poke_imgs_by_table(table, cursor=None):
     data = defaultdict(list)
-    print("Getting all missing images by pokemon...")
+    print(f"Getting all missing images from {table} by pokemon...")
     
     with get_cursor(cursor) as cur:
         cur.execute(f"SELECT poke_num, filename FROM {table} WHERE does_exist=0")
