@@ -8,11 +8,6 @@ from openpyxl import load_workbook
 # TODO: Make sure run new file checklist if new pokes added to poke_info sheet
 
 
-# NOTE: Commented out to prevent circular import before refactoring
-#from bulba_translators import bulba_doesnt_have_this_form, determine_bulba_name
-from game_tools import combine_gen_and_game
-
-
 def normalize_empty_in_sheet(sheet):
     for row in sheet.iter_rows():
         for cell in row:
@@ -75,7 +70,7 @@ def poke_isnt_in_game(poke_num, game):
     return not is_poke_in_game(poke_num, game)
 
 
-# TODO: Set cols to largest width of value in each
+# TODO: Add Home, Home Menu Sprite (And Gen6 Mega subs), and Drawn image checklist sheets too!
 def create_file_checklist_spreadsheet():
     # This will always create a new file that overrides an existing one
     workbook = xlsxwriter.Workbook('C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Pokemon Images Checklist.xlsx')
