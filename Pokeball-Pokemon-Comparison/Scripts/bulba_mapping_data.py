@@ -36,7 +36,7 @@ BULBA_GAME_MAP = {
 
 
 
-# NOTE: If poke num here, cannot also be in BULBA_FORM_MAP
+# NOTE: If poke num here, cannot also be in BULBA_GAMES_SPECIFIC_FORM_MAP
 # NOTE: If there's spaces, replace them with an underscore for the url
 BULBA_GAME_INCONSISTENCIES = {
     # Just an example for formatting, will try to find which image exists between A, -A, and ""
@@ -45,7 +45,7 @@ BULBA_GAME_INCONSISTENCIES = {
 
 
 # NOTE: Gigantamax pulled out due to Urshifu bulba names, where forms are put before gigantamax
-BULBA_UNIVERSAL_FORM_MAP = {
+BULBA_GAMES_UNIVERSAL_FORM_MAP = {
     "-Mega_X": "MX",
     "-Mega_Y": "MY",
     "-Mega": "M",   # This after X&Y so when looping through Mega wont trigger a form meant to be X or Y
@@ -80,7 +80,7 @@ BULBA_TYPE_FORM_MAP = {
 
 
 # TODO: Before actually downloading, make sure you have all these, cross reference w poke info spreadsheet
-BULBA_FORM_MAP = {
+BULBA_GAMES_SPECIFIC_FORM_MAP = {
     #Pikachu
     25: {
         "-Form_Cap_Alola": "A",
@@ -129,6 +129,7 @@ BULBA_FORM_MAP = {
         "-Form_N": "N",
         "-Form_O": "O",
         "-Form_P": "P",
+        "-Form_Qmark": "QU",    # QU before Q because Q form would trigger first and misname file
         "-Form_Q": "Q",
         "-Form_R": "R",
         "-Form_S": "S",
@@ -139,7 +140,6 @@ BULBA_FORM_MAP = {
         "-Form_X": "X",
         "-Form_Y": "Y",
         "-Form_Z": "Z",
-        "-Form_Qmark": "QU",
         "-Form_!": "EX"
     },
 
@@ -670,11 +670,33 @@ BULBA_FORM_MAP = {
 }
 
 
-#BULBA_DRAWN_DREAM_TYPE_MAP = {k.replace("-Form_", ""): v.replace("-"," ") + " Dream" for k,v in BULBA_FORM_MAP.items()}
+#BULBA_DRAWN_DREAM_TYPE_MAP = {k.replace("-Form_", ""): v.replace("-"," ") + " Dream" for k,v in BULBA_GAMES_SPECIFIC_FORM_MAP.items()}
+
+
+DRAWN_IMAGES_UNIVERSAL_FORMS_MAP = {
+
+}
 
 
 # my_filename_format: bulba_filename_format
-DRAWN_IMAGES_MAP = {
+DRAWN_IMAGES_SPECIFIC_FORMS_MAP = {
+    # Pikachu
+    25: {
+        "Cap_Alola": "Alola Cap",
+        "Cap_Hoenn": "Hoenn Cap",
+        "Cap_Kalos": "Kalos Cap",
+        "Cap_Original": "Original Cap",
+        "Cap_Partner": "Partner Cap",
+        "Cap_Sinnoh": "Sinnoh Cap",
+        "Cap_Unova": "Unova Cap",
+        "Cap_World": "World Cap",
+        "Cosplay_Belle": "Belle",
+        "Cosplay_Libre": "Libre",
+        "Cosplay_PhD": "PhD",
+        "Cosplay_Pop_Star": "Pop Star",
+        "Cosplay_Rock_Star": "Rock Star"
+    },
+
     # Burmy & Wormadam
     412: { "_Cloak": "" },
     413: { "_Cloak": "" },

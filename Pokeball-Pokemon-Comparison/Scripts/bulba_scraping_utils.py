@@ -47,7 +47,7 @@ def get_next_page_soup(curr_page_soup):
 
 def scrape(allow_download=False):
     scrape_game_imgs(allow_download)
-    #scrape_drawn_imgs(allow_download)
+    scrape_drawn_imgs(allow_download)
 
 
 def scrape_game_imgs(allow_download=False):
@@ -55,13 +55,13 @@ def scrape_game_imgs(allow_download=False):
     translated_missing_imgs = translate_all_filenames_to_bulba_url(missing_imgs_dict, bulba_game_sprite_translate)
 
     for poke_num, files in translated_missing_imgs.items():
-        print(f"{poke_num}\t{files}")
         for file in files:
-            # filename == (my_file_naming_convention, bulba_url)
+            # file == (my_file_naming_convention, bulba_url)
             bulba_game_sprite_filename_url = verify_translation_for_bulba_inconsistency(poke_num, file[0], file[1])
             my_filename = file[0] + ".png"
             save_path = os.path.join(GAME_SPRITE_PATH, my_filename)
-            #get_game_img(bulba_game_sprite_filename_url, save_path, allow_download)
+            if allow_download:  # Putting this here in addition to the actual func, so dont try to open bulba pages to check for existence
+                get_game_img(bulba_game_sprite_filename_url, save_path, allow_download)
 
 
 def translate_all_filenames_to_bulba_url(filename_dict, translate_func):
@@ -128,7 +128,7 @@ def bulba_doesnt_have_game_images_for(filename):
     return False
 
 
-# TODO: This is taking way too much time and using way too many bulba resources for a single gen inconsistency, find way to adapt for gen
+# NOTE: If pokemon has LOTS of forms, this func will probably be too slow. If searching less than say, 30 images probably fine. If more, hardcode probably
 # NOTE: poke num limited to 3 digits here since time of writing inconsistency was for game sprites
 def verify_translation_for_bulba_inconsistency(poke_num, my_filename, url):
     if poke_num in BULBA_GAME_INCONSISTENCIES:
@@ -155,7 +155,7 @@ def bulba_game_sprite_translate(filename):
     poke_num_leading_zeros = str(poke_num_int).zfill(3)  # Converting from 4 total digits to 3
     bulba_filename += f" {poke_num_leading_zeros}"
     bulba_filename += get_bulba_translated_universal_form(filename)
-    bulba_filename += get_bulba_translated_specific_form(poke_num_int, filename, BULBA_FORM_MAP)
+    bulba_filename += get_bulba_translated_specific_form(poke_num_int, filename, BULBA_GAMES_SPECIFIC_FORM_MAP)
     if "-Gigantamax" in filename: bulba_filename += "Gi"    # Put here because of Urshifu, form before gigantamax denoter
     bulba_filename += get_gender_denoter(poke_num_int, filename)
     if "-Shiny" in filename: bulba_filename += " s"
@@ -173,7 +173,7 @@ def get_bulba_translated_game(filename):
 
 # Mega and regional forms, not gigantamax (bc urshifu, see dict in file for more)
 def get_bulba_translated_universal_form(filename):
-    for u_form, translation in BULBA_UNIVERSAL_FORM_MAP.items():
+    for u_form, translation in BULBA_GAMES_UNIVERSAL_FORM_MAP.items():
         if u_form in filename: return(translation)
     return ("")
 
@@ -242,7 +242,7 @@ def include_male_denoter(filename):
 
 
 def universal_form_in_filename(filename):
-    for u_form in BULBA_UNIVERSAL_FORM_MAP:
+    for u_form in BULBA_GAMES_UNIVERSAL_FORM_MAP:
         if u_form in filename:
             return True
         
@@ -261,12 +261,18 @@ def f_exception_poke_in_filename(filename):
 
 def scrape_drawn_imgs(allow_download=False):
     missing_imgs_dict = get_missing_poke_imgs_by_table("drawn_filenames")
+    translated_missing_imgs = translate_all_filenames_to_bulba_url(missing_imgs_dict, drawn_translate)
 
     for poke_num, missing_imgs in missing_imgs_dict.items():
         if len(missing_imgs)==0: continue
         for missing_img in missing_imgs:
             bulba_filename = get_bulba_translated_specific_form(poke_num, missing_img, DRAWN_IMAGES_MAP)
             print(bulba_filename)
+
+
+def drawn_translate(my_filename):
+    bulba_drawn_filename = my_filename.replace(" ", "", 1)  # Replace first space (Between poke num and name)
+
 
 # Drawn
 # Home
