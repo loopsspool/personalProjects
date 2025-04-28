@@ -57,25 +57,25 @@ BULBA_GAMES_UNIVERSAL_FORM_MAP = {
 
 
 BULBA_TYPE_FORM_MAP = {
-    "Form_Normal": "",  # Normal form considered default: so does not have a letter denoter
-    "Form_Fighting": "-Fighting", 
-    "Form_Flying": "-Flying", 
-    "Form_Poison": "-Poison", 
-    "Form_Ground": "-Ground", 
-    "Form_Rock": "-Rock", 
-    "Form_Bug": "-Bug", 
-    "Form_Ghost": "-Ghost", 
-    "Form_Steel": "-Steel", 
-    "Form_Fire": "-Fire", 
-    "Form_Water": "-Water", 
-    "Form_Grass": "-Grass", 
-    "Form_Electric": "-Electric", 
-    "Form_Psychic": "-Psychic", 
-    "Form_Ice": "-Ice", 
-    "Form_Dragon": "-Dragon", 
-    "Form_Dark": "-Dark", 
-    "Form_Fairy": "-Fairy", 
-    "Form_Qmark": "-Unknown"
+    "-Form_Normal": "",  # Normal form considered default: so does not have a letter denoter
+    "-Form_Fighting": "-Fighting", 
+    "-Form_Flying": "-Flying", 
+    "-Form_Poison": "-Poison", 
+    "-Form_Ground": "-Ground", 
+    "-Form_Rock": "-Rock", 
+    "-Form_Bug": "-Bug", 
+    "-Form_Ghost": "-Ghost", 
+    "-Form_Steel": "-Steel", 
+    "-Form_Fire": "-Fire", 
+    "-Form_Water": "-Water", 
+    "-Form_Grass": "-Grass", 
+    "-Form_Electric": "-Electric", 
+    "-Form_Psychic": "-Psychic", 
+    "-Form_Ice": "-Ice", 
+    "-Form_Dragon": "-Dragon", 
+    "-Form_Dark": "-Dark", 
+    "-Form_Fairy": "-Fairy", 
+    "-Form_Qmark": "-Unknown"
 }
 
 
@@ -670,18 +670,20 @@ BULBA_GAMES_SPECIFIC_FORM_MAP = {
 }
 
 
-#BULBA_DRAWN_DREAM_TYPE_MAP = {k.replace("-Form_", ""): v.replace("-"," ") + " Dream" for k,v in BULBA_GAMES_SPECIFIC_FORM_MAP.items()}
+# TODO: When dream function created, use it to convert value instead of manually here
+BULBA_DRAWN_DREAM_TYPE_MAP = {k.replace("Form_", ""): str(v.replace("-"," ") + " Dream") for k,v in BULBA_TYPE_FORM_MAP.items()}
 
-
+# NOTE: Unlike game sprites, drawn Urshifu has Giganta before forms, so gigantamax can be included here
 DRAWN_IMAGES_UNIVERSAL_FORMS_MAP = {
-    "Mega_X": "Mega X",
-    "Mega_Y": "Mega X",
-    "Mega": "Mega",   # This after X&Y so when looping through Mega wont trigger a form meant to be X or Y
-    "Region_Alola": "Alola",
-    "Region_Galar": "Galar",
-    "Region_Hisui": "Hisui",
-    "Region_Paldea": "Paldea",
-    "Gigantamax": "Gigantamax"  # Not changed, but I have protection for missing forms, so if I omit it wont get downloaded
+    "-Mega_X": "-Mega X",
+    "-Mega_Y": "-Mega Y",
+    # The below are unchanged, but I have protection for missing forms, so if I omit them they wont get downloaded
+    "-Mega": "-Mega",   # This after X&Y so when looping through Mega wont trigger a form meant to be X or Y
+    "-Alola": "-Alola",
+    "-Galar": "-Galar",
+    "-Hisui": "-Hisui",
+    "-Paldea": "-Paldea",
+    "-Gigantamax": "-Gigantamax"
 }
 
 
@@ -689,19 +691,19 @@ DRAWN_IMAGES_UNIVERSAL_FORMS_MAP = {
 DRAWN_IMAGES_SPECIFIC_FORMS_MAP = {
     # Pikachu
     25: {
-        "Cap_Alola": "Alola Cap",
-        "Cap_Hoenn": "Hoenn Cap",
-        "Cap_Kalos": "Kalos Cap",
-        "Cap_Original": "Original Cap",
-        "Cap_Partner": "Partner Cap",
-        "Cap_Sinnoh": "Sinnoh Cap",
-        "Cap_Unova": "Unova Cap",
-        "Cap_World": "World Cap",
-        "Cosplay_Belle": "Belle",
-        "Cosplay_Libre": "Libre",
-        "Cosplay_PhD": "PhD",
-        "Cosplay_Pop_Star": "Pop Star",
-        "Cosplay_Rock_Star": "Rock Star"
+        "-Cap_Alola": "-Alola Cap",
+        "-Cap_Hoenn": "-Hoenn Cap",
+        "-Cap_Kalos": "-Kalos Cap",
+        "-Cap_Original": "-Original Cap",
+        "-Cap_Partner": "-Partner Cap",
+        "-Cap_Sinnoh": "-Sinnoh Cap",
+        "-Cap_Unova": "-Unova Cap",
+        "-Cap_World": "-World Cap",
+        "-Cosplay_Belle": "Belle",
+        "-Cosplay_Libre": "-Libre",
+        "-Cosplay_PhD": "-PhD",
+        "-Cosplay_Pop_Star": "-Pop Star",
+        "-Cosplay_Rock_Star": "-Rock Star"
     },
 
     # Tauros
@@ -711,13 +713,13 @@ DRAWN_IMAGES_SPECIFIC_FORMS_MAP = {
         "-Aqua": " Aqua"
     },
 
-    # Pichu
-    172: {"-Form_Spiky_Eared": "N"},
+    # No *official* spiky eared Pichu
 
     # Unown
     # Hyphens and one-off differences handled in bulba_scraping_utils where needed
+    # TODO: Create Dream converter function that will return { {form} Dream}
     201: {
-        "-Form_A": "",
+        "-Form_A": "A",
         "-Form_B": "B",
         "-Form_C": "C",
         "-Form_D": "D",
