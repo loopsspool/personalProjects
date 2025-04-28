@@ -47,24 +47,49 @@ def get_next_page_soup(curr_page_soup):
 
 def scrape(allow_download=False):
     scrape_game_imgs(allow_download)
-    scrape_drawn_imgs(allow_download)
+    #scrape_drawn_imgs(allow_download)
 
 
 def scrape_game_imgs(allow_download=False):
     missing_imgs_dict = get_missing_poke_imgs_by_table("obtainable_game_filenames")
-    
-    for poke_num, missing_imgs in missing_imgs_dict.items():
-        if len(missing_imgs)==0: continue
-        for missing_img in missing_imgs:
+    translated_missing_imgs = translate_all_filenames_to_bulba_url(missing_imgs_dict, bulba_game_sprite_translate)
+
+    for poke_num, files in translated_missing_imgs.items():
+        print(f"{poke_num}\t{files}")
+        for file in files:
+            # filename == (my_file_naming_convention, bulba_url)
+            bulba_game_sprite_filename_url = verify_translation_for_bulba_inconsistency(poke_num, file[0], file[1])
+            my_filename = file[0] + ".png"
+            save_path = os.path.join(GAME_SPRITE_PATH, my_filename)
+            #get_game_img(bulba_game_sprite_filename_url, save_path, allow_download)
+
+    # for poke_num, missing_imgs in missing_imgs_dict.items():
+    #     if len(missing_imgs)==0: continue
+    #     for missing_img in missing_imgs:
+    #         # Right now this filters out SV & BDSP Sprites since bulba doesnt have them
+    #         if bulba_doesnt_have_game_images_for(missing_img):
+    #             continue
+    #         bulba_game_sprite_filename = bulba_game_sprite_translate(missing_img)
+    #         bulba_game_sprite_filename_url = convert_bulba_filename_to_url(bulba_game_sprite_filename)
+    #         bulba_game_sprite_filename_url = verify_translation_for_bulba_inconsistency(poke_num, bulba_game_sprite_filename_url, missing_img)
+    #         my_filename = missing_img + ".png"
+    #         save_path = os.path.join(GAME_SPRITE_PATH, my_filename)
+    #         get_game_img(bulba_game_sprite_filename_url, save_path, allow_download)
+
+
+def translate_all_filenames_to_bulba_url(filename_dict, translate_func):
+    for poke_num, files in filename_dict.items():
+        if len(files)==0: continue
+        bulba_urls = []
+        for my_filename in files:
             # Right now this filters out SV & BDSP Sprites since bulba doesnt have them
-            if bulba_doesnt_have_game_images_for(missing_img):
+            if bulba_doesnt_have_game_images_for(my_filename):
                 continue
-            bulba_game_sprite_filename = bulba_game_sprite_translate(missing_img)
+            bulba_game_sprite_filename = translate_func(my_filename)
             bulba_game_sprite_filename_url = convert_bulba_filename_to_url(bulba_game_sprite_filename)
-            bulba_game_sprite_filename_url = verify_translation_for_bulba_inconsistency(poke_num, bulba_game_sprite_filename_url, missing_img)
-            filename = missing_img + ".png"
-            save_path = os.path.join(GAME_SPRITE_PATH, filename)
-            get_game_img(bulba_game_sprite_filename_url, save_path, allow_download)
+            bulba_urls.append((my_filename, bulba_game_sprite_filename_url))
+        filename_dict[poke_num] = bulba_urls
+    return filename_dict
 
 
 def convert_bulba_filename_to_url(filename):
@@ -116,12 +141,15 @@ def bulba_doesnt_have_game_images_for(filename):
     return False
 
 
-def verify_translation_for_bulba_inconsistency(poke_num, url, my_filename):
+# TODO: This is taking way too much time and using way too many bulba resources for a single gen inconsistency, find way to adapt for gen
+# NOTE: poke num limited to 3 digits here since time of writing inconsistency was for game sprites
+def verify_translation_for_bulba_inconsistency(poke_num, my_filename, url):
     if poke_num in BULBA_GAME_INCONSISTENCIES:
         poke_num_str = str(poke_num).zfill(3)
         insert_index = re.search(poke_num_str, url).end()
         for form, translation_list in BULBA_GAME_INCONSISTENCIES[poke_num].items():
             if form in my_filename:
+                print(f"\rSearching for proper bulba filename for {my_filename}...", end='', flush=True)
                 for translation in translation_list:
                     new_url = url[:insert_index] + translation + url[insert_index:]
                     exists, page_soup = bulba_img_exists(new_url)
@@ -167,6 +195,7 @@ def get_bulba_translated_specific_form(poke_num, filename, mapping):
     if poke_num in mapping:
         for form, translation in mapping[poke_num].items():
             if form in filename:
+                # If 201 and 4 in filename, add hyphen
                 return(translation)
         if "-Form" in filename:     # This allows a default image to be downloaded for a default pokemon (will skip and go to empty string)
             return("FORM_NOT_IN_MAP_SET")    # This prevents a default image being downloaded for a pokemon with a form
