@@ -98,21 +98,25 @@ def get_bulba_img(url, save_path, allow_download, is_game_sprite=False):
         img_url = get_largest_png(img_page_soup)
         
         if is_game_sprite:
-            img_is_animated = is_animated(img_url)
-            if "-Animated" in save_path:
-                if img_is_animated:
-                    if allow_download:
-                        download_img(img_url, save_path)
-            else: # Looking for still
-                if not img_is_animated:
-                    if allow_download:
-                        download_img(img_url, save_path)
-                else: # Looking for still, but image is animated
-                    if allow_download:
-                        # TODO: Test this
-                        save_first_frame(img_url, save_path)
+            determine_animation_status_before_downloading(img_url, save_path, allow_download)
         else:
             if allow_download: download_img(img_url, save_path)
+
+
+def determine_animation_status_before_downloading(img_url, save_path, allow_download):
+    img_is_animated = is_animated(img_url)
+    if "-Animated" in save_path:
+        if img_is_animated:
+            if allow_download:
+                download_img(img_url, save_path)
+    else: # Looking for still
+        if not img_is_animated:
+            if allow_download:
+                download_img(img_url, save_path)
+        else: # Looking for still, but image is animated
+            if allow_download:
+                # TODO: Test this
+                save_first_frame(img_url, save_path)
 
 
 def download_img(url, save_path):
@@ -195,12 +199,9 @@ def get_bulba_translated_species_form(poke_info, filename, mapping):
         for form, translation in mapping[poke_num].items():
             if form in filename:
                 # If Unown, adjust bulba translation as needed, see NOTE above function if need more info
-                if poke_num == 201:
+                if poke_num == 201 and mapping == BULBA_GAMES_SPECIFIC_FORM_MAP:
                     translation = adjust_translation_for_unown(filename, translation)
                 return(translation)
-        if mapping != DRAWN_IMAGES_SPECIES_FORMS_MAP:   # Drawn forms will frequently omit forms to just run my filename
-            print(f"Couldn't search for image to download... No respective form in map set for \t{filename}")
-        return("FORM_NOT_IN_MAP_SET")
     
     if mapping != DRAWN_IMAGES_SPECIES_FORMS_MAP:   # Drawn forms will frequently omit forms to just run my filename
         print(f"Couldn't search for image to download... No respective form in map set for \t{filename}")
@@ -284,6 +285,7 @@ def scrape_drawn_imgs(allow_download=False):
             # poke_info == (poke_num, form_id)
             # file == (my_file_naming_convention, bulba_url)
             save_path = os.path.join(DRAWN_SAVE_PATH, file[0])
+            
             print(file)
             if allow_download:  # Putting this here in addition to the actual func, so dont try to open bulba pages to check for existence
                 get_bulba_img(file, save_path, allow_download, is_game_sprite=False)
@@ -293,25 +295,23 @@ def drawn_translate(my_filename, poke_info):
     poke_num = poke_info[0]
     poke_num_leading_zeros = str(poke_num).zfill(4)
     poke_name = get_poke_name(poke_num)
-    bulba_drawn_filename = my_filename.replace(" ", "", 1)  # Replace first space (Between poke num and name)
-    if bulba_drawn_filename[:4] == "0029": bulba_drawn_filename = bulba_drawn_filename.replace(" f", "")
-    if bulba_drawn_filename[:4] == "0032": bulba_drawn_filename = bulba_drawn_filename.replace(" m", "")
+    if poke_num == 669: poke_name.replace("e", "\u00e9")    # Adjusting for flabebe proper name
+    bulba_drawn_filename = f"{poke_num_leading_zeros}{poke_name}"
+    if poke_num == 29: bulba_drawn_filename = bulba_drawn_filename.replace(" f", "")
+    if poke_num == 32: bulba_drawn_filename = bulba_drawn_filename.replace(" m", "")
     bulba_drawn_filename += get_bulba_translated_universal_form(my_filename, DRAWN_IMAGES_UNIVERSAL_FORMS_MAP)
     bulba_drawn_filename += get_bulba_translated_species_form(poke_info, my_filename, DRAWN_IMAGES_SPECIES_FORMS_MAP)
     bulba_drawn_filename += ".png"
+
     # If this showed up in the filename, its either an intentional omission of the form in my mapping file because my filename is an exact match for bulbas
-    # or its a new pokemon not added to the mapping file yet, which will either work without further action or remind me I need to add it
+    # or its a new pokemon not added to the mapping file yet, which will either work without further action or remind me I need to add its form to map
     if "FORM_NOT_IN_MAP_SET" in bulba_drawn_filename:    # If form was omitted for species form bulba translation mapping
-        bulba_drawn_filename = my_filename  # Try scraping for my filename
-    # TODO: If Dream in filename, poke num is 3 digits, not 4 (leading zeros)
+        bulba_drawn_filename = my_filename.replace(" ", "", 1)  # Try scraping for my filename (without space between poke num and name)
+    # Bulba Dream files only go up to 3 leading zeros, not 4... This adjusts for that
+    if " Dream" in bulba_drawn_filename and bulba_drawn_filename[0] == "0":
+        bulba_drawn_filename = bulba_drawn_filename.replace("0","",1) 
     return bulba_drawn_filename
 
 
-# Drawn
 # Home
 # Home menu sprites ONLY
-
-# Drawn images
-# TODO: 
-# Remove space between poke num & name
-# Check all forms, see if exceptions
