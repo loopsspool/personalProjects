@@ -688,8 +688,12 @@ BULBA_GAMES_SPECIFIC_FORM_MAP = {
 }
 
 
-# TODO: When dream function created, use it to convert value instead of manually here
-BULBA_DRAWN_DREAM_TYPE_MAP = {k.replace("Form_", ""): str(v.replace("-"," ") + " Dream") for k,v in BULBA_TYPE_FORM_MAP.items()}
+def drawn_dream_translation(form):
+    dream_translation = f" {form} Dream"
+    return dream_translation
+
+
+BULBA_DRAWN_DREAM_TYPE_MAP = {k.replace("Form_", ""): drawn_dream_translation(v.replace("-","")) for k,v in BULBA_TYPE_FORM_MAP.items()}
 
 # NOTE: Unlike game sprites, drawn Urshifu has Giganta before forms, so gigantamax can be included here
 DRAWN_IMAGES_UNIVERSAL_FORMS_MAP = {
@@ -705,6 +709,8 @@ DRAWN_IMAGES_UNIVERSAL_FORMS_MAP = {
 }
 
 
+# NOTE: If a form is omitted below, it means my filename tags are the same as bulbas, as such only file naming differences are listed below
+# NOTE: Technically my underscores dont match up with their spaces, but all spaces get converted to underscores when becoming a URL, anyways
 # my_filename_format: bulba_filename_format
 DRAWN_IMAGES_SPECIES_FORMS_MAP = {
     # Pikachu
@@ -731,565 +737,353 @@ DRAWN_IMAGES_SPECIES_FORMS_MAP = {
         "-Aqua": " Aqua"
     },
 
-    # Pichu
-    # TODO: Put in dream anyways
+    # Pichu Spiky Eared doesn't have any official artwork following naming conventions
 
     # Unown
     # Hyphens and one-off differences handled in bulba_scraping_utils where needed
     # TODO: Create Dream converter function that will return { {form} Dream}
     201: {
-        "-Form_A": "A",
-        "-Form_B": "B",
-        "-Form_C": "C",
-        "-Form_D": "D",
-        "-Form_E": "E",
-        "-Form_F": "F",
-        "-Form_G": "G",
-        "-Form_H": "H",
-        "-Form_I": "I",
-        "-Form_J": "J",
-        "-Form_K": "K",
-        "-Form_L": "L",
-        "-Form_M": "M",
-        "-Form_N": "N",
-        "-Form_O": "O",
-        "-Form_P": "P",
-        "-Form_Qmark": "QU",    # QU before Q because Q form would trigger first and misname file
-        "-Form_Q": "Q",
-        "-Form_R": "R",
-        "-Form_S": "S",
-        "-Form_T": "T",
-        "-Form_U": "U",
-        "-Form_V": "V",
-        "-Form_W": "W",
-        "-Form_X": "X",
-        "-Form_Y": "Y",
-        "-Form_Z": "Z",
-        "-Form_!": "EX"
-    },
-
-    # Castform Weathers
-    351: {
-        "-Form_Rainy": "R",
-        "-Form_Snowy": "H",
-        "-Form_Sunny": "S"
-    },
-
-    # Primal Kyogre & Groudon
-    382: {"-Form_Primal": "P"},
-    383: {"-Form_Primal": "P"},
-
-    # Deoxys
-    386: {
-        "-Form_Attack": "A",
-        "-Form_Defense": "D",
-        "-Form_Speed": "S"
+        "-A": drawn_dream_translation("A"),
+        "-B": drawn_dream_translation("B"),
+        "-C": drawn_dream_translation("C"),
+        "-D": drawn_dream_translation("D"),
+        "-E": drawn_dream_translation("E"),
+        "-F": drawn_dream_translation("F"),
+        "-G": drawn_dream_translation("G"),
+        "-H": drawn_dream_translation("H"),
+        "-I": drawn_dream_translation("I"),
+        "-J": drawn_dream_translation("J"),
+        "-K": drawn_dream_translation("K"),
+        "-L": drawn_dream_translation("L"),
+        "-M": drawn_dream_translation("M"),
+        "-N": drawn_dream_translation("N"),
+        "-O": drawn_dream_translation("O"),
+        "-P": drawn_dream_translation("P"),
+        "-Qmark": drawn_dream_translation("Question"),    # QU before Q because Q form would trigger first and misname file
+        "-Q": drawn_dream_translation("Q"),
+        "-R": drawn_dream_translation("R"),
+        "-S": drawn_dream_translation("S"),
+        "-T": drawn_dream_translation("T"),
+        "-U": drawn_dream_translation("U"),
+        "-V": drawn_dream_translation("V"),
+        "-W": drawn_dream_translation("W"),
+        "-X": drawn_dream_translation("X"),
+        "-Y": drawn_dream_translation("Y"),
+        "-Z": drawn_dream_translation("Z"),
+        "-!": drawn_dream_translation("Exclamation")
     },
 
     # Burmy & Wormadam
-    412: { "_Cloak": "" },
-    413: { "_Cloak": "" },
+    412: {
+        "Plant_Cloak": "-Plant",
+        "Sandy_Cloak": "-Sandy",
+        "Trash_Cloak": "-Trash",
+    },
+    413: {
+        "Plant_Cloak": "-Plant",
+        "Sandy_Cloak": "-Sandy",
+        "Trash_Cloak": "-Trash",
+    },
 
     # Cherrim
-    421: {
-        "-Form_Overcast": "",   # Overcast form considered default: so does not have a letter denoter
-        "-Form_Sunshine": "S"
-    },
-
-    # Shellos & Gastrodon East/West
-    422: {
-        "-Form_West": "",   # West form considered default: so does not have a letter denoter
-        "-Form_East": "E"
-    },
-    423: {
-        "-Form_West": "",   # West form considered default: so does not have a letter denoter
-        "-Form_East": "E"
-    },
-
-    # Rotom Appliances
-    479: {
-        "-Form_Fan": "F",
-        "-Form_Frost": "R",
-        "-Form_Heat": "O",
-        "-Form_Mow": "L",
-        "-Form_Wash": "W"
-    },
-
-    # Dialga & Palkia
-    483: {"-Form_Origin": "O"},
-    484: {"-Form_Origin": "O"},
+    421: {"-Overcast": ""},    # Overcast form considered default: so does not have a letter denoter
 
     # Giratina
-    487: {
-        "-Form_Altered": "",    # Altered form considered default: so does not have a letter denoter
-        "-Form_Origin": "O"
-    },
+    487: {"-Altered": ""},  # Altered form considered default: so does not have a letter denoter
 
     # Shaymin
-    492: {
-        "-Form_Land": "",   # Land form considered default: so does not have a letter denoter
-        "-Form_Sky": "S"
-    },
+    492: {"-Land": ""},   # Land form considered default: so does not have a letter denoter
 
     # Arceus Types
-    493: BULBA_TYPE_FORM_MAP,
+    493: BULBA_DRAWN_DREAM_TYPE_MAP,
 
     # Basculin Stripes
     550: {
-        "-Form_Red_Striped": "",    # Red Striped form considered default: so does not have a letter denoter
-        "-Form_Blue_Striped": "B",
-        "-White_Blue_Striped": "W"
+        "-Red_Striped": "-Red",
+        "-Blue_Striped": "-Blue",
+        "-White_Striped": "-White",
     },
 
     # Darmanitan Modes
     555: {
-        "-Form_Standard": "",   # Standard form considered default: so does not have a letter denoter
-        "-Form_Zen": "Z"
+        "-Standard": "",   # Standard form considered default: so does not have a letter denoter
+        "-Zen": "-DO_BY_HAND"    # Has hyphen for no region, space for Galarian
     },
 
     # Deerling & Sawsbuck Seasons
-    585: {
-        "-Form_Spring": "", # Spring form considered default: so does not have a letter denoter
-        "-Form_Autumn": "A",
-        "-Form_Summer": "S",
-        "-Form_Winter": "W"
-    },
-    586: {
-        "-Form_Spring": "", # Spring form considered default: so does not have a letter denoter
-        "-Form_Autumn": "A",
-        "-Form_Summer": "S",
-        "-Form_Winter": "W"
-    },
+    # Spring form considered default: so does not have a letter denoter
+    585: {"-Spring": ""},   
+    586: {"-Spring": ""},
 
     # Forces of nature forms
-    641: {
-        "-Form_Incarnate": "",  # Incarnate form considered default: so does not have a letter denoter
-        "-Form_Therian": "T"
-    },
-    642: {
-        "-Form_Incarnate": "",  # Incarnate form considered default: so does not have a letter denoter
-        "-Form_Therian": "T"
-    },
-    645: {
-        "-Form_Incarnate": "",  # Incarnate form considered default: so does not have a letter denoter
-        "-Form_Therian": "T"
-    },
+    # Incarnate form considered default: so does not have a letter denoter
+    641: {"-Incarnate": ""},
+    642: {"-Incarnate": ""},
+    645: {"-Incarnate": ""},
 
     # Kyurem
     646: {
-        "-Form_Black": "DO_BY_HAND",
-        "-Form_Black_Overdrive": "DO_BY_HAND",
-        "-Form_White": "DO_BY_HAND",
-        "-Form_White_Overdrive": "DO_BY_HAND",
+        "-Black_Overdrive": "-Black2",
+        "-White_Overdrive": "-White2",
     },
     
     # Keldeo
-    647: {
-        "-Form_Ordinary": "",   # Ordinary form considered default: so does not have a letter denoter
-        "-Form_Resolute": "R"
-    },
+    647: {"-Ordinary": ""}, # Ordinary form considered default: so does not have a letter denoter
 
     # Meloetta
-    648: {
-        "-Form_Aria": "",
-        "-Form_Pirouette": "P"
-    },
+    648: {"-Aria": ""},
 
     # Genesect
     649: {
-        "-Form_Douse_Drive": "B",
-        "-Form_Burn_Drive": "R",
-        "-Form_Chill_Drive": "W",
-        "-Form_Shock_Drive": "Y"
+        "-Douse_Drive": drawn_dream_translation("Douse"),
+        "-Burn_Drive": drawn_dream_translation("Burn"),
+        "-Chill_Drive": drawn_dream_translation("Chill"),
+        "-Shock_Drive": drawn_dream_translation("Shock")
     },
-
-    # Ash Greninja
-    658: {"-Form_Ash": "A"},
 
     # Vivillon Patterns
-    666: {
-        "-Form_Meadow": "",  # Meadow form considered default: so does not have a letter denoter
-        "-Form_Archipelago": "Arc",
-        "-Form_Continental": "Con",
-        "-Form_Elegant": "Ele",
-        "-Form_Garden": "Gar",
-        "-Form_High_Plains": "Hig",
-        "-Form_Icy_Snow": "Icy",
-        "-Form_Jungle": "Jun",
-        "-Form_Marine": "Mar",
-        "-Form_Modern": "Mod",
-        "-Form_Monsoon": "Mon",
-        "-Form_Ocean": "Oce",
-        "-Form_Polar": "Pol",
-        "-Form_River": "Riv",
-        "-Form_Sandstorm": "San",
-        "-Form_Savanna": "Sav",
-        "-Form_Sun": "Sun",
-        "-Form_Tundra": "Tun",
-        "-Form_Poke_Ball": "Pok",
-        "-Form_Fancy": "Fan"
-    },
+    666: {"-Poke_Ball": "-Pok\u00e9 Ball"},
     
     # Flabebe: Floette: and Florges colors
     669: {
-        "-Form_Red_Flower": "", # Red Flower form considered default: so does not have a letter denoter
-        "-Form_Blue_Flower": "B",
-        "-Form_Orange_Flower": "O",
-        "-Form_White_Flower": "W",
-        "-Form_Yellow_Flower": "Y"
+        "-Red_Flower": " Red Flower XY anime",
+        "-Blue_Flower": " Blue Flower XY anime",
+        "-Orange_Flower": " Orange Flower XY anime",
+        "-White_Flower": " White Flower XY anime",
+        "-Yellow_Flower": " Yellow Flower XY anime"
     },
     670: {
-        "-Form_Red_Flower": "", # Red Flower form considered default: so does not have a letter denoter
-        "-Form_Blue_Flower": "B",
-        "-Form_Orange_Flower": "O",
-        "-Form_White_Flower": "W",
-        "-Form_Yellow_Flower": "Y",
-        "-Form_Eternal_Flower": "E"
+        "-Red_Flower": "-Red XY anime",
+        "-Blue_Flower": "-Blue XY anime",
+        "-Orange_Flower": "-Orange XY anime",
+        "-White_Flower": "-White XY anime",
+        "-Yellow_Flower": "-Yellow XY anime",
+        "-Eternal_Flower": "DO_BY_HAND" # Doesn't Follow Naming Convention
     },
     671: {
-        "-Form_Red_Flower": "", # Red Flower form considered default: so does not have a letter denoter
-        "-Form_Blue_Flower": "B",
-        "-Form_Orange_Flower": "O",
-        "-Form_White_Flower": "W",
-        "-Form_Yellow_Flower": "Y"
+        "-Red_Flower": " Red Flower XY anime",
+        "-Blue_Flower": " Blue Flower XY anime",
+        "-Orange_Flower": " Orange Flower XY anime",
+        "-White_Flower": " White Flower XY anime",
+        "-Yellow_Flower": " Yellow Flower XY anime"
     },
 
     # Furfrou Trims
     676: {
-        "-Form_Dandy_Trim": "Da",
-        "-Form_Debutante_Trim": "De",
-        "-Form_Diamond_Trim": "Di",
-        "-Form_Heart_Trim": "He",
-        "-Form_Kabuki_Trim": "Ka",
-        "-Form_La_Reine_Trim": "La",
-        "-Form_Matron_Trim": "Ma",
-        "-Form_Pharaoh_Trim": "Ph",
-        "-Form_Star_Trim": "St"
+        "-Dandy_Trim": drawn_dream_translation("Dandy"),
+        "-Debutante_Trim": drawn_dream_translation("Debutante"),
+        "-Diamond_Trim": drawn_dream_translation("Diamond"),
+        "-Heart_Trim": drawn_dream_translation("Heart"),
+        "-Kabuki_Trim": drawn_dream_translation("Kabuki"),
+        "-La_Reine_Trim": drawn_dream_translation("La Reine"),
+        "-Matron_Trim": drawn_dream_translation("Matron"),
+        "-Pharaoh_Trim": drawn_dream_translation("Pharaoh"),
+        "-Star_Trim": drawn_dream_translation("Star")
     },
 
-    # Aegislash
-    681: {
-        "-Form_Shield": "", # Shield form considered default: so does not have a letter denoter
-        "-Form_Blade": "B"
-    },
-
-    # Pumpkaboo and Gourgeist Sizes
-    710: {
-        "-Form_Average_Size": "", # Average Size form considered default: so does not have a letter denoter
-        "-Form_Small_Size": "Sm",
-        "-Form_Large_Size": "La",
-        "-Form_Super_Size": "Su"
-    },
-    711: {
-        "-Form_Average_Size": "", # Average Size form considered default: so does not have a letter denoter
-        "-Form_Small_Size": "Sm",
-        "-Form_Large_Size": "La",
-        "-Form_Super_Size": "Su"
-    },
+    # Pumpkaboo and Gourgeist
+    710: {"-Average_Size": ""},
+    711: {"-Average_Size": ""},
 
     # Xerneas
-    716: {
-        "-Form_Active": "", # Active form considered default: so does not have a letter denoter
-        "-Form_Neutral": "N"
-    },
+    716: {"-Active": ""},   # Active form considered default: so does not have a letter denoter
 
     # Zygarde
     718: {
-        "-Form_50%": "",    # 50% form considered default: so does not have a letter denoter
-        "-Form_Complete": "C",
-        "-Form_10%": "T"
+        "-50%": "",    # 50% form considered default: so does not have a letter denoter
+        "-Complete": "-Complete",
+        "-10%": "-10Percent"
     },
 
     # Hoopa
-    720: {
-        "-Form_Confined": "",   # Confined form considered default: so does not have a letter denoter
-        "-Form_Unbound": "U"
-    },
+    720: {"-Confined": ""},
 
     # Oricorio
     741: {
-        "-Form_Baile": "",   # Baile form considered default: so does not have a letter denoter
-        "-Form_Pa'u": "Pa",
-        "-Form_Pom_Pom": "Po",
-        "-Form_Sensu": "Se"
+        "-Baile": "",   # Baile form considered default: so does not have a letter denoter
+        "-Pom_Pom": "-Pom-Pom"
     },
 
     # Lycanroc
-    745: {
-        "-Form_Midday": "", # Midday form considered default: so does not have a letter denoter
-        "-Form_Dusk": "D",
-        "-Form_Midnight": "Mn"
-    },
+    745: {"-Midday": ""},
 
     # Wishiwashi
-    746: {
-        "-Form_Solo": "",   # Solo form considered default: so does not have a letter denoter
-        "-Form_School": "Sc"
-    },
+    746: {"-Solo": ""},
 
     # Silvally Types
-    773: BULBA_TYPE_FORM_MAP,
+    773: BULBA_DRAWN_DREAM_TYPE_MAP,
 
     # Minior
     774: {
-        "-Form_Meteor": "", # Meteor form considered default: so does not have a letter denoter
-        "-Form_Blue_Core": "B",
-        "-Form_Green_Core": "G",
-        "-Form_Indigo_Core": "I",
-        "-Form_Orange_Core": "O",
-        "-Form_Red_Core": "R",
-        "-Form_Violet_Core": "V",
-        "-Form_Yellow_Core": "Y",
-        "-Form_Core": "R"   # This is the shiny sprite, which bulba has labeled for Red
+        "-Meteor": drawn_dream_translation(""), # Meteor form considered default: so does not have a letter denoter
+        "-Blue_Core": drawn_dream_translation("Blue"),
+        "-Green_Core": drawn_dream_translation("Green"),
+        "-Indigo_Core": drawn_dream_translation("Indigo"),
+        "-Orange_Core": drawn_dream_translation("Orange"),
+        "-Red_Core": drawn_dream_translation("Red"),
+        "-Violet_Core": drawn_dream_translation("Violet"),
+        "-Yellow_Core": drawn_dream_translation("Yellow"),
     },
 
     # Mimikyu
     778: {
-        "-Form_Disguised": "",  # Disguised form considered default: so does not have a letter denoter
-        "-Form_Busted": "B"
+        "-Disguised": "",  # Disguised form considered default: so does not have a letter denoter
+        "-Busted": drawn_dream_translation("Busted")
     },
 
     # Solgaleo
-    791: {"-Form_Radiant_Sun": "R"},
+    791: {"-Radiant_Sun": "-RadiantSunPhase"},
 
     # Lunala
-    792: {"-Form_Full_Moon": "F"},
-
-    # Necrozma
-    800: {
-        "-Form_Dawn_Wings": "DW",
-        "-Form_Dusk_Mane": "DM",
-        "-Form_Ultra": "U"
-    },
+    792: {"-Full_Moon": "-FullMoonPhase"},
 
     # Magearna
-    801: {"-Form_Original_Color": "O"},
-    
-    # Cramorant
-    845: {
-        "-Form_Gorging": "Go",
-        "-Form_Gulping": "Gu"
-    },
-    
-    # Toxtricity
-    849: {
-        "-Form_Amped": "",   # Amped form considered default: so does not have a letter denoter
-        "-Form_Low_Key": "L"
-    },
-
-    # Sinistea & Polteageist
-    854 : {
-        "-Form_Phony": "",  # Phony form considered default: so does not have a letter denoter
-        "-Form_Antique": "A",
-        "-Show_Stamp": "DO_BY_HAND" # Just putting here so it doesn't download default
-    },
-    855 : {
-        "-Form_Phony": "",  # Phony form considered default: so does not have a letter denoter
-        "-Form_Antique": "A",
-        "-Show_Stamp": "DO_BY_HAND" # Just putting here so it doesn't download default
-    },
+    801: {"-Original_Color": "-DOESNT_EXIST"},
 
     # Alcremie Creams & Sweets
+    # Non commented is all bulba had, commented so I wouldn't have to write them all again
     869: {
-        "-Form_Caramel_Swirl_Berry_Sweet": "CaSB",
-        "-Form_Caramel_Swirl_Clover_Sweet": "CaSC",
-        "-Form_Caramel_Swirl_Flower_Sweet": "CaSF",
-        "-Form_Caramel_Swirl_Love_Sweet": "CaSL",
-        "-Form_Caramel_Swirl_Ribbon_Sweet": "CaSR",
-        "-Form_Caramel_Swirl_Star_Sweet": "CaSS",
-        "-Form_Caramel_Swirl_Strawberry_Sweet": "CaS",
-        "-Form_Lemon_Cream_Berry_Sweet": "LeCB",
-        "-Form_Lemon_Cream_Clover_Sweet": "LeCC",
-        "-Form_Lemon_Cream_Flower_Sweet": "LeCF",
-        "-Form_Lemon_Cream_Love_Sweet": "LeCL",
-        "-Form_Lemon_Cream_Ribbon_Sweet": "LeCR",
-        "-Form_Lemon_Cream_Star_Sweet": "LeCS",
-        "-Form_Lemon_Cream_Strawberry_Sweet": "LeC",
-        "-Form_Matcha_Cream_Berry_Sweet": "MaCB",
-        "-Form_Matcha_Cream_Clover_Sweet": "MaCC",
-        "-Form_Matcha_Cream_Flower_Sweet": "MaCF",
-        "-Form_Matcha_Cream_Love_Sweet": "MaCL",
-        "-Form_Matcha_Cream_Ribbon_Sweet": "MaCR",
-        "-Form_Matcha_Cream_Star_Sweet": "MaCS",
-        "-Form_Matcha_Cream_Strawberry_Sweet": "MaC",
-        "-Form_Mint_Cream_Berry_Sweet": "MiCB",
-        "-Form_Mint_Cream_Clover_Sweet": "MiCC",
-        "-Form_Mint_Cream_Flower_Sweet": "MiCF",
-        "-Form_Mint_Cream_Love_Sweet": "MiCL",
-        "-Form_Mint_Cream_Ribbon_Sweet": "MiCR",
-        "-Form_Mint_Cream_Star_Sweet": "MiCS",
-        "-Form_Mint_Cream_Strawberry_Sweet": "MiC",
-        "-Form_Rainbow_Swirl_Berry_Sweet": "RaSB",
-        "-Form_Rainbow_Swirl_Clover_Sweet": "RaSC",
-        "-Form_Rainbow_Swirl_Flower_Sweet": "RaSF",
-        "-Form_Rainbow_Swirl_Love_Sweet": "RaSL",
-        "-Form_Rainbow_Swirl_Ribbon_Sweet": "RaSR",
-        "-Form_Rainbow_Swirl_Star_Sweet": "RaSS",
-        "-Form_Rainbow_Swirl_Strawberry_Sweet": "RaS",
-        "-Form_Ruby_Cream_Berry_Sweet": "RaCB",
-        "-Form_Ruby_Cream_Clover_Sweet": "RaCC",
-        "-Form_Ruby_Cream_Flower_Sweet": "RaCF",
-        "-Form_Ruby_Cream_Love_Sweet": "RaCL",
-        "-Form_Ruby_Cream_Ribbon_Sweet": "RaCR",
-        "-Form_Ruby_Cream_Star_Sweet": "RaCS",
-        "-Form_Ruby_Cream_Strawberry_Sweet": "RaC",
-        "-Form_Ruby_Swirl_Berry_Sweet": "RuSB",
-        "-Form_Ruby_Swirl_Clover_Sweet": "RuSC",
-        "-Form_Ruby_Swirl_Flower_Sweet": "RuSF",
-        "-Form_Ruby_Swirl_Love_Sweet": "RuSL",
-        "-Form_Ruby_Swirl_Ribbon_Sweet": "RuSR",
-        "-Form_Ruby_Swirl_Star_Sweet": "RuSS",
-        "-Form_Ruby_Swirl_Strawberry_Sweet": "RuS",
-        "-Form_Salted_Cream_Berry_Sweet": "SaCB",
-        "-Form_Salted_Cream_Clover_Sweet": "SaCC",
-        "-Form_Salted_Cream_Flower_Sweet": "SaCF",
-        "-Form_Salted_Cream_Love_Sweet": "SaCL",
-        "-Form_Salted_Cream_Ribbon_Sweet": "SaCR",
-        "-Form_Salted_Cream_Star_Sweet": "SaCS",
-        "-Form_Salted_Cream_Strawberry_Sweet": "SaC",
+        # "-Caramel_Swirl_Berry_Sweet": "CaSB",
+        # "-Caramel_Swirl_Clover_Sweet": "CaSC",
+        "-Caramel_Swirl_Flower_Sweet": " Dream - Caramel Swirl",
+        # "-Caramel_Swirl_Love_Sweet": "CaSL",
+        # "-Caramel_Swirl_Ribbon_Sweet": "CaSR",
+        # "-Caramel_Swirl_Star_Sweet": "CaSS",
+        # "-Caramel_Swirl_Strawberry_Sweet": "CaS",
+        # "-Lemon_Cream_Berry_Sweet": "LeCB",
+        # "-Lemon_Cream_Clover_Sweet": "LeCC",
+        # "-Lemon_Cream_Flower_Sweet": "LeCF",
+        # "-Lemon_Cream_Love_Sweet": "LeCL",
+        "-Lemon_Cream_Ribbon_Sweet": " Dream - Lemon Cream",
+        # "-Lemon_Cream_Star_Sweet": "LeCS",
+        # "-Lemon_Cream_Strawberry_Sweet": "LeC",
+        # "-Matcha_Cream_Berry_Sweet": "MaCB",
+        # "-Matcha_Cream_Clover_Sweet": "MaCC",
+        "-Matcha_Cream_Flower_Sweet": " Dream - Matcha Cream",
+        # "-Matcha_Cream_Love_Sweet": "MaCL",
+        # "-Matcha_Cream_Ribbon_Sweet": "MaCR",
+        # "-Matcha_Cream_Star_Sweet": "MaCS",
+        # "-Matcha_Cream_Strawberry_Sweet": "MaC",
+        # "-Mint_Cream_Berry_Sweet": "MiCB",
+        # "-Mint_Cream_Clover_Sweet": "MiCC",
+        # "-Mint_Cream_Flower_Sweet": "MiCF",
+        # "-Mint_Cream_Love_Sweet": "MiCL",
+        # "-Mint_Cream_Ribbon_Sweet": "MiCR",
+        # "-Mint_Cream_Star_Sweet": "MiCS",
+        "-Mint_Cream_Strawberry_Sweet": " Dream - Mint Cream",
+        # "-Rainbow_Swirl_Berry_Sweet": "RaSB",
+        # "-Rainbow_Swirl_Clover_Sweet": "RaSC",
+        # "-Rainbow_Swirl_Flower_Sweet": "RaSF",
+        # "-Rainbow_Swirl_Love_Sweet": "RaSL",
+        # "-Rainbow_Swirl_Ribbon_Sweet": "RaSR",
+        # "-Rainbow_Swirl_Star_Sweet": "RaSS",
+        "-Rainbow_Swirl_Strawberry_Sweet": " Dream - Rainbow Swirl",
+        # "-Ruby_Cream_Berry_Sweet": "RaCB",
+        "-Ruby_Cream_Clover_Sweet": " Dream - Ruby Cream",
+        # "-Ruby_Cream_Flower_Sweet": "RaCF",
+        # "-Ruby_Cream_Love_Sweet": "RaCL",
+        # "-Ruby_Cream_Ribbon_Sweet": "RaCR",
+        # "-Ruby_Cream_Star_Sweet": "RaCS",
+        # "-Ruby_Cream_Strawberry_Sweet": "RaC",
+        # "-Ruby_Swirl_Berry_Sweet": "RuSB",
+        # "-Ruby_Swirl_Clover_Sweet": "RuSC",
+        # "-Ruby_Swirl_Flower_Sweet": "RuSF",
+        # "-Ruby_Swirl_Love_Sweet": "RuSL",
+        # "-Ruby_Swirl_Ribbon_Sweet": "RuSR",
+        "-Ruby_Swirl_Star_Sweet": " Dream - Ruby Swirl",
+        # "-Ruby_Swirl_Strawberry_Sweet": "RuS",
+        # "-Salted_Cream_Berry_Sweet": "SaCB",
+        # "-Salted_Cream_Clover_Sweet": "SaCC",
+        # "-Salted_Cream_Flower_Sweet": "SaCF",
+        "-Salted_Cream_Love_Sweet": " Dream - Salted Cream",
+        # "-Salted_Cream_Ribbon_Sweet": "SaCR",
+        # "-Salted_Cream_Star_Sweet": "SaCS",
+        # "-Salted_Cream_Strawberry_Sweet": "SaC",
         # Vanilla Cream considered default Cream, so no letter denoter
-        "-Form_Vanilla_Cream_Berry_Sweet": "B",
-        "-Form_Vanilla_Cream_Clover_Sweet": "C",
-        "-Form_Vanilla_Cream_Flower_Sweet": "F",
-        "-Form_Vanilla_Cream_Love_Sweet": "L",
-        "-Form_Vanilla_Cream_Ribbon_Sweet": "R",
-        "-Form_Vanilla_Cream_Star_Sweet": "S",
+        "-Vanilla_Cream_Berry_Sweet": " Dream - Vanilla Cream",
+        # "-Vanilla_Cream_Clover_Sweet": "C",
+        # "-Vanilla_Cream_Flower_Sweet": "F",
+        # "-Vanilla_Cream_Love_Sweet": "L",
+        # "-Vanilla_Cream_Ribbon_Sweet": "R",
+        # "-Vanilla_Cream_Star_Sweet": "S",
         # Strawberry Sweet considered default Sweet, so no letter denoter
-        "-Form_Vanilla_Cream_Strawberry_Sweet": "",
+        "-Vanilla_Cream_Strawberry_Sweet": "",
         # Shinies (which have only berry differences)
-        "-Form_Berry_Sweet": "B",
-        "-Form_Clover_Sweet": "C",
-        "-Form_Flower_Sweet": "F",
-        "-Form_Love_Sweet": "L",
-        "-Form_Ribbon_Sweet": "R",
-        "-Form_Star_Sweet": "S",
-        "-Form_Strawberry_Sweet": "",
+        # "-Berry_Sweet": "B",
+        # "-Clover_Sweet": "C",
+        # "-Flower_Sweet": "F",
+        # "-Love_Sweet": "L",
+        # "-Ribbon_Sweet": "R",
+        # "-Star_Sweet": "S",
+        # "-Strawberry_Sweet": "",
     },
 
     # Eiscue
     875: {
-        "-Form_Ice_Face": "",   # Ice Face form considered default: so does not have a letter denoter
-        "-Form_Noice_Face": "N"
+        "-Ice_Face": "",   # Ice Face form considered default: so does not have a letter denoter
+        "-Noice_Face": "-Noice"
     },
     
     # Morpeko
-    877: {
-        "-Form_Full_Belly": "", # Full Belly form considered default: so does not have a letter denoter
-        "-Form_Hangry": "H"
-    },
+    877: {"-Full_Belly": "Full"},
 
     # Zacian
     888: {
-        "-Form_Hero_of_Many_Battles": "",   # Hero form considered default: so does not have a letter denoter
-        "-Form_Crowned_Sword": "C"
+        "-Hero_of_Many_Battles": "-Hero",
+        "-Crowned_Sword": ""
     },
 
     # Zamazenta
     889: {
-        "-Form_Hero_of_Many_Battles": "",   # Hero form considered default: so does not have a letter denoter
-        "-Form_Crowned_Shield": "C"
+        "-Hero_of_Many_Battles": "-Hero",
+        "-Crowned_Shield": ""
     },
 
     # Eternatus Eternamax
-    890: {"-Form_Eternamax": "E"},
+    890: {"-Eternamax": "-DNE"},
 
     # Urshifu
     892: {
-        "-Form_Single_Strike": "",  # Single strike form considered default: so does not have a letter denoter
-        "-Form_Rapid_Strike": "R"
+        "-Single_Strike": " Single Strike",
+        "-Rapid_Strike": " Rapid Strike"
     },
-
-    # Zarude
-    893: {"-Form_Dada": "D"},
-
-    # Calyrex Ridings
-    898: {
-        "-Form_Ice_Rider": "I",
-        "-Form_Shadow_Rider": "R"
-    },
-
-    # Ursaluna
-    901: {"-Form_Bloodmoon": "B",},
 
     # Enamorus
-    905: {
-        "-Form_Incarnate": "",  # Incarnate form considered default: so does not have a letter denoter
-        "-Form_Therian": "T"
-    },
+    905: {"-Incarnate": ""},
 
     # Maushold
     925: {
-        "-Form_Family-of-Three": "T",
-        "-Form_Family-of-Four": ""  # Family of Four considered default: so does not have a letter denoter
+        "-Family-of-Three": drawn_dream_translation(""),
+        "-Family-of-Four": " Dream - Four"  # Family of Four considered default: so does not have a letter denoter
     },
 
     # Squawkabilly
     931: {
-        "-Form_Blue_Plumage": "B", 
-        "-Form_Green_Plumage": "",  # Green form considered default: so does not have a letter denoter
-        "-Form_White_Plumage": "W", 
-        "-Form_Yellow_Plumage": "Y"
+        "-Blue_Plumage": drawn_dream_translation("Blue"), 
+        "-Green_Plumage": drawn_dream_translation("Green"),
+        "-White_Plumage": drawn_dream_translation("White"), 
+        "-Yellow_Plumage": drawn_dream_translation("Yellow")
     },
 
     # Palafin
-    964: {
-        "-Form_Zero": "",   # Zero form considered default: so does not have a letter denoter
-        "-Form_Hero": "H"
-    },
+    964: {"-Zero": ""},
 
     # Tatsugiri
-    978 :{
-        "-Form_Curly": "",  # Curly form considered default: so does not have a letter denoter
-        "-Form_Droopy": "D", 
-        "-Form_Stretchy" : "S"
-    },
+    978 :{"-Curly": ""},
 
     # Dudunsparce
     982 : {
-        "-Form_Two_Segment": "",    # Two Segment form considered default: so does not have a letter denoter
-        "-Form_Three_Segment": "Th"
+        "-Two_Segment": drawn_dream_translation("2"),    # Two Segment form considered default: so does not have a letter denoter
+        "-Three_Segment": drawn_dream_translation("3")
     },
 
     # Gimmighoul
-    999: {
-        "-Form_Chest": "",  # Chest form considered default: so does not have a letter denoter
-        "-Form_Roaming": "R"
-    },
-
-    # Poltchageist
-    1012: {
-        "-Form_Artisan": "A", 
-        "-Form_Counterfeit": "",     # Counterfeit form considered default: so does not have a letter denoter
-        "-Show_Stamp": "DO_BY_HAND" # Just putting here so it doesn't download default
-    },
-
-    # Sinistcha
-    1013: {
-        "-Form_Masterpiece": "M", 
-        "-Form_Unremarkable" : "",   # Unremarkable form considered default: so does not have a letter denoter
-        "-Show_Stamp": "DO_BY_HAND" # Just putting here so it doesn't download default
-    },
+    999: {"-Chest": ""},
 
     # Ogerpon
-    1017: {
-        "-Form_Cornerstone_Mask": "C", 
-        "-Form_Hearthflame_Mask": "H", 
-        "-Form_Teal_Mask": "",      # Teal Mask form considered default: so does not have a letter denoter
-        "-Form_Wellspring_Mask": "W"
-    },
+    1017: {"-Teal_Mask": ""},
 
     # Terapagos
-    1024: {
-        "-Form_Normal": "",     # Normal form considered default: so does not have a letter denoter
-        "-Form_Terastal": "T", 
-        "-Form_Stellar": "S"
-    },
-
-    #493: BULBA_DRAWN_DREAM_TYPE_MAP
-    # Add exclusions (Arceus, Silvally, furfrou, minior, Alcremie) -- and what to do (dream forms)
-    # Unowns must be dream (A marked like rest, ! is Exclamation, ? is question)
-    # Confirm the below in bulba
-    # Florges, etc remove _Flower
-    # Morpeko remove _Belly
-    # For pumpkaboo and gorgeist average_size ONLY remove to get drawn
+    # Stellar has dream form, but it has a background...
+    1024: {"-Normal": ""},
 }
