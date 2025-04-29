@@ -156,7 +156,7 @@ def bulba_game_sprite_translate(filename, poke_info):
     poke_num_leading_zeros = str(poke_num_int).zfill(3)  # Converting from 4 total digits to 3
     bulba_filename += f" {poke_num_leading_zeros}"
     bulba_filename += get_bulba_translated_universal_form(filename)
-    bulba_filename += get_bulba_translated_specific_form(poke_info, filename, BULBA_GAMES_SPECIFIC_FORM_MAP)
+    bulba_filename += get_bulba_translated_species_form(poke_info, filename, BULBA_GAMES_SPECIFIC_FORM_MAP)
     if "-Gigantamax" in filename: bulba_filename += "Gi"    # Put here because of Urshifu, form before gigantamax denoter
     bulba_filename += get_gender_denoter(poke_num_int, filename)
     if "-Shiny" in filename: bulba_filename += " s"
@@ -179,9 +179,14 @@ def get_bulba_translated_universal_form(filename):
     return ("")
 
 
-def get_bulba_translated_specific_form(poke_info, filename, mapping):
+def get_bulba_translated_species_form(poke_info, filename, mapping):
     poke_num = poke_info[0]
     form_id = poke_info[1]
+
+    # No widespread universal forms combined with species forms, the few exceptions have their own form id associated with it
+    if form_id in UNIVERSAL_FORM_IDS:
+        return("")
+
     if poke_num in mapping:
         for form, translation in mapping[poke_num].items():
             if form in filename:
@@ -189,11 +194,8 @@ def get_bulba_translated_specific_form(poke_info, filename, mapping):
                 if poke_num == 201:
                     translation = adjust_translation_for_unown(filename, translation)
                 return(translation)
-        # TODO: Test this & everywhere get missing imgs dict used w new (poke num, form id key)
-        if form_id != get_form_id("Default"):     # This allows a default image to be downloaded for a default pokemon (will skip and go to empty string)
-            # TODO: Have this throw to console instead of just doing in  background
-            return("FORM_NOT_IN_MAP_SET")    # This prevents a default image being downloaded for a pokemon with a form
-    return("")
+        print(f"Couldn't search for image to download... No respective form in map set for \t{filename}")
+        return("FORM_NOT_IN_MAP_SET")
 
 
 # NOTE: I hate to hardcode it this way, but attempting 2-3 page opens just to find the right name (via verify_bulba_inconsistency func)
@@ -224,7 +226,7 @@ def adjust_translation_for_unown(filename, translation):
     return translation
 
 
-
+# TODO: Adjust the likes of cap pikachu
 def get_gender_denoter(poke_num, filename):
     has_f_var = has_f_form(poke_num)
     if "-f" in filename:
@@ -268,10 +270,11 @@ def scrape_drawn_imgs(allow_download=False):
     missing_imgs_dict = get_missing_poke_imgs_by_table("drawn_filenames")
     translated_missing_imgs = translate_all_filenames_to_bulba_url(missing_imgs_dict, drawn_translate)
 
+    # TODO: Mimic game sprites
     for poke_num, missing_imgs in missing_imgs_dict.items():
         if len(missing_imgs)==0: continue
         for missing_img in missing_imgs:
-            bulba_filename = get_bulba_translated_specific_form(poke_num, missing_img, DRAWN_IMAGES_MAP)
+            bulba_filename = get_bulba_translated_species_form(poke_num, missing_img, DRAWN_IMAGES_SPECIES_FORMS_MAP)
             print(bulba_filename)
 
 

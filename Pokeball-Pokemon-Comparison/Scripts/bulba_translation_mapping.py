@@ -1,3 +1,5 @@
+from db_utils import get_form_id
+
 # TODO: Put all these mappings in a seperate file, with static dicts and whatnot from db_utils
 # TODO: Also put db_utils exclusions and exceptions into a seperate file
 ############################# BULBA TRANSLATORS #############################
@@ -41,6 +43,22 @@ BULBA_GAME_MAP = {
 BULBA_GAME_INCONSISTENCIES = {
     # Just an example for formatting, will try to find which image exists between A, -A, and ""
     #201: { "-Form_A": ["A", "-A", ""]}
+}
+
+
+# This is to filter out specific forms when building bulba filename
+# The exceptions that have a universal AND specific form (See 555 Galarian Darmanitan Zen form) have their own unique form id generated in db_utils > FORM_EXCEPTION_POKEMON
+UNIVERSAL_FORM_IDS = {
+    get_form_id("Default"), 
+    get_form_id("-f"), 
+    get_form_id("-Mega"), 
+    get_form_id("-Mega_X"), 
+    get_form_id("-Mega_Y"), 
+    get_form_id("-Gigantamax"), 
+    get_form_id("-Region_Alola"), 
+    get_form_id("-Region_Galar"), 
+    get_form_id("-Region_Hisui"), 
+    get_form_id("-Region_Paldea")
 }
 
 
@@ -221,7 +239,7 @@ BULBA_GAMES_SPECIFIC_FORM_MAP = {
     550: {
         "-Form_Red_Striped": "",    # Red Striped form considered default: so does not have a letter denoter
         "-Form_Blue_Striped": "B",
-        "-White_Blue_Striped": "W"
+        "-Form_White_Striped": "W"
     },
 
     # Darmanitan Modes
@@ -688,7 +706,7 @@ DRAWN_IMAGES_UNIVERSAL_FORMS_MAP = {
 
 
 # my_filename_format: bulba_filename_format
-DRAWN_IMAGES_SPECIFIC_FORMS_MAP = {
+DRAWN_IMAGES_SPECIES_FORMS_MAP = {
     # Pikachu
     25: {
         "-Cap_Alola": "-Alola Cap",
@@ -713,7 +731,8 @@ DRAWN_IMAGES_SPECIFIC_FORMS_MAP = {
         "-Aqua": " Aqua"
     },
 
-    # No *official* spiky eared Pichu
+    # Pichu
+    # TODO: Put in dream anyways
 
     # Unown
     # Hyphens and one-off differences handled in bulba_scraping_utils where needed
