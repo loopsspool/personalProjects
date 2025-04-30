@@ -35,6 +35,7 @@ BULBA_FILE_STARTER_URL = "https://archives.bulbagarden.net/wiki/File:"
 GAME_SPRITE_PATH = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Game Sprites\\"
 DRAWN_SAVE_PATH = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Drawn\\"
 HOME_SAVE_PATH = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\HOME Sprites\\"
+HOME_MENU_SAVE_PATH = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Menu Sprites\\HOME\\"
 # https://archives.bulbagarden.net/wiki/Category:Pok%C3%A9mon_artwork
 
     
@@ -316,6 +317,20 @@ def home_sprite_translate(my_filename, poke_info):
     if "-Shiny" in my_filename: home_sprite_filename += " s"
     home_sprite_filename += ".png"
     return(home_sprite_filename)
+
+
+def scrape_home_menu_imgs(allow_download=False):
+    scraping_if_no_extra_steps_needed("home_menu_filenames", home_menu_translate, False, allow_download, HOME_MENU_SAVE_PATH)
+
+
+def home_menu_translate(my_filename, poke_info):
+    poke_num = poke_info[0]
+    poke_num_leading_zeros = str(poke_num).zfill(4)
+    home_menu_filename = f"Menu HOME {poke_num_leading_zeros}"
+    # Urshifu order doesn't matter because no gigantamax home menu sprites
+    # But also doesn't have form menu sprites either? See if thats the case for others
+    home_menu_filename += get_bulba_translated_universal_form(my_filename, DRAWN_IMAGES_UNIVERSAL_FORMS_MAP)
+
 
 
 def scrape_drawn_imgs(allow_download=False):
