@@ -159,6 +159,14 @@ BULBA_GAMES_SPECIFIC_FORM_MAP = {
         "-Form_!": "EX"
     },
 
+    # Sneasel
+    # Needs to be included here because its not a universal form (it has its own form id in whole (-Region_Hisui-f))
+    # So translator will come into this dict and if a value isn't found, will change it to "FORM_NOT_IN_MAP_SET"
+    # Consequently not downloading it
+    215: {
+        "-Region_Hisui-f": ""
+    },
+
     # Castform Weathers
     351: {
         "-Form_Rainy": "R",
@@ -618,8 +626,8 @@ BULBA_GAMES_SPECIFIC_FORM_MAP = {
 
     # Maushold
     925: {
-        "-Form_Family-of-Three": "T",
-        "-Form_Family-of-Four": ""  # Family of Four considered default: so does not have a letter denoter
+        "-Form_Family_of_Three": "T",
+        "-Form_Family_of_Four": ""  # Family of Four considered default: so does not have a letter denoter
     },
 
     # Squawkabilly
