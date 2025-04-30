@@ -24,4 +24,6 @@ save_path_starter = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon
 game_save_path = save_path_starter + "\\Game Sprites\\"
 gen6_menu_sprite_save_path = save_path_starter + "\\Menu Sprites\\Gen6\\"
 gen8_menu_sprite_save_path = save_path_starter + "\\Menu Sprites\\Gen8\\"
+home_menu_sprite_path = save_path_starter + "\\Menu Sprites\\HOME\\"
 drawn_save_path = save_path_starter + "\\Drawn\\"
+home_save_path = save_path_starter + "\\Home Sprites\\"
