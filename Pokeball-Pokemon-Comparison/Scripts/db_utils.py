@@ -119,17 +119,6 @@ def create_db():
     """)
 
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS drawn_filenames (
-        id INTEGER PRIMARY KEY,
-        filename TEXT NOT NULL UNIQUE,
-        poke_num INTEGER NOT NULL,
-        form_id INTEGER NOT NULL,
-        does_exist BOOLEAN NOT NULL,
-        FOREIGN KEY (poke_num, form_id) REFERENCES poke_forms
-    );
-    """)
-
-    cursor.execute("""
     CREATE TABLE IF NOT EXISTS home_filenames (
         id INTEGER PRIMARY KEY,
         filename TEXT NOT NULL UNIQUE,
@@ -142,8 +131,27 @@ def create_db():
     );
     """)
 
-    # TODO: Add Home Menu Filename Table
-        # See whats missing to download from Gen8 (Just gigantamax?)
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS home_menu_filenames (
+        id INTEGER PRIMARY KEY,
+        filename TEXT NOT NULL UNIQUE,
+        poke_num INTEGER NOT NULL,
+        form_id INTEGER NOT NULL,
+        does_exist BOOLEAN,
+        FOREIGN KEY (poke_num, form_id) REFERENCES poke_forms
+    );
+    """)
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS drawn_filenames (
+        id INTEGER PRIMARY KEY,
+        filename TEXT NOT NULL UNIQUE,
+        poke_num INTEGER NOT NULL,
+        form_id INTEGER NOT NULL,
+        does_exist BOOLEAN NOT NULL,
+        FOREIGN KEY (poke_num, form_id) REFERENCES poke_forms
+    );
+    """)
 
     connection.commit()
     connection.close()
@@ -591,7 +599,10 @@ def is_sprite_possible(pfgo_info, sprite_type):
 
 
 # Sprites that don't exist. Shouldn't even be marked unobtainable, which is why theyre here not SPRITE_EXCLUSIONS
-# TODO: Adjust show stamp further, should not be on default, should default exist for them? See HOME filenames for further clarity
+# TODO: Adjust show stamp further, should not be on default, should default exist for them? 
+# Either: Have default only and forms for only show stamp sprite (probably best option, idk how RN will handle)
+# Have no default and have sprites substitute for each other, or duplicate
+# See HOME filenames for further clarity
 NONEXISTANT_SPRITES={
     "no_shiny_cosplay_pikachu": lambda poke_num, form_name, sprite_type: poke_num == 25 and "-Form_Cosplay" in form_name and "Shiny" in sprite_type,
     "no_shiny_cap_pikachu": lambda poke_num, form_name, sprite_type: poke_num == 25 and "-Form_Cap" in form_name and "Shiny" in sprite_type,
@@ -655,6 +666,7 @@ def seperate_sprite_type_if_shiny(sprite_type):
 
 
 def file_does_exist(filename, dir_file_list):
+    if len(dir_file_list) == 0: return False
     # TODO: Could just search without an extension
     file_ext = [".png"]
     file_has_ext = filename[-4:] in file_ext
@@ -720,7 +732,7 @@ def generate_game_filename(sprite_info):
     return filename
 
 
-
+# TODO: Skip if already in db, like for game form availability
 ALL_GAME_SPRITE_FILES = set(os.listdir(game_sprite_path))
 def populate_game_filenames(cursor):
     print("Populating game filenames into database...")
@@ -790,6 +802,27 @@ def generate_home_filename(poke_info, sprite_type):
 
     # Hyphen before game allows for alphabetical sorting of back sprites below the front game sprites
     filename = f"{poke_num} {poke_info["poke name"]} HOME{"-Shiny" if is_shiny else ""}{form_name}{sprite_type}"
+    return filename
+
+
+def populate_home_menu_filenames(cursor):
+    from app_globals import home_menu_sprite_path
+    print("Populating home menu sprites into database...")
+
+    # TODO: Create function to get listdir like this, if None, make it empty set
+    home_menu_sprite_files = set(os.listdir(home_menu_sprite_path))
+    poke_forms = get_poke_form_records(cursor)
+    for poke_form, poke_info in poke_forms.items():
+        filename = generate_home_menu_filename(poke_info)
+        exists = file_does_exist(filename, home_menu_sprite_files)
+        file_ids = {"filename": filename, "poke_num": poke_form[0], "form_id": poke_form[1], "does_exist": exists}
+        insert_into_table(cursor, "home_menu_filenames", **file_ids)
+
+
+def generate_home_menu_filename(poke_info):
+    poke_num = str(poke_info["poke num"]).zfill(4)
+    form = "" if poke_info["form name"] == "Default" else poke_info["form name"]
+    filename = f"{poke_num} {poke_info["poke name"]}{form}"
     return filename
 
 
@@ -863,6 +896,7 @@ def populate_db(force=False):
         populate_game_filenames(cursor)
         connection.commit() # Committing because database was locked when populate_drawn_filenames trying to access with has_f_form
         populate_home_filenames(cursor)
+        populate_home_menu_filenames(cursor)
         populate_drawn_filenames(cursor)
 
         connection.commit()
