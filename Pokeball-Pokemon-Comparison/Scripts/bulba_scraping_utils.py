@@ -31,8 +31,10 @@ POKE_URL_JSON_PATH = os.path.join(PARENT_DIR, "game_sprite_urls_by_poke.json")
 # Their links are only the info after this
 BULBA_ARCHIVES_STARTER_URL = "https://archives.bulbagarden.net"
 BULBA_FILE_STARTER_URL = "https://archives.bulbagarden.net/wiki/File:"
+# TODO: Import these from app_globals
 GAME_SPRITE_PATH = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Game Sprites\\"
 DRAWN_SAVE_PATH = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Drawn\\"
+HOME_SAVE_PATH = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\HOME Sprites\\"
 # https://archives.bulbagarden.net/wiki/Category:Pok%C3%A9mon_artwork
 
     
@@ -48,7 +50,8 @@ def get_next_page_soup(curr_page_soup):
 
 def scrape(allow_download=False):
     #scrape_game_imgs(allow_download)
-    scrape_drawn_imgs(allow_download)
+    #scrape_drawn_imgs(allow_download)
+    scrape_home_sprite_imgs(allow_download)
 
 
 def scrape_game_imgs(allow_download=False):
@@ -56,7 +59,10 @@ def scrape_game_imgs(allow_download=False):
     translated_missing_imgs = translate_all_filenames_to_bulba_url(missing_imgs_dict, bulba_game_sprite_translate)
 
     for poke_info, files in translated_missing_imgs.items():
+        print(f"\rTranslating #{poke_info[0]} game sprite filename to bulba filename...", end='', flush=True)
+        print(poke_info[0])
         for file in files:
+            if poke_info[0] == 215: print(file)
             # poke_info == (poke_num, form_id)
             # file == (my_file_naming_convention, bulba_url)
             bulba_game_sprite_filename_url = verify_translation_for_bulba_inconsistency(poke_info[0], file[0], file[1])
@@ -64,10 +70,13 @@ def scrape_game_imgs(allow_download=False):
             save_path = os.path.join(GAME_SPRITE_PATH, my_filename)
             if allow_download:  # Putting this here in addition to the actual func, so dont try to open bulba pages to check for existence
                 get_bulba_img(bulba_game_sprite_filename_url, save_path, allow_download, is_game_sprite=True)
+    # Resetting console line after updates from above
+    print('\r' + ' '*45 + '\r', end='')
 
 
 def translate_all_filenames_to_bulba_url(filename_dict, translate_func):
     for poke_info, files in filename_dict.items():
+        print("Translating", poke_info[0])
         if len(files)==0: continue
         bulba_urls = []
         for my_filename in files:
@@ -166,7 +175,7 @@ def bulba_game_sprite_translate(filename, poke_info):
     bulba_filename += get_bulba_translated_universal_form(filename, BULBA_GAMES_UNIVERSAL_FORM_MAP)
     bulba_filename += get_bulba_translated_species_form(poke_info, filename, BULBA_GAMES_SPECIFIC_FORM_MAP)
     if "-Gigantamax" in filename: bulba_filename += "Gi"    # Put here because of Urshifu, form before gigantamax denoter
-    bulba_filename += get_gender_denoter(poke_num_int, filename)
+    bulba_filename += get_gender_denoter(poke_num_int, filename, is_game_sprite=True)
     if "-Shiny" in filename: bulba_filename += " s"
     bulba_filename += ".png"
     return(bulba_filename)
@@ -239,11 +248,12 @@ def adjust_translation_for_unown(filename, translation):
 
 
 # TODO: Adjust the likes of cap pikachu
-def get_gender_denoter(poke_num, filename):
+# is_game_sprite necessary since both game sprites and home sprites are run through this, game sprites have m denoter where applicable, home sprites never do
+def get_gender_denoter(poke_num, filename, is_game_sprite):
     has_f_var = has_f_form(poke_num)
     if "-f" in filename:
         return(" f")
-    elif "-f" not in filename and has_f_var and include_male_denoter(filename):
+    elif "-f" not in filename and has_f_var and is_game_sprite and include_male_denoter(filename):
         return(" m")
     else:
         return("")
@@ -278,19 +288,41 @@ def f_exception_poke_in_filename(filename):
     return False
 
 
-def scrape_drawn_imgs(allow_download=False):
-    missing_imgs_dict = get_missing_poke_imgs_by_table("drawn_filenames")
-    translated_missing_imgs = translate_all_filenames_to_bulba_url(missing_imgs_dict, drawn_translate)
+def scraping_if_no_extra_steps_needed(filename_table, translate_func, is_game_sprite, allow_download, save_path):
+    missing_imgs_dict = get_missing_poke_imgs_by_table(filename_table)
+    translated_missing_imgs = translate_all_filenames_to_bulba_url(missing_imgs_dict, translate_func)
 
     for poke_info, files in translated_missing_imgs.items():
         for file in files:
             # poke_info == (poke_num, form_id)
             # file == (my_file_naming_convention, bulba_url)
-            save_path = os.path.join(DRAWN_SAVE_PATH, file[0])
-            
-            print(file)
-            if allow_download:  # Putting this here in addition to the actual func, so dont try to open bulba pages to check for existence
-                get_bulba_img(file, save_path, allow_download, is_game_sprite=False)
+            save_path = os.path.join(save_path, file[0])
+            if poke_info[0] == 215: print(file)
+            if allow_download:  # Putting this here in addition to the actual func, so func doesnt try to open bulba pages to check for existence
+                get_bulba_img(file[1], save_path, allow_download, is_game_sprite)
+
+
+def scrape_home_sprite_imgs(allow_download=False):
+    # NOTE: is_game_sprite set to true here to deal with animateds, if it were false and missing it would just download the still
+    # As of writing (4-30-25) bulba doesn't have animated HOME sprites, but I do want to leave the option open if possible
+    scraping_if_no_extra_steps_needed("home_filenames", home_sprite_translate, True, allow_download, HOME_SAVE_PATH)
+
+
+def home_sprite_translate(my_filename, poke_info):
+    poke_num = poke_info[0]
+    poke_num_leading_zeros = str(poke_num).zfill(4)
+    home_sprite_filename = f"HOME{poke_num_leading_zeros}"
+    home_sprite_filename += get_bulba_translated_universal_form(my_filename, BULBA_GAMES_UNIVERSAL_FORM_MAP)
+    home_sprite_filename += get_bulba_translated_species_form(poke_info, my_filename, BULBA_GAMES_SPECIFIC_FORM_MAP)
+    if "-Gigantamax" in my_filename: home_sprite_filename += "Gi"    # Put here because of Urshifu, form before gigantamax denoter
+    home_sprite_filename += get_gender_denoter(poke_num, my_filename, is_game_sprite=False)
+    if "-Shiny" in my_filename: home_sprite_filename += " s"
+    home_sprite_filename += ".png"
+    return(home_sprite_filename)
+
+
+def scrape_drawn_imgs(allow_download=False):
+    scraping_if_no_extra_steps_needed("drawn_filenames", drawn_translate, False, allow_download, DRAWN_SAVE_PATH)
 
 
 def drawn_translate(my_filename, poke_info):
