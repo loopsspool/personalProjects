@@ -112,7 +112,7 @@ def create_db():
         does_exist BOOLEAN,
         substitution_id INTEGER,
         has_alt BOOLEAN,
-        FOREIGN KEY (substitution_id) REFERENCES all_game_filenames(id)
+        FOREIGN KEY (substitution_id) REFERENCES all_game_filenames(id),
         FOREIGN KEY (id) REFERENCES all_game_filenames(id),
         FOREIGN KEY (poke_num, form_id, game_id, sprite_id) REFERENCES sprite_obtainability
     );
@@ -129,8 +129,19 @@ def create_db():
     );
     """)
 
-    # TODO: Add Drawn Filename Table
-    # TODO: Add Home Filename Table
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS home_filenames (
+        id INTEGER PRIMARY KEY,
+        filename TEXT NOT NULL UNIQUE,
+        poke_num INTEGER NOT NULL,
+        form_id INTEGER NOT NULL,
+        sprite_id INTEGER NOT NULL,
+        does_exist BOOLEAN,
+        FOREIGN KEY (poke_num, form_id) REFERENCES poke_forms,
+        FOREIGN KEY (sprite_id) REFERENCES sprite_types(id)
+    );
+    """)
+
     # TODO: Add Home Menu Filename Table
         # See whats missing to download from Gen8 (Just gigantamax?)
 
@@ -635,6 +646,7 @@ def seperate_sprite_type_if_shiny(sprite_type):
 
 
 def file_does_exist(filename, dir_file_list):
+    # TODO: Could just search without an extension
     file_ext = [".png"]
     file_has_ext = filename[-4:] in file_ext
     if file_has_ext :
@@ -682,6 +694,7 @@ GAME_FALLBACKS = {
     "Gen3 FRLG": ["Gen3 Ruby_Sapphire"],
     "Gen4 HGSS": ["Gen4 Platinum", "Gen4 Diamond_Pearl"],
     "Gen4 Platinum": ["Gen4 Diamond_Pearl"],
+    "Gen6 XY_ORAS": ["Gen7 SM_USUM"],
     "Gen7 SM_USUM": ["Gen6 XY_ORAS"]
 }
 
@@ -739,6 +752,36 @@ def change_substitution_field_from_filename_to_file_id(cursor, sub_names_to_conv
     print("Converting substitution game filenames to ids...")
     for record in sub_names_to_convert:
         edit_substitution_field(cursor, record)
+
+
+def populate_home_filenames(cursor):
+    from app_globals import home_save_path
+    print("Populating HOME sprite filenames into database...")
+
+    home_sprites_files = set(os.listdir(home_save_path))
+    poke_forms = get_poke_form_records(cursor)
+    sprite_types = get_sprite_types(cursor)
+
+    for poke_form, poke_info in poke_forms.items():
+        for sprite_id, sprite_type in sprite_types.items():
+            if should_skip_nonexistant_sprite(poke_info["poke num"], poke_info["form name"], sprite_type):
+                continue
+            
+            filename = generate_home_filename(poke_info, sprite_type)
+            exists = file_does_exist(filename, home_sprites_files)
+            file_ids = {"filename": filename, "poke_num": poke_info["poke num"], "form_id": poke_info["form id"], "sprite_id": sprite_id, "does_exist":exists}
+            insert_into_table(cursor, "home_filenames", **file_ids)
+
+
+
+def generate_home_filename(poke_info, sprite_type):
+    poke_num = str(poke_info["poke num"]).zfill(4)
+    form_name = "" if poke_info["form name"] == "Default" else poke_info["form name"]
+    is_shiny, sprite_type = seperate_sprite_type_if_shiny(poke_info["sprite type"])
+
+    # Hyphen before game allows for alphabetical sorting of back sprites below the front game sprites
+    filename = f"{poke_num} {poke_info["poke name"]} HOME{"-Shiny" if is_shiny else ""}{form_name}{sprite_type}"
+    return filename
 
 
 def populate_drawn_filenames(cursor):
@@ -810,6 +853,7 @@ def populate_db(force=False):
         populate_sprite_obtainability(cursor)
         populate_game_filenames(cursor)
         connection.commit() # Committing because database was locked when populate_drawn_filenames trying to access with has_f_form
+        populate_home_filenames(cursor)
         populate_drawn_filenames(cursor)
 
         connection.commit()
