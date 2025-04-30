@@ -59,10 +59,7 @@ def scrape_game_imgs(allow_download=False):
     translated_missing_imgs = translate_all_filenames_to_bulba_url(missing_imgs_dict, bulba_game_sprite_translate)
 
     for poke_info, files in translated_missing_imgs.items():
-        print(f"\rTranslating #{poke_info[0]} game sprite filename to bulba filename...", end='', flush=True)
-        print(poke_info[0])
         for file in files:
-            if poke_info[0] == 215: print(file)
             # poke_info == (poke_num, form_id)
             # file == (my_file_naming_convention, bulba_url)
             bulba_game_sprite_filename_url = verify_translation_for_bulba_inconsistency(poke_info[0], file[0], file[1])
@@ -70,14 +67,12 @@ def scrape_game_imgs(allow_download=False):
             save_path = os.path.join(GAME_SPRITE_PATH, my_filename)
             if allow_download:  # Putting this here in addition to the actual func, so dont try to open bulba pages to check for existence
                 get_bulba_img(bulba_game_sprite_filename_url, save_path, allow_download, is_game_sprite=True)
-    # Resetting console line after updates from above
-    print('\r' + ' '*45 + '\r', end='')
 
 
 def translate_all_filenames_to_bulba_url(filename_dict, translate_func):
     for poke_info, files in filename_dict.items():
-        print("Translating", poke_info[0])
         if len(files)==0: continue
+        print(f"\rTranslating #{poke_info[0]} game sprite filenames to bulba urls...", end='', flush=True)
         bulba_urls = []
         for my_filename in files:
             # Right now this filters out SV & BDSP Sprites since bulba doesnt have them
@@ -87,6 +82,8 @@ def translate_all_filenames_to_bulba_url(filename_dict, translate_func):
             bulba_game_sprite_filename_url = convert_bulba_filename_to_url(bulba_game_sprite_filename)
             bulba_urls.append((my_filename, bulba_game_sprite_filename_url))
         filename_dict[poke_info] = bulba_urls
+    # Resetting console line after updates from above
+    print('\r' + ' '*55 + '\r', end='')
     return filename_dict
 
 
@@ -297,7 +294,7 @@ def scraping_if_no_extra_steps_needed(filename_table, translate_func, is_game_sp
             # poke_info == (poke_num, form_id)
             # file == (my_file_naming_convention, bulba_url)
             save_path = os.path.join(save_path, file[0])
-            if poke_info[0] == 215: print(file)
+            print(file)
             if allow_download:  # Putting this here in addition to the actual func, so func doesnt try to open bulba pages to check for existence
                 get_bulba_img(file[1], save_path, allow_download, is_game_sprite)
 
