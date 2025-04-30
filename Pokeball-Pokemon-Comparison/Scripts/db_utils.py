@@ -190,6 +190,14 @@ def get_form_id(form_name, cursor=None):
     else: return None
 
 
+def get_form_name(form_id, cursor=None):
+    with get_cursor(cursor) as cur:
+        cur.execute("SELECT form_name FROM forms WHERE form_id=?", (form_id,))
+        form_name = cur.fetchone()
+    if form_name: return form_name[0]
+    else: return None
+
+
 def get_game_id(game_name, cursor=None):
     with get_cursor(cursor) as cur:
         cur.execute("SELECT id FROM games WHERE name=?", (game_name,))
@@ -583,6 +591,7 @@ def is_sprite_possible(pfgo_info, sprite_type):
 
 
 # Sprites that don't exist. Shouldn't even be marked unobtainable, which is why theyre here not SPRITE_EXCLUSIONS
+# TODO: Adjust show stamp further, should not be on default, should default exist for them? See HOME filenames for further clarity
 NONEXISTANT_SPRITES={
     "no_shiny_cosplay_pikachu": lambda poke_num, form_name, sprite_type: poke_num == 25 and "-Form_Cosplay" in form_name and "Shiny" in sprite_type,
     "no_shiny_cap_pikachu": lambda poke_num, form_name, sprite_type: poke_num == 25 and "-Form_Cap" in form_name and "Shiny" in sprite_type,
@@ -769,7 +778,7 @@ def populate_home_filenames(cursor):
             
             filename = generate_home_filename(poke_info, sprite_type)
             exists = file_does_exist(filename, home_sprites_files)
-            file_ids = {"filename": filename, "poke_num": poke_info["poke num"], "form_id": poke_info["form id"], "sprite_id": sprite_id, "does_exist":exists}
+            file_ids = {"filename": filename, "poke_num": poke_info["poke num"], "form_id": poke_form[1], "sprite_id": sprite_id, "does_exist":exists}
             insert_into_table(cursor, "home_filenames", **file_ids)
 
 
@@ -777,7 +786,7 @@ def populate_home_filenames(cursor):
 def generate_home_filename(poke_info, sprite_type):
     poke_num = str(poke_info["poke num"]).zfill(4)
     form_name = "" if poke_info["form name"] == "Default" else poke_info["form name"]
-    is_shiny, sprite_type = seperate_sprite_type_if_shiny(poke_info["sprite type"])
+    is_shiny, sprite_type = seperate_sprite_type_if_shiny(sprite_type)
 
     # Hyphen before game allows for alphabetical sorting of back sprites below the front game sprites
     filename = f"{poke_num} {poke_info["poke name"]} HOME{"-Shiny" if is_shiny else ""}{form_name}{sprite_type}"

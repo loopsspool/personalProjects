@@ -1,5 +1,3 @@
-from db_utils import get_form_id
-
 # TODO: Put all these mappings in a seperate file, with static dicts and whatnot from db_utils
 # TODO: Also put db_utils exclusions and exceptions into a seperate file
 ############################# BULBA TRANSLATORS #############################
@@ -48,17 +46,17 @@ BULBA_GAME_INCONSISTENCIES = {
 
 # This is to filter out specific forms when building bulba filename
 # The exceptions that have a universal AND specific form (See 555 Galarian Darmanitan Zen form) have their own unique form id generated in db_utils > FORM_EXCEPTION_POKEMON
-UNIVERSAL_FORM_IDS = {
-    get_form_id("Default"), 
-    get_form_id("-f"), 
-    get_form_id("-Mega"), 
-    get_form_id("-Mega_X"), 
-    get_form_id("-Mega_Y"), 
-    get_form_id("-Gigantamax"), 
-    get_form_id("-Region_Alola"), 
-    get_form_id("-Region_Galar"), 
-    get_form_id("-Region_Hisui"), 
-    get_form_id("-Region_Paldea")
+UNIVERSAL_FORMS = {
+    "Default", 
+    "-f", 
+    "-Mega", 
+    "-Mega_X", 
+    "-Mega_Y", 
+    "-Gigantamax", 
+    "-Region_Alola", 
+    "-Region_Galar", 
+    "-Region_Hisui", 
+    "-Region_Paldea"
 }
 
 

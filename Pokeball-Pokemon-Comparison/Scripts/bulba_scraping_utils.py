@@ -5,7 +5,7 @@ import re   # For filtering what images to download
 import os
 
 from json_utils import *
-from db_utils import get_missing_poke_imgs_by_table, has_f_form, get_form_id, get_poke_name
+from db_utils import get_missing_poke_imgs_by_table, has_f_form, get_form_id, get_form_name, get_poke_name
 from bulba_translation_mapping import *
 # from app_globals import *
 from image_tools import *
@@ -190,9 +190,11 @@ def get_bulba_translated_universal_form(filename, mapping):
 def get_bulba_translated_species_form(poke_info, filename, mapping):
     poke_num = poke_info[0]
     form_id = poke_info[1]
+    form_name = get_form_name(form_id)
 
-    # No widespread universal forms combined with species forms, the few exceptions have their own form id associated with it
-    if form_id in UNIVERSAL_FORM_IDS:
+    # No widespread universal forms combined with species forms, the few exceptions have their own form id/name associated with it
+    # TODO: Had to change this from id to name, verify it works
+    if form_name in UNIVERSAL_FORMS:
         return("")
 
     if poke_num in mapping:
