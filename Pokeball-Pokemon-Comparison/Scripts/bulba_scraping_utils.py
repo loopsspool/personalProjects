@@ -90,8 +90,8 @@ def translate_all_filenames_to_bulba_url(filename_dict, translate_func):
     return filename_dict
 
 
-def convert_bulba_filename_to_url(filename):
-    return (BULBA_FILE_STARTER_URL + filename.replace(" ", "_"))
+def convert_bulba_filename_to_url(bulba_filename):
+    return (BULBA_FILE_STARTER_URL + bulba_filename.replace(" ", "_"))
 
 
 def get_bulba_img(url, save_path, allow_download, is_game_sprite=False):
@@ -139,9 +139,9 @@ def bulba_img_exists(url):
     return (img_exists, img_page_soup)
 
 
-def bulba_doesnt_have_game_images_for(filename):
+def bulba_doesnt_have_game_images_for(my_filename):
     for exclusion in BULBA_DOESNT_HAVE_GAME_IMGS_FOR:
-        if exclusion in filename:
+        if exclusion in my_filename:
             return True
     return False
 
@@ -163,40 +163,40 @@ def verify_translation_for_bulba_inconsistency(poke_num, my_filename, url):
         return (url[:insert_index] + "-NOT_FOUND" + url[insert_index:])     # This prevents the default bulba image being downloaded for that form
 
 
-def bulba_game_sprite_translate(filename, poke_info):
+def bulba_game_sprite_translate(my_filename, poke_info):
     # Starting bulba filename w their format
     bulba_filename = "Spr"
-    if "-Back" in filename: bulba_filename += " b"
-    bulba_game = get_bulba_translated_game(filename)    # Not just adding it so I can evaluate it later
+    if "-Back" in my_filename: bulba_filename += " b"
+    bulba_game = get_bulba_translated_game(my_filename)    # Not just adding it so I can evaluate it later
     bulba_filename += bulba_game
     poke_num_int = poke_info[0]
     poke_num_leading_zeros = str(poke_num_int).zfill(3)  # Converting from 4 total digits to 3
     bulba_filename += f" {poke_num_leading_zeros}"
-    bulba_filename += get_bulba_translated_universal_form(filename, BULBA_GAMES_UNIVERSAL_FORM_MAP)
-    bulba_filename += get_bulba_translated_species_form(poke_info, filename, BULBA_GAMES_SPECIFIC_FORM_MAP)
-    if "-Gigantamax" in filename: bulba_filename += "Gi"    # Put here because of Urshifu, form before gigantamax denoter
-    bulba_filename += get_gender_denoter(poke_num_int, filename, is_game_sprite=True)
-    if "-Shiny" in filename: bulba_filename += " s"
+    bulba_filename += get_bulba_translated_universal_form(my_filename, BULBA_GAMES_UNIVERSAL_FORM_MAP)
+    bulba_filename += get_bulba_translated_species_form(poke_info, my_filename, BULBA_GAMES_SPECIFIC_FORM_MAP)
+    if "-Gigantamax" in my_filename: bulba_filename += "Gi"    # Put here because of Urshifu, form before gigantamax denoter
+    bulba_filename += get_gender_denoter(poke_num_int, my_filename, is_game_sprite=True)
+    if "-Shiny" in my_filename: bulba_filename += " s"
     bulba_filename += ".png"
     return(bulba_filename)
 
 
-def get_bulba_translated_game(filename):
+def get_bulba_translated_game(my_filename):
     for game, translation in BULBA_GAME_MAP.items():
-        if "-Back" in filename:
+        if "-Back" in my_filename:
             game = game.replace(" ", "_")
-        if game in filename:
+        if game in my_filename:
             return(f" {translation}")
         
 
 # Mega and regional forms, not gigantamax (bc urshifu, see dict in file for more)
-def get_bulba_translated_universal_form(filename, mapping):
+def get_bulba_translated_universal_form(my_filename, mapping):
     for u_form, translation in mapping.items():
-        if u_form in filename: return(translation)
+        if u_form in my_filename: return(translation)
     return ("")
 
 
-def get_bulba_translated_species_form(poke_info, filename, mapping):
+def get_bulba_translated_species_form(poke_info, my_filename, mapping):
     poke_num = poke_info[0]
     form_id = poke_info[1]
     form_name = get_form_name(form_id)
@@ -208,14 +208,14 @@ def get_bulba_translated_species_form(poke_info, filename, mapping):
 
     if poke_num in mapping:
         for form, translation in mapping[poke_num].items():
-            if form in filename:
+            if form in my_filename:
                 # If Unown, adjust bulba translation as needed, see NOTE above function if need more info
                 if poke_num == 201 and mapping == BULBA_GAMES_SPECIFIC_FORM_MAP:
-                    translation = adjust_translation_for_unown(filename, translation)
+                    translation = adjust_translation_for_unown(my_filename, translation)
                 return(translation)
     
     if mapping != DRAWN_IMAGES_SPECIES_FORMS_MAP:   # Drawn forms will frequently omit forms to just run my filename
-        print(f"Couldn't search for image to download... No respective form in map set for \t{filename}")
+        print(f"Couldn't search for image to download... No respective form in map set for \t{my_filename}")
     return("FORM_NOT_IN_MAP_SET")
 
 
@@ -223,22 +223,22 @@ def get_bulba_translated_species_form(poke_info, filename, mapping):
 # AND THEN ANOTHER to download FOR EACH game AND sprite type was way too taxing for bulba resources and my time
 # This may break in the future if someone (ie me) ever fixes their naming convention on bulba
 # But in the meantime this is like 1000x faster than doing it programatically 
-def adjust_translation_for_unown(filename, translation):
+def adjust_translation_for_unown(my_filename, translation):
     # Gen4 has hyphens, A is always blank
-    if "Gen4" in filename and "-Form_A" not in filename:
+    if "Gen4" in my_filename and "-Form_A" not in my_filename:
         # Regular color back doesn't have the hyphen, but the shiny backs do (ARRRAAAAGHHH)
-        if "-Back" in filename and "-Shiny" not in filename:
+        if "-Back" in my_filename and "-Shiny" not in my_filename:
             return translation
         adj_translation = "-" + translation
         return adj_translation
     # TODO: When implementing Home Menu Sprites, adjust the conditionals to reflect whatever I do
     # Home Menu Sprites have hyphen AND use "Exclamatioin" & "Question" instead of EX & QU
-    if "HOME MS" in filename and "-Form_A" not in filename:
+    if "HOME MS" in my_filename and "-Form_A" not in my_filename:
         adj_translation = "-"
-        if "-Form_!" in filename: 
+        if "-Form_!" in my_filename: 
             adj_translation += "Exclamation"
             return adj_translation
-        if "-Form_Qmark" in filename:
+        if "-Form_Qmark" in my_filename:
             adj_translation += "Question"
             return adj_translation
         adj_translation += translation
@@ -249,41 +249,41 @@ def adjust_translation_for_unown(filename, translation):
 
 # TODO: Adjust the likes of cap pikachu
 # is_game_sprite necessary since both game sprites and home sprites are run through this, game sprites have m denoter where applicable, home sprites never do
-def get_gender_denoter(poke_num, filename, is_game_sprite):
+def get_gender_denoter(poke_num, my_filename, is_game_sprite):
     has_f_var = has_f_form(poke_num)
-    if "-f" in filename:
+    if "-f" in my_filename:
         return(" f")
-    elif "-f" not in filename and has_f_var and is_game_sprite and include_male_denoter(filename):
+    elif "-f" not in my_filename and has_f_var and is_game_sprite and include_male_denoter(my_filename):
         return(" m")
     else:
         return("")
     
 
-def include_male_denoter(filename):
+def include_male_denoter(my_filename):
     # Checking file is gen4 or above (when f variations started)
     for gen_exclusion in MALE_DENOTER_EXCLUSION_GENS:
-        if gen_exclusion in filename:
+        if gen_exclusion in my_filename:
             return False
     # No universal forms w gender differences, except excpetions (Hisuian Sneasel f)
-    if universal_form_in_filename(filename) and not f_exception_poke_in_filename(filename):
+    if universal_form_in_filename(my_filename) and not f_exception_poke_in_filename(my_filename):
         return False
     return True
 
 
-def universal_form_in_filename(filename):
+def universal_form_in_filename(my_filename):
     for u_form in BULBA_GAMES_UNIVERSAL_FORM_MAP:
-        if u_form in filename:
+        if u_form in my_filename:
             return True
         
     # Gigantamax pulled out of UNIVERRSAL_FORM_MAP for Urshifu
-    if "-Gigantamax" in filename: return True
+    if "-Gigantamax" in my_filename: return True
     
     return False
 
 
-def f_exception_poke_in_filename(filename):
+def f_exception_poke_in_filename(my_filename):
     for poke_num in FEMALE_DENOTER_UNIVERSAL_FORM_EXCEPTION_POKEMON:
-        if poke_num in filename:
+        if poke_num in my_filename:
             return True
     return False
 
