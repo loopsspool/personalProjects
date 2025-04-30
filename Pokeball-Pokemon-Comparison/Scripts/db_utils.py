@@ -200,7 +200,7 @@ def get_form_id(form_name, cursor=None):
 
 def get_form_name(form_id, cursor=None):
     with get_cursor(cursor) as cur:
-        cur.execute("SELECT form_name FROM forms WHERE form_id=?", (form_id,))
+        cur.execute("SELECT form_name FROM forms WHERE id=?", (form_id,))
         form_name = cur.fetchone()
     if form_name: return form_name[0]
     else: return None
@@ -273,9 +273,9 @@ def get_missing_poke_imgs_by_table(table, cursor=None):
         cur.execute(f"SELECT poke_num, form_id, filename FROM {table} WHERE does_exist=0")
         result = cur.fetchall()
         for row in result:
+            # { (poke_num, form_id) : [missing imgs list] }
             poke_info = (row[0], row[1])
             data[poke_info].append(row[2])
-    # { (poke_num, form_id) : [missing imgs list] }
     return data
 
 
@@ -478,7 +478,7 @@ FORM_EXCLUSIONS = {
     "no_hisuian_forms_before_LA": lambda poke_form, game: "-Region_Hisui" in poke_form["form name"] and get_game_id(game["name"]) < get_game_id("LA"),
     "no_paldean_forms_before_SV": lambda poke_form, game: "-Region_Paldea" in poke_form["form name"] and get_game_id(game["name"]) < get_game_id("SV"),
     "no_regional_forms_in_BDSP": lambda poke_form, game: game["name"] == "BDSP" and "-Region" in poke_form["form name"],
-    "no_regional_forms_in_LA_other_than_hisui_and_alola_kitties": lambda poke_form, game: game["name"] == "LA" and "-Region" in poke_form["form name"] and poke_form["form name"] != "-Region_Hisui" and not (poke_form["poke name"] in ("Vulpix", "Ninetales") and poke_form["form name"] == "-Region_Alola"),
+    "no_regional_forms_in_LA_other_than_hisui_and_alola_kitties": lambda poke_form, game: game["name"] == "LA" and "-Region" in poke_form["form name"] and "-Region_Hisui" not in poke_form["form name"] and not (poke_form["poke name"] in ("Vulpix", "Ninetales") and poke_form["form name"] == "-Region_Alola"),
 
     # Specific pokemon
     "no_cosplay_pikachu_outside_ORAS": lambda poke_form, game: poke_form["poke num"] == 25 and "-Form_Cosplay" in poke_form["form name"] and game["name"] != "XY_ORAS",
@@ -787,7 +787,7 @@ def populate_home_filenames(cursor):
         for sprite_id, sprite_type in sprite_types.items():
             if should_skip_nonexistant_sprite(poke_info["poke num"], poke_info["form name"], sprite_type):
                 continue
-            
+            if "-Back" in sprite_type: continue     # No home back sprites
             filename = generate_home_filename(poke_info, sprite_type)
             exists = file_does_exist(filename, home_sprites_files)
             file_ids = {"filename": filename, "poke_num": poke_info["poke num"], "form_id": poke_form[1], "sprite_id": sprite_id, "does_exist":exists}
@@ -809,10 +809,10 @@ def populate_home_menu_filenames(cursor):
     from app_globals import home_menu_sprite_path
     print("Populating home menu sprites into database...")
 
-    # TODO: Create function to get listdir like this, if None, make it empty set
     home_menu_sprite_files = set(os.listdir(home_menu_sprite_path))
     poke_forms = get_poke_form_records(cursor)
     for poke_form, poke_info in poke_forms.items():
+        if poke_info["form name"] == "-f": continue     # No f menu sprites
         filename = generate_home_menu_filename(poke_info)
         exists = file_does_exist(filename, home_menu_sprite_files)
         file_ids = {"filename": filename, "poke_num": poke_form[0], "form_id": poke_form[1], "does_exist": exists}
