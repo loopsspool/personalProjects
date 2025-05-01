@@ -820,9 +820,13 @@ def populate_home_menu_filenames(cursor):
 
 
 def generate_home_menu_filename(poke_info):
+    # TODO: Most all NO_DRAWN_FORMS will apply (except 774), will need to figure out the stamped pokes
     poke_num = str(poke_info["poke num"]).zfill(4)
-    form = "" if poke_info["form name"] == "Default" else poke_info["form name"]
-    filename = f"{poke_num} {poke_info["poke name"]}{form}"
+    form_name = poke_info["form name"]
+    # Removing Region, Form, and Default tags, leaving -values
+    for excl in ["Region_", "Form_", "Default"]:
+        if excl in form_name: form_name = form_name.replace(excl, "")
+    filename = f"{poke_num} {poke_info["poke name"]}{form_name}"
     return filename
 
 
@@ -860,12 +864,10 @@ def generate_drawn_filenames(poke_info, cursor):
     if poke_num_int in NO_DRAWN_FORMS: 
         if form_name in NO_DRAWN_FORMS[poke_num_int]: 
             return []
-    if has_f_form(poke_num_int, cursor=cursor) and form_name == "Default": return []  # In bulba, default drawn for a poke w a female form is a pic of both m and f
+    if has_f_form(poke_num_int, cursor=cursor) and form_name == "Default": return []  # In bulba, default drawn for a poke with a female form is a pic of both m and f
     # Removing Region, Form, and Default tags, leaving -values
-    exclude_from_form = ["Region_", "Form_", "Default"]
-    for excl in exclude_from_form:
-        if excl in form_name: 
-            form_name = form_name.replace(excl, "")
+    for excl in ["Region_", "Form_", "Default"]:
+        if excl in form_name: form_name = form_name.replace(excl, "")
     # No drawn females until gen5, and then seperated by -Female/Male denoter
     if poke_info["poke gen"] >= 5 and "-f" in form_name:
         form_name = "-Female"
