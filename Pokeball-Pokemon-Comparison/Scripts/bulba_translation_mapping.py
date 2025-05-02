@@ -810,10 +810,13 @@ DRAWN_IMAGES_SPECIES_FORMS_MAP = {
         "-White_Striped": "-White",
     },
 
+    # TODO: Check
     # Darmanitan Modes
     555: {
-        "-Standard": "",   # Standard form considered default: so does not have a letter denoter
-        "-Zen": "-DO_BY_HAND"    # Has hyphen for no region, space for Galarian
+        "-Standard": "",
+        "-Zen": "-Zen",
+        "-Region_Galar-Standard": "-Galar",
+        "-Region_Galar-Zen": "-Galar Zen"
     },
 
     # Deerling & Sawsbuck Seasons
@@ -1093,3 +1096,95 @@ DRAWN_IMAGES_SPECIES_FORMS_MAP = {
     # Stellar has dream form, but it has a background...
     1024: {"-Normal": ""},
 }
+
+
+# Used for HOME menu imgs where drawn forms have a dream translation or fringe case, and the HOME menu image needs a different tag
+# Otherwise, HOME menu imgs use drawn translations
+HOME_MENU_IMGS_SPECIES_FORMS_MAP = {
+    # Pikachu
+    25: {
+        "-Cap_Alola": "-Alola",
+        "-Cap_Hoenn": "-Hoenn",
+        "-Cap_Kalos": "-Kalos",
+        "-Cap_Original": "-Original",
+        "-Cap_Partner": "-Partner",
+        "-Cap_Sinnoh": "-Sinnoh",
+        "-Cap_Unova": "-Unova",
+        "-Cap_World": "-World"
+    },
+
+    # Unown
+    201: {
+        "-Form_A": "",
+        "-Form_B": "-B",
+        "-Form_C": "-C",
+        "-Form_D": "-D",
+        "-Form_E": "-E",
+        "-Form_F": "-F",
+        "-Form_G": "-G",
+        "-Form_H": "-H",
+        "-Form_I": "-I",
+        "-Form_J": "-J",
+        "-Form_K": "-K",
+        "-Form_L": "-L",
+        "-Form_M": "-M",
+        "-Form_N": "-N",
+        "-Form_O": "-O",
+        "-Form_P": "-P",
+        "-Form_Qmark": "-Question",    # QU before Q because Q form would trigger first and misname file
+        "-Form_Q": "-Q",
+        "-Form_R": "-R",
+        "-Form_S": "-S",
+        "-Form_T": "-T",
+        "-Form_U": "-U",
+        "-Form_V": "-V",
+        "-Form_W": "-W",
+        "-Form_X": "-X",
+        "-Form_Y": "-Y",
+        "-Form_Z": "-Z",
+        "-Form_!": "-Exclamation"
+    },
+
+    # Shellos & Gastrodon
+    422: {
+        "-Form_East": "-East",
+        "-Form_West": ""
+    },
+    423: {
+        "-Form_East": "-East",
+        "-Form_West": ""
+    },
+
+    # Arceus
+    493: BULBA_TYPE_FORM_MAP,
+
+    # Basculin
+    550: {
+        "-Form_Blue_Striped": "-Blue",
+        "-Form_Red_Striped": "",
+        "-Form_White_Striped": "-White",
+    },
+
+    # Darmanitan
+    555: {
+        "-Form_Standard": "",
+        "-Region_Galar-Form_Standard": "-Galar",
+        "-Form_Zen": "-Zen",
+        "-Region_Galar-Form_Zen": "-Zen Galar",
+    },
+
+    # Genesect
+    649: {
+        "-Form_Burn_Drive": "Burn",
+        "-Form_Chill_Drive": "Chill",
+        "-Form_Douse_Drive": "Douse",
+        "-Form_Shock_Drive": "Shock"
+    }
+
+    # Flabebe, Floette, and Florges
+    
+}
+
+# Used for HOME menu imgs where drawn forms have a dream translation or fringe case, and the HOME menu image needs a different tag
+# Otherwise, HOME menu imgs use drawn translations
+HOME_MENU_POKE_EXCLSUIONS_FROM_DRAWN_TRANSLATIONS = set(HOME_MENU_IMGS_SPECIES_FORMS_MAP.keys())
