@@ -52,7 +52,8 @@ def get_next_page_soup(curr_page_soup):
 def scrape(allow_download=False):
     #scrape_game_imgs(allow_download)
     #scrape_drawn_imgs(allow_download)
-    scrape_home_sprite_imgs(allow_download)
+    #scrape_home_sprite_imgs(allow_download)
+    scrape_home_menu_imgs(allow_download)
 
 
 def scrape_game_imgs(allow_download=False):
@@ -67,7 +68,7 @@ def scrape_game_imgs(allow_download=False):
             my_filename = file[0] + ".png"
             save_path = os.path.join(GAME_SPRITE_PATH, my_filename)
             if allow_download:  # Putting this here in addition to the actual func, so dont try to open bulba pages to check for existence
-                get_bulba_img(bulba_game_sprite_filename_url, save_path, allow_download, is_game_sprite=True)
+                get_bulba_img(bulba_game_sprite_filename_url, save_path, allow_download, has_animation=True)
 
 
 def translate_all_filenames_to_bulba_url(filename_dict, translate_func):
@@ -92,7 +93,7 @@ def convert_bulba_filename_to_url(bulba_filename):
     return (BULBA_FILE_STARTER_URL + bulba_filename.replace(" ", "_"))
 
 
-def get_bulba_img(url, save_path, allow_download, is_game_sprite=False):
+def get_bulba_img(url, save_path, allow_download, has_animation=False):
     img_exists, img_page_soup = bulba_img_exists(url)
     if not img_exists:
         return ()
@@ -104,7 +105,7 @@ def get_bulba_img(url, save_path, allow_download, is_game_sprite=False):
 
         img_url = get_largest_png(img_page_soup)
         
-        if is_game_sprite:
+        if has_animation:
             determine_animation_status_before_downloading(img_url, save_path, allow_download)
         else:
             if allow_download: download_img(img_url, save_path)
@@ -212,7 +213,7 @@ def get_bulba_translated_species_form(poke_info, my_filename, mapping):
                     translation = adjust_translation_for_unown(my_filename, translation)
                 return(translation)
     
-    if mapping != DRAWN_IMAGES_SPECIES_FORMS_MAP:   # Drawn forms will frequently omit forms to just run my filename
+    if mapping not in (DRAWN_IMAGES_SPECIES_FORMS_MAP, HOME_MENU_IMGS_SPECIES_FORMS_MAP):   # Drawn/HOME forms will frequently omit forms to just run my filename
         print(f"Couldn't search for image to download... No respective form in map set for \t{my_filename}")
     return("FORM_NOT_IN_MAP_SET")
 
@@ -229,19 +230,7 @@ def adjust_translation_for_unown(my_filename, translation):
             return translation
         adj_translation = "-" + translation
         return adj_translation
-    # TODO: When implementing Home Menu Sprites, adjust the conditionals to reflect whatever I do
-    # Home Menu Sprites have hyphen AND use "Exclamatioin" & "Question" instead of EX & QU
-    if "HOME MS" in my_filename and "-Form_A" not in my_filename:
-        adj_translation = "-"
-        if "-Form_!" in my_filename: 
-            adj_translation += "Exclamation"
-            return adj_translation
-        if "-Form_Qmark" in my_filename:
-            adj_translation += "Question"
-            return adj_translation
-        adj_translation += translation
-        return adj_translation
-    # If neither condition is met, just return the letter
+    # If condition isnt met, just return the letter
     return translation
 
 
@@ -286,7 +275,7 @@ def f_exception_poke_in_filename(my_filename):
     return False
 
 
-def scraping_if_no_extra_steps_needed(filename_table, translate_func, is_game_sprite, allow_download, save_path):
+def scraping_if_no_extra_steps_needed(filename_table, translate_func, has_animation, allow_download, save_path):
     missing_imgs_dict = get_missing_poke_imgs_by_table(filename_table)
     translated_missing_imgs = translate_all_filenames_to_bulba_url(missing_imgs_dict, translate_func)
 
@@ -297,11 +286,11 @@ def scraping_if_no_extra_steps_needed(filename_table, translate_func, is_game_sp
             save_path = os.path.join(save_path, file[0])
             print(file)
             if allow_download:  # Putting this here in addition to the actual func, so func doesnt try to open bulba pages to check for existence
-                get_bulba_img(file[1], save_path, allow_download, is_game_sprite)
+                get_bulba_img(file[1], save_path, allow_download, has_animation)
 
 
 def scrape_home_sprite_imgs(allow_download=False):
-    # NOTE: is_game_sprite set to true here to deal with animateds, if it were false and missing it would just download the still
+    # NOTE: has_animation set to true (because it does, just not in bulba), if it were false and missing it would just download the still
     # As of writing (4-30-25) bulba doesn't have animated HOME sprites, but I do want to leave the option open if possible
     scraping_if_no_extra_steps_needed("home_filenames", home_sprite_translate, True, allow_download, HOME_SAVE_PATH)
 
@@ -328,9 +317,31 @@ def home_menu_translate(my_filename, poke_info):
     poke_num_leading_zeros = str(poke_num).zfill(4)
     home_menu_filename = f"Menu HOME {poke_num_leading_zeros}"
     # Urshifu order doesn't matter because no gigantamax home menu sprites
-    # But also doesn't have form menu sprites either? See if thats the case for others
+    # TODO: But also doesn't have form menu sprites either? See if thats the case for others
     home_menu_filename += get_bulba_translated_universal_form(my_filename, DRAWN_IMAGES_UNIVERSAL_FORMS_MAP)
+    home_menu_filename += get_home_menu_translated_species_form(poke_info, my_filename)
+    home_menu_filename += ".png"
+    print (home_menu_filename)
+    return home_menu_filename
+    
+def get_home_menu_translated_species_form(poke_info, my_filename):
+    # Species forms will usually translate from the drawn images species form translation dict, but sometimes that has weird cases/needs to use dream images
+    # If that's the case (poke num in this exclusion set), translate from home menu translation dict
+    if poke_num in HOME_MENU_POKE_EXCLSUIONS_FROM_DRAWN_TRANSLATIONS:
+        form_translation = get_bulba_translated_species_form(poke_info, my_filename, HOME_MENU_IMGS_SPECIES_FORMS_MAP)
+    else:
+        form_translation = get_bulba_translated_species_form(poke_info, my_filename, DRAWN_IMAGES_SPECIES_FORMS_MAP)
 
+    # If this showed up in the filename, its either an intentional omission of the form in my mapping file because my file translation is an exact match for bulbas
+    # or its a new pokemon not added to the mapping file yet, which will either work without further action or remind me I need to add its form to map
+    if form_translation == "FORM_NOT_IN_MAP_SET":    # If form was omitted for species form bulba translation mapping
+        poke_num = int(my_filename[:4])
+        split_limit = 1
+        if "-" in get_poke_name(poke_num): split_limit = 2
+        species_form = my_filename.split("-", maxsplit=split_limit)
+        species_form = "-" + species_form[len(species_form)-1]
+        return(species_form)
+    return(form_translation)
 
 
 def scrape_drawn_imgs(allow_download=False):
@@ -349,7 +360,7 @@ def drawn_translate(my_filename, poke_info):
     bulba_drawn_filename += get_bulba_translated_species_form(poke_info, my_filename, DRAWN_IMAGES_SPECIES_FORMS_MAP)
     bulba_drawn_filename += ".png"
 
-    # If this showed up in the filename, its either an intentional omission of the form in my mapping file because my filename is an exact match for bulbas
+    # If this showed up in the filename, its either an intentional omission of the form in my mapping file because my file translation is an exact match for bulbas
     # or its a new pokemon not added to the mapping file yet, which will either work without further action or remind me I need to add its form to map
     if "FORM_NOT_IN_MAP_SET" in bulba_drawn_filename:    # If form was omitted for species form bulba translation mapping
         bulba_drawn_filename = my_filename.replace(" ", "", 1)  # Try scraping for my filename (without space between poke num and name)
@@ -357,7 +368,3 @@ def drawn_translate(my_filename, poke_info):
     if " Dream" in bulba_drawn_filename and bulba_drawn_filename[0] == "0":
         bulba_drawn_filename = bulba_drawn_filename.replace("0","",1) 
     return bulba_drawn_filename
-
-
-# Home
-# Home menu sprites ONLY
