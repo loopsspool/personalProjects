@@ -105,27 +105,26 @@ def get_bulba_img(url, save_path, allow_download, has_animation=False):
 
         img_url = get_largest_png(img_page_soup)
         
-        # TODO: Put allow_download conditional here, remove from determine_ani_status
-        if has_animation:
-            determine_animation_status_before_downloading(img_url, save_path, allow_download)
-        else:
-            if allow_download: download_img(img_url, save_path)
+        if allow_download:
+            if has_animation:
+                determine_animation_status_before_downloading(img_url, save_path)
+            else:
+                download_img(img_url, save_path)
 
 
-def determine_animation_status_before_downloading(img_url, save_path, allow_download):
+def determine_animation_status_before_downloading(img_url, save_path):
     img_is_animated = is_animated(img_url)
     if "-Animated" in save_path:
         if img_is_animated:
-            if allow_download:
-                download_img(img_url, save_path)
+            download_img(img_url, save_path)
+        else:
+            print(f"Could not download animated img for {save_path.split("\\")[-1]}")
     else: # Looking for still
         if not img_is_animated:
-            if allow_download:
-                download_img(img_url, save_path)
+            download_img(img_url, save_path)
         else: # Looking for still, but image is animated
-            if allow_download:
-                # TODO: Test this
-                save_first_frame(img_url, save_path)
+            # TODO: Test this
+            save_first_frame(img_url, save_path)
 
 
 def download_img(url, save_path):
