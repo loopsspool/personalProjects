@@ -105,6 +105,7 @@ def get_bulba_img(url, save_path, allow_download, has_animation=False):
 
         img_url = get_largest_png(img_page_soup)
         
+        # TODO: Put allow_download conditional here, remove from determine_ani_status
         if has_animation:
             determine_animation_status_before_downloading(img_url, save_path, allow_download)
         else:
@@ -159,6 +160,8 @@ def verify_translation_for_bulba_inconsistency(poke_num, my_filename, url):
                     exists, page_soup = bulba_img_exists(new_url)
                     if exists:
                         return (new_url)
+        # Resetting console line after updates from above
+        print('\r' + ' '*55 + '\r', end='')
         return (url[:insert_index] + "-NOT_FOUND" + url[insert_index:])     # This prevents the default bulba image being downloaded for that form
 
 
@@ -284,7 +287,6 @@ def scraping_if_no_extra_steps_needed(filename_table, translate_func, has_animat
             # poke_info == (poke_num, form_id)
             # file == (my_file_naming_convention, bulba_url)
             save_path = os.path.join(save_path, file[0])
-            print(file)
             if allow_download:  # Putting this here in addition to the actual func, so func doesnt try to open bulba pages to check for existence
                 get_bulba_img(file[1], save_path, allow_download, has_animation)
 
@@ -321,10 +323,10 @@ def home_menu_translate(my_filename, poke_info):
     home_menu_filename += get_bulba_translated_universal_form(my_filename, DRAWN_IMAGES_UNIVERSAL_FORMS_MAP)
     home_menu_filename += get_home_menu_translated_species_form(poke_info, my_filename)
     home_menu_filename += ".png"
-    print (home_menu_filename)
     return home_menu_filename
     
 def get_home_menu_translated_species_form(poke_info, my_filename):
+    poke_num = poke_info[0]
     # Species forms will usually translate from the drawn images species form translation dict, but sometimes that has weird cases/needs to use dream images
     # If that's the case (poke num in this exclusion set), translate from home menu translation dict
     if poke_num in HOME_MENU_POKE_EXCLSUIONS_FROM_DRAWN_TRANSLATIONS:
@@ -332,16 +334,13 @@ def get_home_menu_translated_species_form(poke_info, my_filename):
     else:
         form_translation = get_bulba_translated_species_form(poke_info, my_filename, DRAWN_IMAGES_SPECIES_FORMS_MAP)
 
-    # If this showed up in the filename, its either an intentional omission of the form in my mapping file because my file translation is an exact match for bulbas
+    # If this showed up in the filename, its either an intentional omission of the form in my mapping file because my form name convention is an exact match for bulbas
     # or its a new pokemon not added to the mapping file yet, which will either work without further action or remind me I need to add its form to map
     if form_translation == "FORM_NOT_IN_MAP_SET":    # If form was omitted for species form bulba translation mapping
-        poke_num = int(my_filename[:4])
-        split_limit = 1
-        if "-" in get_poke_name(poke_num): split_limit = 2
-        species_form = my_filename.split("-", maxsplit=split_limit)
-        species_form = "-" + species_form[len(species_form)-1]
+        species_form = get_form_name(poke_info[1]).replace("Form_", "")
         return(species_form)
-    return(form_translation)
+    else:
+        return(form_translation)
 
 
 def scrape_drawn_imgs(allow_download=False):
