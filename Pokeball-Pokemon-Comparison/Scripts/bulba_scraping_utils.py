@@ -202,6 +202,13 @@ def get_bulba_translated_species_form(poke_info, my_filename, map_type):
     form_id = poke_info[1]
     form_name = get_form_name(form_id)
 
+    # Keep above universal form check, otherwise may return empty string
+    # Doing these by hand because they aren't clearly marked in bulba
+    # TODO: Check these arent considered back sprites in bulba, see wikidex for true back sprite if so
+        # If nowhere to be found, check in HOME
+    if "-Show_Stamp" in my_filename:
+        return("-DO_BY_HAND")
+
     # No widespread universal forms combined with species forms, the few exceptions have their own form id/name associated with it
     if form_name in UNIVERSAL_FORMS:
         return("")
@@ -218,7 +225,7 @@ def get_bulba_translated_species_form(poke_info, my_filename, map_type):
     
     if map_type not in ("Drawn", "Menu"):   # Drawn/HOME Menu forms will frequently omit forms to just run my filename
         print(f"Couldn't search for image to download... No respective form in map set for \t{my_filename}")
-    return("FORM_NOT_IN_MAP_SET")
+    return("-FORM_NOT_IN_MAP_SET")
 
 
 # NOTE: I hate to hardcode it this way, but attempting 2-3 page opens just to find the right name (via verify_bulba_inconsistency func)
@@ -344,7 +351,7 @@ def get_home_menu_translated_species_form(poke_info, my_filename):
 
     # If this showed up in the filename, its either an intentional omission of the form in my mapping file because my form name convention is an exact match for bulbas
     # or its a new pokemon not added to the mapping file yet, which will either work without further action or remind me I need to add its form to map
-    if form_translation == "FORM_NOT_IN_MAP_SET":    # If form was omitted for species form bulba translation mapping
+    if form_translation == "-FORM_NOT_IN_MAP_SET":    # If form was omitted for species form bulba translation mapping
         species_form = get_form_name(poke_info[1]).replace("Form_", "")
         return(species_form)
     else:
@@ -369,7 +376,7 @@ def drawn_translate(my_filename, poke_info):
 
     # If this showed up in the filename, its either an intentional omission of the form in my mapping file because my file translation is an exact match for bulbas
     # or its a new pokemon not added to the mapping file yet, which will either work without further action or remind me I need to add its form to map
-    if "FORM_NOT_IN_MAP_SET" in bulba_drawn_filename:    # If form was omitted for species form bulba translation mapping
+    if "-FORM_NOT_IN_MAP_SET" in bulba_drawn_filename:    # If form was omitted for species form bulba translation mapping
         bulba_drawn_filename = my_filename.replace(" ", "", 1)  # Try scraping for my filename (without space between poke num and name)
     # Bulba Dream files only go up to 3 leading zeros, not 4... This adjusts for that
     if " Dream" in bulba_drawn_filename and bulba_drawn_filename[0] == "0":
