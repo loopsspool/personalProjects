@@ -118,7 +118,6 @@ BULBA_DRAWN_DREAM_TYPE_MAP = {k: drawn_dream_translation(v.replace("-","")) for 
 
 
 # TODO: Finish adding Menu forms & Finish commenting names (left off at same place)
-# TODO: Change all drawn -Forms to -Form_form
 # Drawn translations only used where bulba naming convention is different from my form naming convention, so if omitted, can assume it is using the form name
 # HOME Menu images will try to use drawn translations first, so if omitted assume it is using drawn translation or just form name
 # NOTE: Bulba naming convention whitespace will be converted to underscores when turned into a URL, allowing my multi-word forms seperated by underscores to match
@@ -142,29 +141,29 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Cosplay_Rock_Star": "Ro"
         },
         "Drawn": {
-            "-Cap_Alola": "-Alola Cap",
-            "-Cap_Hoenn": "-Hoenn Cap",
-            "-Cap_Kalos": "-Kalos Cap",
-            "-Cap_Original": "-Original Cap",
-            "-Cap_Partner": "-Partner Cap",
-            "-Cap_Sinnoh": "-Sinnoh Cap",
-            "-Cap_Unova": "-Unova Cap",
-            "-Cap_World": "-World Cap",
-            "-Cosplay_Belle": "Belle",
-            "-Cosplay_Libre": "-Libre",
-            "-Cosplay_PhD": "-PhD",
-            "-Cosplay_Pop_Star": "-Pop Star",
-            "-Cosplay_Rock_Star": "-Rock Star"
+            "-Form_Cap_Alola": "-Alola Cap",
+            "-Form_Cap_Hoenn": "-Hoenn Cap",
+            "-Form_Cap_Kalos": "-Kalos Cap",
+            "-Form_Cap_Original": "-Original Cap",
+            "-Form_Cap_Partner": "-Partner Cap",
+            "-Form_Cap_Sinnoh": "-Sinnoh Cap",
+            "-Form_Cap_Unova": "-Unova Cap",
+            "-Form_Cap_World": "-World Cap",
+            "-Form_Cosplay_Belle": "Belle",
+            "-Form_Cosplay_Libre": "-Libre",
+            "-Form_Cosplay_PhD": "-PhD",
+            "-Form_Cosplay_Pop_Star": "-Pop Star",
+            "-Form_Cosplay_Rock_Star": "-Rock Star"
         },
         "Menu": {
-            "-Cap_Alola": "-Alola",
-            "-Cap_Hoenn": "-Hoenn",
-            "-Cap_Kalos": "-Kalos",
-            "-Cap_Original": "-Original",
-            "-Cap_Partner": "-Partner",
-            "-Cap_Sinnoh": "-Sinnoh",
-            "-Cap_Unova": "-Unova",
-            "-Cap_World": "-World"
+            "-Form_Cap_Alola": "-Alola",
+            "-Form_Cap_Hoenn": "-Hoenn",
+            "-Form_Cap_Kalos": "-Kalos",
+            "-Form_Cap_Original": "-Original",
+            "-Form_Cap_Partner": "-Partner",
+            "-Form_Cap_Sinnoh": "-Sinnoh",
+            "-Form_Cap_Unova": "-Unova",
+            "-Form_Cap_World": "-World"
         }
     },
 
@@ -176,9 +175,9 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Aqua": "A"
         },
         "Drawn": {
-            "-Combat": " Combat",
-            "-Blaze": " Blaze",
-            "-Aqua": " Aqua"
+            "-Form_Combat": " Combat",
+            "-Form_Blaze": " Blaze",
+            "-Form_Aqua": " Aqua"
         }
     },
 
@@ -316,9 +315,9 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Trash_Cloak": "S"
         },
         "Drawn": {
-            "Plant_Cloak": "-Plant",
-            "Sandy_Cloak": "-Sandy",
-            "Trash_Cloak": "-Trash"
+            "-Form_Plant_Cloak": "-Plant",
+            "-Form_Sandy_Cloak": "-Sandy",
+            "-Form_Trash_Cloak": "-Trash"
         }
     },
     413: {
@@ -328,9 +327,9 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Trash_Cloak": "S"
         },
         "Drawn": {
-            "Plant_Cloak": "-Plant",
-            "Sandy_Cloak": "-Sandy",
-            "Trash_Cloak": "-Trash"
+            "-Form_Plant_Cloak": "-Plant",
+            "-Form_Sandy_Cloak": "-Sandy",
+            "-Form_Trash_Cloak": "-Trash"
         }
     },
 
@@ -341,7 +340,7 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Sunshine": "S"
         },
         "Drawn": {
-            "-Overcast": ""
+            "-Form_Overcast": ""
         }
     },
     
@@ -389,7 +388,7 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Origin": "O"
         },
         "Drawn": {
-            "-Altered": ""
+            "-Form_Altered": ""
         }
     },
     
@@ -419,9 +418,9 @@ BULBA_TRANSLATION_MAP = {
             "-Form_White_Striped": "W"
         },
         "Drawn": {
-            "-Red_Striped": "-Red",
-            "-Blue_Striped": "-Blue",
-            "-White_Striped": "-White"
+            "-Form_Red_Striped": "-Red",
+            "-Form_Blue_Striped": "-Blue",
+            "-Form_White_Striped": "-White"
         },
         "Menu": {
             "-Form_Blue_Striped": "-Blue",
@@ -437,10 +436,10 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Zen": "Z"
         },
         "Drawn": {
-            "-Standard": "",
-            "-Zen": "-Zen",
-            "-Region_Galar-Standard": "-Galar",
-            "-Region_Galar-Zen": "-Galar Zen"
+            "-Form_Standard": "",
+            "-Form_Zen": "-Zen",
+            "-Region_Galar-Form_Standard": "-Galar",
+            "-Region_Galar-Form_Zen": "-Galar Zen"
         },
         "Menu": {
             "-Form_Standard": "",
@@ -459,7 +458,7 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Winter": "W"
         },
         "Drawn": {
-            "-Spring": ""
+            "-Form_Spring": ""
         }
     },
     586: {
@@ -470,7 +469,7 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Winter": "W"
         },
         "Drawn": {
-            "-Spring": ""
+            "-Form_Spring": ""
         }
     },
 
@@ -481,7 +480,7 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Therian": "T"
         },
         "Drawn": {
-            "-Incarnate": ""
+            "-Form_Incarnate": ""
         }
     },
     642: {
@@ -490,7 +489,7 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Therian": "T"
         },
         "Drawn": {
-            "-Incarnate": ""
+            "-Form_Incarnate": ""
         }
     },
     645: {
@@ -499,7 +498,7 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Therian": "T"
         },
         "Drawn": {
-            "-Incarnate": ""
+            "-Form_Incarnate": ""
         }
     },
 
@@ -513,8 +512,8 @@ BULBA_TRANSLATION_MAP = {
             "-Form_White_Overdrive": "DO_BY_HAND"
         },
         "Drawn": {
-            "-Black_Overdrive": "-Black2",
-            "-White_Overdrive": "-White2"
+            "-Form_Black_Overdrive": "-Black2",
+            "-Form_White_Overdrive": "-White2"
         }
     },
 
@@ -525,7 +524,7 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Resolute": "R"
         },
         "Drawn": {
-            "-Ordinary": ""
+            "-Form_Ordinary": ""
         }
     },
 
@@ -536,7 +535,7 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Pirouette": "P"
         },
         "Drawn": {
-            "-Aria": ""
+            "-Form_Aria": ""
         }
     },
 
@@ -549,10 +548,10 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Shock_Drive": "Y"
         },
         "Drawn": {
-            "-Douse_Drive": " Douse Dream",
-            "-Burn_Drive": " Burn Dream",
-            "-Chill_Drive": " Chill Dream",
-            "-Shock_Drive": " Shock Dream"
+            "-Form_Douse_Drive": " Douse Dream",
+            "-Form_Burn_Drive": " Burn Dream",
+            "-Form_Chill_Drive": " Chill Dream",
+            "-Form_Shock_Drive": " Shock Dream"
         },
         "Menu": {
             "-Form_Burn_Drive": drawn_dream_translation("Burn"),
@@ -594,7 +593,7 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Fancy": "Fan"
         },
         "Drawn": {
-            "-Poke_Ball": "-Pok\u00e9 Ball"
+            "-Form_Poke_Ball": "-Pok\u00e9 Ball"
         }
     },
 
@@ -608,11 +607,11 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Yellow_Flower": "Y"
         },
         "Drawn": {
-            "-Red_Flower": " Red Flower XY anime",
-            "-Blue_Flower": " Blue Flower XY anime",
-            "-Orange_Flower": " Orange Flower XY anime",
-            "-White_Flower": " White Flower XY anime",
-            "-Yellow_Flower": " Yellow Flower XY anime"
+            "-Form_Red_Flower": " Red Flower XY anime",
+            "-Form_Blue_Flower": " Blue Flower XY anime",
+            "-Form_Orange_Flower": " Orange Flower XY anime",
+            "-Form_White_Flower": " White Flower XY anime",
+            "-Form_Yellow_Flower": " Yellow Flower XY anime"
         },
         "Menu": {
             "-Form_Blue_Flower": "-Blue",
@@ -632,12 +631,12 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Eternal_Flower": "E"
         },
         "Drawn": {
-            "-Red_Flower": "-Red XY anime",
-            "-Blue_Flower": "-Blue XY anime",
-            "-Orange_Flower": "-Orange XY anime",
-            "-White_Flower": "-White XY anime",
-            "-Yellow_Flower": "-Yellow XY anime",
-            "-Eternal_Flower": "DO_BY_HAND"     # Doesn't Follow Naming Convention
+            "-Form_Red_Flower": "-Red XY anime",
+            "-Form_Blue_Flower": "-Blue XY anime",
+            "-Form_Orange_Flower": "-Orange XY anime",
+            "-Form_White_Flower": "-White XY anime",
+            "-Form_Yellow_Flower": "-Yellow XY anime",
+            "-Form_Eternal_Flower": "DO_BY_HAND"     # Doesn't Follow Naming Convention
         },
         "Menu": {
             "-Form_Eternal_Flower": "-Eternal",
@@ -657,11 +656,11 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Yellow_Flower": "Y"
         },
         "Drawn": {
-            "-Red_Flower": " Red Flower XY anime",
-            "-Blue_Flower": " Blue Flower XY anime",
-            "-Orange_Flower": " Orange Flower XY anime",
-            "-White_Flower": " White Flower XY anime",
-            "-Yellow_Flower": " Yellow Flower XY anime"
+            "-Form_Red_Flower": " Red Flower XY anime",
+            "-Form_Blue_Flower": " Blue Flower XY anime",
+            "-Form_Orange_Flower": " Orange Flower XY anime",
+            "-Form_White_Flower": " White Flower XY anime",
+            "-Form_Yellow_Flower": " Yellow Flower XY anime"
         }
     },
 
@@ -862,15 +861,13 @@ BULBA_TRANSLATION_MAP = {
     854: {
         "Game": {
             "-Form_Phony": "",
-            "-Form_Antique": "A",
-            "-Show_Stamp": "DO_BY_HAND"     # Just putting here so it doesn't download default
+            "-Form_Antique": "A"
         }
     },
     855: {
         "Game": {
             "-Form_Phony": "",
-            "-Form_Antique": "A",
-            "-Show_Stamp": "DO_BY_HAND"     # Just putting here so it doesn't download default
+            "-Form_Antique": "A"
         }
     },
     869: {
@@ -1108,14 +1105,12 @@ BULBA_TRANSLATION_MAP = {
         "Game": {
             "-Form_Artisan": "A",
             "-Form_Counterfeit": "",
-            "-Show_Stamp": "DO_BY_HAND"     # Just putting here so it doesn't download default
         }
     },
     1013: {
         "Game": {
             "-Form_Masterpiece": "M",
             "-Form_Unremarkable": "",
-            "-Show_Stamp": "DO_BY_HAND"     # Just putting here so it doesn't download default
         }
     },
     1017: {
