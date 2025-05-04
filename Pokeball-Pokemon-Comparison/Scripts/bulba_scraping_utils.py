@@ -102,10 +102,10 @@ def get_bulba_img(url, save_path, allow_download, has_animation=False):
         print(f"\r{save_path.split("\\")[-1]}", end='', flush=True)
         # Resetting console line after updates from above
         print('\r' + ' '*75 + '\r', end='')
-
-        img_url = get_largest_png(img_page_soup)
         
         if allow_download:
+            img_url = get_largest_png(img_page_soup)
+
             if has_animation:
                 determine_animation_status_before_downloading(img_url, save_path)
             else:
@@ -174,7 +174,7 @@ def bulba_game_sprite_translate(my_filename, poke_info):
     poke_num_leading_zeros = str(poke_num_int).zfill(3)  # Converting from 4 total digits to 3
     bulba_filename += f" {poke_num_leading_zeros}"
     bulba_filename += get_bulba_translated_universal_form(my_filename, BULBA_GAMES_UNIVERSAL_FORM_MAP)
-    bulba_filename += get_bulba_translated_species_form(poke_info, my_filename, BULBA_GAMES_SPECIFIC_FORM_MAP)
+    bulba_filename += get_bulba_translated_species_form(poke_info, my_filename, "Game")
     if "-Gigantamax" in my_filename: bulba_filename += "Gi"    # Put here because of Urshifu, form before gigantamax denoter
     bulba_filename += get_gender_denoter(poke_num_int, my_filename, is_game_sprite=True)
     if "-Shiny" in my_filename: bulba_filename += " s"
@@ -197,25 +197,26 @@ def get_bulba_translated_universal_form(my_filename, mapping):
     return ("")
 
 
-def get_bulba_translated_species_form(poke_info, my_filename, mapping):
+def get_bulba_translated_species_form(poke_info, my_filename, map_type):
     poke_num = poke_info[0]
     form_id = poke_info[1]
     form_name = get_form_name(form_id)
 
     # No widespread universal forms combined with species forms, the few exceptions have their own form id/name associated with it
-    # TODO: Had to change this from id to name, verify it works
     if form_name in UNIVERSAL_FORMS:
         return("")
 
-    if poke_num in mapping:
-        for form, translation in mapping[poke_num].items():
-            if form in my_filename:
+    if poke_num in BULBA_TRANSLATION_MAP:
+        for form, translation in BULBA_TRANSLATION_MAP[poke_num][map_type].items():
+            # TODO: Changed this from checking my_filename to form_name, make sure it didnt break anything
+                # I think I'll have to remove all hyphens from Drawn & Menu dicts bc -West isnt in -Form_West
+            if form in form_name:
                 # If Unown, adjust bulba translation as needed, see NOTE above function if need more info
-                if poke_num == 201 and mapping == BULBA_GAMES_SPECIFIC_FORM_MAP:
+                if poke_num == 201 and map_type == "Game":
                     translation = adjust_translation_for_unown(my_filename, translation)
                 return(translation)
     
-    if mapping not in (DRAWN_IMAGES_SPECIES_FORMS_MAP, HOME_MENU_IMGS_SPECIES_FORMS_MAP):   # Drawn/HOME forms will frequently omit forms to just run my filename
+    if map_type not in ("Drawn", "Menu"):   # Drawn/HOME Menu forms will frequently omit forms to just run my filename
         print(f"Couldn't search for image to download... No respective form in map set for \t{my_filename}")
     return("FORM_NOT_IN_MAP_SET")
 
@@ -285,6 +286,7 @@ def scraping_if_no_extra_steps_needed(filename_table, translate_func, has_animat
         for file in files:
             # poke_info == (poke_num, form_id)
             # file == (my_file_naming_convention, bulba_url)
+            print(file)
             save_path = os.path.join(save_path, file[0])
             if allow_download:  # Putting this here in addition to the actual func, so func doesnt try to open bulba pages to check for existence
                 get_bulba_img(file[1], save_path, allow_download, has_animation)
@@ -301,7 +303,7 @@ def home_sprite_translate(my_filename, poke_info):
     poke_num_leading_zeros = str(poke_num).zfill(4)
     home_sprite_filename = f"HOME{poke_num_leading_zeros}"
     home_sprite_filename += get_bulba_translated_universal_form(my_filename, BULBA_GAMES_UNIVERSAL_FORM_MAP)
-    home_sprite_filename += get_bulba_translated_species_form(poke_info, my_filename, BULBA_GAMES_SPECIFIC_FORM_MAP)
+    home_sprite_filename += get_bulba_translated_species_form(poke_info, my_filename, "Game")
     if "-Gigantamax" in my_filename: home_sprite_filename += "Gi"    # Put here because of Urshifu, form before gigantamax denoter
     home_sprite_filename += get_gender_denoter(poke_num, my_filename, is_game_sprite=False)
     if "-Shiny" in my_filename: home_sprite_filename += " s"
@@ -326,12 +328,19 @@ def home_menu_translate(my_filename, poke_info):
     
 def get_home_menu_translated_species_form(poke_info, my_filename):
     poke_num = poke_info[0]
+    form_id = poke_info[1]
+    form_name = get_form_name(form_id)
+
     # Species forms will usually translate from the drawn images species form translation dict, but sometimes that has weird cases/needs to use dream images
     # If that's the case (poke num in this exclusion set), translate from home menu translation dict
-    if poke_num in HOME_MENU_POKE_EXCLSUIONS_FROM_DRAWN_TRANSLATIONS:
-        form_translation = get_bulba_translated_species_form(poke_info, my_filename, HOME_MENU_IMGS_SPECIES_FORMS_MAP)
-    else:
-        form_translation = get_bulba_translated_species_form(poke_info, my_filename, DRAWN_IMAGES_SPECIES_FORMS_MAP)
+    try:    # If Menu denoters exist, use those. If not, use Drawn. If no drawn, use just the form name
+        form_translation = get_bulba_translated_species_form(poke_info, my_filename, "Menu")
+    except KeyError:
+        try:
+            form_translation = get_bulba_translated_species_form(poke_info, my_filename, "Drawn")
+        except KeyError:
+            species_form = get_form_name(poke_info[1]).replace("Form_", "")
+            return(species_form)
 
     # If this showed up in the filename, its either an intentional omission of the form in my mapping file because my form name convention is an exact match for bulbas
     # or its a new pokemon not added to the mapping file yet, which will either work without further action or remind me I need to add its form to map
@@ -355,7 +364,7 @@ def drawn_translate(my_filename, poke_info):
     if poke_num == 29: bulba_drawn_filename = bulba_drawn_filename.replace(" f", "")
     if poke_num == 32: bulba_drawn_filename = bulba_drawn_filename.replace(" m", "")
     bulba_drawn_filename += get_bulba_translated_universal_form(my_filename, DRAWN_IMAGES_UNIVERSAL_FORMS_MAP)
-    bulba_drawn_filename += get_bulba_translated_species_form(poke_info, my_filename, DRAWN_IMAGES_SPECIES_FORMS_MAP)
+    bulba_drawn_filename += get_bulba_translated_species_form(poke_info, my_filename, "Drawn")
     bulba_drawn_filename += ".png"
 
     # If this showed up in the filename, its either an intentional omission of the form in my mapping file because my file translation is an exact match for bulbas
