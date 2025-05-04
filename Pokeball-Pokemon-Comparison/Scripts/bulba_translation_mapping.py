@@ -1,4 +1,3 @@
-# TODO: Put all these mappings in a seperate file, with static dicts and whatnot from db_utils
 # TODO: Also put db_utils exclusions and exceptions into a seperate file
 ############################# BULBA TRANSLATORS #############################
 # These will be excluded if tried to run through the game sprite image downloader
@@ -117,7 +116,6 @@ def drawn_dream_translation(form):
 BULBA_DRAWN_DREAM_TYPE_MAP = {k: drawn_dream_translation(v.replace("-","")) for k,v in BULBA_TYPE_FORM_MAP.items()}
 
 
-# TODO: Finish adding Menu forms & Finish commenting names (left off at same place)
 # Drawn translations only used where bulba naming convention is different from my form naming convention, so if omitted, can assume it is using the form name
 # HOME Menu images will try to use drawn translations first, so if omitted assume it is using drawn translation or just form name
 # NOTE: Bulba naming convention whitespace will be converted to underscores when turned into a URL, allowing my multi-word forms seperated by underscores to match
@@ -687,14 +685,33 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Matron_Trim": drawn_dream_translation("Matron"),
             "-Form_Pharaoh_Trim": drawn_dream_translation("Pharaoh"),
             "-Form_Star_Trim": drawn_dream_translation("Star")
+        },
+        "Menu": {
+            "-Form_Dandy_Trim": "-Dandy",
+            "-Form_Debutante_Trim": "-Debutante",
+            "-Form_Diamond_Trim": "-Diamond",
+            "-Form_Heart_Trim": "-Heart",
+            "-Form_Kabuki_Trim": "-Kabuki",
+            "-Form_La_Reine_Trim": "-La Reine",
+            "-Form_Matron_Trim": "-Matron",
+            "-Form_Pharaoh_Trim": "-Pharaoh",
+            "-Form_Star_Trim": "-Star"
         }
     },
+
+    # Aegislash
     681: {
         "Game": {
             "-Form_Shield": "",
             "-Form_Blade": "B"
+        },
+        "Menu": {
+            "-Form_Shield": "",
+            "-Form_Blade": "-Blade"
         }
     },
+
+    # Pumpkaboo & Gourgeist
     710: {
         "Game": {
             "-Form_Average_Size": "",
@@ -717,6 +734,8 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Average_Size": ""
         }
     },
+
+    # Xerneas
     716: {
         "Game": {
             "-Form_Active": "",
@@ -726,6 +745,8 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Active": ""
         }
     },
+
+    # Zygarde
     718: {
         "Game": {
             "-Form_50%": "",
@@ -736,8 +757,13 @@ BULBA_TRANSLATION_MAP = {
             "-Form_50%": "",
             "-Form_Complete": "-Complete",
             "-Form_10%": "-10Percent"
+        },
+        "Menu":{
+            "-Form_10%": "-10 Percent"
         }
     },
+
+    # Hoopa
     720: {
         "Game": {
             "-Form_Confined": "",
@@ -747,6 +773,8 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Confined": ""
         }
     },
+
+    # Oricorio
     741: {
         "Game": {
             "-Form_Baile": "",
@@ -759,6 +787,8 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Pom_Pom": "-Pom-Pom"
         }
     },
+
+    # Lycanroc
     745: {
         "Game": {
             "-Form_Midday": "",
@@ -769,6 +799,8 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Midday": ""
         }
     },
+
+    # Wishiwashi
     746: {
         "Game": {
             "-Form_Solo": "",
@@ -778,10 +810,15 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Solo": ""
         }
     },
+
+    # Silvally
     773: {
         "Game": BULBA_TYPE_FORM_MAP,
-        "Drawn": BULBA_DRAWN_DREAM_TYPE_MAP
+        "Drawn": BULBA_DRAWN_DREAM_TYPE_MAP,
+        "Menu": BULBA_TYPE_FORM_MAP
     },
+
+    # Minior
     774: {
         "Game": {
             "-Form_Meteor": "",
@@ -803,8 +840,21 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Red_Core": drawn_dream_translation("Red"),
             "-Form_Violet_Core": drawn_dream_translation("Violet"),
             "-Form_Yellow_Core": drawn_dream_translation("Yellow")
-        }
+        },
+        "Menu": {
+            "-Form_Meteor": "",
+            "-Form_Blue_Core": "-Blue",
+            "-Form_Green_Core": "-Green",
+            "-Form_Indigo_Core": "-Indigo",
+            "-Form_Orange_Core": "-Orange",
+            "-Form_Red_Core": "-Red",
+            "-Form_Violet_Core": "-Violet",
+            "-Form_Yellow_Core": "-Yellow",
+            "-Form_Core": "-DOES_NOT_EXIST"   # This is the shiny sprite, which obviously doesnt have a menu sprite
+        },
     },
+
+    # Mimikyu
     778: {
         "Game": {
             "-Form_Disguised": "",
@@ -813,24 +863,39 @@ BULBA_TRANSLATION_MAP = {
         "Drawn": {
             "-Form_Disguised": "",
             "-Form_Busted": drawn_dream_translation("Busted")
+        },
+        "Menu": {
+            "-Form_Busted": "-DOES_NOT_EXIST"
         }
     },
+
+    # Solgaleo
     791: {
         "Game": {
             "-Form_Radiant_Sun": "R"
         },
         "Drawn": {
             "-Form_Radiant_Sun": "-RadiantSunPhase"
+        },
+        "Menu": {
+            "-Form_Radiant_Sun": "-DOES_NOT_EXIST"
         }
     },
+
+    # Lunala
     792: {
         "Game": {
             "-Form_Full_Moon": "F"
         },
         "Drawn": {
             "-Form_Full_Moon": "-FullMoonPhase"
+        },
+        "Menu": {
+            "-Form_Full_Moon": "-DOES_NOT_EXIST"
         }
     },
+
+    # Necrozma
     800: {
         "Game": {
             "-Form_Dawn_Wings": "DW",
@@ -838,26 +903,42 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Ultra": "U"
         }
     },
+
+    # Magearna
     801: {
         "Game": {
             "-Form_Original_Color": "O"
         },
         "Drawn": {
-            "-Form_Original_Color": "-DOESNT_EXIST"
+            "-Form_Original_Color": "-BULBA_DOESNT_HAVE"
+        },
+        "Menu": {
+            "-Form_Original_Color": "-Original Color"
         }
     },
+
+    # Cramorant
     845: {
         "Game": {
             "-Form_Gorging": "Go",
             "-Form_Gulping": "Gu"
         }
     },
+
+    # Toxtricity
     849: {
         "Game": {
             "-Form_Amped": "",
             "-Form_Low_Key": "L"
+        },
+        "Menu": {
+            "-Form_Amped": ""
         }
     },
+
+    # TODO: These may have to be altered when I decide how I'm hamdling them due to their sprite form show stamp
+    # NOTE: There are drawn show stamp images
+    # Sinistea & Polteageist
     854: {
         "Game": {
             "-Form_Phony": "",
@@ -870,6 +951,8 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Antique": "A"
         }
     },
+
+    # Alcremie
     869: {
         "Game": {
             "-Form_Caramel_Swirl_Berry_Sweet": "CaSB",
@@ -945,6 +1028,7 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Strawberry_Sweet": ""
         },
         "Drawn": {
+            # Kinda random selection, I guess?
             "-Form_Caramel_Swirl_Flower_Sweet": " Dream - Caramel Swirl",
             "-Form_Lemon_Cream_Ribbon_Sweet": " Dream - Lemon Cream",
             "-Form_Matcha_Cream_Flower_Sweet": " Dream - Matcha Cream",
@@ -955,8 +1039,22 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Salted_Cream_Love_Sweet": " Dream - Salted Cream",
             "-Form_Vanilla_Cream_Berry_Sweet": " Dream - Vanilla Cream",
             "-Form_Vanilla_Cream_Strawberry_Sweet": ""
+        },
+        "Menu": {
+            # Basically all different creams, with strawberry sweet
+            "-Form_Caramel_Swirl_Strawberry_Sweet": "-Caramel",
+            "-Form_Lemon_Cream_Strawberry_Sweet": "-Lemon",
+            "-Form_Matcha_Cream_Strawberry_Sweet": "-Matcha",
+            "-Form_Mint_Cream_Strawberry_Sweet": "-Mint",
+            "-Form_Rainbow_Swirl_Strawberry_Sweet": "-Rainbow",
+            "-Form_Ruby_Swirl_Strawberry_Sweet": "-Ruby Swirl",
+            "-Form_Ruby_Cream_Strawberry_Sweet": "-Ruby",
+            "-Form_Salted_Cream_Strawberry_Sweet": "-Salted",
+            "-Form_Vanilla_Cream_Strawberry_Sweet": ""
         }
     },
+
+    # Eiscue
     875: {
         "Game": {
             "-Form_Ice_Face": "",
@@ -967,15 +1065,22 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Noice_Face": "-Noice"
         }
     },
+
+    # Morpeko
     877: {
         "Game": {
             "-Form_Full_Belly": "",
             "-Form_Hangry": "H"
         },
         "Drawn": {
-            "-Form_Full_Belly": "Full"
+            "-Form_Full_Belly": "-Full"
+        },
+        "Menu": {
+            "-Form_Full_Belly": ""
         }
     },
+
+    # Zacian & Zamazenta
     888: {
         "Game": {
             "-Form_Hero_of_Many_Battles": "",
@@ -984,6 +1089,10 @@ BULBA_TRANSLATION_MAP = {
         "Drawn": {
             "-Form_Hero_of_Many_Battles": "-Hero",
             "-Form_Crowned_Sword": ""
+        },
+        "Menu": {
+            "-Form_Hero_of_Many_Battles": "",
+            "-Form_Crowned_Sword": "-Crowned"
         }
     },
     889: {
@@ -994,16 +1103,24 @@ BULBA_TRANSLATION_MAP = {
         "Drawn": {
             "-Form_Hero_of_Many_Battles": "-Hero",
             "-Form_Crowned_Shield": ""
+        },
+        "Menu": {
+            "-Form_Hero_of_Many_Battles": "",
+            "-Form_Crowned_Sword": "-Crowned"
         }
     },
+
+    # Eternatus
     890: {
         "Game": {
             "-Form_Eternamax": "E"
         },
         "Drawn": {
-            "-Form_Eternamax": "-DNE"
+            "-Form_Eternamax": "-DOES_NOT_EXIST"
         }
     },
+    
+    # Urshifu
     892: {
         "Game": {
             "-Form_Single_Strike": "",
@@ -1012,24 +1129,37 @@ BULBA_TRANSLATION_MAP = {
         "Drawn": {
             "-Form_Single_Strike": " Single Strike",
             "-Form_Rapid_Strike": " Rapid Strike"
+        },
+        "Menu": {
+            # Doesn't have either form??? So downloading default for both ig
+            "-Form_Single_Strike": "",
+            "-Form_Rapid_Strike": ""
         }
     },
+
+    # Zarude
     893: {
         "Game": {
             "-Form_Dada": "D"
         }
     },
+
+    # Calyrex
     898: {
         "Game": {
             "-Form_Ice_Rider": "I",
             "-Form_Shadow_Rider": "R"
         }
     },
+
+    # Ursaluna
     901: {
         "Game": {
             "-Form_Bloodmoon": "B"
         }
     },
+
+    # Enamorus
     905: {
         "Game": {
             "-Form_Incarnate": "",
@@ -1039,6 +1169,8 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Incarnate": ""
         }
     },
+
+    # Maushold
     925: {
         "Game": {
             "-Form_Family_of_Three": "T",
@@ -1047,8 +1179,14 @@ BULBA_TRANSLATION_MAP = {
         "Drawn": {
             "-Form_Family_of_Three": drawn_dream_translation(""),
             "-Form_Family_of_Four": " Dream - Four"
+        },
+        "Menu": {
+            "-Form_Family_of_Three": "-Three",
+            "-Form_Family_of_Four": ""
         }
     },
+
+    # Squawkabilly
     931: {
         "Game": {
             "-Form_Blue_Plumage": "B",
@@ -1061,8 +1199,16 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Green_Plumage": drawn_dream_translation("Green"),
             "-Form_White_Plumage": drawn_dream_translation("White"), 
             "-Form_Yellow_Plumage": drawn_dream_translation("Yellow")
+        },
+        "Menu": {
+            "-Form_Blue_Plumage": "-Blue", 
+            "-Form_Green_Plumage": "",
+            "-Form_White_Plumage": "-White", 
+            "-Form_Yellow_Plumage": "-Yellow"
         }
     },
+
+    # Palafin
     964: {
         "Game": {
             "-Form_Zero": "",
@@ -1072,6 +1218,8 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Zero": ""
         }
     },
+    
+    # Tatsugiri
     978: {
         "Game": {
             "-Form_Curly": "",
@@ -1082,6 +1230,8 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Curly": ""
         }
     },
+
+    # Dudunsparce
     982: {
         "Game": {
             "-Form_Two_Segment": "",
@@ -1090,8 +1240,14 @@ BULBA_TRANSLATION_MAP = {
         "Drawn": {
             "-Form_Two_Segment": drawn_dream_translation("2"),
             "-Form_Three_Segment": drawn_dream_translation("3")
-        }
+        },
+        "Game": {
+            "-Form_Two_Segment": "",
+            "-Form_Three_Segment": "-DOES_NOT_EXIST"
+        },
     },
+
+    # Gimmighoul
     999: {
         "Game": {
             "-Form_Chest": "",
@@ -1101,6 +1257,10 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Chest": ""
         }
     },
+
+    # Poltchageist & Sinistcha
+    # TODO: These may have to be altered when I decide how I'm hamdling them due to their sprite form show stamp
+    # NOTE: There are drawn show stamp images
     1012: {
         "Game": {
             "-Form_Artisan": "A",
@@ -1113,6 +1273,8 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Unremarkable": "",
         }
     },
+
+    # Ogerpon
     1017: {
         "Game": {
             "-Form_Cornerstone_Mask": "C",
@@ -1124,6 +1286,8 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Teal_Mask": ""
         }
     },
+
+    # Terapagos
     1024: {
         "Game": {
             "-Form_Normal": "",
