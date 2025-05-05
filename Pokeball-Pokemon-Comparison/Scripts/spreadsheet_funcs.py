@@ -74,8 +74,14 @@ def poke_isnt_in_game(poke_num, game):
 def create_file_checklist_spreadsheet():
     # This will always create a new file that overrides an existing one
     workbook = xlsxwriter.Workbook('C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Pokemon Images Checklist.xlsx')
-    worksheet = workbook.add_worksheet()
-    worksheet.freeze_panes(1, 3)
+    game_sprite_availability_sheet = workbook.add_worksheet('Game Sprites')
+    home_sprite_availability_sheet = workbook.add_worksheet('Home Sprites')
+    drawn_availability_sheet = workbook.add_worksheet('Drawn')
+    home_menu_sprite_availability_sheet = workbook.add_worksheet('Home Menu Imgs')
+    game_sprite_availability_sheet.freeze_panes(1, 3)
+    home_sprite_availability_sheet.freeze_panes(1, 3)
+    drawn_availability_sheet.freeze_panes(1, 3)
+    home_menu_sprite_availability_sheet.freeze_panes(1, 3)
 
     green = '#40D073'
     red = '#C75451'
@@ -92,15 +98,28 @@ def create_file_checklist_spreadsheet():
         "grey": workbook.add_format({'border': 1, 'align': 'center', 'bg_color': grey, 'font_color': grey})
     }
 
-    game_cols = generate_header_row(workbook, worksheet)
-    write_availability(workbook, worksheet, formats, game_cols)
+    # TODO: Test this works
+    # Game sprite availability
+    game_cols = generate_header_row(workbook, game_sprite_availability_sheet, is_game_sprites=True)
+    write_availability(workbook, game_sprite_availability_sheet, formats, table="Games", game_cols=game_cols)
+    # Home sprite availability
+    generate_header_row(workbook, home_sprite_availability_sheet)
+    write_availability(workbook, home_sprite_availability_sheet, formats, table="home_filenames")
+    # Drawn availability
+    generate_header_row(workbook, drawn_availability_sheet)
+    write_availability(workbook, drawn_availability_sheet, formats, table="drawn_filenames")
+    # Home Menu Imgs availability
+    generate_header_row(workbook, home_menu_sprite_availability_sheet)
+    write_availability(workbook, home_menu_sprite_availability_sheet, formats, table="home_menu_filenames")
+
+
 
     print("Done!")
     print("Finalizing close...")
     workbook.close()
 
 
-def generate_header_row(workbook, worksheet):
+def generate_header_row(workbook, worksheet, is_game_sprites=False):
     print("Generating header row...")
     from db_utils import GAMES
     
@@ -109,33 +128,48 @@ def generate_header_row(workbook, worksheet):
     worksheet.write(0, 0, "#")
     worksheet.write(0, 1, "Name")
     worksheet.write(0, 2, "Tags")
-    col_num = 3
-    game_cols = {}
-    for game in reversed(GAMES):
-        game_name = game[0]
-        worksheet.write(0, col_num, game_name)
-        game_cols[game_name] = col_num
-        worksheet.set_column(col_num, col_num, len(str(game_name)) + 1)    # Setting column width, 1 is for padding
-        col_num += 1
 
-    return game_cols
+    if is_game_sprites:
+        col_num = 3
+        game_cols = {}
+        for game in reversed(GAMES):
+            game_name = game[0]
+            worksheet.write(0, col_num, game_name)
+            game_cols[game_name] = col_num
+            worksheet.set_column(col_num, col_num, len(str(game_name)) + 1)    # Setting column width, 1 is for padding
+            col_num += 1
+
+        return game_cols
+    else:
+        worksheet.write(0, 3, "Avail")
 
 
-def write_availability(workbook, worksheet, formats, game_cols):
-    from db_utils import get_all_game_filenames_info, get_poke_name, get_game_name
+def write_availability(workbook, worksheet, formats, table, game_cols={}):
+    from db_utils import get_all_game_filenames_info, get_non_game_filename_info, get_poke_name
     
-    all_file_info = get_all_game_filenames_info()
+    if table == "Games":
+        all_file_info = get_all_game_filenames_info()
+    else:
+        all_file_info = get_non_game_filename_info(table)
+
     longest_values = {"num": 4, "name": 0, "tags": 0}
 
     print("Writing availability of files...")
     prev_poke_num = 0
     is_new_poke = True
+
+    # Unfortunately, no really easier way to do this since games dict has more nesting due to the games
+    # if table == "Games":
     # Starting at 1 because row 0 is the header row
-    for i, (poke_sprite_form_id, games) in enumerate(all_file_info.items(), start=1):
-        poke_num = poke_sprite_form_id[0]
+    for i, (poke_info, files) in enumerate(all_file_info.items(), start=1):
+        poke_num = poke_info[0]
         poke_name = get_poke_name(poke_num)
-        # Any game would work here for tags, just pulling it out of the next loop so it isn't rewritten for each game
-        tags = get_poke_tags(poke_name, games["SV"]["filename"])
+        # Could work pulling poke_sprite_form_id[1] (form) + poke_sprite_form_id[2] (sprite type), but I do seperate shiny from sprite_type sometimes so it wouldn't match the true filename
+        if table == "Games":
+            # Any game would work here for tags, just pulling it out of the next loop so it isn't rewritten for each game
+            tags = get_poke_tags(poke_name, files["SV"]["filename"])
+        else:
+            tags = get_poke_tags(poke_name, files["filename"])
         longest_values = determine_if_longest_length_value_yet(longest_values, poke_name, tags)
         # Putting a top border on if its a new poke
         if prev_poke_num != poke_num:
@@ -148,10 +182,21 @@ def write_availability(workbook, worksheet, formats, game_cols):
         worksheet.write(i, 0, poke_num, sprite_info_format)
         worksheet.write(i, 1, poke_name, sprite_info_format)
         worksheet.write(i, 2, tags, sprite_info_format)
-        for game_name, sprite_data in games.items():
-            write_sprite_status_for_game(workbook, worksheet, formats, is_new_poke, i, game_cols, game_name, sprite_data["obtainable"], sprite_data["exists"], sprite_data["has_sub"])
+
+        if table == "Games":
+            for game_name, sprite_data in files.items():
+                write_sprite_status_for_game(workbook, worksheet, formats, is_new_poke, i, game_cols, game_name, sprite_data["obtainable"], sprite_data["exists"], sprite_data["has_sub"])
+        else:
+            format = determine_binary_format(files["exists"], is_new_poke)
+            worksheet.write(i, 3, "X" if files["exists"] else "M", formats[format])
         
         prev_poke_num = poke_num
+    # else:
+    #     for i, poke_form in enumerate(all_file_info.items(), start=1):
+    #         poke_num = poke_form[0][0]
+    #         poke_name = get_poke_name(poke_num)
+
+    #         tags = get_poke_tags(poke_name, )
 
     # Setting column width
     padding = 2
@@ -174,16 +219,23 @@ def determine_if_longest_length_value_yet(longest_values_dict, name, tags):
 def write_sprite_status_for_game(workbook, worksheet, formats, is_new_poke, row, game_cols, game, obtainable, exists, sub):
     game_col = game_cols[game]
     text = denote_file_status(obtainable, exists, sub)
-    format = determine_format(text, is_new_poke)
+    format = determine_game_sprite_format(text, is_new_poke)
 
     worksheet.write(row, game_col, text, formats[format])
 
 
-def determine_format(text, is_new_poke):
+def determine_game_sprite_format(text, is_new_poke):
     format = "new poke " if is_new_poke else ""
     if text == "U": format += "grey"
     elif text in ("S", "X"): format += "green"
     elif text == "M": format += "red"
+    return format
+
+
+def determine_binary_format(is_avail, is_new_poke):
+    format = "new poke " if is_new_poke else ""
+    if is_avail: format += "green"
+    if not is_avail: format += "red"
     return format
 
 
@@ -205,11 +257,10 @@ def denote_file_status(obtainable, exists, sub):
 
 def get_poke_tags(poke_name, filename):
     max_split = 1
-    if "-" in poke_name:
-        max_split = 2
+    max_split += poke_name.count("-")
     split_filename = filename.split("-", max_split)
     # If theres no tags in the filename, return an empty string
-    if len(split_filename) > 1:
+    if len(split_filename) > max_split:
         tags = "-" + split_filename[len(split_filename)-1]
         # Getting rid of file extenstion
         tags = tags[:-4]
