@@ -3,7 +3,6 @@ import xlsxwriter
 
 from openpyxl import load_workbook
 
-# TODO: Add menu sprites and drawn images sheet to file checklist
 # TODO: Run file checklist at end of each scrape? update when image found?
 # TODO: Make sure run new file checklist if new pokes added to poke_info sheet
 
@@ -70,7 +69,6 @@ def poke_isnt_in_game(poke_num, game):
     return not is_poke_in_game(poke_num, game)
 
 
-# TODO: Add Home, Home Menu Sprite (And Gen6 Mega subs), and Drawn image checklist sheets too!
 def create_file_checklist_spreadsheet():
     # This will always create a new file that overrides an existing one
     workbook = xlsxwriter.Workbook('C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Pokemon Images Checklist.xlsx')
@@ -98,7 +96,6 @@ def create_file_checklist_spreadsheet():
         "grey": workbook.add_format({'border': 1, 'align': 'center', 'bg_color': grey, 'font_color': grey})
     }
 
-    # TODO: Test this works
     # Game sprite availability
     write_availability(workbook, game_sprite_availability_sheet, formats, table="Games")
     # Home sprite availability
