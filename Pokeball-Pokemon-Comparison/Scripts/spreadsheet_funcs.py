@@ -100,27 +100,22 @@ def create_file_checklist_spreadsheet():
 
     # TODO: Test this works
     # Game sprite availability
-    game_cols = generate_header_row(workbook, game_sprite_availability_sheet, is_game_sprites=True)
-    write_availability(workbook, game_sprite_availability_sheet, formats, table="Games", game_cols=game_cols)
+    write_availability(workbook, game_sprite_availability_sheet, formats, table="Games")
     # Home sprite availability
-    generate_header_row(workbook, home_sprite_availability_sheet)
     write_availability(workbook, home_sprite_availability_sheet, formats, table="home_filenames")
     # Drawn availability
-    generate_header_row(workbook, drawn_availability_sheet)
     write_availability(workbook, drawn_availability_sheet, formats, table="drawn_filenames")
     # Home Menu Imgs availability
-    generate_header_row(workbook, home_menu_sprite_availability_sheet)
     write_availability(workbook, home_menu_sprite_availability_sheet, formats, table="home_menu_filenames")
 
 
 
-    print("Done!")
-    print("Finalizing close...")
+    print("Spreadsheet finished!")
+    print("Finalizing spreadsheet close...")
     workbook.close()
 
 
 def generate_header_row(workbook, worksheet, is_game_sprites=False):
-    print("Generating header row...")
     from db_utils import GAMES
     
     h_format = workbook.add_format({'bold': True, 'align': 'center', 'bg_color': 'gray', 'bottom': 5, 'top': 1, 'left': 1, 'right': 1})
@@ -141,25 +136,24 @@ def generate_header_row(workbook, worksheet, is_game_sprites=False):
 
         return game_cols
     else:
-        worksheet.write(0, 3, "Avail")
+        worksheet.write(0, 3, "Available")
 
 
-def write_availability(workbook, worksheet, formats, table, game_cols={}):
+def write_availability(workbook, worksheet, formats, table):
     from db_utils import get_all_game_filenames_info, get_non_game_filename_info, get_poke_name
     
     if table == "Games":
+        game_cols = generate_header_row(workbook, worksheet, is_game_sprites=True)
         all_file_info = get_all_game_filenames_info()
     else:
+        generate_header_row(workbook, worksheet)
         all_file_info = get_non_game_filename_info(table)
 
     longest_values = {"num": 4, "name": 0, "tags": 0}
 
-    print("Writing availability of files...")
     prev_poke_num = 0
     is_new_poke = True
 
-    # Unfortunately, no really easier way to do this since games dict has more nesting due to the games
-    # if table == "Games":
     # Starting at 1 because row 0 is the header row
     for i, (poke_info, files) in enumerate(all_file_info.items(), start=1):
         poke_num = poke_info[0]
@@ -175,7 +169,7 @@ def write_availability(workbook, worksheet, formats, table, game_cols={}):
         if prev_poke_num != poke_num:
             is_new_poke = True
             print(f"\rWriting pokemon #{poke_num} file availability...", end='', flush=True)
-            sprite_info_format = formats["new poke info"]
+            sprite_info_format = formats["new poke info"] if table in ("Games", "home_filenames") else None
         else:
             is_new_poke = False
             sprite_info_format = None
@@ -187,16 +181,12 @@ def write_availability(workbook, worksheet, formats, table, game_cols={}):
             for game_name, sprite_data in files.items():
                 write_sprite_status_for_game(workbook, worksheet, formats, is_new_poke, i, game_cols, game_name, sprite_data["obtainable"], sprite_data["exists"], sprite_data["has_sub"])
         else:
-            format = determine_binary_format(files["exists"], is_new_poke)
+            # Only allowing is_new_poke formatting (top border line) for home sprites for all the non-game tables
+            # It's the only one with enough imgs for each poke to be useful, looks cluttered for the other img types 
+            format = determine_format_by_boolean(files["exists"]) if table != "home_filenames" else determine_format_by_boolean(files["exists"], is_new_poke)
             worksheet.write(i, 3, "X" if files["exists"] else "M", formats[format])
         
         prev_poke_num = poke_num
-    # else:
-    #     for i, poke_form in enumerate(all_file_info.items(), start=1):
-    #         poke_num = poke_form[0][0]
-    #         poke_name = get_poke_name(poke_num)
-
-    #         tags = get_poke_tags(poke_name, )
 
     # Setting column width
     padding = 2
@@ -232,7 +222,8 @@ def determine_game_sprite_format(text, is_new_poke):
     return format
 
 
-def determine_binary_format(is_avail, is_new_poke):
+# is_new_poke = False allows omission of it to not draw the top border for a new poke
+def determine_format_by_boolean(is_avail, is_new_poke=False):
     format = "new poke " if is_new_poke else ""
     if is_avail: format += "green"
     if not is_avail: format += "red"
@@ -263,7 +254,7 @@ def get_poke_tags(poke_name, filename):
     if len(split_filename) > max_split:
         tags = "-" + split_filename[len(split_filename)-1]
         # Getting rid of file extenstion
-        tags = tags[:-4]
+        #tags = tags[:-4]
     else:
         tags = ""
     return tags
