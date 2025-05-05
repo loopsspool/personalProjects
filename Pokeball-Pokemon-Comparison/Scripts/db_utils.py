@@ -831,16 +831,29 @@ def populate_home_menu_filenames(cursor):
     home_menu_sprite_files = set(os.listdir(home_menu_sprite_path))
     poke_forms = get_poke_form_records(cursor)
     for poke_form, poke_info in poke_forms.items():
-        if poke_info["form name"] == "-f": continue     # No f menu sprites
+        if should_exclude_menu_poke_form(poke_info): continue
         filename = generate_home_menu_filename(poke_info)
         exists = file_does_exist(filename, home_menu_sprite_files)
         file_ids = {"filename": filename, "poke_num": poke_form[0], "form_id": poke_form[1], "does_exist": exists}
         insert_into_table(cursor, "home_menu_filenames", **file_ids)
 
 
+def should_exclude_menu_poke_form(poke_info):
+    poke_num = poke_info["poke num"]
+    form_name = poke_info["form name"]
+    # No f menu sprites
+    if form_name == "-f": return True     
+    # These get excluded from menu sprites too
+    if poke_num in NO_DRAWN_FORMS:  
+        if form_name in NO_DRAWN_FORMS[poke_num]:
+            return True
+    # No Kyurem overdrive
+    if poke_num == 646 and "Overdrive" in form_name: return True
+
+    return False
+
+
 def generate_home_menu_filename(poke_info):
-    # TODO: Most all NO_DRAWN_FORMS will apply (except 774), will need to figure out the stamped pokes
-        # Also add Overdrive B&W Kyurem
     poke_num = str(poke_info["poke num"]).zfill(4)
     form_name = poke_info["form name"]
     # Removing Region, Form, and Default tags, leaving -values
@@ -870,9 +883,11 @@ NO_DRAWN_FORMS = {
     # Only using Average Size for drawn 710-711
     710: {"-Form_Small_Size", "-Form_Large_Size", "-Form_Super_Size"},
     711: {"-Form_Small_Size", "-Form_Large_Size", "-Form_Super_Size"},
-    774: {"-Form_Core"},
+    774: {"-Form_Core"},    # No shiny form
+    # TODO: Figure out how to handle these...
     854: {"-Form_Antique", "-Form_Phony"},
     855: {"-Form_Antique", "-Form_Phony"},
+    869: {"-Form_Berry_Sweet", "-Form_Clover_Sweet", "-Form_Flower_Sweet", "-Form_Love_Sweet", "-Form_Ribbon_Sweet", "-Form_Star_Sweet", "-Form_Strawberry_Sweet"},     # No shiny forms
     1012: {"-Form_Artisan", "-Form_Counterfeit"},
     1013: {"-Form_Masterpiece", "-Form_Unremarkable"},
 }
