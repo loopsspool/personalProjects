@@ -239,7 +239,6 @@ def get_game_filename_id(cursor, filename):
 
 
 def get_all_game_filenames_info():
-    print("Fetching game file info from database...")
     connection = sqlite3.connect(DB_PATH)
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
@@ -266,21 +265,20 @@ def get_all_game_filenames_info():
 
 
 def get_non_game_filename_info(table):
-    print(f"Fetching {table} file info from database...")
     connection = sqlite3.connect(DB_PATH)
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
 
-    cursor.execute(f"SELECT poke_num, form_id, filename, does_exist FROM {table}")
+    fields = "poke_num, form_id, filename, does_exist"
+    if table == "home_filenames": fields += ", sprite_id"   # Home sprites need sprite_id since they have shinies, animated, etc. Otherwise their identifiers (poke num, form) are non-unique
+
+    cursor.execute(f"SELECT {fields} FROM {table}")
     rows = cursor.fetchall()
     data = {}
 
     for row in rows:
-        print(f"\rGetting pokemon #{row["poke_num"]} {table} availability...", end='', flush=True)
-        data[(row["poke_num"], row["form_id"])] = {"filename": row["filename"], "exists": True if row["does_exist"] else False}
-
-    # Resetting console line after updates from above
-    print('\r' + ' '*45 + '\r', end='')
+        key = (row["poke_num"], row["form_id"]) if table != "home_filenames" else (row["poke_num"], row["form_id"], row["sprite_id"])   # Home sprites need sprite_id since they have shinies, animated, etc. Otherwise their identifiers (poke num, form) are non-unique
+        data[key] = {"filename": row["filename"], "exists": True if row["does_exist"] else False}
 
     connection.close()
     return data
@@ -893,11 +891,11 @@ def generate_drawn_filenames(poke_info, cursor):
     # No drawn females until gen5, and then seperated by -Female/Male denoter
     if poke_info["poke gen"] >= 5 and "-f" in form_name:
         form_name = "-Female"
-        filenames.append(f"{poke_num_leading_zeros} {poke_info["poke name"]}-Male.png")
+        filenames.append(f"{poke_num_leading_zeros} {poke_info["poke name"]}-Male")
     elif "-f" in form_name: # Gen < 5
         form_name = ""
 
-    filenames.append(f"{poke_num_leading_zeros} {poke_info["poke name"]}{form_name}.png")
+    filenames.append(f"{poke_num_leading_zeros} {poke_info["poke name"]}{form_name}")
     return filenames
 
 
