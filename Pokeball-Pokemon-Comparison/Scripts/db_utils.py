@@ -239,7 +239,7 @@ def get_game_filename_id(cursor, filename):
 
 
 def get_all_game_filenames_info():
-    print("Fetching file info from database...")
+    print("Fetching game file info from database...")
     connection = sqlite3.connect(DB_PATH)
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
@@ -258,6 +258,27 @@ def get_all_game_filenames_info():
         data[main_key][game]["obtainable"] = True if row["obtainable"] else False
         data[main_key][game]["exists"] = True if row["does_exist"] else False
         data[main_key][game]["has_sub"] = row["substitution_id"] != None
+    # Resetting console line after updates from above
+    print('\r' + ' '*45 + '\r', end='')
+
+    connection.close()
+    return data
+
+
+def get_non_game_filename_info(table):
+    print(f"Fetching {table} file info from database...")
+    connection = sqlite3.connect(DB_PATH)
+    connection.row_factory = sqlite3.Row
+    cursor = connection.cursor()
+
+    cursor.execute(f"SELECT poke_num, form_id, filename, does_exist FROM {table}")
+    rows = cursor.fetchall()
+    data = {}
+
+    for row in rows:
+        print(f"\rGetting pokemon #{row["poke_num"]} {table} availability...", end='', flush=True)
+        data[(row["poke_num"], row["form_id"])] = {"filename": row["filename"], "exists": True if row["does_exist"] else False}
+
     # Resetting console line after updates from above
     print('\r' + ' '*45 + '\r', end='')
 
@@ -821,6 +842,7 @@ def populate_home_menu_filenames(cursor):
 
 def generate_home_menu_filename(poke_info):
     # TODO: Most all NO_DRAWN_FORMS will apply (except 774), will need to figure out the stamped pokes
+        # Also add Overdrive B&W Kyurem
     poke_num = str(poke_info["poke num"]).zfill(4)
     form_name = poke_info["form name"]
     # Removing Region, Form, and Default tags, leaving -values
