@@ -180,6 +180,7 @@ BULBA_TRANSLATION_MAP = {
     },
 
     # Pichu
+    # Spiky Eared excluded from drawn & menu
     172: {"Game": {"-Form_Spiky_Eared": "N"}},
 
     # Unown
@@ -402,6 +403,7 @@ BULBA_TRANSLATION_MAP = {
     },
 
     # Arceus
+    # ??? form excluded from drawn & menu
     493: {
         "Game": BULBA_TYPE_FORM_MAP,
         "Drawn": BULBA_DRAWN_DREAM_TYPE_MAP,
@@ -501,6 +503,7 @@ BULBA_TRANSLATION_MAP = {
     },
 
     # Kyurem
+    # Overdrive forms excluded from menu
     646: {
         "Game": {
             # These are all over the place by game/denoters, easier to just do by hand
@@ -712,6 +715,7 @@ BULBA_TRANSLATION_MAP = {
     },
 
     # Pumpkaboo & Gourgeist
+    # Drawn & menu only use Average Size
     710: {
         "Game": {
             "-Form_Average_Size": "",
@@ -819,6 +823,7 @@ BULBA_TRANSLATION_MAP = {
     },
 
     # Minior
+    # Shiny forms excluded from drawn & menu
     774: {
         "Game": {
             "-Form_Meteor": "",
@@ -850,7 +855,6 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Red_Core": "-Red",
             "-Form_Violet_Core": "-Violet",
             "-Form_Yellow_Core": "-Yellow",
-            "-Form_Core": "-DOES_NOT_EXIST"   # This is the shiny sprite, which obviously doesnt have a menu sprite
         },
     },
 
@@ -953,6 +957,7 @@ BULBA_TRANSLATION_MAP = {
     },
 
     # Alcremie
+    # Shiny forms excluded from drawn and menu
     869: {
         "Game": {
             "-Form_Caramel_Swirl_Berry_Sweet": "CaSB",
