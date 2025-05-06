@@ -940,19 +940,18 @@ BULBA_TRANSLATION_MAP = {
         }
     },
 
-    # TODO: These may have to be altered when I decide how I'm hamdling them due to their sprite form show stamp
-    # NOTE: There are drawn show stamp images
     # Sinistea & Polteageist
+    # Only used by HOME for the show stamp sprites. All other images (since identical) are default form
     854: {
         "Game": {
-            "-Form_Phony": "",
-            "-Form_Antique": "A"
+            "-Form_Phony": " b",
+            "-Form_Antique": "A b"
         }
     },
     855: {
         "Game": {
-            "-Form_Phony": "",
-            "-Form_Antique": "A"
+            "-Form_Phony": " b",
+            "-Form_Antique": "A b"
         }
     },
 
@@ -1264,18 +1263,17 @@ BULBA_TRANSLATION_MAP = {
     },
 
     # Poltchageist & Sinistcha
-    # TODO: These may have to be altered when I decide how I'm hamdling them due to their sprite form show stamp
-    # NOTE: There are drawn show stamp images
+    # Only used by HOME for the show stamp sprites. All other images (since identical) are default form
     1012: {
         "Game": {
-            "-Form_Artisan": "A",
-            "-Form_Counterfeit": "",
+            "-Form_Artisan": "A b",
+            "-Form_Counterfeit": " b",
         }
     },
     1013: {
         "Game": {
-            "-Form_Masterpiece": "M",
-            "-Form_Unremarkable": "",
+            "-Form_Masterpiece": "M b",
+            "-Form_Unremarkable": " b",
         }
     },
 
