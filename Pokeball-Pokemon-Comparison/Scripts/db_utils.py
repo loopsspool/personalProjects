@@ -521,7 +521,8 @@ FORM_EXCLUSIONS = {
     "no_zygarde_forms_until_gen_7": lambda poke_form, game: poke_form["poke num"] == 718 and poke_form["form name"] != "-Form_50%" and game["gen"] < 7,
     "no_solgaleo_lunala_forms_outside_SM_USUM": lambda poke_form, game: poke_form["poke num"] in (791, 792) and poke_form["form name"] != "Default" and game["name"] != "SM_USUM",
     "no_zenith_marshadow_form_outside_gen_SM_USUM": lambda poke_form, game: poke_form["poke num"] == 802 and poke_form["form name"] != "Default" and game["name"] != "SM_USUM",
-    "no_meltan_or_melmetal_until_LGPE": lambda poke_form, game: poke_form["poke num"] in (808, 809) and get_game_id(game["name"]) < get_game_id("LGPE")    # Technically these are gen 7 pokemon, they just werent introduced until LGPE
+    "no_meltan_or_melmetal_until_LGPE": lambda poke_form, game: poke_form["poke num"] in (808, 809) and get_game_id(game["name"]) < get_game_id("LGPE"),    # Technically these are gen 7 pokemon, they just werent introduced until LGPE
+    "no_stamped_poke_sprites_in_games": lambda poke_form, game: poke_form["poke num"] in (854, 855, 1012, 1013) and poke_form["form name"] != "Default"     # Both forms look the same except for the stamp, which is really only visible in HOME anyways. This is where the stamp img will be downloaded
 }
 def is_form_obtainable(form, game):
     for exclusion in FORM_EXCLUSIONS.values():
@@ -561,8 +562,7 @@ def entry_exists(cursor, table, cols):
 
 
 # Default meaning front, normal color, static sprite
-# Show stamp for the tea/matcha pokemon (854, 855, 1012, 1013)
-SPRITE_TYPES = ["Default", "-Animated", "-Shiny", "-Shiny-Animated", "-Back", "-Back-Animated", "-Shiny-Back", "-Shiny-Back-Animated", "-Show_Stamp"]
+SPRITE_TYPES = ["Default", "-Animated", "-Shiny", "-Shiny-Animated", "-Back", "-Back-Animated", "-Shiny-Back", "-Shiny-Back-Animated"]
 def populate_sprite_types(cursor):
     print("Populating sprite types into database...")
     for type in SPRITE_TYPES:
@@ -618,16 +618,15 @@ def is_sprite_possible(pfgo_info, sprite_type):
 
 
 # Sprites that don't exist. Shouldn't even be marked unobtainable, which is why theyre here not SPRITE_EXCLUSIONS
-# TODO: Adjust show stamp further, should not be on default, should default exist for them? 
-# Either: Have default only and forms for only show stamp sprite (probably best option, idk how RN will handle)
-# Have no default and have sprites substitute for each other, or duplicate
-# See HOME filenames for further clarity
 NONEXISTANT_SPRITES={
-    "no_shiny_cosplay_pikachu": lambda poke_num, form_name, sprite_type: poke_num == 25 and "-Form_Cosplay" in form_name and "Shiny" in sprite_type,
-    "no_shiny_cap_pikachu": lambda poke_num, form_name, sprite_type: poke_num == 25 and "-Form_Cap" in form_name and "Shiny" in sprite_type,
     "skip_all_shared_shiny_forms_that_arent_adjusted_appropriately": lambda poke_num, form_name, sprite_type: poke_num in SHARED_SHINY_FORMS and "Shiny" in sprite_type and form_name not in SHARED_SHINY_FORMS[poke_num],
     "skip_all_non_shiny_sprites_for_shared_shinies_that_are_adjusted": lambda poke_num, form_name, sprite_type: poke_num in SHARED_SHINY_FORMS and "Shiny" not in sprite_type and form_name in SHARED_SHINY_FORMS[poke_num],
-    "skip_show_stamp_sprite_if_not_applicable": lambda poke_num, form_name, sprite_type: poke_num not in (854, 855, 1012, 1013) and sprite_type == "-Show_Stamp"
+
+    "no_shiny_cosplay_pikachu": lambda poke_num, form_name, sprite_type: poke_num == 25 and "-Form_Cosplay" in form_name and "Shiny" in sprite_type,
+    "no_shiny_cap_pikachu": lambda poke_num, form_name, sprite_type: poke_num == 25 and "-Form_Cap" in form_name and "Shiny" in sprite_type,
+    # The below only affects home because (non-default) forms of the stamped pokes were already marked as unobtainable in games (since no way to see stamp in game and all other sprites are identical)
+    # Further processing is done in the generate_home_filenames function to exclude default form back sprites (couldn't include here bc would also filter them for games)
+    "no_stamped_poke_forms_except_show_stamp_back_sprite": lambda poke_num, form_name, sprite_type: poke_num in (854, 855, 1012, 1013) and form_name != "Default" and sprite_type not in ("-Back", "-Shiny-Back")
 }
 def should_skip_nonexistant_sprite(poke_num, form_name, sprite_type):
     for nonexistant in NONEXISTANT_SPRITES.values():
@@ -759,7 +758,7 @@ def populate_game_filenames(cursor):
     substitutions_to_convert_to_id = []
     
     for sprite_id, sprite_info in all_sprites.items():
-        print(f"\rGenerating pokemon #{sprite_info["poke num"]} filenames...", end='', flush=True)
+        print(f"\rGenerating pokemon #{sprite_info["poke num"]} game filenames...", end='', flush=True)
         filename = generate_game_filename(sprite_info)
         file_exists, substitution = check_for_usable_game_file(filename, sprite_info)
         has_sub = 1 if substitution!=None else None     # Temp marking to set in substitution field until I can get subs file id
@@ -774,7 +773,7 @@ def populate_game_filenames(cursor):
             insert_into_table(cursor, "obtainable_game_filenames", **{"id": filename_id, **file_ids})
 
     # Resetting console line after updates from above
-    print('\r' + ' '*50 + '\r', end='')
+    print('\r' + ' '*60 + '\r', end='')
 
     # This is pulled out seperate since it depends on file_ids from all_game_filenames table, which may not be present yet
     # This is due to checking if the replacement filename exists in all files
@@ -806,12 +805,20 @@ def populate_home_filenames(cursor):
         for sprite_id, sprite_type in sprite_types.items():
             if should_skip_nonexistant_sprite(poke_info["poke num"], poke_info["form name"], sprite_type):
                 continue
-            if "-Back" in sprite_type: continue     # No home back sprites
+            # No home back sprites
+            if "-Back" in sprite_type:
+                # Except for stamped pokemon formed "back" sprites (showing the stamp)
+                if not is_stamped_poke_form(poke_info):
+                    continue
             filename = generate_home_filename(poke_info, sprite_type)
             exists = file_does_exist(filename, home_sprites_files)
             file_ids = {"filename": filename, "poke_num": poke_info["poke num"], "form_id": poke_form[1], "sprite_id": sprite_id, "does_exist":exists}
             insert_into_table(cursor, "home_filenames", **file_ids)
 
+
+def is_stamped_poke_form(poke_info):
+    if poke_info["poke num"] in (854, 855, 1012, 1013) and poke_info["form name"] != "Default": return True
+    else: return False
 
 
 def generate_home_filename(poke_info, sprite_type):
@@ -884,7 +891,6 @@ NO_DRAWN_FORMS = {
     710: {"-Form_Small_Size", "-Form_Large_Size", "-Form_Super_Size"},
     711: {"-Form_Small_Size", "-Form_Large_Size", "-Form_Super_Size"},
     774: {"-Form_Core"},    # No shiny form
-    # TODO: Figure out how to handle these...
     854: {"-Form_Antique", "-Form_Phony"},
     855: {"-Form_Antique", "-Form_Phony"},
     869: {"-Form_Berry_Sweet", "-Form_Clover_Sweet", "-Form_Flower_Sweet", "-Form_Love_Sweet", "-Form_Ribbon_Sweet", "-Form_Star_Sweet", "-Form_Strawberry_Sweet"},     # No shiny forms
