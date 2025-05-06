@@ -5,6 +5,8 @@ import pytest
 
 # TODO: To replace cursor arguments, in db_utils could pull game/form ids into a dict or something, then search that instead of the db
 # TODO: Add sprite exclusions
+# TODO: Add all multi form pokemon (eg paldean tauros) checks
+# TODO: Make sure show stamp pokemon forms excluded from all games
 
 # To go into parent directory to import db_utils
 parent_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
@@ -45,11 +47,11 @@ sprite_types = get_sprite_types(cursor)
     ((493, get_form_id("-Form_Fairy")), get_game_id("XY_ORAS"), True),
     ((6, get_form_id("-Mega_X")), get_game_id("BW_B2W2"), False),
     ((6, get_form_id("-Mega_X")), get_game_id("XY_ORAS"), True),
-    ((6, get_form_id("-Mega_X")), get_game_id("LGPE"), False),
+    ((6, get_form_id("-Mega_X")), get_game_id("LGPE"), True),
     ((6, get_form_id("-Mega_X")), get_game_id("SwSh"), False),
     ((3, get_form_id("-Mega")), get_game_id("BW_B2W2"), False),
     ((3, get_form_id("-Mega")), get_game_id("XY_ORAS"), True),
-    ((3, get_form_id("-Mega")), get_game_id("LGPE"), False),
+    ((3, get_form_id("-Mega")), get_game_id("LGPE"), True),
     ((3, get_form_id("-Mega")), get_game_id("SwSh"), False),
     ((3, get_form_id("-Gigantamax")), get_game_id("LA"), False),
     ((3, get_form_id("-Gigantamax")), get_game_id("SwSh"), True),
@@ -70,6 +72,27 @@ sprite_types = get_sprite_types(cursor)
     ((38, get_form_id("-Region_Alola")), get_game_id("LA"), True),
     ((128, get_form_id("-Region_Paldea-Form_Blaze")), get_game_id("SwSh"), False),
     ((128, get_form_id("-Region_Paldea-Form_Blaze")), get_game_id("SV"), True),
+
+    # Form Exceptions
+    ((6, get_form_id("-Mega_X")), get_game_id("XY_ORAS"), True),
+    ((6, get_form_id("-Mega_Y")), get_game_id("SM_USUM"), True),
+    ((128, get_form_id("-Region_Paldea-Form_Combat")), get_game_id("SwSh"), False),
+    ((128, get_form_id("-Region_Paldea-Form_Aqua")), get_game_id("Emerald"), False),
+    ((128, get_form_id("-Region_Paldea-Form_Combat")), get_game_id("SV"), True),
+    ((128, get_form_id("-Region_Paldea-Form_Blaze")), get_game_id("SV"), True),
+    ((128, get_form_id("-Region_Paldea-Form_Aqua")), get_game_id("SV"), True),
+    ((150, get_form_id("-Mega_X")), get_game_id("XY_ORAS"), True),
+    ((150, get_form_id("-Mega_Y")), get_game_id("SM_USUM"), True),
+    ((215, get_form_id("-Region_Hisui-f")), get_game_id("SwSh"), False),
+    ((215, get_form_id("-Region_Hisui-f")), get_game_id("LA"), True),
+    ((215, get_form_id("-Region_Hisui-f")), get_game_id("SV"), True),
+    ((555, get_form_id("-Region_Galar-Form_Standard")), get_game_id("SM_USUM"), False),
+    ((555, get_form_id("-Region_Galar-Form_Zen")), get_game_id("SV"), False),
+    ((555, get_form_id("-Region_Galar-Form_Standard")), get_game_id("SwSh"), True),
+    ((555, get_form_id("-Region_Galar-Form_Zen")), get_game_id("SwSh"), True),
+    ((892, get_form_id("-Gigantamax-Form_Single_Strike")), get_game_id("SwSh"), True),
+    ((892, get_form_id("-Gigantamax-Form_Rapid_Strike")), get_game_id("SwSh"), True),
+
 
     # Specific Pokemon
     ((25, get_form_id("-Form_Cosplay_Belle")), get_game_id("BW_B2W2"), False),
@@ -139,13 +162,18 @@ sprite_types = get_sprite_types(cursor)
     ((792, get_form_id("-Form_Full_Moon")), get_game_id("SV"), False),
     ((791, get_form_id("-Form_Radiant_Sun")), get_game_id("SM_USUM"), True),
     ((792, get_form_id("-Form_Full_Moon")), get_game_id("SM_USUM"), True),
-    ((802, get_form_id("-Form_Zenith")), get_game_id("SwSh"), False),
-    ((802, get_form_id("-Form_Zenith")), get_game_id("SM_USUM"), True),
     ((808, default_form_id), get_game_id("SM_USUM"), False),
     ((809, default_form_id), get_game_id("SM_USUM"), False),
     ((808, default_form_id), get_game_id("LGPE"), True),
     ((809, default_form_id), get_game_id("LGPE"), True),
-    ((808, default_form_id), get_game_id("SwSh"), True)
+    ((808, default_form_id), get_game_id("SwSh"), True),
+    # These only have forms in HOME to show their stamps
+    ((854, get_form_id("-Form_Antique")), get_game_id("SwSh"), False),
+    ((854, get_form_id("-Form_Phony")), get_game_id("SwSh"), False),
+    ((854, default_form_id), get_game_id("SwSh"), True),
+    ((1013, get_form_id("-Form_Unremarkable")), get_game_id("SV"), False),
+    ((1013, get_form_id("-Form_Masterpiece")), get_game_id("SV"), False),
+    ((1013, default_form_id), get_game_id("SV"), True)
 ])
 def test_is_form_obtainable(poke_form_id, game_id, expected):
     # Getting the dict values that holds poke_form_info and game_info, respectively, to check obtainability
@@ -200,13 +228,6 @@ def test_is_sprite_possible(pfgo_id, sprite_type, expected):
     (869, "-Form_Star_Sweet", "-Shiny-Back", False),
     (869, "-Form_Ribbon_Sweet", "-Animated", True),
     (869, "-Form_Matcha_Cream_Strawberry_Sweet", "-Back-Animated", False),
-    (1, "Default", "-Show_Stamp", True),
-    (151, "-Form_Mega_X", "-Show_Stamp", True),
-    (555, "-Form_Zen", "-Show_Stamp", True),
-    (854, "-Form_Antique", "-Show_Stamp", False),
-    (855, "-Form_Phony", "-Show_Stamp", False),
-    (1012, "-Form_Artisan", "-Show_Stamp", False),
-    (1013, "-Form_Masterpiece", "-Show_Stamp", False)
 ])
 def test_should_skip_nonexistant_sprite(poke_num, form_name, sprite_type, expected):
     assert should_skip_nonexistant_sprite(poke_num, form_name, sprite_type) == expected
