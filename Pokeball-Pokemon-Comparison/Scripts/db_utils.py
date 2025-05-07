@@ -5,6 +5,7 @@ from collections import defaultdict
 from contextlib import contextmanager
 
 from file_utils import game_sprite_path
+from db_reference_data import *
 
 PARENT_DIR = os.path.join(os.getcwd(), os.pardir)
 DB_NAME = "pokedex.db"
@@ -158,7 +159,7 @@ def create_db():
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL UNIQUE,
         gen INGEGER NOT NULL,
-        LA_only BOOLEAN NOT NULL
+        game_exclusive TEXT DEFAULT NULL
     );
     """)
 
@@ -437,6 +438,8 @@ def populate_forms(cursor):
                 insert_into_both_form_tables(cursor, form, poke_num)
     
 
+# TODO: Group with other gets
+# TODO: Change all these gets to cursor factories so more readible and robust
 def get_poke_form_records(cursor):
     cursor.execute("""
         SELECT p.num, f.id, f.form_name, pf.poke_num, p.name, p.gen
@@ -946,6 +949,64 @@ def generate_drawn_filenames(poke_info, cursor):
     return filenames
 
 
+def populate_pokeballs(cursor):
+    for ball in POKEBALLS:
+        insert_into_table(cursor, "pokeballs", **ball)
+
+
+def populate_pokeball_img_types(cursor):
+    for img_type in POKEBALL_IMG_TYPES:
+        insert_into_table(cursor, "pokeball_img_types", **img_type)
+
+
+def get_all_pokeballs(cursor):
+    cursor.execute("SELECT * FROM pokeballs")
+    data = cursor.fetchall()
+    pokeballs = {}
+    for ball in data:
+        # name: {}
+        pokeballs[ball[1]] = {"gen": ball[2], "exclusive to": ball[3]}
+    print(pokeballs)
+    return pokeballs
+
+
+def get_all_pokeball_img_types(cursor):
+    cursor.execute("SELECT * FROM pokeball_img_types")
+    data = cursor.fetchall()
+    pokeball_img_types = {}
+    for img_type in data:
+        pokeball_img_types[img_type[1]] = img_type[2]
+    print(pokeball_img_types)
+    return pokeball_img_types
+
+
+def populate_pokeball_filenames(cursor):
+    pokeballs = get_all_pokeballs(cursor)
+    pokeball_img_types = get_all_pokeball_img_types(cursor)
+    filenames = []
+
+    for ball, ball_info in pokeballs.items():
+        for img_type, img_type_gen in pokeball_img_types.items():
+            # Certain img types only apply to certain balls
+            if img_type in POKEBALL_IMG_TYPE_APPLICABILITY and ball not in POKEBALL_IMG_TYPE_APPLICABILITY[img_type]: 
+                continue
+            # LA Exclusive balls should only have img types attributed to LA or HOME atm
+            if ball_info["exclusive to"] == "LA" and not any(platform in img_type for platform in ("HOME", "LA")):
+                continue
+            # Ultra ball difference between Ruby_Sapphire and FRLG/Emerald
+            if ball == "Ultra Ball" and img_type == "Gen3":
+                filenames.append(f"{ball}-{img_type}-FRLGE")
+                filenames.append(f"{ball}-{img_type}-RS")
+                continue
+            if ball_info["gen"] <= img_type_gen:
+                filename = f"{ball}-{img_type}"
+                filenames.append(filename)
+
+    # TODO: Actually insert filenames into table
+    print (filenames)
+
+
+
 # TODO: Add update function to update existing, sub, and alt status for all imgs
 def populate_db(force=False):
     if not db_exists():
@@ -967,6 +1028,9 @@ def populate_db(force=False):
         populate_home_filenames(cursor)
         populate_home_menu_filenames(cursor)
         populate_drawn_filenames(cursor)
+        populate_pokeballs(cursor)
+        populate_pokeball_img_types(cursor)
+        populate_pokeball_filenames(cursor)
 
         connection.commit()
     except Exception as e:
