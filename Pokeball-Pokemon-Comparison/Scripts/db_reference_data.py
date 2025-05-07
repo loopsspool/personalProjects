@@ -38,3 +38,27 @@ POKEBALLS = [
     {"name": "Gigaton Ball", "gen": 8, "LA_only": True},
     {"name": "Origin Ball", "gen": 8, "LA_only": True}
 ]
+
+# TODO: Adjust to how you want named, will do bulba translation later
+POKEBALL_IMG_TYPES = [
+    # For bag sprites, gen is referring to how far back the balls go 
+    {"name": "Bag", "gen": 1},
+    {"name": "Bag IV", "gen": 4},   # This is for some gen4 exlusive differences (lure ball, park ball)
+    {"name": "HOME Bag", "gen": 8}, # So far this only applies to exclusively gen 8 balls (I assume the rest were recycled into home via game bag sprites)
+    {"name": "BDSP Bag", "gen": 1},
+    {"name": "LA Bag", "gen": 8},
+    {"name": "SV Bag", "gen": 1},
+
+    {"name": "Dream", "gen": 1}, # Pokemon global link
+    {"name": "Sugimori", "gen": 1}, # Drawn
+
+    {"name": "III", "gen": 3},  # TODO: Ultra ball different in FRLG & Em than R_S, figure out
+    {"name": "battle IV", "gen": 4},
+    {"name": "summary IV", "gen": 4},
+    {"name": "summary V", "gen": 5},    # Only for pokeballs that had differences in gen 4
+    {"name": "battle V", "gen": 5},
+    {"name": "battle 3DS", "gen": 6},
+    {"name": "VIII", "gen": 8},
+    {"name": "HOME", "gen": 1}, # Setting home to gen1 so it will apply to all pokeballs
+
+]
