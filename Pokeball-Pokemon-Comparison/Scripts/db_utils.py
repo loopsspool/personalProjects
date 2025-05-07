@@ -153,6 +153,35 @@ def create_db():
     );
     """)
 
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS pokeballs (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL UNIQUE,
+        gen INGEGER NOT NULL,
+        LA_only BOOLEAN NOT NULL
+    );
+    """)
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS pokeball_img_types (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL UNIQUE,
+        gen INTEGER NOT NULL
+    );
+    """)
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS pokeball_filenames (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        pokeball_id INTEGER NOT NULL,
+        img_type_id INTEGER NOT NULL,
+        filename TEXT NOT NULL UNIQUE,
+        does_exist BOOLEAN NOT NULL,
+        FOREIGN KEY (pokeball_id) REFERENCES pokeballs(id),
+        FOREIGN KEY (img_type_id) REFERENCES pokeball_img_types(id)
+    );
+    """)
+
     connection.commit()
     connection.close()
 
@@ -685,7 +714,6 @@ def seperate_sprite_type_if_shiny(sprite_type):
 
 def file_does_exist(filename, dir_file_list):
     if len(dir_file_list) == 0: return False
-    # TODO: Could just search without an extension
     file_ext = [".png"]
     file_has_ext = filename[-4:] in file_ext
     if file_has_ext :
@@ -726,7 +754,6 @@ def game_adjustment_for_back(filename, game):
 
 
 GAME_FALLBACKS = {
-    # TODO: Gen1?
     "Gen2 Silver": ["Gen2 Gold", "Gen2 Crystal"],
     "Gen2 Crystal": ["Gen2 Gold"],
     "Gen3 Emerald": ["Gen3 Ruby_Sapphire", "Gen3 FRLG"],
@@ -750,9 +777,8 @@ def generate_game_filename(sprite_info):
     return filename
 
 
-# TODO: Skip if already in db, like for game form availability
 ALL_GAME_SPRITE_FILES = set(os.listdir(game_sprite_path))
-def populate_game_filenames(cursor):
+def populate_game_filenames(cursor, force=False):
     print("Populating game filenames into database...")
     all_sprites = get_sprites_obtainability_records(cursor)
     substitutions_to_convert_to_id = []
@@ -890,13 +916,13 @@ NO_DRAWN_FORMS = {
     # Only using Average Size for drawn 710-711
     710: {"-Form_Small_Size", "-Form_Large_Size", "-Form_Super_Size"},
     711: {"-Form_Small_Size", "-Form_Large_Size", "-Form_Super_Size"},
-    774: {"-Form_Core"},    # No shiny form
     854: {"-Form_Antique", "-Form_Phony"},
     855: {"-Form_Antique", "-Form_Phony"},
-    869: {"-Form_Berry_Sweet", "-Form_Clover_Sweet", "-Form_Flower_Sweet", "-Form_Love_Sweet", "-Form_Ribbon_Sweet", "-Form_Star_Sweet", "-Form_Strawberry_Sweet"},     # No shiny forms
     1012: {"-Form_Artisan", "-Form_Counterfeit"},
     1013: {"-Form_Masterpiece", "-Form_Unremarkable"},
 }
+# Removes forms specifically for being shiny
+for k,v in SHARED_SHINY_FORMS.items(): NO_DRAWN_FORMS[k] = set(v)
 def generate_drawn_filenames(poke_info, cursor):
     poke_num_leading_zeros = str(poke_info["poke num"]).zfill(4)
     poke_num_int = poke_info["poke num"]
