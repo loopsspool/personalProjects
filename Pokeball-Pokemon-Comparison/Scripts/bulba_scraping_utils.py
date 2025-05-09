@@ -5,7 +5,7 @@ import re   # For filtering what images to download
 import os
 
 from json_utils import *
-from db_utils import get_missing_poke_imgs_by_table, has_f_form, get_form_id, get_form_name, get_poke_name
+from db_utils import get_missing_poke_imgs_by_table, get_missing_pokeball_imgs, has_f_form, get_form_id, get_form_name, get_poke_name, get_pokeball_name, get_pokeball_img_type_name
 from bulba_translation_mapping import *
 # from app_globals import *
 from image_tools import *
@@ -36,6 +36,7 @@ GAME_SPRITE_PATH = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-
 DRAWN_SAVE_PATH = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Drawn\\"
 HOME_SAVE_PATH = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\HOME Sprites\\"
 HOME_MENU_SAVE_PATH = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Menu Sprites\\HOME\\"
+POKEBALL_SAVE_PATH = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokeballs\\"
 # https://archives.bulbagarden.net/wiki/Category:Pok%C3%A9mon_artwork
 
     
@@ -74,15 +75,15 @@ def scrape_game_imgs(allow_download=False):
 def translate_all_filenames_to_bulba_url(filename_dict, translate_func):
     for poke_info, files in filename_dict.items():
         if len(files)==0: continue
-        print(f"\rTranslating #{poke_info[0]} game sprite filenames to bulba urls...", end='', flush=True)
+        print(f"\rTranslating #{poke_info[0]} filenames to bulba urls...", end='', flush=True)
         bulba_urls = []
         for my_filename in files:
             # Right now this filters out SV & BDSP Sprites since bulba doesnt have them
             if bulba_doesnt_have_game_images_for(my_filename):
                 continue
-            bulba_game_sprite_filename = translate_func(my_filename, poke_info)
-            bulba_game_sprite_filename_url = convert_bulba_filename_to_url(bulba_game_sprite_filename)
-            bulba_urls.append((my_filename, bulba_game_sprite_filename_url))
+            bulba_filename = translate_func(my_filename, poke_info)
+            bulba_filename_url = convert_bulba_filename_to_url(bulba_filename)
+            bulba_urls.append((my_filename, bulba_filename_url))
         filename_dict[poke_info] = bulba_urls
     # Resetting console line after updates from above
     print('\r' + ' '*55 + '\r', end='')
@@ -93,6 +94,7 @@ def convert_bulba_filename_to_url(bulba_filename):
     return (BULBA_FILE_STARTER_URL + bulba_filename.replace(" ", "_"))
 
 
+# TODO: Exclude images w NOT_IN_MAP_SET, DO_BY_HAND, etc
 def get_bulba_img(url, save_path, allow_download, has_animation=False):
     img_exists, img_page_soup = bulba_img_exists(url)
     if not img_exists:
@@ -213,8 +215,8 @@ def get_bulba_translated_species_form(poke_info, my_filename, map_type):
     if form_name in UNIVERSAL_FORMS:
         return("")
 
-    if poke_num in BULBA_TRANSLATION_MAP:
-        for form, translation in BULBA_TRANSLATION_MAP[poke_num][map_type].items():
+    if poke_num in BULBA_POKE_FORM_TRANSLATION_MAP:
+        for form, translation in BULBA_POKE_FORM_TRANSLATION_MAP[poke_num][map_type].items():
             # TODO: Changed this from checking my_filename to form_name, make sure it didnt break anything
                 # I think I'll have to remove all hyphens from Drawn & Menu dicts bc -West isnt in -Form_West
             if form in form_name:
@@ -286,12 +288,12 @@ def f_exception_poke_in_filename(my_filename):
 
 
 def scraping_if_no_extra_steps_needed(filename_table, translate_func, has_animation, allow_download, save_path):
-    missing_imgs_dict = get_missing_poke_imgs_by_table(filename_table)
+    missing_imgs_dict = get_missing_poke_imgs_by_table(filename_table) if filename_table != "pokeball_filenames" else get_missing_pokeball_imgs()
     translated_missing_imgs = translate_all_filenames_to_bulba_url(missing_imgs_dict, translate_func)
 
     for poke_info, files in translated_missing_imgs.items():
         for file in files:
-            # poke_info == (poke_num, form_id)
+            # poke_info == (poke_num, form_id) or (pokeball_id, img_type_id) if pokeball img
             # file == (my_file_naming_convention, bulba_url)
             print(file)
             save_path = os.path.join(save_path, file[0])
@@ -382,3 +384,34 @@ def drawn_translate(my_filename, poke_info):
     if " Dream" in bulba_drawn_filename and bulba_drawn_filename[0] == "0":
         bulba_drawn_filename = bulba_drawn_filename.replace("0","",1) 
     return bulba_drawn_filename
+
+
+def scrape_pokeballs(allow_download=False):
+    # Setting animated to True for gen5_Battle-Animated
+    scraping_if_no_extra_steps_needed("pokeball_filenames", pokeball_translate, True, allow_download, POKEBALL_SAVE_PATH)
+
+
+def pokeball_translate(my_filename, pokeball_info):
+    # TODO: If pokeball, replace e with special one
+    # TODO: bulba_filename initialization needed? Can return at end? See once done
+    bulba_filename = ""
+    pokeball_name = get_pokeball_name(pokeball_info[0])
+    img_type_name = get_pokeball_img_type_name(pokeball_info[1])
+    if "-Bag" in img_type_name:
+        bag_platform = get_bulba_translated_pokeball_info(img_type_name)
+        bulba_filename = f"Bag {pokeball_name} {bag_platform} Sprite.png"
+        return bulba_filename
+    if img_type_name == "PGL":
+        bulba_filename = f"Dream {pokeball_name} Sprite.png"
+        return bulba_filename
+    if img_type_name == "Drawn":
+        # NOTE: No fancy pokeball e replacement here
+        no_space_ball_name = pokeball_name.replace(" ", "")
+        bulba_filename = f"Sugimori{no_space_ball_name}.png"
+
+
+def get_bulba_translated_pokeball_info(info):
+    try:
+        return BULBA_POKEBALL_TRANSLATION_MAP[info]
+    except KeyError:
+        return ("-NOT_IN_MAP_SET")
