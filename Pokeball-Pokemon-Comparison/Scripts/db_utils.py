@@ -269,6 +269,22 @@ def get_game_filename_id(cursor, filename):
     else: return None
 
 
+def get_pokeball_name(pokeball_id, cursor=None):
+    with get_cursor(cursor) as cur:
+        cur.execute(f"SELECT name FROM pokeballs WHERE id={pokeball_id}")
+        pokeball_name=cur.fetchone()
+    if pokeball_name: return pokeball_name["name"]
+    else: return None
+
+
+def get_pokeball_img_type_name(img_type_id, cursor=None):
+    with get_cursor(cursor) as cur:
+        cur.execute(f"SELECT name FROM pokeball_img_types WHERE id={img_type_id}")
+        img_type_name=cur.fetchone()
+    if img_type_name: return img_type_name["name"]
+    else: return None
+
+
 def get_all_game_filenames_info():
     connection = sqlite3.connect(DB_PATH)
     connection.row_factory = sqlite3.Row
@@ -326,6 +342,21 @@ def get_missing_poke_imgs_by_table(table, cursor=None):
             # { (poke_num, form_id) : [missing imgs list] }
             poke_info = (row["poke_num"], row["form_id"])
             data[poke_info].append(row["filename"])
+    return data
+
+
+def get_missing_pokeball_imgs(cursor=None):
+    data = defaultdict(list)
+    print("Getting all missing pokeball images...")
+
+    with get_cursor(cursor) as cur:
+        cur.execute("SELECT pokeball_id, img_type_id, filename FROM pokeball_filenames WHERE does_exist=0")
+        result = cur.fetchall()
+        for row in result:
+            # { (pokeball_id, img_type_id) : [missing imgs list] }
+            # Have to do it as a list because of gen3 ultra ball having two imgs for same ball img type...
+            pokeball_info = (row["pokeball_id"], row["img_type_id"])
+            data[pokeball_info].append(row["filename"])
     return data
 
 
@@ -1008,6 +1039,7 @@ def populate_pokeball_filenames(cursor):
                 insert_into_table(cursor, "pokeball_filenames", **file_ids)
 
 
+# TODO: Only has HOME and LA bag sprites if its in LA, and if not strange ball note as hisuian
 def generate_pokeball_filename(ball_info, img_type_info):
     ball_name = ball_info["name"]
     img_type_name = img_type_info["name"]
