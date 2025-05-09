@@ -1039,21 +1039,19 @@ def populate_pokeball_filenames(cursor):
                 insert_into_table(cursor, "pokeball_filenames", **file_ids)
 
 
+# TODO: May have to adapt strange ball since it was like a mid-gen introduction
 # TODO: Only has HOME and LA bag sprites if its in LA, and if not strange ball note as hisuian
+# TODO: Bag_BDSP Not on all?
+# TODO: Change exclusivity to just exclusive to, and checking platformm in exclusive to.split(", ")
 def generate_pokeball_filename(ball_info, img_type_info):
     ball_name = ball_info["name"]
     img_type_name = img_type_info["name"]
 
-    # Certain img types only apply to certain balls
-    if img_type_name in POKEBALL_IMG_TYPE_APPLICABILITY and ball_name not in POKEBALL_IMG_TYPE_APPLICABILITY[img_type_name]: 
-        return []
-    # LA Exclusive balls should only have img types denoted for LA or HOME atm
-    if ball_info["exclusive to"] == "LA" and not any(platform in img_type_name for platform in ("HOME", "LA")):
-        return []
+    # TODO: Run POKEBALL_IMG_EXCEPTIONS
     # Ultra ball difference between Ruby_Sapphire and FRLG/Emerald
     if ball_name == "Ultra Ball" and img_type_name == "Gen3":
         return ["Ultra Ball-Gen3-FRLGE", "Ultra Ball-Gen3-RS"]
-    if ball_info["gen"] <= img_type_info["gen"]:
+    if img_type_info["gen"] <= ball_info["gen"]:
         filename = f"{ball_name}-{img_type_name}"
         return [filename]
     return []
