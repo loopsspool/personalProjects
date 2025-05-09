@@ -203,6 +203,7 @@ def get_cursor(passed_cur=None):
         yield passed_cur
     else:
         connection = sqlite3.connect(DB_PATH)
+        connection.row_factory = sqlite3.Row
         cur = connection.cursor()
         try:
             yield cur
@@ -216,7 +217,7 @@ def get_poke_num(poke_name, cursor=None):
     with get_cursor(cursor) as cur:
         cur.execute("SELECT num FROM pokemon WHERE name=?", (poke_name,))
         form_id = cur.fetchone()
-    if form_id: return form_id[0]
+    if form_id: return form_id["num"]
     else: return None
 
 
@@ -224,7 +225,7 @@ def get_form_id(form_name, cursor=None):
     with get_cursor(cursor) as cur:
         cur.execute("SELECT id FROM forms WHERE form_name=?", (form_name,))
         form_id = cur.fetchone()
-    if form_id: return form_id[0]
+    if form_id: return form_id["id"]
     else: return None
 
 
@@ -232,7 +233,7 @@ def get_form_name(form_id, cursor=None):
     with get_cursor(cursor) as cur:
         cur.execute("SELECT form_name FROM forms WHERE id=?", (form_id,))
         form_name = cur.fetchone()
-    if form_name: return form_name[0]
+    if form_name: return form_name["form_name"]
     else: return None
 
 
@@ -240,7 +241,7 @@ def get_game_id(game_name, cursor=None):
     with get_cursor(cursor) as cur:
         cur.execute("SELECT id FROM games WHERE name=?", (game_name,))
         game_id = cur.fetchone()
-    if game_id: return game_id[0]
+    if game_id: return game_id["id"]
     else: return None
 
 
@@ -248,7 +249,7 @@ def get_game_name(game_id, cursor=None):
     with get_cursor(cursor) as cur:
         cur.execute(f"SELECT name FROM games WHERE id={game_id}")
         game_name=cur.fetchone()
-    if game_name: return game_name[0]
+    if game_name: return game_name["name"]
     else: return None
 
 
@@ -256,7 +257,7 @@ def get_poke_name(poke_id, cursor=None):
     with get_cursor(cursor) as cur:
         cur.execute(f"SELECT name FROM pokemon WHERE num={poke_id}")
         poke_name=cur.fetchone()
-    if poke_name: return poke_name[0]
+    if poke_name: return poke_name["name"]
     else: return None
 
 
@@ -264,7 +265,7 @@ def get_poke_name(poke_id, cursor=None):
 def get_game_filename_id(cursor, filename):
     cursor.execute("SELECT id FROM all_game_filenames WHERE filename=?", (filename,))
     file_id = cursor.fetchone()
-    if file_id: return file_id[0]
+    if file_id: return file_id["id"]
     else: return None
 
 
@@ -323,8 +324,8 @@ def get_missing_poke_imgs_by_table(table, cursor=None):
         result = cur.fetchall()
         for row in result:
             # { (poke_num, form_id) : [missing imgs list] }
-            poke_info = (row[0], row[1])
-            data[poke_info].append(row[2])
+            poke_info = (row["poke_num"], row["form_id"])
+            data[poke_info].append(row["filename"])
     return data
 
 
@@ -439,7 +440,6 @@ def populate_forms(cursor):
     
 
 # TODO: Group with other gets
-# TODO: Change all these gets to cursor factories so more readible and robust
 def get_poke_form_records(cursor):
     cursor.execute("""
         SELECT p.num, f.id, f.form_name, pf.poke_num, p.name, p.gen
@@ -450,10 +450,10 @@ def get_poke_form_records(cursor):
     forms = {}
     for row in cursor.fetchall():
         # (poke num, form id) maps to form/poke info
-        forms[(row[0], row[1])] = { "form name" : row[2],
-                                    "poke num" : row[3],
-                                    "poke name" : row[4],
-                                    "poke gen" : row[5]
+        forms[(row["num"], row["id"])] = {  "form name" : row["form_name"],
+                                            "poke num" : row["poke_num"],
+                                            "poke name" : row["name"],
+                                            "poke gen" : row["gen"]
                         }
     return forms
 
@@ -474,8 +474,8 @@ def get_game_records(cursor):
     games = {}
     for row in cursor.fetchall():
         # Game id maps to game info
-        games[row[0]] = {"name" : row[1], 
-                         "gen" : row[2]}
+        games[row["id"]] = {"name" : row["name"], 
+                            "gen" : row["gen"]}
     return games
 
 
@@ -584,6 +584,8 @@ def populate_form_game_obtainability(cursor, force):
     for form_info in form_game_obtainability.values(): insert_into_table(cursor, "form_game_obtainability", **form_info)
 
 
+# TODO: This might not be needed for when you check last entered pokemon in db against highest poke num in info spreadsheet?
+    # Especially if you check highest poke_num across all applicable tables!
 def entry_exists(cursor, table, cols):
     where_clause = " AND ".join(f"{k} = ?" for k in cols)
     values = tuple(cols.values())
@@ -605,13 +607,13 @@ def get_sprite_types(cursor):
     cursor.execute("SELECT * FROM sprite_types")
     sprite_types = {}
     for row in cursor.fetchall():
-        sprite_types[row[0]] = row[1]
+        sprite_types[row["id"]] = row["name"]
     return sprite_types
 
 
 def get_poke_form_obtainability_records(cursor):
     cursor.execute("""
-        SELECT p.num, f.id, g.id, f.form_name, fgo.poke_num, p.name, g.name, g.gen, fgo.obtainable
+        SELECT p.num, f.id AS form_id, g.id AS game_id, f.form_name, fgo.poke_num, p.name AS poke_name, g.name AS game_name, g.gen, fgo.obtainable
         FROM form_game_obtainability fgo
         JOIN forms f ON fgo.form_id = f.id
         JOIN pokemon p ON fgo.poke_num = p.num
@@ -620,12 +622,12 @@ def get_poke_form_obtainability_records(cursor):
     forms = {}
     for row in cursor.fetchall():
         # (poke num, form id, game id) maps to form/poke/game info
-        forms[(row[0], row[1], row[2])] = { "form name" : row[3],
-                                            "poke num" : row[4],
-                                            "poke name" : row[5],
-                                            "game name" : row[6],
-                                            "game gen" : row[7],
-                                            "obtainable" : row[8]
+        forms[(row["num"], row["form_id"], row["game_id"])] = { "form name" : row["form_name"],
+                                                                "poke num" : row["poke_num"],
+                                                                "poke name" : row["poke_name"],
+                                                                "game name" : row["game_name"],
+                                                                "game gen" : row["gen"],
+                                                                "obtainable" : row["obtainable"]
         }
     return forms
 
@@ -687,7 +689,19 @@ def populate_sprite_obtainability(cursor):
 
 def get_sprites_obtainability_records(cursor):
     cursor.execute("""
-        SELECT p.num, f.id, g.id, s.id, so.poke_num, p.name, p.gen, g.gen, g.name, f.form_name, s.name, so.obtainable
+        SELECT 
+            p.num, 
+            f.id AS form_id, 
+            g.id AS game_id, 
+            s.id AS sprite_id, 
+            so.poke_num, 
+            p.name AS poke_name, 
+            p.gen AS poke_gen, 
+            g.gen AS game_gen, 
+            g.name AS game_name, 
+            f.form_name, 
+            s.name AS sprite_name, 
+            so.obtainable
         FROM sprite_obtainability so
         JOIN forms f ON so.form_id = f.id
         JOIN pokemon p ON so.poke_num = p.num
@@ -697,14 +711,14 @@ def get_sprites_obtainability_records(cursor):
     sprites = {}
     for row in cursor.fetchall():
         # (poke num, form id, game id, sprite id) maps to form/poke/game/sprite info
-        sprites[(row[0], row[1], row[2], row[3])] = {   "poke num" : row[4],
-                                                        "poke name" : row[5],
-                                                        "poke gen" : row[6],
-                                                        "game gen" : row[7],
-                                                        "game name" : row[8],
-                                                        "form name" : row[9],
-                                                        "sprite type": row[10],
-                                                        "obtainable" : row[11]
+        sprites[(row["num"], row["form_id"], row["game_id"], row["sprite_id"])] = { "poke num" : row["poke_num"],
+                                                                                    "poke name" : row["poke_name"],
+                                                                                    "poke gen" : row["poke_gen"],
+                                                                                    "game gen" : row["game_gen"],
+                                                                                    "game name" : row["game_name"],
+                                                                                    "form name" : row["form_name"],
+                                                                                    "sprite type": row["sprite_name"],
+                                                                                    "obtainable" : row["obtainable"]
         }
     return sprites
 
@@ -965,7 +979,7 @@ def get_all_pokeballs(cursor):
     pokeballs = {}
     for ball in data:
         # name: {}
-        pokeballs[ball[1]] = {"gen": ball[2], "exclusive to": ball[3]}
+        pokeballs[ball["id"]] = {"name": ball["name"], "gen": ball["gen"], "exclusive to": ball["game_exclusive"]}
     print(pokeballs)
     return pokeballs
 
@@ -975,7 +989,7 @@ def get_all_pokeball_img_types(cursor):
     data = cursor.fetchall()
     pokeball_img_types = {}
     for img_type in data:
-        pokeball_img_types[img_type[1]] = img_type[2]
+        pokeball_img_types[img_type["id"]] = {"name": img_type["name"], "gen": img_type["gen"]}
     print(pokeball_img_types)
     return pokeball_img_types
 
@@ -985,25 +999,28 @@ def populate_pokeball_filenames(cursor):
     pokeball_img_types = get_all_pokeball_img_types(cursor)
     filenames = []
 
-    for ball, ball_info in pokeballs.items():
-        for img_type, img_type_gen in pokeball_img_types.items():
+    for ball_id, ball_info in pokeballs.items():
+        for img_type_id, img_type_info in pokeball_img_types.items():
+            ball_name = ball_info["name"]
+            img_type_name = img_type_info["name"]
             # Certain img types only apply to certain balls
-            if img_type in POKEBALL_IMG_TYPE_APPLICABILITY and ball not in POKEBALL_IMG_TYPE_APPLICABILITY[img_type]: 
+            if img_type_name in POKEBALL_IMG_TYPE_APPLICABILITY and ball_name not in POKEBALL_IMG_TYPE_APPLICABILITY[img_type_name]: 
                 continue
-            # LA Exclusive balls should only have img types attributed to LA or HOME atm
-            if ball_info["exclusive to"] == "LA" and not any(platform in img_type for platform in ("HOME", "LA")):
+            # LA Exclusive balls should only have img types denoted for LA or HOME atm
+            if ball_info["exclusive to"] == "LA" and not any(platform in img_type_name for platform in ("HOME", "LA")):
                 continue
             # Ultra ball difference between Ruby_Sapphire and FRLG/Emerald
-            if ball == "Ultra Ball" and img_type == "Gen3":
-                filenames.append(f"{ball}-{img_type}-FRLGE")
-                filenames.append(f"{ball}-{img_type}-RS")
+            if ball_name == "Ultra Ball" and img_type_name == "Gen3":
+                filenames.append("Ultra Ball-Gen3-FRLGE")
+                filenames.append("Ultra Ball-Gen3-RS")
                 continue
-            if ball_info["gen"] <= img_type_gen:
-                filename = f"{ball}-{img_type}"
+            if ball_info["gen"] <= img_type_info["gen"]:
+                filename = f"{ball_name}-{img_type_name}"
                 filenames.append(filename)
 
     # TODO: Actually insert filenames into table
-    print (filenames)
+    for f in filenames:
+        print (f)
 
 
 
@@ -1013,6 +1030,7 @@ def populate_db(force=False):
         create_db()
 
     connection = sqlite3.connect(DB_PATH)
+    connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
 
     try:
@@ -1043,6 +1061,6 @@ def get_last_poke_num():
     connection = sqlite3.connect(DB_PATH)
     cursor = connection.cursor()
     cursor.execute("SELECT MAX(num) FROM pokemon")
-    max_num = cursor.fetchone()[0]
+    max_num = cursor.fetchone()["num"]
     connection.close()
     return max_num
