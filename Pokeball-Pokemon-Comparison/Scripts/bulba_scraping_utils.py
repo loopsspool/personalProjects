@@ -54,7 +54,8 @@ def scrape(allow_download=False):
     #scrape_game_imgs(allow_download)
     #scrape_drawn_imgs(allow_download)
     #scrape_home_sprite_imgs(allow_download)
-    scrape_home_menu_imgs(allow_download)
+    #scrape_home_menu_imgs(allow_download)
+    scrape_pokeballs(allow_download)
 
 
 def scrape_game_imgs(allow_download=False):
@@ -368,7 +369,7 @@ def drawn_translate(my_filename, poke_info):
     poke_num = poke_info[0]
     poke_num_leading_zeros = str(poke_num).zfill(4)
     poke_name = get_poke_name(poke_num)
-    if poke_num == 669: poke_name.replace("e", "\u00e9")    # Adjusting for flabebe proper name
+    if poke_num == 669: poke_name = poke_name.replace("e", "\u00e9")    # Adjusting for flabebe proper name
     bulba_drawn_filename = f"{poke_num_leading_zeros}{poke_name}"
     if poke_num == 29: bulba_drawn_filename = bulba_drawn_filename.replace(" f", "")
     if poke_num == 32: bulba_drawn_filename = bulba_drawn_filename.replace(" m", "")
@@ -392,22 +393,27 @@ def scrape_pokeballs(allow_download=False):
 
 
 def pokeball_translate(my_filename, pokeball_info):
-    # TODO: If pokeball, replace e with special one
-    # TODO: bulba_filename initialization needed? Can return at end? See once done
     bulba_filename = ""
     pokeball_name = get_pokeball_name(pokeball_info[0])
     img_type_name = get_pokeball_img_type_name(pokeball_info[1])
+    if pokeball_name == "Poke Ball" and img_type_name != "Drawn": pokeball_name = pokeball_name.replace("e", "\u00e9")
     if "-Bag" in img_type_name:
+        # NOTE: Hisuian pokeballs do not get any bulba denotion for bag sprites (so poke ball and hisuian poke ball are formatted the same), just that they are the only ones to exist in LA & HOME bag sprites...
+        if "-Hisui" in pokeball_name: pokeball_name = pokeball_name.replace("-Hisui", "")
         bag_platform = get_bulba_translated_pokeball_info(img_type_name)
         bulba_filename = f"Bag {pokeball_name} {bag_platform} Sprite.png"
-        return bulba_filename
-    if img_type_name == "PGL":
+    elif img_type_name == "PGL":
         bulba_filename = f"Dream {pokeball_name} Sprite.png"
-        return bulba_filename
-    if img_type_name == "Drawn":
-        # NOTE: No fancy pokeball e replacement here
+    elif img_type_name == "Drawn":
         no_space_ball_name = pokeball_name.replace(" ", "")
         bulba_filename = f"Sugimori{no_space_ball_name}.png"
+    else:
+        translation = get_bulba_translated_pokeball_info(img_type_name)
+        # Gen3 ultra ball different between games, adding on FRLGE or RS depending on which I'm looking for 
+        if pokeball_name == "Ultra Ball" and img_type_name == "Gen3": translation += f"-{my_filename.split("-")[-1]}"
+        bulba_filename = f"{pokeball_name} {translation}.png"
+    
+    return bulba_filename
 
 
 def get_bulba_translated_pokeball_info(info):
