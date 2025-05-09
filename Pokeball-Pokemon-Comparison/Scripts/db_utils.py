@@ -730,15 +730,12 @@ def seperate_sprite_type_if_shiny(sprite_type):
 
 
 def file_does_exist(filename, dir_file_list):
-    if len(dir_file_list) == 0: return False
+    # Keep .png first since it's most common img type for this
     file_ext = [".png"]
-    file_has_ext = filename[-4:] in file_ext
-    if file_has_ext :
-        if filename in dir_file_list: return True
-    else:   #  Checking all extensions in path
-        for ext in file_ext:
-            filename_w_ext = filename + ext
-            if filename_w_ext in dir_file_list: return True
+    #  Checking all extensions in path
+    for ext in file_ext:
+        filename_w_ext = filename + ext
+        if filename_w_ext in dir_file_list: return True
     return False
     
 
@@ -980,7 +977,6 @@ def get_all_pokeballs(cursor):
     for ball in data:
         # name: {}
         pokeballs[ball["id"]] = {"name": ball["name"], "gen": ball["gen"], "exclusive to": ball["game_exclusive"]}
-    print(pokeballs)
     return pokeballs
 
 
@@ -990,38 +986,45 @@ def get_all_pokeball_img_types(cursor):
     pokeball_img_types = {}
     for img_type in data:
         pokeball_img_types[img_type["id"]] = {"name": img_type["name"], "gen": img_type["gen"]}
-    print(pokeball_img_types)
     return pokeball_img_types
 
 
 def populate_pokeball_filenames(cursor):
+    from app_globals import pokeball_save_path
+
+    print("Populating pokeball filenames into database...")
+
     pokeballs = get_all_pokeballs(cursor)
     pokeball_img_types = get_all_pokeball_img_types(cursor)
-    filenames = []
 
+    pokeball_files = set(os.listdir(pokeball_save_path))
     for ball_id, ball_info in pokeballs.items():
         for img_type_id, img_type_info in pokeball_img_types.items():
-            ball_name = ball_info["name"]
-            img_type_name = img_type_info["name"]
-            # Certain img types only apply to certain balls
-            if img_type_name in POKEBALL_IMG_TYPE_APPLICABILITY and ball_name not in POKEBALL_IMG_TYPE_APPLICABILITY[img_type_name]: 
-                continue
-            # LA Exclusive balls should only have img types denoted for LA or HOME atm
-            if ball_info["exclusive to"] == "LA" and not any(platform in img_type_name for platform in ("HOME", "LA")):
-                continue
-            # Ultra ball difference between Ruby_Sapphire and FRLG/Emerald
-            if ball_name == "Ultra Ball" and img_type_name == "Gen3":
-                filenames.append("Ultra Ball-Gen3-FRLGE")
-                filenames.append("Ultra Ball-Gen3-RS")
-                continue
-            if ball_info["gen"] <= img_type_info["gen"]:
-                filename = f"{ball_name}-{img_type_name}"
-                filenames.append(filename)
+            filenames = generate_pokeball_filename(ball_info, img_type_info)
+            # Iterating bc generate pokeball filename returns a list, because if gen3 Ultra Ball theres inter-gen differences (ie multiple filenames)
+            for filename in filenames:
+                exists = file_does_exist(filename, pokeball_files)
+                file_ids = {"filename": filename, "pokeball_id": ball_id, "img_type_id": img_type_id, "does_exist": exists}
+                insert_into_table(cursor, "pokeball_filenames", **file_ids)
 
-    # TODO: Actually insert filenames into table
-    for f in filenames:
-        print (f)
 
+def generate_pokeball_filename(ball_info, img_type_info):
+    ball_name = ball_info["name"]
+    img_type_name = img_type_info["name"]
+
+    # Certain img types only apply to certain balls
+    if img_type_name in POKEBALL_IMG_TYPE_APPLICABILITY and ball_name not in POKEBALL_IMG_TYPE_APPLICABILITY[img_type_name]: 
+        return []
+    # LA Exclusive balls should only have img types denoted for LA or HOME atm
+    if ball_info["exclusive to"] == "LA" and not any(platform in img_type_name for platform in ("HOME", "LA")):
+        return []
+    # Ultra ball difference between Ruby_Sapphire and FRLG/Emerald
+    if ball_name == "Ultra Ball" and img_type_name == "Gen3":
+        return ["Ultra Ball-Gen3-FRLGE", "Ultra Ball-Gen3-RS"]
+    if ball_info["gen"] <= img_type_info["gen"]:
+        filename = f"{ball_name}-{img_type_name}"
+        return [filename]
+    return []
 
 
 # TODO: Add update function to update existing, sub, and alt status for all imgs
