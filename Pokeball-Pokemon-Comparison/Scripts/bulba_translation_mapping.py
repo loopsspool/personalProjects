@@ -1,6 +1,7 @@
 # TODO: Also put db_utils exclusions and exceptions into a seperate file
 ############################# BULBA TRANSLATORS #############################
 # These will be excluded if tried to run through the game sprite image downloader
+# TODO: Should change to lambdas to include basically all animated (except what? Gen5?   )
 BULBA_DOESNT_HAVE_GAME_IMGS_FOR = ["Gen9 SV", "Gen9_SV", "Gen8 BDSP", "Gen8_BDSP"]
 
 # Only allows male denoter on bulba translated file if these strings not in my filename
@@ -119,7 +120,7 @@ BULBA_DRAWN_DREAM_TYPE_MAP = {k: drawn_dream_translation(v.replace("-","")) for 
 # Drawn translations only used where bulba naming convention is different from my form naming convention, so if omitted, can assume it is using the form name
 # HOME Menu images will try to use drawn translations first, so if omitted assume it is using drawn translation or just form name
 # NOTE: Bulba naming convention whitespace will be converted to underscores when turned into a URL, allowing my multi-word forms seperated by underscores to match
-BULBA_TRANSLATION_MAP = {
+BULBA_POKE_FORM_TRANSLATION_MAP = {
     # Pikachu
     25: {
         "Game": {
@@ -1301,4 +1302,15 @@ BULBA_TRANSLATION_MAP = {
             "-Form_Normal": ""
         }
     }
+}
+
+
+BULBA_POKEBALL_TRANSLATION_MAP = {
+    # Image Types
+    "Bag": "",
+    "Bag_Gen4": "IV",
+    "Bag_HOME": "HOME",
+    "Bag_BDSP": "BDSP",
+    "Bag_LA": "LA",
+    "Bag_SV": "SV",
 }
