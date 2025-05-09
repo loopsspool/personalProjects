@@ -63,7 +63,8 @@ POKEBALL_IMG_TYPES = [
     {"name": "Gen4_Battle", "gen": 4},
     {"name": "Gen4_Summary", "gen": 4},
     {"name": "Gen5_Summary", "gen": 5},    # Only for pokeballs that had differences in gen 4
-    {"name": "Gen5_Battle", "gen": 5},  # TODO: Get animated and still
+    {"name": "Gen5_Battle", "gen": 5},
+    {"name": "Gen5_Battle-Animated", "gen": 5},
     {"name": "Gen6_Battle", "gen": 6},
     {"name": "Gen8", "gen": 8},
     {"name": "HOME", "gen": 1}, # Setting home to gen1 so it will apply to all pokeballs
