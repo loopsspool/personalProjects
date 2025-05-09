@@ -1313,4 +1313,19 @@ BULBA_POKEBALL_TRANSLATION_MAP = {
     "Bag_BDSP": "BDSP",
     "Bag_LA": "LA",
     "Bag_SV": "SV",
+    # PGL & Drawn handled individually in translate function
+    "Gen3": "III",
+    "Gen4_Battle": "battle IV",
+    "Gen4_Summary": "summary IV",
+    "Gen5_Summary": "summary V",
+    "Gen5_Battle": "battle V",
+    "Gen5_Battle-Animated": "battle V",
+    "Gen6_Battle": "battle 3DS",
+    "Gen7_Battle": "battle SMUSUM",
+    "Gen8": "VIII",
+    "LA_Summary": "summary LA",
+    "HOME": "HOME",
+
+    # Poke Balls
+
 }
