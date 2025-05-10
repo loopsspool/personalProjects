@@ -159,7 +159,7 @@ def create_db():
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL UNIQUE,
         gen INGEGER NOT NULL,
-        game_exclusive TEXT DEFAULT NULL
+        exclusive_to TEXT DEFAULT NULL
     );
     """)
 
@@ -1007,7 +1007,7 @@ def get_all_pokeballs(cursor):
     pokeballs = {}
     for ball in data:
         # name: {}
-        pokeballs[ball["id"]] = {"name": ball["name"], "gen": ball["gen"], "exclusive to": ball["game_exclusive"]}
+        pokeballs[ball["id"]] = {"name": ball["name"], "gen": ball["gen"], "exclusive_to": ball["exclusive_to"]}
     return pokeballs
 
 
@@ -1039,22 +1039,18 @@ def populate_pokeball_filenames(cursor):
                 insert_into_table(cursor, "pokeball_filenames", **file_ids)
 
 
-# TODO: May have to adapt strange ball since it was like a mid-gen introduction
-# TODO: Only has HOME and LA bag sprites if its in LA, and if not strange ball note as hisuian
-# TODO: Bag_BDSP Not on all?
-# TODO: Change exclusivity to just exclusive to, and checking platformm in exclusive to.split(", ")
+
 def generate_pokeball_filename(ball_info, img_type_info):
+    if should_exclude_pokeball_img(ball_info, img_type_info): return []
+
     ball_name = ball_info["name"]
     img_type_name = img_type_info["name"]
-
-    # TODO: Run POKEBALL_IMG_EXCEPTIONS
+    bulba_filename = f"{ball_name}-{img_type_name}"
     # Ultra ball difference between Ruby_Sapphire and FRLG/Emerald
     if ball_name == "Ultra Ball" and img_type_name == "Gen3":
-        return ["Ultra Ball-Gen3-FRLGE", "Ultra Ball-Gen3-RS"]
-    if img_type_info["gen"] <= ball_info["gen"]:
-        filename = f"{ball_name}-{img_type_name}"
-        return [filename]
-    return []
+        return [bulba_filename+"-FRLGE", bulba_filename+"-RS"]
+    
+    return [bulba_filename]
 
 
 # TODO: Add update function to update existing, sub, and alt status for all imgs
