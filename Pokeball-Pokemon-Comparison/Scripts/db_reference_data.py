@@ -27,17 +27,17 @@ POKEBALLS = [
     {"name": "Dream Ball", "gen": 5},
     {"name": "Beast Ball", "gen": 7},
     {"name": "Strange Ball", "gen": 8},
-    # TODO: Translated to Hisuian _____
+    # Hisuian
     {"name": "Poke Ball-Hisui", "gen": 8, "exclusive_to": "LA, HOME"},
     {"name": "Great Ball-Hisui", "gen": 8, "exclusive_to": "LA, HOME"},
     {"name": "Ultra Ball-Hisui", "gen": 8, "exclusive_to": "LA, HOME"},
-    {"name": "Feather Ball", "gen": 8, "exclusive_to": "LA, HOME"},
-    {"name": "Wing Ball", "gen": 8, "exclusive_to": "LA, HOME"},
-    {"name": "Jet Ball", "gen": 8, "exclusive_to": "LA, HOME"},
+    {"name": "Feather Ball-Hisui", "gen": 8, "exclusive_to": "LA, HOME"},
+    {"name": "Wing Ball-Hisui", "gen": 8, "exclusive_to": "LA, HOME"},
+    {"name": "Jet Ball-Hisui", "gen": 8, "exclusive_to": "LA, HOME"},
     {"name": "Heavy Ball-Hisui", "gen": 8, "exclusive_to": "LA, HOME"},
-    {"name": "Leaden Ball", "gen": 8, "exclusive_to": "LA, HOME"},
-    {"name": "Gigaton Ball", "gen": 8, "exclusive_to": "LA, HOME"},
-    {"name": "Origin Ball", "gen": 8, "exclusive_to": "LA, HOME"}
+    {"name": "Leaden Ball-Hisui", "gen": 8, "exclusive_to": "LA, HOME"},
+    {"name": "Gigaton Ball-Hisui", "gen": 8, "exclusive_to": "LA, HOME"},
+    {"name": "Origin Ball-Hisui", "gen": 8, "exclusive_to": "LA, HOME"}
 ]
 
 
@@ -50,26 +50,26 @@ POKEBALL_IMG_TYPE_APPLICABILITY = {
 
 
 GAMES_W_BALL_EXCLUSIVES = ["LA"]
-# TODO: if ball gen < 8, no Bag_HOME sprite
-# TODO: May have to adapt strange ball since it was like a mid-gen introduction
+
 # Certain img types only apply to certain balls
 # If lambda evaluates to True, will be excluded
 POKEBALL_IMG_EXCLUSIONS = {
     # Universal
     "ball_intoductory_gen_should_be_less_than_or_equal_to_img_type_gen": lambda ball_info, img_type_info: img_type_info["gen"] != -1 and img_type_info["gen"] < ball_info["gen"],
     "game_exclusive_balls_should_only_have_img_types_with_those_games_in_it": lambda ball_info, img_type_info: ball_info["exclusive_to"] is not None and not any(platform in img_type_info["name"] for platform in ball_info["exclusive_to"].split(", ")),
-    "non_game_exclusive_balls_should_not_be_included_in_exclusionary_games": lambda ball_info, img_type_info: ball_info["exclusive_to"] == None and any(game in img_type_info["name"] for game in GAMES_W_BALL_EXCLUSIVES),
-    
+    "non_game_exclusive_balls_should_not_be_included_in_exclusionary_games_except_strange_ball": lambda ball_info, img_type_info: ball_info["exclusive_to"] == None and any(game in img_type_info["name"] for game in GAMES_W_BALL_EXCLUSIVES) and ball_info["name"] != "Strange Ball",
+    "no_HOME_bag_sprites_for_pokeballs_introduced_before_gen8": lambda ball_info, img_type_info: ball_info["gen"] < 8 and img_type_info["name"] == "Bag_HOME",
+    "no_PGL_dream_imgs_after_discontinued_in_gen_7": lambda ball_info, img_type_info: ball_info["gen"] > 7 and img_type_info["name"] == "PGL",
 
     # Image types
     "gen4_bag_sprites_only_for_gen_4_diifferences": lambda ball_info, img_type_info: img_type_info["name"] == "Bag_Gen4" and ball_info["name"] not in ("Lure Ball", "Park Ball"),
     "gen5_summary_only_for_balls_w_gen_4_diifferences": lambda ball_info, img_type_info: img_type_info["name"] == "Gen5_Summary" and ball_info["name"] not in ("Lure Ball", "Park Ball"),
     "gen7_battle_only_for_beast_ball": lambda ball_info, img_type_info: img_type_info["name"] == "Gen7_Battle" and ball_info["name"] != "Beast Ball",
-    #"LA_img_types_only_for_balls_in_LA": lambda ball_info, img_type_info: "LA" in img_type_info["name"] and (ball_info["exclusive_to"] is None or "LA" not in ball_info["exclusive_to"]),
 
     # Balls
-    # Exclude strange ball from all but BDSP, HOME, LA, SV
-        # Exclude older instead of specifying newer so I dont have to change it for new game releases
+    # Putting this here so I dont have to make it game exclusive and add a new game every time one releases, since this ball is probably sticking around
+    # Also excluded older games for the same reason, so a newer game doesn't have to be explicitly added
+    "strange_ball_img_exclusions": lambda ball_info, img_type_info: ball_info["name"] == "Strange Ball" and img_type_info["name"] in ("Bag")
 }
 def should_exclude_pokeball_img(ball_info, img_type_info):
     for reason, exclusion in POKEBALL_IMG_EXCLUSIONS.items():
