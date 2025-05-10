@@ -28,18 +28,6 @@ opener.addheader('User-Agent', 'Mozilla/5.0')
 # Their links are only the info after this
 BULBA_FILE_STARTER_URL = "https://archives.bulbagarden.net/wiki/File:"
 
-    
-# TODO: Remove these
-BULBA_ARCHIVES_STARTER_URL = "https://archives.bulbagarden.net"
-def get_next_page_soup(curr_page_soup):
-    try:
-        next_page_url = curr_page_soup.find('a', string='next page').get('href')
-        next_page = requests.get(BULBA_ARCHIVES_STARTER_URL + next_page_url)
-        next_page_soup = BeautifulSoup(next_page.content, 'html.parser')
-        return next_page_soup
-    except:
-        return None
-
 
 def scrape(allow_download=False):
     scrape_game_imgs(allow_download)
