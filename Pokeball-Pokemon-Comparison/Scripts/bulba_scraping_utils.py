@@ -9,7 +9,6 @@ from db_utils import get_missing_poke_imgs_by_table, get_missing_pokeball_imgs, 
 from bulba_translation_mapping import *
 from app_globals import *
 from image_tools import *
-# from bulba_translators import potentially_adapt_game_in_filename
 
 # TODO: Maybe best to run to update db and spreadsheet after this finishes
     # If I do it inline, it'll be hard to populate substitutes
@@ -21,7 +20,7 @@ from image_tools import *
     # Otherwise bulba has a check on if the site is being web scraped and it will block the download
 # This is to mask the fact I'm webscraping
     # To use, call
-    # filename, headers = opener.retrieve(get_largest_png(img), gen8_menu_sprite_save_path + save_name)
+    # filename, headers = opener.retrieve(get_largest_png(img), path + save_name)
 opener = urllib.request.URLopener()
 opener.addheader('User-Agent', 'Mozilla/5.0')
 
@@ -47,7 +46,7 @@ def scrape_game_imgs(allow_download=False):
             # file == (my_file_naming_convention, bulba_url)
             bulba_game_sprite_filename_url = verify_translation_for_bulba_inconsistency(poke_info[0], file[0], file[1])
             my_filename = file[0] + ".png"
-            save_path = os.path.join(GAME_SPRITE_PATH, my_filename)
+            save_path = os.path.join(GAME_SPRITE_SAVE_PATH, my_filename)
             if allow_download:  # Putting this here in addition to the actual func, so dont try to open bulba pages to check for existence
                 get_bulba_img(bulba_game_sprite_filename_url, save_path, allow_download, has_animation=True)
 
