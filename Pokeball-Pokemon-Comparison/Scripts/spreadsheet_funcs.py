@@ -1,7 +1,9 @@
 import re
 import xlsxwriter
+import os
 
 from openpyxl import load_workbook
+from app_globals import PARENT_DIR
 
 # TODO: Run file checklist at end of each scrape? update when image found?
 # TODO: Make sure run new file checklist if new pokes added to poke_info sheet
@@ -69,9 +71,10 @@ def poke_isnt_in_game(poke_num, game):
     return not is_poke_in_game(poke_num, game)
 
 
+image_checklist_filepath = os.path.join(PARENT_DIR, 'Pokemon Images Checklist.xlsx')
 def create_file_checklist_spreadsheet():
     # This will always create a new file that overrides an existing one
-    workbook = xlsxwriter.Workbook('C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Pokemon Images Checklist.xlsx')
+    workbook = xlsxwriter.Workbook(image_checklist_filepath)
     game_sprite_availability_sheet = workbook.add_worksheet('Game Sprites')
     home_sprite_availability_sheet = workbook.add_worksheet('Home Sprites')
     drawn_availability_sheet = workbook.add_worksheet('Drawn')
@@ -260,10 +263,10 @@ def get_poke_tags(poke_name, filename):
 # TODO: Capitalize constants
 # TODO: Verify poke_info_last_row used instead of pokemon_files_sheet.max_row
 # Spreadsheet For Pokedex Info
-pokemon_info_sheet_path = 'C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Pokemon Info.xlsx'
+pokemon_info_sheet_path = os.path.join(PARENT_DIR, 'Pokemon Info.xlsx')
 pokemon_info_sheet = load_sheet_from_excel(pokemon_info_sheet_path)
 
-pokemon_files = load_workbook(filename = 'C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Pokemon Images Checklist.xlsx', data_only=True)
+pokemon_files = load_workbook(filename = image_checklist_filepath, data_only=True)
 pokemon_files_sheet = pokemon_files.worksheets[0]
 POKE_INFO_LAST_ROW = get_last_row(pokemon_info_sheet)
 poke_info_name_col = get_col_number(pokemon_info_sheet, "Name")
