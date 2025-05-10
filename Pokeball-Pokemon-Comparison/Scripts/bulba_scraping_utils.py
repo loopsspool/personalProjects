@@ -11,7 +11,6 @@ from bulba_translation_mapping import *
 from image_tools import *
 # from bulba_translators import potentially_adapt_game_in_filename
 
-# TODO: Maybe keep track of images on a page that are downloaded and if another matches a pattern have an alt for it? (see primal kyogre gen6ORAS and gen7SM)
 # TODO: Maybe best to run to update db and spreadsheet after this finishes
     # If I do it inline, it'll be hard to populate substitutes
     # I guess I could write a function to do so, think about it
@@ -79,8 +78,8 @@ def translate_all_filenames_to_bulba_url(filename_dict, translate_func):
         print(f"\rTranslating #{poke_info[0]} filenames to bulba urls...", end='', flush=True)
         bulba_urls = []
         for my_filename in files:
-            # Right now this filters out SV & BDSP Sprites since bulba doesnt have them
-            if bulba_doesnt_have_game_images_for(my_filename):
+            # Right now this filters out SV & BDSP Sprites, and animateds > Gen5 since bulba doesnt have them
+            if bulba_doesnt_have_images_for(my_filename):
                 continue
             bulba_filename = translate_func(my_filename, poke_info)
             bulba_filename_url = convert_bulba_filename_to_url(bulba_filename)
@@ -95,7 +94,6 @@ def convert_bulba_filename_to_url(bulba_filename):
     return (BULBA_FILE_STARTER_URL + bulba_filename.replace(" ", "_"))
 
 
-# TODO: Exclude images w NOT_IN_MAP_SET, DO_BY_HAND, etc
 def get_bulba_img(url, save_path, allow_download, has_animation=False):
     img_exists, img_page_soup = bulba_img_exists(url)
     if not img_exists:
@@ -141,9 +139,13 @@ def bulba_img_exists(url):
     return (img_exists, img_page_soup)
 
 
-def bulba_doesnt_have_game_images_for(my_filename):
+def bulba_doesnt_have_images_for(my_filename):
     for exclusion in BULBA_DOESNT_HAVE_GAME_IMGS_FOR:
         if exclusion in my_filename:
+            if exclusion == "-Animated":
+                # Allowing Gen2-5 Animated Sprites and Pokeballs (HOME will be excluded)
+                if any(gen in my_filename for gen in ("Gen2", "Gen3", "Gen4", "Gen5")):
+                    return False
             return True
     return False
 
@@ -205,21 +207,12 @@ def get_bulba_translated_species_form(poke_info, my_filename, map_type):
     form_id = poke_info[1]
     form_name = get_form_name(form_id)
 
-    # Keep above universal form check, otherwise may return empty string
-    # Doing these by hand because they aren't clearly marked in bulba
-    # TODO: Check these arent considered back sprites in bulba, see wikidex for true back sprite if so
-        # If nowhere to be found, check in HOME
-    if "-Show_Stamp" in my_filename:
-        return("-DO_BY_HAND")
-
     # No widespread universal forms combined with species forms, the few exceptions have their own form id/name associated with it
     if form_name in UNIVERSAL_FORMS:
         return("")
 
     if poke_num in BULBA_POKE_FORM_TRANSLATION_MAP:
         for form, translation in BULBA_POKE_FORM_TRANSLATION_MAP[poke_num][map_type].items():
-            # TODO: Changed this from checking my_filename to form_name, make sure it didnt break anything
-                # I think I'll have to remove all hyphens from Drawn & Menu dicts bc -West isnt in -Form_West
             if form in form_name:
                 # If Unown, adjust bulba translation as needed, see NOTE above function if need more info
                 if poke_num == 201 and map_type == "Game":

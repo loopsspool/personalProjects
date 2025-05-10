@@ -1,8 +1,8 @@
 # TODO: Also put db_utils exclusions and exceptions into a seperate file
 ############################# BULBA TRANSLATORS #############################
 # These will be excluded if tried to run through the game sprite image downloader
-# TODO: Should change to lambdas to include basically all animated (except what? Gen5?   )
-BULBA_DOESNT_HAVE_GAME_IMGS_FOR = ["Gen9 SV", "Gen9_SV", "Gen8 BDSP", "Gen8_BDSP"]
+# Animated gets processed further in bulba_scraping_utils to only filter animated > Gen5/HOME
+BULBA_DOESNT_HAVE_GAME_IMGS_FOR = ["Gen9 SV", "Gen9_SV", "Gen8 BDSP", "Gen8_BDSP", "-Animated"]
 
 # Only allows male denoter on bulba translated file if these strings not in my filename
 # MUST KEEP SPACE AND UNDERSCORE -- No easy way to get gen when calling this, and dont want gen1 to filter gen10
@@ -1324,8 +1324,5 @@ BULBA_POKEBALL_TRANSLATION_MAP = {
     "Gen7_Battle": "battle SMUSUM",
     "Gen8": "VIII",
     "LA_Summary": "summary LA",
-    "HOME": "HOME",
-
-    # Poke Balls
-
+    "HOME": "HOME"
 }
