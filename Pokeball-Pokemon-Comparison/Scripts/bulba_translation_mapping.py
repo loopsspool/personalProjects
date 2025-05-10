@@ -1308,11 +1308,11 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
 BULBA_POKEBALL_TRANSLATION_MAP = {
     # Image Types
     "Bag": "",
-    "Bag_Gen4": "IV",
-    "Bag_HOME": "HOME",
-    "Bag_BDSP": "BDSP",
-    "Bag_LA": "LA",
-    "Bag_SV": "SV",
+    "Bag_Gen4": " IV",
+    "Bag_HOME": " HOME",
+    "Bag_BDSP": " BDSP",
+    "Bag_LA": " LA",
+    "Bag_SV": " SV",
     # PGL & Drawn handled individually in translate function
     "Gen3": "III",
     "Gen4_Battle": "battle IV",

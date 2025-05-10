@@ -396,17 +396,22 @@ def pokeball_translate(my_filename, pokeball_info):
     bulba_filename = ""
     pokeball_name = get_pokeball_name(pokeball_info[0])
     img_type_name = get_pokeball_img_type_name(pokeball_info[1])
+
     if pokeball_name == "Poke Ball" and img_type_name != "Drawn": pokeball_name = pokeball_name.replace("e", "\u00e9")
-    if "-Bag" in img_type_name:
-        # NOTE: Hisuian pokeballs do not get any bulba denotion for bag sprites (so poke ball and hisuian poke ball are formatted the same), just that they are the only ones to exist in LA & HOME bag sprites...
-        if "-Hisui" in pokeball_name: pokeball_name = pokeball_name.replace("-Hisui", "")
+    # NOTE: Hisuian pokeballs do not get any bulba denotion for bag sprites (so poke ball and hisuian poke ball are formatted the same), just that they are the only ones to exist in LA & HOME bag sprites...
+    if "-Hisui" in pokeball_name and any(types in img_type_name for types in ("-Bag", "LA_Summary")): pokeball_name = pokeball_name.replace("-Hisui", "")
+    
+    if "Bag" in img_type_name:
         bag_platform = get_bulba_translated_pokeball_info(img_type_name)
-        bulba_filename = f"Bag {pokeball_name} {bag_platform} Sprite.png"
+        bulba_filename = f"Bag {pokeball_name}{bag_platform} Sprite.png"
     elif img_type_name == "PGL":
         bulba_filename = f"Dream {pokeball_name} Sprite.png"
     elif img_type_name == "Drawn":
         no_space_ball_name = pokeball_name.replace(" ", "")
         bulba_filename = f"Sugimori{no_space_ball_name}.png"
+    elif "-Hisui" in pokeball_name and img_type_name == "HOME":
+        pokeball_name = pokeball_name.replace("-Hisui", "")
+        bulba_filename = f"Hisuian {pokeball_name} HOME.png"
     else:
         translation = get_bulba_translated_pokeball_info(img_type_name)
         # Gen3 ultra ball different between games, adding on FRLGE or RS depending on which I'm looking for 
