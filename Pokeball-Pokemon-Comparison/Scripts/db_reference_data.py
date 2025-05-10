@@ -28,16 +28,16 @@ POKEBALLS = [
     {"name": "Beast Ball", "gen": 7},
     {"name": "Strange Ball", "gen": 8},
     # TODO: Translated to Hisuian _____
-    {"name": "Poke Ball-Hisui", "gen": 8, "game_exclusive": "LA, HOME"},
-    {"name": "Great Ball-Hisui", "gen": 8, "game_exclusive": "LA, HOME"},
-    {"name": "Ultra Ball-Hisui", "gen": 8, "game_exclusive": "LA, HOME"},
-    {"name": "Feather Ball", "gen": 8, "game_exclusive": "LA, HOME"},
-    {"name": "Wing Ball", "gen": 8, "game_exclusive": "LA, HOME"},
-    {"name": "Jet Ball", "gen": 8, "game_exclusive": "LA, HOME"},
-    {"name": "Heavy Ball-Hisui", "gen": 8, "game_exclusive": "LA, HOME"},
-    {"name": "Leaden Ball", "gen": 8, "game_exclusive": "LA, HOME"},
-    {"name": "Gigaton Ball", "gen": 8, "game_exclusive": "LA, HOME"},
-    {"name": "Origin Ball", "gen": 8, "game_exclusive": "LA, HOME"}
+    {"name": "Poke Ball-Hisui", "gen": 8, "exclusive_to": "LA, HOME"},
+    {"name": "Great Ball-Hisui", "gen": 8, "exclusive_to": "LA, HOME"},
+    {"name": "Ultra Ball-Hisui", "gen": 8, "exclusive_to": "LA, HOME"},
+    {"name": "Feather Ball", "gen": 8, "exclusive_to": "LA, HOME"},
+    {"name": "Wing Ball", "gen": 8, "exclusive_to": "LA, HOME"},
+    {"name": "Jet Ball", "gen": 8, "exclusive_to": "LA, HOME"},
+    {"name": "Heavy Ball-Hisui", "gen": 8, "exclusive_to": "LA, HOME"},
+    {"name": "Leaden Ball", "gen": 8, "exclusive_to": "LA, HOME"},
+    {"name": "Gigaton Ball", "gen": 8, "exclusive_to": "LA, HOME"},
+    {"name": "Origin Ball", "gen": 8, "exclusive_to": "LA, HOME"}
 ]
 
 
@@ -49,36 +49,46 @@ POKEBALL_IMG_TYPE_APPLICABILITY = {
 }
 
 
+GAMES_W_BALL_EXCLUSIVES = ["LA"]
+# TODO: if ball gen < 8, no Bag_HOME sprite
+# TODO: May have to adapt strange ball since it was like a mid-gen introduction
 # Certain img types only apply to certain balls
-POKEBALL_IMG_EXCEPTIONS = {
+# If lambda evaluates to True, will be excluded
+POKEBALL_IMG_EXCLUSIONS = {
     # Universal
-    # Exclusive balls should only have img types denoted for their exclusive platforms
-    # if ball_info["exclusive to"] and not any(platform in img_type_name for platform in ball_info["exclusive to"]):
-    #     return []
+    "ball_intoductory_gen_should_be_less_than_or_equal_to_img_type_gen": lambda ball_info, img_type_info: img_type_info["gen"] != -1 and img_type_info["gen"] < ball_info["gen"],
+    "game_exclusive_balls_should_only_have_img_types_with_those_games_in_it": lambda ball_info, img_type_info: ball_info["exclusive_to"] is not None and not any(platform in img_type_info["name"] for platform in ball_info["exclusive_to"].split(", ")),
+    "non_game_exclusive_balls_should_not_be_included_in_exclusionary_games": lambda ball_info, img_type_info: ball_info["exclusive_to"] == None and any(game in img_type_info["name"] for game in GAMES_W_BALL_EXCLUSIVES),
+    
 
     # Image types
     "gen4_bag_sprites_only_for_gen_4_diifferences": lambda ball_info, img_type_info: img_type_info["name"] == "Bag_Gen4" and ball_info["name"] not in ("Lure Ball", "Park Ball"),
     "gen5_summary_only_for_balls_w_gen_4_diifferences": lambda ball_info, img_type_info: img_type_info["name"] == "Gen5_Summary" and ball_info["name"] not in ("Lure Ball", "Park Ball"),
     "gen7_battle_only_for_beast_ball": lambda ball_info, img_type_info: img_type_info["name"] == "Gen7_Battle" and ball_info["name"] != "Beast Ball",
-    "LA_summary_only_for_balls_in_LA": lambda ball_info, img_type_info: img_type_info["name"] == "LA_Summary" and "LA" not in ball_info["game_exclusive"],
+    #"LA_img_types_only_for_balls_in_LA": lambda ball_info, img_type_info: "LA" in img_type_info["name"] and (ball_info["exclusive_to"] is None or "LA" not in ball_info["exclusive_to"]),
 
     # Balls
     # Exclude strange ball from all but BDSP, HOME, LA, SV
         # Exclude older instead of specifying newer so I dont have to change it for new game releases
 }
+def should_exclude_pokeball_img(ball_info, img_type_info):
+    for reason, exclusion in POKEBALL_IMG_EXCLUSIONS.items():
+        if exclusion(ball_info, img_type_info): return True
+    return False
 
 
+# Gen refers to when img_sprite was introduced, balls should be less than or equal to this in order to have that sprite
+# Gen -1 means it applies to all balls regardless of generation
 POKEBALL_IMG_TYPES = [
-    # For bag sprites, gen is referring to how far back the balls go 
-    {"name": "Bag", "gen": 1},
+    {"name": "Bag", "gen": -1},
     {"name": "Bag_Gen4", "gen": 4},   # This is for some gen4 exlusive differences (lure ball, park ball)
     {"name": "Bag_HOME", "gen": 8}, # So far this only applies to exclusively gen 8 balls (I assume the rest were recycled into home via game bag sprites)
-    {"name": "Bag_BDSP", "gen": 1},
+    {"name": "Bag_BDSP", "gen": -1},
     {"name": "Bag_LA", "gen": 8},
-    {"name": "Bag_SV", "gen": 1},
+    {"name": "Bag_SV", "gen": -1},
 
-    {"name": "PGL", "gen": 1}, # Pokemon global link (Dream)
-    {"name": "Drawn", "gen": 1}, # Drawn (Sugimori)
+    {"name": "PGL", "gen": -1}, # Pokemon global link (Dream)
+    {"name": "Drawn", "gen": -1}, # Drawn (Sugimori)
 
     {"name": "Gen3", "gen": 3},
     {"name": "Gen4_Battle", "gen": 4},
@@ -89,7 +99,7 @@ POKEBALL_IMG_TYPES = [
     {"name": "Gen6_Battle", "gen": 6},
     {"name": "Gen7_Battle", "gen": 7},  # Only for beast ball since introduced in gen7
     {"name": "Gen8", "gen": 8},
-    {"name": "LA_Summary", "gen": 8}
-    {"name": "HOME", "gen": 1}, # Setting home to gen1 so it will apply to all pokeballs
+    {"name": "LA_Summary", "gen": 8},
+    {"name": "HOME", "gen": -1}, # Setting home to gen1 so it will apply to all pokeballs
 
 ]
