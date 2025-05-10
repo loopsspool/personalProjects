@@ -50,11 +50,11 @@ def get_next_page_soup(curr_page_soup):
 
 
 def scrape(allow_download=False):
-    #scrape_game_imgs(allow_download)
+    scrape_game_imgs(allow_download)
     #scrape_drawn_imgs(allow_download)
     #scrape_home_sprite_imgs(allow_download)
     #scrape_home_menu_imgs(allow_download)
-    scrape_pokeballs(allow_download)
+    #scrape_pokeballs(allow_download)
 
 
 def scrape_game_imgs(allow_download=False):
@@ -240,7 +240,6 @@ def adjust_translation_for_unown(my_filename, translation):
     return translation
 
 
-# TODO: Adjust the likes of cap pikachu
 # is_game_sprite necessary since both game sprites and home sprites are run through this, game sprites have m denoter where applicable, home sprites never do
 def get_gender_denoter(poke_num, my_filename, is_game_sprite):
     has_f_var = has_f_form(poke_num)
@@ -259,6 +258,9 @@ def include_male_denoter(my_filename):
             return False
     # No universal forms w gender differences, except excpetions (Hisuian Sneasel f)
     if universal_form_in_filename(my_filename) and not f_exception_poke_in_filename(my_filename):
+        return False
+    # No f version cosplay/cap pikachu
+    if "0025" in my_filename and any(form in my_filename for form in ("-Form_Cap", "-Form_Cosplay")):
         return False
     return True
 
