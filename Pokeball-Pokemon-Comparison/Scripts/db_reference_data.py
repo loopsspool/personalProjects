@@ -77,6 +77,7 @@ def should_exclude_pokeball_img(ball_info, img_type_info):
     return False
 
 
+# TODO: Add gen2 images?
 # Gen refers to when img_sprite was introduced, balls should be less than or equal to this in order to have that sprite
 # Gen -1 means it applies to all balls regardless of generation
 POKEBALL_IMG_TYPES = [
