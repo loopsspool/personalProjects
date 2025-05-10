@@ -7,7 +7,7 @@ import os
 from json_utils import *
 from db_utils import get_missing_poke_imgs_by_table, get_missing_pokeball_imgs, has_f_form, get_form_id, get_form_name, get_poke_name, get_pokeball_name, get_pokeball_img_type_name
 from bulba_translation_mapping import *
-# from app_globals import *
+from app_globals import *
 from image_tools import *
 # from bulba_translators import potentially_adapt_game_in_filename
 
@@ -25,20 +25,12 @@ from image_tools import *
 opener = urllib.request.URLopener()
 opener.addheader('User-Agent', 'Mozilla/5.0')
 
-PARENT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-POKE_URL_JSON_PATH = os.path.join(PARENT_DIR, "game_sprite_urls_by_poke.json")
 # Their links are only the info after this
-BULBA_ARCHIVES_STARTER_URL = "https://archives.bulbagarden.net"
 BULBA_FILE_STARTER_URL = "https://archives.bulbagarden.net/wiki/File:"
-# TODO: Import these from app_globals
-GAME_SPRITE_PATH = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Game Sprites\\"
-DRAWN_SAVE_PATH = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Drawn\\"
-HOME_SAVE_PATH = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\HOME Sprites\\"
-HOME_MENU_SAVE_PATH = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Menu Sprites\\HOME\\"
-POKEBALL_SAVE_PATH = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokeballs\\"
-# https://archives.bulbagarden.net/wiki/Category:Pok%C3%A9mon_artwork
 
     
+# TODO: Remove these
+BULBA_ARCHIVES_STARTER_URL = "https://archives.bulbagarden.net"
 def get_next_page_soup(curr_page_soup):
     try:
         next_page_url = curr_page_soup.find('a', string='next page').get('href')
@@ -325,7 +317,7 @@ def home_menu_translate(my_filename, poke_info):
     poke_num_leading_zeros = str(poke_num).zfill(4)
     home_menu_filename = f"Menu HOME {poke_num_leading_zeros}"
     # Urshifu order doesn't matter because no gigantamax home menu sprites
-    # TODO: But also doesn't have form menu sprites either? See if thats the case for others
+    # TODO: But also doesn't have form menu sprites either? See if thats the case for others after download
     home_menu_filename += get_bulba_translated_universal_form(my_filename, DRAWN_IMAGES_UNIVERSAL_FORMS_MAP)
     home_menu_filename += get_home_menu_translated_species_form(poke_info, my_filename)
     home_menu_filename += ".png"
