@@ -1,15 +1,6 @@
 import os
 import shutil
-
-
-game_sprite_path = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Game Sprites\\"
-animated_pngs_pre_gif_conversion_path = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Game Sprites\\animated_pngs_for_gifs\\pngs\\Converted to gif\\"
-gifs_post_conversion_path = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Game Sprites\\animated_pngs_for_gifs\\gifs\\"
-test_path = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Test\\"
-staging_path = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Game Sprites\\staging\\"
-drawn_path = "C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\Drawn\\"
-file_ext = ""
-
+from app_globals import *
 
 def add_leading_zero(path):
     files = os.listdir(path)
@@ -35,10 +26,15 @@ def replace_in_filename(path, replace, replace_with, just_print=False):
 
 
 def replace_filename_in_all_dirs(replace, replace_with, just_print=False):
-    replace_in_filename(game_sprite_path, replace, replace_with, just_print)
-    replace_in_filename(staging_path, replace, replace_with, just_print)
-    replace_in_filename(animated_pngs_pre_gif_conversion_path, replace, replace_with, just_print)
-    replace_in_filename(gifs_post_conversion_path, replace, replace_with, just_print)
+    replace_in_filename(GAME_SPRITE_SAVE_PATH, replace, replace_with, just_print)
+    replace_in_filename(DRAWN_SAVE_PATH, replace, replace_with, just_print)
+    replace_in_filename(HOME_SAVE_PATH, replace, replace_with, just_print)
+    replace_in_filename(HOME_MENU_SAVE_PATH, replace, replace_with, just_print)
+    replace_in_filename(POKEBALL_SAVE_PATH, replace, replace_with, just_print)
+    replace_in_filename(ANIMATED_PNGS_PRE_GIF_CONVERSION_PATH, replace, replace_with, just_print)
+    replace_in_filename(GIFS_POST_CONVERSION_PATH, replace, replace_with, just_print)
+    replace_in_filename(TEST_PATH, replace, replace_with, just_print)
+    replace_in_filename(STAGING_PATH, replace, replace_with, just_print)
 
 
 def print_files_with(path, s):
@@ -49,7 +45,12 @@ def print_files_with(path, s):
 
 
 def print_files_with_from_all_dirs(s):
-    print_files_with(game_sprite_path, s)
-    print_files_with(staging_path, s)
-    print_files_with(animated_pngs_pre_gif_conversion_path, s)
-    print_files_with(gifs_post_conversion_path, s)
+    print_files_with(GAME_SPRITE_SAVE_PATH, s)
+    print_files_with(DRAWN_SAVE_PATH, s)
+    print_files_with(HOME_SAVE_PATH, s)
+    print_files_with(HOME_MENU_SAVE_PATH, s)
+    print_files_with(POKEBALL_SAVE_PATH, s)
+    print_files_with(ANIMATED_PNGS_PRE_GIF_CONVERSION_PATH, s)
+    print_files_with(GIFS_POST_CONVERSION_PATH, s)
+    print_files_with(TEST_PATH, s)
+    print_files_with(STAGING_PATH, s)
