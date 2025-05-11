@@ -1,13 +1,16 @@
-import re
 import xlsxwriter
 import os
-
 from openpyxl import load_workbook
+
 from app_globals import PARENT_DIR
 
 # TODO: Run file checklist at end of each scrape? update when image found?
 # TODO: Make sure run new file checklist if new pokes added to poke_info sheet
 
+
+#|================================================================================================|
+#|~~~~~~~~~~~~~~~~~~~~~~~~~~[     GENERAL SPREADSHEET FUNCTIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+#|================================================================================================|
 
 def normalize_empty_in_sheet(sheet):
     for row in sheet.iter_rows():
@@ -59,21 +62,33 @@ def sheet_pretty_print(sheet):
         print("\t".join(str(cell) if cell is not None else "None" for cell in row))
 
 
+
+
+#|================================================================================================|
+#|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     POKEMON FUNCTIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+#|================================================================================================|
+
 def is_poke_in_game(poke_num, game):
     if isinstance(poke_num, int): poke_num = str(poke_num).zfill(4)
-    game_availability_col = get_col_number(pokemon_info_sheet, game)
+    game_availability_col = get_col_number(POKEMON_INFO_SHEET, game)
     for row in range(2, POKE_INFO_LAST_ROW+1):
-        if str(cell_value(pokemon_info_sheet, row, poke_info_num_col)) == poke_num:
-            return isnt_empty(pokemon_info_sheet, row, game_availability_col)
+        if str(cell_value(POKEMON_INFO_SHEET, row, POKE_INFO_NUM_COL)) == poke_num:
+            return isnt_empty(POKEMON_INFO_SHEET, row, game_availability_col)
         
 
 def poke_isnt_in_game(poke_num, game):
     return not is_poke_in_game(poke_num, game)
 
 
-image_checklist_filepath = os.path.join(PARENT_DIR, 'Pokemon Images Checklist.xlsx')
+
+
+#|================================================================================================|
+#|~~~~~~~~~~~~~~~~~~~~~~~~~~~[     IMAGE CHECKLIST SPREADSHEET     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+#|================================================================================================|
+
 def create_file_checklist_spreadsheet():
     # This will always create a new file that overrides an existing one
+    image_checklist_filepath = os.path.join(PARENT_DIR, 'Pokemon Images Checklist.xlsx')
     workbook = xlsxwriter.Workbook(image_checklist_filepath)
     game_sprite_availability_sheet = workbook.add_worksheet('Game Sprites')
     home_sprite_availability_sheet = workbook.add_worksheet('Home Sprites')
@@ -108,8 +123,6 @@ def create_file_checklist_spreadsheet():
     # Home Menu Imgs availability
     write_availability(workbook, home_menu_sprite_availability_sheet, formats, table="home_menu_filenames")
 
-
-
     print("Spreadsheet finished!")
     print("Finalizing spreadsheet close...")
     workbook.close()
@@ -133,7 +146,6 @@ def generate_header_row(workbook, worksheet, is_game_sprites=False):
             game_cols[game_name] = col_num
             worksheet.set_column(col_num, col_num, len(str(game_name)) + 1)    # Setting column width, 1 is for padding
             col_num += 1
-
         return game_cols
     else:
         worksheet.write(0, 3, "Available")
@@ -150,7 +162,6 @@ def write_availability(workbook, worksheet, formats, table):
         all_file_info = get_non_game_filename_info(table)
 
     longest_values = {"num": 4, "name": 0, "tags": 0}
-
     prev_poke_num = 0
     is_new_poke = True
 
@@ -260,30 +271,23 @@ def get_poke_tags(poke_name, filename):
     return tags
 
 
-# TODO: Capitalize constants
-# TODO: Verify poke_info_last_row used instead of pokemon_files_sheet.max_row
-# Spreadsheet For Pokedex Info
-pokemon_info_sheet_path = os.path.join(PARENT_DIR, 'Pokemon Info.xlsx')
-pokemon_info_sheet = load_sheet_from_excel(pokemon_info_sheet_path)
 
-pokemon_files = load_workbook(filename = image_checklist_filepath, data_only=True)
-pokemon_files_sheet = pokemon_files.worksheets[0]
-POKE_INFO_LAST_ROW = get_last_row(pokemon_info_sheet)
-poke_info_name_col = get_col_number(pokemon_info_sheet, "Name")
-poke_info_num_col = get_col_number(pokemon_info_sheet, "#")
-poke_info_gen_col = get_col_number(pokemon_info_sheet, "Gen")
-poke_info_f_col = get_col_number(pokemon_info_sheet, "Female Variation")
-poke_info_mega_col = get_col_number(pokemon_info_sheet, "Mega")
-poke_info_giganta_col = get_col_number(pokemon_info_sheet, "Gigantamax")
-poke_info_reg_forms_col = get_col_number(pokemon_info_sheet, "Regional Forms")
-poke_info_misc_forms_col = get_col_number(pokemon_info_sheet, "Misc Forms")
-poke_info_lgpe_col = get_col_number(pokemon_info_sheet, "LGPE")
-poke_info_swsh_col = get_col_number(pokemon_info_sheet, "SwSh")
-poke_info_bdsp_col = get_col_number(pokemon_info_sheet, "BDSP")
-poke_info_la_col = get_col_number(pokemon_info_sheet, "LA")
-poke_info_sv_col = get_col_number(pokemon_info_sheet, "SV")
-# TODO: Add drawn and menu sprites
-poke_files_num_col = get_col_number(pokemon_files_sheet, "#")
-poke_files_name_col = get_col_number(pokemon_files_sheet, "Name")
-poke_files_tags_col = get_col_number(pokemon_files_sheet, "Tags")
-poke_files_filename_col = get_col_number(pokemon_files_sheet, "Filename")
+
+
+#|================================================================================================|
+#|~~~~~~~~~~~~~~~~~~~~~~~~~~[     GLOBAL  POKE INFO CONSTANTS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+#|================================================================================================|
+
+# Spreadsheet for Pokedex Info (pokemon, f/region/mega/giganta variants, megas, species forms, game exclusivity, etc)
+POKEMON_INFO_SHEET_PATH = os.path.join(PARENT_DIR, 'Pokemon Info.xlsx')
+POKEMON_INFO_SHEET = load_sheet_from_excel(POKEMON_INFO_SHEET_PATH)
+
+POKE_INFO_LAST_ROW = get_last_row(POKEMON_INFO_SHEET)
+POKE_INFO_NAME_COL = get_col_number(POKEMON_INFO_SHEET, "Name")
+POKE_INFO_NUM_COL = get_col_number(POKEMON_INFO_SHEET, "#")
+POKE_INFO_GEN_COL = get_col_number(POKEMON_INFO_SHEET, "Gen")
+POKE_INFO_F_COL = get_col_number(POKEMON_INFO_SHEET, "Female Variation")
+POKE_INFO_MEGA_COL = get_col_number(POKEMON_INFO_SHEET, "Mega")
+POKE_INFO_GIGANTA_COL = get_col_number(POKEMON_INFO_SHEET, "Gigantamax")
+POKE_INFO_REG_FORMS_COL = get_col_number(POKEMON_INFO_SHEET, "Regional Forms")
+POKE_INFO_MISC_FORMS_COL = get_col_number(POKEMON_INFO_SHEET, "Misc Forms")
