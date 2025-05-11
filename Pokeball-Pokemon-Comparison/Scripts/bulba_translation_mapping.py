@@ -1,5 +1,9 @@
 # TODO: Also put db_utils exclusions and exceptions into a seperate file
-############################# BULBA TRANSLATORS #############################
+
+#|================================================================================================|
+#|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     GAME IMAGE TRANSLATIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+#|================================================================================================|
+
 # These will be excluded if tried to run through the game sprite image downloader
 # Animated gets processed further in bulba_scraping_utils to only filter animated > Gen5/HOME
 BULBA_DOESNT_HAVE_GAME_IMGS_FOR = ["Gen9 SV", "Gen9_SV", "Gen8 BDSP", "Gen8_BDSP", "-Animated"]
@@ -35,7 +39,6 @@ BULBA_GAME_MAP = {
 }
 
 
-
 # NOTE: If poke num here, cannot also be in BULBA_GAMES_SPECIFIC_FORM_MAP
 # NOTE: If there's spaces, replace them with an underscore for the url
 BULBA_GAME_INCONSISTENCIES = {
@@ -43,6 +46,12 @@ BULBA_GAME_INCONSISTENCIES = {
     #201: { "-Form_A": ["A", "-A", ""]}
 }
 
+
+
+
+#|================================================================================================|
+#|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     UNIVERSAL TRANSLATIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+#|================================================================================================|
 
 # This is to filter out these forms when translating species forms
 # The exceptions that have a universal AND species form (See 555 Galarian Darmanitan Zen form) have their own unique form id generated in db_utils > FORM_EXCEPTION_POKEMON
@@ -85,6 +94,12 @@ DRAWN_IMAGES_UNIVERSAL_FORMS_MAP = {
     "-Gigantamax": "-Gigantamax"
 }
 
+
+
+
+#|================================================================================================|
+#|~~~~~~~~~~~~~~~~~~~~~~~~~~~[     SPECIES FORM TRANSLATIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+#|================================================================================================|
 
 BULBA_TYPE_FORM_MAP = {
     "-Form_Normal": "",  # Normal form considered default: so does not have a letter denoter
@@ -1304,6 +1319,12 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
     }
 }
 
+
+
+
+#|================================================================================================|
+#|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     POKEBALL TRANSLATIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+#|================================================================================================|
 
 BULBA_POKEBALL_TRANSLATION_MAP = {
     # Image Types
