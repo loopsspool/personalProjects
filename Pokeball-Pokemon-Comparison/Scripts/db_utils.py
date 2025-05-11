@@ -4,8 +4,9 @@ import importlib
 from collections import defaultdict
 from contextlib import contextmanager
 
-from file_utils import game_sprite_path
+from app_globals import *
 from db_reference_data import *
+from spreadsheet_funcs import *
 
 PARENT_DIR = os.path.join(os.getcwd(), os.pardir)
 DB_NAME = "pokedex.db"
@@ -368,22 +369,12 @@ def has_f_form(poke_num, cursor=None):
     else: return False
 
 
-# To cache dynamically imported funcs from spreadsheet_utils so it only imports once
-# Necessary to avoid circular import
-_module_cache = {}
-def lazy_import(module_name):
-    if module_name not in _module_cache:
-        _module_cache[module_name] = importlib.import_module(module_name)
-    return _module_cache[module_name]
-
-
 def db_exists():
     return os.path.exists(DB_PATH)
 
 
 def populate_pokes(cursor):
     print("Populating Pokemon into database...")
-    from spreadsheet_funcs import POKE_INFO_LAST_ROW, cell_value, POKEMON_INFO_SHEET, POKE_INFO_NUM_COL, POKE_INFO_NAME_COL, POKE_INFO_GEN_COL
 
     # Grabbing information from pokemon info spreadsheet
     for row in range(2, POKE_INFO_LAST_ROW + 1):
@@ -411,7 +402,6 @@ def denote_forms(forms, denotion):
 
 
 def get_forms_from_excel(row):
-    from spreadsheet_funcs import cell_value, isnt_empty, POKEMON_INFO_SHEET, POKE_INFO_NUM_COL, POKE_INFO_REG_FORMS_COL, POKE_INFO_MISC_FORMS_COL, POKE_INFO_F_COL, POKE_INFO_MEGA_COL, POKE_INFO_GIGANTA_COL
     forms = []
     poke_num = int(cell_value(POKEMON_INFO_SHEET, row, POKE_INFO_NUM_COL))
     regional_form_field = cell_value(POKEMON_INFO_SHEET, row, POKE_INFO_REG_FORMS_COL)
@@ -454,7 +444,6 @@ SHARED_SHINY_FORMS = {  774: ["-Form_Core"],
 }
 def populate_forms(cursor):
     print("Populating forms into database...")
-    from spreadsheet_funcs import POKE_INFO_LAST_ROW
 
     for row in range(2, POKE_INFO_LAST_ROW + 1): 
         poke_num = row-1
@@ -542,11 +531,11 @@ def populate_games(cursor):
 
 FORM_EXCLUSIONS = {
     # Species game availability
-    "filtering_for_LGPE_dex_if_needed": lambda poke_form, game: game["name"] == "LGPE" and lazy_import("spreadsheet_funcs").poke_isnt_in_game(poke_form["poke num"], "LGPE"),
-    "filtering_for_SwSh_dex_if_needed": lambda poke_form, game: game["name"] == "SwSh" and lazy_import("spreadsheet_funcs").poke_isnt_in_game(poke_form["poke num"], "SwSh"),
-    "filtering_for_BDSP_dex_if_needed": lambda poke_form, game: game["name"] == "BDSP" and lazy_import("spreadsheet_funcs").poke_isnt_in_game(poke_form["poke num"], "BDSP"),
-    "filtering_for_LA_dex_if_needed": lambda poke_form, game: game["name"] == "LA" and lazy_import("spreadsheet_funcs").poke_isnt_in_game(poke_form["poke num"], "LA"),
-    "filtering_for_SV_dex_if_needed": lambda poke_form, game: game["name"] == "SV" and lazy_import("spreadsheet_funcs").poke_isnt_in_game(poke_form["poke num"], "SV"),
+    "filtering_for_LGPE_dex_if_needed": lambda poke_form, game: game["name"] == "LGPE" and poke_isnt_in_game(poke_form["poke num"], "LGPE"),
+    "filtering_for_SwSh_dex_if_needed": lambda poke_form, game: game["name"] == "SwSh" and poke_isnt_in_game(poke_form["poke num"], "SwSh"),
+    "filtering_for_BDSP_dex_if_needed": lambda poke_form, game: game["name"] == "BDSP" and poke_isnt_in_game(poke_form["poke num"], "BDSP"),
+    "filtering_for_LA_dex_if_needed": lambda poke_form, game: game["name"] == "LA" and poke_isnt_in_game(poke_form["poke num"], "LA"),
+    "filtering_for_SV_dex_if_needed": lambda poke_form, game: game["name"] == "SV" and poke_isnt_in_game(poke_form["poke num"], "SV"),
 
     # Universal Rules
     "no_pokemon_with_a_higher_generation_than_game_generation": lambda poke_form, game: poke_form["poke gen"] > game["gen"],
@@ -820,7 +809,8 @@ def generate_game_filename(sprite_info):
     return filename
 
 
-ALL_GAME_SPRITE_FILES = set(os.listdir(game_sprite_path))
+# TODO: Move these to app_globals?
+ALL_GAME_SPRITE_FILES = set(os.listdir(GAME_SPRITE_SAVE_PATH))
 def populate_game_filenames(cursor, force=False):
     print("Populating game filenames into database...")
     all_sprites = get_sprites_obtainability_records(cursor)
@@ -863,10 +853,9 @@ def change_substitution_field_from_filename_to_file_id(cursor, sub_names_to_conv
 
 
 def populate_home_filenames(cursor):
-    from app_globals import home_save_path
     print("Populating HOME sprite filenames into database...")
 
-    home_sprites_files = set(os.listdir(home_save_path))
+    home_sprites_files = set(os.listdir(HOME_SAVE_PATH))
     poke_forms = get_poke_form_records(cursor)
     sprite_types = get_sprite_types(cursor)
 
@@ -901,10 +890,9 @@ def generate_home_filename(poke_info, sprite_type):
 
 
 def populate_home_menu_filenames(cursor):
-    from app_globals import home_menu_sprite_path
     print("Populating home menu sprites into database...")
 
-    home_menu_sprite_files = set(os.listdir(home_menu_sprite_path))
+    home_menu_sprite_files = set(os.listdir(HOME_MENU_SAVE_PATH))
     poke_forms = get_poke_form_records(cursor)
     for poke_form, poke_info in poke_forms.items():
         if should_exclude_menu_poke_form(poke_info): continue
@@ -940,10 +928,9 @@ def generate_home_menu_filename(poke_info):
 
 
 def populate_drawn_filenames(cursor):
-    from app_globals import drawn_save_path
     print("Populating drawn filenames into database...")
 
-    drawn_files = set(os.listdir(drawn_save_path))
+    drawn_files = set(os.listdir(DRAWN_SAVE_PATH))
     poke_forms = get_poke_form_records(cursor)
     for poke_form, poke_info in poke_forms.items():
         filenames = generate_drawn_filenames(poke_info, cursor)    # generate_drawn_filenames actually returns a list, usually len==1, but if its a female it has to generate a male filename too
@@ -1019,14 +1006,12 @@ def get_all_pokeball_img_types(cursor):
 
 
 def populate_pokeball_filenames(cursor):
-    from app_globals import pokeball_save_path
-
     print("Populating pokeball filenames into database...")
 
     pokeballs = get_all_pokeballs(cursor)
     pokeball_img_types = get_all_pokeball_img_types(cursor)
 
-    pokeball_files = set(os.listdir(pokeball_save_path))
+    pokeball_files = set(os.listdir(POKEBALL_SAVE_PATH))
     for ball_id, ball_info in pokeballs.items():
         for img_type_id, img_type_info in pokeball_img_types.items():
             filenames = generate_pokeball_filename(ball_info, img_type_info)
