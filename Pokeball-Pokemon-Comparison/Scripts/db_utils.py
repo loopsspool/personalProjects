@@ -383,14 +383,14 @@ def db_exists():
 
 def populate_pokes(cursor):
     print("Populating Pokemon into database...")
-    from spreadsheet_funcs import POKE_INFO_LAST_ROW, cell_value, pokemon_info_sheet, poke_info_num_col, poke_info_name_col, poke_info_gen_col
+    from spreadsheet_funcs import POKE_INFO_LAST_ROW, cell_value, POKEMON_INFO_SHEET, POKE_INFO_NUM_COL, POKE_INFO_NAME_COL, POKE_INFO_GEN_COL
 
     # Grabbing information from pokemon info spreadsheet
     for row in range(2, POKE_INFO_LAST_ROW + 1):
         num = row - 1
-        num_as_str = str(cell_value(pokemon_info_sheet, row, poke_info_num_col))
-        name = cell_value(pokemon_info_sheet, row, poke_info_name_col)
-        gen = cell_value(pokemon_info_sheet, row, poke_info_gen_col)
+        num_as_str = str(cell_value(POKEMON_INFO_SHEET, row, POKE_INFO_NUM_COL))
+        name = cell_value(POKEMON_INFO_SHEET, row, POKE_INFO_NAME_COL)
+        gen = cell_value(POKEMON_INFO_SHEET, row, POKE_INFO_GEN_COL)
         insert_into_table(cursor, "pokemon", **{"num": num, "num_as_text": num_as_str, "name": name, "gen": gen})
 
 
@@ -411,18 +411,18 @@ def denote_forms(forms, denotion):
 
 
 def get_forms_from_excel(row):
-    from spreadsheet_funcs import cell_value, isnt_empty, pokemon_info_sheet, poke_info_num_col, poke_info_reg_forms_col, poke_info_misc_forms_col, poke_info_f_col, poke_info_mega_col, poke_info_giganta_col
+    from spreadsheet_funcs import cell_value, isnt_empty, POKEMON_INFO_SHEET, POKE_INFO_NUM_COL, POKE_INFO_REG_FORMS_COL, POKE_INFO_MISC_FORMS_COL, POKE_INFO_F_COL, POKE_INFO_MEGA_COL, POKE_INFO_GIGANTA_COL
     forms = []
-    poke_num = int(cell_value(pokemon_info_sheet, row, poke_info_num_col))
-    regional_form_field = cell_value(pokemon_info_sheet, row, poke_info_reg_forms_col)
-    misc_form_field = cell_value(pokemon_info_sheet, row, poke_info_misc_forms_col)
+    poke_num = int(cell_value(POKEMON_INFO_SHEET, row, POKE_INFO_NUM_COL))
+    regional_form_field = cell_value(POKEMON_INFO_SHEET, row, POKE_INFO_REG_FORMS_COL)
+    misc_form_field = cell_value(POKEMON_INFO_SHEET, row, POKE_INFO_MISC_FORMS_COL)
 
     if has_default_form(poke_num): forms.append("Default")
-    if isnt_empty(pokemon_info_sheet, row, poke_info_f_col): forms.append("-f")
-    if isnt_empty(pokemon_info_sheet, row, poke_info_mega_col): forms.append("-Mega")
-    if isnt_empty(pokemon_info_sheet, row, poke_info_giganta_col): forms.append("-Gigantamax")
-    if isnt_empty(pokemon_info_sheet, row, poke_info_reg_forms_col): forms.extend(denote_forms(regional_form_field, "-Region_"))
-    if isnt_empty(pokemon_info_sheet, row, poke_info_misc_forms_col): forms.extend(denote_forms(misc_form_field, "-Form_"))
+    if isnt_empty(POKEMON_INFO_SHEET, row, POKE_INFO_F_COL): forms.append("-f")
+    if isnt_empty(POKEMON_INFO_SHEET, row, POKE_INFO_MEGA_COL): forms.append("-Mega")
+    if isnt_empty(POKEMON_INFO_SHEET, row, POKE_INFO_GIGANTA_COL): forms.append("-Gigantamax")
+    if isnt_empty(POKEMON_INFO_SHEET, row, POKE_INFO_REG_FORMS_COL): forms.extend(denote_forms(regional_form_field, "-Region_"))
+    if isnt_empty(POKEMON_INFO_SHEET, row, POKE_INFO_MISC_FORMS_COL): forms.extend(denote_forms(misc_form_field, "-Form_"))
 
     return forms
 
@@ -615,8 +615,6 @@ def populate_form_game_obtainability(cursor, force):
     for form_info in form_game_obtainability.values(): insert_into_table(cursor, "form_game_obtainability", **form_info)
 
 
-# TODO: This might not be needed for when you check last entered pokemon in db against highest poke num in info spreadsheet?
-    # Especially if you check highest poke_num across all applicable tables!
 def entry_exists(cursor, table, cols):
     where_clause = " AND ".join(f"{k} = ?" for k in cols)
     values = tuple(cols.values())
@@ -1054,6 +1052,10 @@ def generate_pokeball_filename(ball_info, img_type_info):
 
 
 # TODO: Add update function to update existing, sub, and alt status for all imgs
+# def update_file_existence(cursor=None):
+#     with get_cursor(cursor) as cur:
+
+
 def populate_db(force=False):
     if not db_exists():
         create_db()
