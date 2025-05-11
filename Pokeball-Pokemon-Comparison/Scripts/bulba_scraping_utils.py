@@ -5,7 +5,7 @@ import re   # For filtering what images to download
 import os
 
 from json_utils import *
-from db_utils import get_missing_poke_imgs_by_table, get_missing_pokeball_imgs, has_f_form, get_form_id, get_form_name, get_poke_name, get_pokeball_name, get_pokeball_img_type_name
+from db_utils import get_missing_poke_imgs_by_table, get_missing_pokeball_imgs, has_f_form, get_form_name, get_poke_name, get_pokeball_name, get_pokeball_img_type_name
 from bulba_translation_mapping import *
 from app_globals import *
 from image_tools import *
@@ -36,20 +36,11 @@ def scrape(allow_download=False):
     #scrape_pokeballs(allow_download)
 
 
-def scrape_game_imgs(allow_download=False):
-    missing_imgs_dict = get_missing_poke_imgs_by_table("obtainable_game_filenames")
-    translated_missing_imgs = translate_all_filenames_to_bulba_url(missing_imgs_dict, bulba_game_sprite_translate)
 
-    for poke_info, files in translated_missing_imgs.items():
-        for file in files:
-            # poke_info == (poke_num, form_id)
-            # file == (my_file_naming_convention, bulba_url)
-            bulba_game_sprite_filename_url = verify_translation_for_bulba_inconsistency(poke_info[0], file[0], file[1])
-            my_filename = file[0] + ".png"
-            save_path = os.path.join(GAME_SPRITE_SAVE_PATH, my_filename)
-            if allow_download:  # Putting this here in addition to the actual func, so dont try to open bulba pages to check for existence
-                get_bulba_img(bulba_game_sprite_filename_url, save_path, allow_download, has_animation=True)
 
+#|================================================================================================|
+#|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     UNIVERSAL TRANSLATIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+#|================================================================================================|
 
 def translate_all_filenames_to_bulba_url(filename_dict, translate_func):
     for poke_info, files in filename_dict.items():
@@ -72,6 +63,41 @@ def translate_all_filenames_to_bulba_url(filename_dict, translate_func):
 def convert_bulba_filename_to_url(bulba_filename):
     return (BULBA_FILE_STARTER_URL + bulba_filename.replace(" ", "_"))
 
+
+# Mega and regional forms, not gigantamax (bc urshifu, see dict in file for more)
+def get_bulba_translated_universal_form(my_filename, mapping):
+    for u_form, translation in mapping.items():
+        if u_form in my_filename: return(translation)
+    return ("")
+
+
+def get_bulba_translated_species_form(poke_info, my_filename, map_type):
+    poke_num = poke_info[0]
+    form_id = poke_info[1]
+    form_name = get_form_name(form_id)
+
+    # No widespread universal forms combined with species forms, the few exceptions have their own form id/name associated with it
+    if form_name in UNIVERSAL_FORMS:
+        return("")
+
+    if poke_num in BULBA_POKE_FORM_TRANSLATION_MAP:
+        for form, translation in BULBA_POKE_FORM_TRANSLATION_MAP[poke_num][map_type].items():
+            if form in form_name:
+                # If Unown, adjust bulba translation as needed, see NOTE above function if need more info
+                if poke_num == 201 and map_type == "Game":
+                    translation = adjust_translation_for_unown(my_filename, translation)
+                return(translation)
+    
+    if map_type not in ("Drawn", "Menu"):   # Drawn/HOME Menu forms will frequently omit forms to just run my filename
+        print(f"Couldn't search for image to download... No respective form in map set for \t{my_filename}")
+    return("-FORM_NOT_IN_MAP_SET")
+
+
+
+
+#|================================================================================================|
+#|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     DOWNLOADING FUNCTIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+#|================================================================================================|
 
 def get_bulba_img(url, save_path, allow_download, has_animation=False):
     img_exists, img_page_soup = bulba_img_exists(url)
@@ -129,6 +155,27 @@ def bulba_doesnt_have_images_for(my_filename):
     return False
 
 
+
+
+#|================================================================================================|
+#|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     GAME IMAGES     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+#|================================================================================================|
+
+def scrape_game_imgs(allow_download=False):
+    missing_imgs_dict = get_missing_poke_imgs_by_table("obtainable_game_filenames")
+    translated_missing_imgs = translate_all_filenames_to_bulba_url(missing_imgs_dict, bulba_game_sprite_translate)
+
+    for poke_info, files in translated_missing_imgs.items():
+        for file in files:
+            # poke_info == (poke_num, form_id)
+            # file == (my_file_naming_convention, bulba_url)
+            bulba_game_sprite_filename_url = verify_translation_for_bulba_inconsistency(poke_info[0], file[0], file[1])
+            my_filename = file[0] + ".png"
+            save_path = os.path.join(GAME_SPRITE_SAVE_PATH, my_filename)
+            if allow_download:  # Putting this here in addition to the actual func, so dont try to open bulba pages to check for existence
+                get_bulba_img(bulba_game_sprite_filename_url, save_path, allow_download, has_animation=True)
+
+
 # NOTE: If pokemon has LOTS of forms, this func will probably be too slow. If searching less than say, 30 images probably fine. If more, hardcode probably
 # NOTE: poke num limited to 3 digits here since time of writing inconsistency was for game sprites
 def verify_translation_for_bulba_inconsistency(poke_num, my_filename, url):
@@ -172,35 +219,6 @@ def get_bulba_translated_game(my_filename):
             game = game.replace(" ", "_")
         if game in my_filename:
             return(f" {translation}")
-        
-
-# Mega and regional forms, not gigantamax (bc urshifu, see dict in file for more)
-def get_bulba_translated_universal_form(my_filename, mapping):
-    for u_form, translation in mapping.items():
-        if u_form in my_filename: return(translation)
-    return ("")
-
-
-def get_bulba_translated_species_form(poke_info, my_filename, map_type):
-    poke_num = poke_info[0]
-    form_id = poke_info[1]
-    form_name = get_form_name(form_id)
-
-    # No widespread universal forms combined with species forms, the few exceptions have their own form id/name associated with it
-    if form_name in UNIVERSAL_FORMS:
-        return("")
-
-    if poke_num in BULBA_POKE_FORM_TRANSLATION_MAP:
-        for form, translation in BULBA_POKE_FORM_TRANSLATION_MAP[poke_num][map_type].items():
-            if form in form_name:
-                # If Unown, adjust bulba translation as needed, see NOTE above function if need more info
-                if poke_num == 201 and map_type == "Game":
-                    translation = adjust_translation_for_unown(my_filename, translation)
-                return(translation)
-    
-    if map_type not in ("Drawn", "Menu"):   # Drawn/HOME Menu forms will frequently omit forms to just run my filename
-        print(f"Couldn't search for image to download... No respective form in map set for \t{my_filename}")
-    return("-FORM_NOT_IN_MAP_SET")
 
 
 # NOTE: I hate to hardcode it this way, but attempting 2-3 page opens just to find the right name (via verify_bulba_inconsistency func)
@@ -262,6 +280,12 @@ def f_exception_poke_in_filename(my_filename):
     return False
 
 
+
+
+#|================================================================================================|
+#|~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     SCRAPING FOR NON-GAME IMAGES     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+#|================================================================================================|
+
 def scraping_if_no_extra_steps_needed(filename_table, translate_func, has_animation, allow_download, save_path):
     missing_imgs_dict = get_missing_poke_imgs_by_table(filename_table) if filename_table != "pokeball_filenames" else get_missing_pokeball_imgs()
     translated_missing_imgs = translate_all_filenames_to_bulba_url(missing_imgs_dict, translate_func)
@@ -275,6 +299,12 @@ def scraping_if_no_extra_steps_needed(filename_table, translate_func, has_animat
             if allow_download:  # Putting this here in addition to the actual func, so func doesnt try to open bulba pages to check for existence
                 get_bulba_img(file[1], save_path, allow_download, has_animation)
 
+
+
+
+#|================================================================================================|
+#|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     HOME IMAGES     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+#|================================================================================================|
 
 def scrape_home_sprite_imgs(allow_download=False):
     # NOTE: has_animation set to true (because it does, just not in bulba), if it were false and missing it would just download the still
@@ -295,6 +325,12 @@ def home_sprite_translate(my_filename, poke_info):
     return(home_sprite_filename)
 
 
+
+
+#|================================================================================================|
+#|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     HOME MENU IMAGES     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+#|================================================================================================|
+
 def scrape_home_menu_imgs(allow_download=False):
     scraping_if_no_extra_steps_needed("home_menu_filenames", home_menu_translate, False, allow_download, HOME_MENU_SAVE_PATH)
 
@@ -310,6 +346,7 @@ def home_menu_translate(my_filename, poke_info):
     home_menu_filename += ".png"
     return home_menu_filename
     
+
 def get_home_menu_translated_species_form(poke_info, my_filename):
     poke_num = poke_info[0]
     form_id = poke_info[1]
@@ -334,6 +371,12 @@ def get_home_menu_translated_species_form(poke_info, my_filename):
     else:
         return(form_translation)
 
+
+
+
+#|================================================================================================|
+#|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     DRAWN IMAGES     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+#|================================================================================================|
 
 def scrape_drawn_imgs(allow_download=False):
     scraping_if_no_extra_steps_needed("drawn_filenames", drawn_translate, False, allow_download, DRAWN_SAVE_PATH)
@@ -360,6 +403,12 @@ def drawn_translate(my_filename, poke_info):
         bulba_drawn_filename = bulba_drawn_filename.replace("0","",1) 
     return bulba_drawn_filename
 
+
+
+
+#|================================================================================================|
+#|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     POKEBALL IMAGES     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+#|================================================================================================|
 
 def scrape_pokeballs(allow_download=False):
     # Setting animated to True for gen5_Battle-Animated
