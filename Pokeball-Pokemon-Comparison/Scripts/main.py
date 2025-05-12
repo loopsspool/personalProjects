@@ -1,7 +1,7 @@
 import os
 
 from app_globals import DB_PATH
-from db_utils import populate_db, get_last_poke_num
+from db_utils import populate_db, update_file_existence, get_last_poke_num
 from spreadsheet_utils import create_file_checklist_spreadsheet, cell_value, POKEMON_INFO_SHEET, POKE_INFO_LAST_ROW, POKE_INFO_NUM_COL
 from bulba_scraping_utils import bulba_scrape
 
@@ -25,7 +25,7 @@ from bulba_scraping_utils import bulba_scrape
 def main():
     # NOTE: If program crashes a lot like last one, write this to a txt file. Each new pokemon would rewrite the line of the file where it picked up
     poke_num_start_scraping_from = 1
-    poke_to_go_after_start_num = 5
+    poke_to_go_after_start_num = 1
 
     valid_start_poke_num, valid_stop_poke_num = validate_context(poke_num_start_scraping_from, poke_to_go_after_start_num)
     # TODO: Update file_exists field in db before scraping
@@ -40,11 +40,10 @@ def main():
 #|================================================================================================|
 
 def validate_context(start_num, num_after_start, force_update=False):
-    # If database doesn't exist, create & populate it. Or update it if forced
     if not os.path.exists(DB_PATH) or force_update or db_isnt_current():
-        populate_db()
-    # else:
-    #     TODO: Update file existence in filename tables
+        populate_db(force_update)   # Will always rewrite filename tables, so also checks if any files were downloaded. Only skips existing form game obtainabailitty records bc its slow, new records will still be added (even on old pokes)
+    else:
+        update_file_existence()     # Checks to see if any images were downloaded
 
     return verify_start_stop_scraping_poke_nums(start_num, num_after_start)
 
@@ -53,7 +52,6 @@ def validate_context(start_num, num_after_start, force_update=False):
 def db_isnt_current():
     print("Confirming database is up to date...")
 
-    # TODO: Add a pokemon_info spreadsheet save datetime check? Save datetime of last spreadsheet save in a file and if when this function is run again it doesnt match, update pokedex
     if info_sheet_has_more_pokes_than_db():
         print("Pokemon Information sheet more current than database, preparing to update database...")
         return True
@@ -69,7 +67,6 @@ def info_sheet_has_more_pokes_than_db():
     return False
     
 
-# TODO: Have all functions utilize the start and to go after start denoters
 def verify_start_stop_scraping_poke_nums(start, num_after):
     last_db_poke_num = get_last_poke_num()
 
@@ -77,7 +74,6 @@ def verify_start_stop_scraping_poke_nums(start, num_after):
     if start > last_db_poke_num: start = last_db_poke_num
     if num_after < 1: num_after=0
     if start + num_after > last_db_poke_num: num_after = last_db_poke_num - start
-    # TODO: Needed? Implement Start & go after and see
     stop = start + num_after
 
     return start, stop

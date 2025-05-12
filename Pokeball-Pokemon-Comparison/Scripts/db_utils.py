@@ -220,15 +220,44 @@ def populate_db(force=False):
         connection.close()
 
 
-# TODO: Add update function to update existing, sub, and alt status for all imgs
-# def update_file_existence(cursor=None):
-#     with get_cursor(cursor) as cur:
+def update_file_existence():
+    print("Updating database if there were any downloads since last execution...")
+
+    connection = sqlite3.connect(DB_PATH)
+    connection.row_factory = sqlite3.Row
+    cursor = connection.cursor()
+
+    update_game_files_existence(cursor)
+    update_non_game_files_existence("home_filenames", ALL_SAVED_HOME_SPRITES, cursor)
+    update_non_game_files_existence("home_menu_filenames", ALL_SAVED_HOME_MENU_IMAGES, cursor)
+    update_non_game_files_existence("drawn_filenames", ALL_SAVED_DRAWN_IMAGES, cursor)
+    update_non_game_files_existence("pokeball_filenames", ALL_SAVED_POKEBALL_IMAGES, cursor)
+
+    connection.commit()
+    connection.close()
+    
 
 
 
 #|================================================================================================|
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~[     DATABASE UNIVERSAL COMMANDS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
+
+@contextmanager
+def get_cursor(passed_cur=None):
+    if passed_cur is not None:
+        yield passed_cur
+    else:
+        connection = sqlite3.connect(DB_PATH)
+        connection.row_factory = sqlite3.Row
+        cur = connection.cursor()
+        try:
+            yield cur
+        finally:
+            connection.commit()
+            cur.close()
+            connection.close()
+
 
 def insert_into_table(cursor, table, **data):
     cols = ", ".join(data.keys())
@@ -246,20 +275,42 @@ def insert_into_both_form_tables(cursor, form_name, poke_num):
     insert_into_table(cursor, "poke_forms", **{"poke_num": poke_num, "form_id": form_id})
 
 
-@contextmanager
-def get_cursor(passed_cur=None):
-    if passed_cur is not None:
-        yield passed_cur
-    else:
-        connection = sqlite3.connect(DB_PATH)
-        connection.row_factory = sqlite3.Row
-        cur = connection.cursor()
-        try:
-            yield cur
-        finally:
-            connection.commit()
-            cur.close()
-            connection.close()
+# TODO: Change all execute statements to parameter substition instead of inserting into f string (this converts None <-> Null properly)
+def update_game_files_existence(cursor=None):
+    with get_cursor(cursor) as cur:
+        cur.execute("SELECT * FROM obtainable_game_filenames")
+        obtainable_game_filename_data = cur.fetchall()
+        for record in obtainable_game_filename_data:
+            does_exist, substitution = check_for_usable_game_file(record["filename"], True)     # True parameter bc obtainable game sprites will always be obtainable (duh)
+            sub_id = get_game_filename_id(cur, substitution) if substitution!=None else None
+            has_alt = file_exists(substitution + "-Alt", ALL_SAVED_GAME_SPRITES) if sub_id!=None else file_exists(record["filename"] + "-Alt", ALL_SAVED_GAME_SPRITES)
+            if does_exist != record["does_exist"] or sub_id != record["substitution_id"] or has_alt != record["has_alt"]:
+                # Updating obtainable game filenames table
+                cur.execute("""
+                                UPDATE obtainable_game_filenames 
+                                SET does_exist = ?, substitution_id = ?, has_alt = ?
+                                WHERE id = ?
+                """, (does_exist, sub_id, has_alt, record["id"]))
+                # Updating all game filenames table
+                cur.execute("""
+                                UPDATE all_game_filenames 
+                                SET does_exist = ?, substitution_id = ?, has_alt = ?
+                                WHERE id = ?
+                """, (does_exist, sub_id, has_alt, record["id"]))
+
+
+def update_non_game_files_existence(table, set_of_saved_imgs, cursor=None):
+    with get_cursor(cursor) as cur:
+        cur.execute(f"SELECT * FROM {table}")
+        table_data = cur.fetchall()
+        for record in table_data:
+            does_exist = file_exists(record["filename"], set_of_saved_imgs)
+            if does_exist != record["does_exist"]:
+                cur.execute(f"""
+                                UPDATE {table} 
+                                SET does_exist = ?
+                                WHERE id = ?
+                """, (does_exist, record["id"]))
 
 
 
@@ -786,7 +837,7 @@ def populate_game_filenames(cursor, force=False):
     for sprite_id, sprite_info in all_sprites.items():
         print(f"\rGenerating pokemon #{sprite_info["poke num"]} game filenames...", end='', flush=True)
         filename = generate_game_filename(sprite_info)
-        does_exist, substitution = check_for_usable_game_file(filename, sprite_info)
+        does_exist, substitution = check_for_usable_game_file(filename, sprite_info["obtainable"])
         has_sub = 1 if substitution!=None else None     # Temp marking to set in substitution field until I can get subs file id
         has_alt = file_exists(substitution + "-Alt", ALL_SAVED_GAME_SPRITES) if has_sub else file_exists(filename + "-Alt", ALL_SAVED_GAME_SPRITES)
 
@@ -823,8 +874,8 @@ def edit_substitution_field(cursor, record):
     cursor.execute(f"UPDATE obtainable_game_filenames SET substitution_id = {substitution_id} WHERE id = {record["file_id"]}")
 
 
-def check_for_usable_game_file(filename, sprite_info):
-    if not sprite_info["obtainable"]:
+def check_for_usable_game_file(filename, obtainable):
+    if not obtainable:
         return None, None
     if file_exists(filename, ALL_SAVED_GAME_SPRITES):
         return True, None

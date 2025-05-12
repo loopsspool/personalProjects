@@ -10,11 +10,6 @@ from bulba_translation_mapping import *
 from app_globals import *
 from image_tools import *
 
-# TODO: Maybe best to run to update db and spreadsheet after this finishes
-    # If I do it inline, it'll be hard to populate substitutes
-    # I guess I could write a function to do so, think about it
-    # *** If crashes, db wont be updated and this'll download them again
-        # AT VERY LEAST have update function for db get called before running this
 
 # NOTE: ALL DOWNLOADS MUST BE DONE IN THE FASHION BELOW
     # Otherwise bulba has a check on if the site is being web scraped and it will block the download
