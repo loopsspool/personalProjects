@@ -6,6 +6,11 @@ import os
 #|================================================================================================|
 
 PARENT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+
+# Database
+DB_NAME = "pokedex.db"
+DB_PATH = os.path.join(PARENT_DIR, DB_NAME)
+
 # Actual save paths
 GAME_SPRITE_SAVE_PATH = os.path.join(PARENT_DIR, "Images\\Pokemon\\Game Sprites\\")
 DRAWN_SAVE_PATH = os.path.join(PARENT_DIR, "Images\\Pokemon\\Drawn\\")
