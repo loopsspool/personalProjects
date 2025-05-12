@@ -6,6 +6,22 @@ import re   # To check each name is formatted properly
 import time     # To simulate a pause between each page opening
 import os.path   # To skip a file if it already exists
 
+
+# ====================================
+# ====================================
+
+#   N   N    OOO   TTTTT  EEEEE
+#   NN  N   O   O    T    E       ::
+#   N N N   O   O    T    EEEE           This is a really old file, broken off from a longer script I wrote... Not updated yet to reflect best practice/work with other scripts
+#   N  NN   O   O    T    E       ::
+#   N   N    OOO     T    EEEEE 
+
+# ====================================
+# ====================================
+
+# TODO: Wikidex has 2 images for each back sprite in gen4, see if there are any other games like this and figure out how to get them
+# TODO: Wikidex animateds are all gifs, gen9 is webm.... determine if worthwhile to convert and color correct or keep as is. Consider RN and device compatibility
+
 # SPREADSHEET DATA
 pokemon_info = xlrd.open_workbook('C:\\Users\\ejone\\OneDrive\\Desktop\\Code\\Javascript\\p5\\projects\\Pokeball Pokemon Comparison\\Pokemon Info.xls')
 sheet = pokemon_info.sheet_by_index(0)
