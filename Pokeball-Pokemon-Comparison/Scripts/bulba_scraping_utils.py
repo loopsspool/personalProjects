@@ -28,7 +28,7 @@ opener.addheader('User-Agent', 'Mozilla/5.0')
 BULBA_FILE_STARTER_URL = "https://archives.bulbagarden.net/wiki/File:"
 
 
-def scrape(allow_download=False):
+def bulba_scrape(allow_download=False):
     scrape_game_imgs(allow_download)
     #scrape_drawn_imgs(allow_download)
     #scrape_home_sprite_imgs(allow_download)
