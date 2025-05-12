@@ -521,7 +521,6 @@ def get_non_game_filename_info(table):
 
 def get_missing_poke_imgs_by_table(poke_num, table, cursor=None):
     data = defaultdict(list)
-    print(f"Getting all missing images from {table} by pokemon...")
     
     with get_cursor(cursor) as cur:
         cur.execute(f"SELECT poke_num, form_id, filename FROM {table} WHERE poke_num={poke_num} AND does_exist=0")

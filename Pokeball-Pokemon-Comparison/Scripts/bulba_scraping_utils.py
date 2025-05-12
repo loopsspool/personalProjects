@@ -30,11 +30,16 @@ BULBA_FILE_STARTER_URL = "https://archives.bulbagarden.net/wiki/File:"
 
 def bulba_scrape(start_poke_num, stop_poke_num, allow_download=False):
     for poke_num in range(start_poke_num, stop_poke_num + 1):
+        print(f"\rGetting pokemon #{poke_num} missing images...", end='', flush=True)
+
         scrape_game_imgs(poke_num, allow_download)
         scrape_drawn_imgs(poke_num, allow_download)
         scrape_home_sprite_imgs(poke_num, allow_download)
         scrape_home_menu_imgs(poke_num, allow_download)
         #scrape_pokeballs(allow_download)
+    
+    # Resetting console line after updates from above
+    print('\r' + ' '*55 + '\r', end='')
 
 
 
@@ -295,7 +300,6 @@ def scraping_if_no_extra_steps_needed(poke_num, filename_table, translate_func, 
         for file in files:
             # poke_info == (poke_num, form_id) or (pokeball_id, img_type_id) if pokeball img
             # file == (my_file_naming_convention, bulba_url)
-            print(file)
             save_path = os.path.join(save_path, file[0])
             if allow_download:  # Putting this here in addition to the actual func, so func doesnt try to open bulba pages to check for existence
                 get_bulba_img(file[1], save_path, allow_download, has_animation)
