@@ -12,10 +12,6 @@ from spreadsheet_utils import *
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     DATABASE INFO     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
-DB_NAME = "pokedex.db"
-DB_PATH = os.path.join(PARENT_DIR, DB_NAME)
-
-
 def create_db():
     print("Creating pokedex database...")
 
@@ -781,7 +777,7 @@ def should_skip_nonexistant_sprite(poke_num, form_name, sprite_type):
 #|~~~~~~~~~~~~~~~~~~~~~~~~~[     GAME SPRITES FILENAME TABLE     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
-#|~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     DB FUNCTIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+#|~~~~~~~~~~~~~~~~~~~~~~~~~[     GAME SPRITE DB FUNCTIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~|
 
 def populate_game_filenames(cursor, force=False):
     print("Populating game filenames into database...")
@@ -791,12 +787,14 @@ def populate_game_filenames(cursor, force=False):
     for sprite_id, sprite_info in all_sprites.items():
         print(f"\rGenerating pokemon #{sprite_info["poke num"]} game filenames...", end='', flush=True)
         filename = generate_game_filename(sprite_info)
-        file_exists, substitution = check_for_usable_game_file(filename, sprite_info)
+        does_exist, substitution = check_for_usable_game_file(filename, sprite_info)
         has_sub = 1 if substitution!=None else None     # Temp marking to set in substitution field until I can get subs file id
         has_alt = file_exists(substitution + "-Alt", ALL_SAVED_GAME_SPRITES) if has_sub else file_exists(filename + "-Alt", ALL_SAVED_GAME_SPRITES)
-        file_ids = {"filename": filename, "poke_num": sprite_id[0], "form_id": sprite_id[1], "game_id": sprite_id[2], "sprite_id": sprite_id[3], "obtainable": sprite_info["obtainable"], "does_exist": file_exists, "substitution_id": has_sub, "has_alt": has_alt}
+
+        file_ids = {"filename": filename, "poke_num": sprite_id[0], "form_id": sprite_id[1], "game_id": sprite_id[2], "sprite_id": sprite_id[3], "obtainable": sprite_info["obtainable"], "does_exist": does_exist, "substitution_id": has_sub, "has_alt": has_alt}
         # Inserting into all filenames table
         insert_into_table(cursor, "all_game_filenames", **file_ids)
+
         filename_id = get_game_filename_id(cursor, filename)
         # Tracking substited files to update substitution file id after all files are inserted into table
         if has_sub: substitutions_to_convert_to_id.append({"file_id": filename_id, "sub_name": substitution})
@@ -826,28 +824,6 @@ def edit_substitution_field(cursor, record):
     cursor.execute(f"UPDATE obtainable_game_filenames SET substitution_id = {substitution_id} WHERE id = {record["file_id"]}")
 
 
-
-
-#|~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     FILENAME FUNCTIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
-
-def generate_game_filename(sprite_info):
-    poke_num = str(sprite_info["poke num"]).zfill(4)
-    form_name = "" if sprite_info["form name"] == "Default" else sprite_info["form name"]
-    is_shiny, sprite_type = seperate_sprite_type_if_shiny(sprite_info["sprite type"])
-    gen = sprite_info["game gen"]
-    game = sprite_info["game name"]
-
-    # Hyphen before game allows for alphabetical sorting of back sprites below the front game sprites
-    filename = f"{poke_num} {sprite_info["poke name"]} Gen{gen}{str("_" + game) if "-Back" in sprite_type else str(" " + game)}{"-Shiny" if is_shiny else ""}{form_name}{sprite_type}"
-    return filename
-
-
-def seperate_sprite_type_if_shiny(sprite_type):
-    if sprite_type == "Default": return False, ""
-    if "-Shiny" not in sprite_type: return False, sprite_type
-    else: return True, sprite_type.replace("-Shiny", "")
-
-    
 def check_for_usable_game_file(filename, sprite_info):
     if not sprite_info["obtainable"]:
         return None, None
@@ -874,6 +850,28 @@ def game_adjustment_for_back(filename, game):
     if "-Back" in filename:
         game = game.replace(" ", "_")
     return game
+
+
+
+
+#|~~~~~~~~~~~~~~~~~~~~~~~[     GAME SPRITE FILENAME FUNCTIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~|
+
+def generate_game_filename(sprite_info):
+    poke_num = str(sprite_info["poke num"]).zfill(4)
+    form_name = "" if sprite_info["form name"] == "Default" else sprite_info["form name"]
+    is_shiny, sprite_type = seperate_sprite_type_if_shiny(sprite_info["sprite type"])
+    gen = sprite_info["game gen"]
+    game = sprite_info["game name"]
+
+    # Hyphen before game allows for alphabetical sorting of back sprites below the front game sprites
+    filename = f"{poke_num} {sprite_info["poke name"]} Gen{gen}{str("_" + game) if "-Back" in sprite_type else str(" " + game)}{"-Shiny" if is_shiny else ""}{form_name}{sprite_type}"
+    return filename
+
+
+def seperate_sprite_type_if_shiny(sprite_type):
+    if sprite_type == "Default": return False, ""
+    if "-Shiny" not in sprite_type: return False, sprite_type
+    else: return True, sprite_type.replace("-Shiny", "")
 
 
 
