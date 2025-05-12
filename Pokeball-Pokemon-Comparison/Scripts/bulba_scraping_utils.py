@@ -28,12 +28,13 @@ opener.addheader('User-Agent', 'Mozilla/5.0')
 BULBA_FILE_STARTER_URL = "https://archives.bulbagarden.net/wiki/File:"
 
 
-def bulba_scrape(allow_download=False):
-    scrape_game_imgs(allow_download)
-    #scrape_drawn_imgs(allow_download)
-    #scrape_home_sprite_imgs(allow_download)
-    #scrape_home_menu_imgs(allow_download)
-    #scrape_pokeballs(allow_download)
+def bulba_scrape(start_poke_num, stop_poke_num, allow_download=False):
+    for poke_num in range(start_poke_num, stop_poke_num + 1):
+        scrape_game_imgs(poke_num, allow_download)
+        scrape_drawn_imgs(poke_num, allow_download)
+        scrape_home_sprite_imgs(poke_num, allow_download)
+        scrape_home_menu_imgs(poke_num, allow_download)
+        #scrape_pokeballs(allow_download)
 
 
 
@@ -161,8 +162,8 @@ def bulba_doesnt_have_images_for(my_filename):
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     GAME IMAGES     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
-def scrape_game_imgs(allow_download=False):
-    missing_imgs_dict = get_missing_poke_imgs_by_table("obtainable_game_filenames")
+def scrape_game_imgs(poke_num, allow_download=False):
+    missing_imgs_dict = get_missing_poke_imgs_by_table(poke_num, "obtainable_game_filenames")
     translated_missing_imgs = translate_all_filenames_to_bulba_url(missing_imgs_dict, bulba_game_sprite_translate)
 
     for poke_info, files in translated_missing_imgs.items():
@@ -286,8 +287,8 @@ def f_exception_poke_in_filename(my_filename):
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     SCRAPING FOR NON-GAME IMAGES     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
-def scraping_if_no_extra_steps_needed(filename_table, translate_func, has_animation, allow_download, save_path):
-    missing_imgs_dict = get_missing_poke_imgs_by_table(filename_table) if filename_table != "pokeball_filenames" else get_missing_pokeball_imgs()
+def scraping_if_no_extra_steps_needed(poke_num, filename_table, translate_func, has_animation, allow_download, save_path):
+    missing_imgs_dict = get_missing_poke_imgs_by_table(poke_num, filename_table) if filename_table != "pokeball_filenames" else get_missing_pokeball_imgs()
     translated_missing_imgs = translate_all_filenames_to_bulba_url(missing_imgs_dict, translate_func)
 
     for poke_info, files in translated_missing_imgs.items():
@@ -306,10 +307,10 @@ def scraping_if_no_extra_steps_needed(filename_table, translate_func, has_animat
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     HOME IMAGES     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
-def scrape_home_sprite_imgs(allow_download=False):
+def scrape_home_sprite_imgs(poke_num, allow_download=False):
     # NOTE: has_animation set to true (because it does, just not in bulba), if it were false and missing it would just download the still
     # As of writing (4-30-25) bulba doesn't have animated HOME sprites, but I do want to leave the option open if possible
-    scraping_if_no_extra_steps_needed("home_filenames", home_sprite_translate, True, allow_download, HOME_SAVE_PATH)
+    scraping_if_no_extra_steps_needed(poke_num, "home_filenames", home_sprite_translate, True, allow_download, HOME_SAVE_PATH)
 
 
 def home_sprite_translate(my_filename, poke_info):
@@ -331,8 +332,8 @@ def home_sprite_translate(my_filename, poke_info):
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     HOME MENU IMAGES     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
-def scrape_home_menu_imgs(allow_download=False):
-    scraping_if_no_extra_steps_needed("home_menu_filenames", home_menu_translate, False, allow_download, HOME_MENU_SAVE_PATH)
+def scrape_home_menu_imgs(poke_num, allow_download=False):
+    scraping_if_no_extra_steps_needed(poke_num, "home_menu_filenames", home_menu_translate, False, allow_download, HOME_MENU_SAVE_PATH)
 
 
 def home_menu_translate(my_filename, poke_info):
@@ -378,8 +379,8 @@ def get_home_menu_translated_species_form(poke_info, my_filename):
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     DRAWN IMAGES     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
-def scrape_drawn_imgs(allow_download=False):
-    scraping_if_no_extra_steps_needed("drawn_filenames", drawn_translate, False, allow_download, DRAWN_SAVE_PATH)
+def scrape_drawn_imgs(poke_num, allow_download=False):
+    scraping_if_no_extra_steps_needed(poke_num, "drawn_filenames", drawn_translate, False, allow_download, DRAWN_SAVE_PATH)
 
 
 def drawn_translate(my_filename, poke_info):

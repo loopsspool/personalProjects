@@ -275,7 +275,7 @@ def get_last_poke_num():
     connection = sqlite3.connect(DB_PATH)
     cursor = connection.cursor()
     cursor.execute("SELECT MAX(num) FROM pokemon")
-    max_num = cursor.fetchone()["num"]
+    max_num = cursor.fetchone()[0]
     connection.close()
     return max_num
 
@@ -519,12 +519,12 @@ def get_non_game_filename_info(table):
     return data
 
 
-def get_missing_poke_imgs_by_table(table, cursor=None):
+def get_missing_poke_imgs_by_table(poke_num, table, cursor=None):
     data = defaultdict(list)
     print(f"Getting all missing images from {table} by pokemon...")
     
     with get_cursor(cursor) as cur:
-        cur.execute(f"SELECT poke_num, form_id, filename FROM {table} WHERE does_exist=0")
+        cur.execute(f"SELECT poke_num, form_id, filename FROM {table} WHERE poke_num={poke_num} AND does_exist=0")
         result = cur.fetchall()
         for row in result:
             # { (poke_num, form_id) : [missing imgs list] }
