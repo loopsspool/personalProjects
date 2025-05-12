@@ -22,19 +22,15 @@ from bulba_scraping_utils import bulba_scrape
 # TODO: Check if there's any female backs missing where male backs are present... May only have visual difference in front and sprite is recycled for back
 
 
-# NOTE: If program crashes a lot like last one, write this to a txt file. Each new pokemon would rewrite the line of the file where it picked up
-POKE_NUM_START_SCRAPING_FROM = 1
-POKE_TO_GO_AFTER_START_NUM = 10000
 def main():
-    validate_context()
-    populate_db()
-    # TODO: Update file_exists field in db before scraping
-    bulba_scrape()     # NOTE: Always check Bulba first, they have higher quality images
-    create_file_checklist_spreadsheet()
+    # NOTE: If program crashes a lot like last one, write this to a txt file. Each new pokemon would rewrite the line of the file where it picked up
+    poke_num_start_scraping_from = 1
+    poke_to_go_after_start_num = 5
 
-    
-if __name__ == "__main__":
-    main()
+    valid_start_poke_num, valid_stop_poke_num = validate_context(poke_num_start_scraping_from, poke_to_go_after_start_num)
+    # TODO: Update file_exists field in db before scraping
+    bulba_scrape(valid_start_poke_num, valid_stop_poke_num)     # NOTE: Always check Bulba first, they have higher quality images
+    #create_file_checklist_spreadsheet()
 
 
 
@@ -43,44 +39,51 @@ if __name__ == "__main__":
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     HELPERS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
-def validate_context(force_update=False):
+def validate_context(start_num, num_after_start, force_update=False):
     # If database doesn't exist, create & populate it. Or update it if forced
-    if not os.path.exists(DB_PATH) or force_update:
+    if not os.path.exists(DB_PATH) or force_update or db_isnt_current():
         populate_db()
-    else:
-        check_db_is_current()
+    # else:
+    #     TODO: Update file existence in filename tables
 
-    verify_start_stop_scraping_poke_nums()
+    return verify_start_stop_scraping_poke_nums(start_num, num_after_start)
 
 
 # Force, if true, will update the db even if the db has the same last pokemon as the poke_info spreadsheet
-def check_db_is_current():
+def db_isnt_current():
     print("Confirming database is up to date...")
 
     # TODO: Add a pokemon_info spreadsheet save datetime check? Save datetime of last spreadsheet save in a file and if when this function is run again it doesnt match, update pokedex
     if info_sheet_has_more_pokes_than_db():
-        print("Pokemon Information sheet more current than pokedex, preparing to update database...")
-        populate_db()
+        print("Pokemon Information sheet more current than database, preparing to update database...")
+        return True
     else:
         print("Pokedex database is current, moving on...")
+        return False
 
 
 def info_sheet_has_more_pokes_than_db():
     # highest poke num in db checked against highest num in poke info sheet
-    if get_last_poke_num != cell_value(POKEMON_INFO_SHEET, POKE_INFO_LAST_ROW, POKE_INFO_NUM_COL): 
+    if get_last_poke_num() != int(cell_value(POKEMON_INFO_SHEET, POKE_INFO_LAST_ROW, POKE_INFO_NUM_COL)): 
         return True
     return False
     
 
 # TODO: Have all functions utilize the start and to go after start denoters
-def verify_start_stop_scraping_poke_nums():
-    global POKE_NUM_START_SCRAPING_FROM
-    global POKE_TO_GO_AFTER_START_NUM
-    LAST_DB_POKE_NUM = get_last_poke_num()
+def verify_start_stop_scraping_poke_nums(start, num_after):
+    last_db_poke_num = get_last_poke_num()
 
-    if POKE_NUM_START_SCRAPING_FROM < 1: POKE_NUM_START_SCRAPING_FROM=1
-    if POKE_NUM_START_SCRAPING_FROM > LAST_DB_POKE_NUM: POKE_NUM_START_SCRAPING_FROM = LAST_DB_POKE_NUM
-    if POKE_TO_GO_AFTER_START_NUM < 1: POKE_TO_GO_AFTER_START_NUM=0
-    if POKE_NUM_START_SCRAPING_FROM + POKE_TO_GO_AFTER_START_NUM > LAST_DB_POKE_NUM: POKE_TO_GO_AFTER_START_NUM = LAST_DB_POKE_NUM - POKE_NUM_START_SCRAPING_FROM
+    if start < 1: start=1
+    if start > last_db_poke_num: start = last_db_poke_num
+    if num_after < 1: num_after=0
+    if start + num_after > last_db_poke_num: num_after = last_db_poke_num - start
     # TODO: Needed? Implement Start & go after and see
-    POKE_NUM_END_AT = POKE_NUM_START_SCRAPING_FROM + POKE_TO_GO_AFTER_START_NUM
+    stop = start + num_after
+
+    return start, stop
+
+
+
+
+if __name__ == "__main__":
+    main()
