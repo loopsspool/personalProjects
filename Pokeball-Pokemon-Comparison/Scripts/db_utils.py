@@ -700,6 +700,7 @@ def populate_forms(cursor):
                 insert_into_both_form_tables(cursor, form, poke_num)
 
 
+
 def get_forms_from_excel(row):
     forms = []
     poke_num = int(cell_value(POKEMON_INFO_SHEET, row, POKE_INFO_NUM_COL))
