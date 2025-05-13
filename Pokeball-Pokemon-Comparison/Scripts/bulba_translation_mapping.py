@@ -1339,10 +1339,11 @@ BULBA_POKEBALL_TRANSLATION_MAP = {
     "Gen4_Battle": "battle IV",
     "Gen4_Summary": "summary IV",
     "Gen5_Summary": "summary V",
+    # TODO: Account for each frame (0-7)
     "Gen5_Battle": "battle V",
     "Gen5_Battle-Animated": "battle V",
-    "Gen6_Battle": "battle 3DS",
-    "Gen7_Battle": "battle SMUSUM",
+    "Gen6": "battle 3DS",
+    "Gen7": "battle SMUSUM",
     "Gen8": "VIII",
     "LA_Summary": "summary LA",
     "HOME": "HOME"
