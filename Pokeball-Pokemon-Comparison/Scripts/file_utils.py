@@ -2,8 +2,9 @@ import os
 import shutil
 from app_globals import *
 
+
 def add_leading_zero(path):
-    files = os.listdir(path)
+    files = set(os.listdir(path))
     for f in files:
         full_path = os.path.join(path, f)
         if os.path.isfile(full_path):
@@ -13,7 +14,7 @@ def add_leading_zero(path):
 
 
 def replace_in_filename(path, replace, replace_with, just_print=False):
-    files = os.listdir(path)
+    files = set(os.listdir(path))
     for f in files:
         full_path = os.path.join(path, f)
         if os.path.isfile(full_path):
@@ -38,7 +39,7 @@ def replace_filename_in_all_dirs(replace, replace_with, just_print=False):
 
 
 def print_files_with(path, s):
-    files = os.listdir(path)
+    files = set(os.listdir(path))
     for f in files:
         if s in f:
             print(f)
