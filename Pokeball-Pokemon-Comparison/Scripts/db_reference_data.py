@@ -278,8 +278,16 @@ POKEBALL_IMG_TYPES = [
     {"name": "Gen4_Battle", "gen": 4},
     {"name": "Gen4_Summary", "gen": 4},
     {"name": "Gen5_Summary", "gen": 5},    # Only for pokeballs that had differences in gen 4
-    # TODO: Account for static frames (0-7)
-    {"name": "Gen5_Battle", "gen": 5},
+    # Frames of Gen5_Battle-Animated
+    {"name": "Gen5_Battle-Static_0", "gen": 5},
+    {"name": "Gen5_Battle-Static_1", "gen": 5},
+    {"name": "Gen5_Battle-Static_2", "gen": 5},
+    {"name": "Gen5_Battle-Static_3", "gen": 5},
+    {"name": "Gen5_Battle-Static_4", "gen": 5},
+    {"name": "Gen5_Battle-Static_5", "gen": 5},
+    {"name": "Gen5_Battle-Static_6", "gen": 5},
+    {"name": "Gen5_Battle-Static_7", "gen": 5},
+    {"name": "Gen5_Battle-Static_8", "gen": 5},
     {"name": "Gen5_Battle-Animated", "gen": 5},
     {"name": "Gen6", "gen": 6},
     {"name": "Gen7", "gen": 7},  # Only for beast ball since introduced in gen7
