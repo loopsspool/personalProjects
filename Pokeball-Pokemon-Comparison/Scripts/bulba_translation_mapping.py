@@ -6,7 +6,8 @@
 
 # These will be excluded if tried to run through the game sprite image downloader
 # Animated gets processed further in bulba_scraping_utils to only filter animated > Gen5/HOME
-BULBA_DOESNT_HAVE_GAME_IMGS_FOR = ["Gen9 SV", "Gen9_SV", "Gen8 BDSP", "Gen8_BDSP", "-Animated"]
+# 
+BULBA_DOESNT_HAVE_GAME_IMGS_FOR = ["Gen9 SV", "Gen9_SV", "Gen8 BDSP", "Gen8_BDSP", "-Animated", "-Gen5_Battle-Static_"]
 
 # Only allows male denoter on bulba translated file if these strings not in my filename
 # MUST KEEP SPACE AND UNDERSCORE -- No easy way to get gen when calling this, and dont want gen1 to filter gen10
