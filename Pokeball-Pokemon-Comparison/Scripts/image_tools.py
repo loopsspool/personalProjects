@@ -17,6 +17,19 @@ def save_first_frame(link, save_path):
     first_frame.save(save_path)
 
 
+# TODO: Incorporate the below to save each frame of an animated img
+# img = Image.open(os.path.join(POKEBALL_SAVE_PATH, file))
+#         frame=0
+#         try:
+#             while True:
+#                 img.seek(frame)
+#                 name = new_f_static.replace("Battle", f"Battle-Static_{frame}")
+#                 img.save(os.path.join(POKEBALL_SAVE_PATH, name))
+#                 frame+=1
+#         except EOFError:
+#             pass
+
+
 def get_largest_png(img_page_soup):
     # Find the biggest image location
     biggest_link = img_page_soup.find("div", "fullImageLink")
