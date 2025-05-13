@@ -94,16 +94,20 @@ def create_file_checklist_spreadsheet():
     home_sprite_availability_sheet = workbook.add_worksheet('Home Sprites')
     drawn_availability_sheet = workbook.add_worksheet('Drawn')
     home_menu_sprite_availability_sheet = workbook.add_worksheet('Home Menu Imgs')
+    pokeball_availability_sheet = workbook.add_worksheet('Pokeballs')
+
     game_sprite_availability_sheet.freeze_panes(1, 3)
     home_sprite_availability_sheet.freeze_panes(1, 3)
     drawn_availability_sheet.freeze_panes(1, 3)
     home_menu_sprite_availability_sheet.freeze_panes(1, 3)
+    pokeball_availability_sheet.freeze_panes(1, 1)
 
     green = '#40D073'
     red = '#C75451'
     grey = '#404040'
     new_poke_top_border_color = '#D9D9D9'
     formats = {
+        # TODO: Change from new poke to just new
         # New pokes have strong top border
         "new poke info": workbook.add_format({'top_color': new_poke_top_border_color, 'top': 5}),
         "new poke green": workbook.add_format({'top_color': new_poke_top_border_color, 'top': 5, 'left': 1, 'right': 1, 'bottom': 1, 'align': 'center', 'bg_color': green, 'font_color': green}),
@@ -115,20 +119,22 @@ def create_file_checklist_spreadsheet():
     }
 
     # Game sprite availability
-    write_availability(workbook, game_sprite_availability_sheet, formats, table="Games")
+    write_pokemon_availability(workbook, game_sprite_availability_sheet, formats, table="Games")
     # Home sprite availability
-    write_availability(workbook, home_sprite_availability_sheet, formats, table="home_filenames")
+    write_pokemon_availability(workbook, home_sprite_availability_sheet, formats, table="home_filenames")
     # Drawn availability
-    write_availability(workbook, drawn_availability_sheet, formats, table="drawn_filenames")
+    write_pokemon_availability(workbook, drawn_availability_sheet, formats, table="drawn_filenames")
     # Home Menu Imgs availability
-    write_availability(workbook, home_menu_sprite_availability_sheet, formats, table="home_menu_filenames")
+    write_pokemon_availability(workbook, home_menu_sprite_availability_sheet, formats, table="home_menu_filenames")
+    # Pokeball availability
+    write_pokeball_availability(workbook, pokeball_availability_sheet, formats)
 
     print("Spreadsheet finished!")
     print("Finalizing spreadsheet close...")
     workbook.close()
 
 
-def generate_header_row(workbook, worksheet, is_game_sprites=False):
+def generate_pokemon_header_row(workbook, worksheet, is_game_sprites=False):
     from db_utils import GAMES
     
     h_format = workbook.add_format({'bold': True, 'align': 'center', 'bg_color': 'gray', 'bottom': 5, 'top': 1, 'left': 1, 'right': 1})
@@ -151,20 +157,56 @@ def generate_header_row(workbook, worksheet, is_game_sprites=False):
         worksheet.write(0, 3, "Available")
 
 
-def write_availability(workbook, worksheet, formats, table):
+def generate_pokeball_header_row(workbook, worksheet):
+    h_format = workbook.add_format({'bold': True, 'align': 'center', 'bg_color': 'gray', 'bottom': 5, 'top': 1, 'left': 1, 'right': 1})
+    worksheet.set_row(0, None, h_format)
+    worksheet.write(0, 0, "Name")
+    worksheet.write(0, 1, "Available")
+
+
+def write_pokeball_availability(workbook, worksheet, formats):
+    from db_utils import get_pokeball_filename_info
+
+    longest_filename = 0
+    prev_ball_id = 0
+    pokeball_info = get_pokeball_filename_info()
+    # Starting at 1 to account for header row
+    for row, file in enumerate(pokeball_info, start=1):
+        curr_ball_id = file["pokeball_id"]
+        filename = file["filename"]
+        exists = file["does_exist"]
+        longest_filename = max(longest_filename, len(filename))
+        if prev_ball_id != curr_ball_id: 
+            new_ball = True
+            filename_format = formats["new poke info"]
+        else: 
+            new_ball = False
+            filename_format = None
+
+        worksheet.write(row, 0, filename, filename_format)
+        exists_format = determine_format_by_boolean(exists, new_ball)
+        worksheet.write(row, 1, "X" if exists else "M", formats[exists_format])
+
+
+
+
+
+def write_pokemon_availability(workbook, worksheet, formats, table):
     from db_utils import get_all_game_filenames_info, get_non_game_filename_info, get_poke_name
     
     if table == "Games":
-        game_cols = generate_header_row(workbook, worksheet, is_game_sprites=True)
+        game_cols = generate_pokemon_header_row(workbook, worksheet, is_game_sprites=True)
         all_file_info = get_all_game_filenames_info()
     else:
-        generate_header_row(workbook, worksheet)
+        generate_pokemon_header_row(workbook, worksheet)
         all_file_info = get_non_game_filename_info(table)
 
     longest_values = {"num": 4, "name": 0, "tags": 0}
     prev_poke_num = 0
     is_new_poke = True
 
+    # TODO: Change i to row
+    # TODO: Split into readable functions
     # Starting at 1 because row 0 is the header row
     for i, (poke_info, files) in enumerate(all_file_info.items(), start=1):
         poke_num = poke_info[0]
