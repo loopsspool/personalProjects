@@ -236,14 +236,6 @@ POKEBALLS = [
 ]
 
 
-POKEBALL_IMG_TYPE_APPLICABILITY = {
-    "Bag_Gen4": ["Lure Ball", "Park Ball"],  # This is for some gen4 exlusive differences (lure ball, park ball)
-    "Gen5_Summary": ["Lure Ball"],  # Only for pokeballs that had differences in gen 4
-    "Gen7_Battle": ["Beast Ball"],  # Beast Ball introduced in gen7, didn't follow 3ds naming convention for gen6 battles
-    "LA_Summary": ["Strange Ball", "Poke Ball-Hisui", "Great Ball-Hisui", "Ultra Ball-Hisui", "Feather Ball", "Wing Ball", "Jet Ball", "Heavy Ball-Hisui", "Leaden Ball", "Gigaton Ball", "Origin Ball"]    # Only pokeballs in LA
-}
-
-
 GAMES_W_BALL_EXCLUSIVES = ["LA"]
 
 # Certain img types only apply to certain balls
@@ -259,7 +251,7 @@ POKEBALL_IMG_EXCLUSIONS = {
     # Image types
     "gen4_bag_sprites_only_for_gen_4_diifferences": lambda ball_info, img_type_info: img_type_info["name"] == "Bag_Gen4" and ball_info["name"] not in ("Lure Ball", "Park Ball"),
     "gen5_summary_only_for_balls_w_gen_4_diifferences": lambda ball_info, img_type_info: img_type_info["name"] == "Gen5_Summary" and ball_info["name"] not in ("Lure Ball", "Park Ball"),
-    "gen7_battle_only_for_beast_ball": lambda ball_info, img_type_info: img_type_info["name"] == "Gen7_Battle" and ball_info["name"] != "Beast Ball",
+    "gen7_battle_only_for_beast_ball": lambda ball_info, img_type_info: img_type_info["name"] == "Gen7" and ball_info["name"] != "Beast Ball",
 
     # Balls
     # Putting this here so I dont have to make it game exclusive and add a new game every time one releases, since this ball is probably sticking around
@@ -286,10 +278,11 @@ POKEBALL_IMG_TYPES = [
     {"name": "Gen4_Battle", "gen": 4},
     {"name": "Gen4_Summary", "gen": 4},
     {"name": "Gen5_Summary", "gen": 5},    # Only for pokeballs that had differences in gen 4
+    # TODO: Account for static frames (0-7)
     {"name": "Gen5_Battle", "gen": 5},
     {"name": "Gen5_Battle-Animated", "gen": 5},
-    {"name": "Gen6_Battle", "gen": 6},
-    {"name": "Gen7_Battle", "gen": 7},  # Only for beast ball since introduced in gen7
+    {"name": "Gen6", "gen": 6},
+    {"name": "Gen7", "gen": 7},  # Only for beast ball since introduced in gen7
     {"name": "Gen8", "gen": 8},
     {"name": "LA_Summary", "gen": 8},
     {"name": "HOME", "gen": -1}, # Setting home to gen1 so it will apply to all pokeballs
