@@ -221,7 +221,7 @@ def populate_db(force=False):
 
 
 def update_file_existence():
-    print("Updating database if there were any downloads since last execution...")
+    print("Updating database if there were any downloads...")
 
     connection = sqlite3.connect(DB_PATH)
     connection.row_factory = sqlite3.Row
@@ -569,6 +569,17 @@ def get_non_game_filename_info(table):
     connection.close()
     return data
 
+
+def get_pokeball_filename_info():
+    connection = sqlite3.connect(DB_PATH)
+    connection.row_factory = sqlite3.Row
+    cursor = connection.cursor()
+
+    cursor.execute("SELECT pokeball_id, filename, does_exist FROM pokeball_filenames")
+    data = cursor.fetchall()
+
+    connection.close()
+    return data
 
 def get_missing_poke_imgs_by_table(poke_num, table, cursor=None):
     data = defaultdict(list)
