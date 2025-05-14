@@ -144,6 +144,10 @@ FORM_EXCLUSIONS = {
 # Default meaning front, normal color, static sprite
 SPRITE_TYPES = ["Default", "-Animated", "-Shiny", "-Shiny-Animated", "-Back", "-Back-Animated", "-Shiny-Back", "-Shiny-Back-Animated"]
 
+# Home sprites use the above sprite types with the exception of the below
+# NOTE: Back sprites are also excluded (no HOME back sprites), but are used for Stamped form pokemon to show stamps (854, 855, 1012, 1013)
+HOME_SPRITE_EXCLUDE = {"-Back-Animated", "-Shiny-Back-Animated"}
+
 
 # Certain rules to be excluded but exist elsewhere, for nonexistant sprites, see NONEXISTANT_SPRITES
 SPRITE_EXCLUSIONS = {
