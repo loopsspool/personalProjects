@@ -245,6 +245,7 @@ def write_pokemon_availability(workbook, worksheet, formats, table):
     print('\r' + ' '*45 + '\r', end='')
 
 
+# TODO: Put the below into a global dict?
 def determine_header_cols(worksheet, table, formats):
     if table == "Games": return generate_header_row(worksheet, formats, mult_col_names=GAMES)
     elif table == "home_filenames": return generate_header_row(worksheet, formats, mult_col_names=[sprite_type for sprite_type in SPRITE_TYPES if sprite_type not in SPRITE_EXCLUSIONS])
@@ -256,12 +257,12 @@ def determine_header_cols(worksheet, table, formats):
 
 # TODO: Alter funcs for home & pokeball in db_utils to reflect multiple columns in spreadsheet
 def get_file_info(table):
-    from db_utils import get_all_game_filenames_info, get_non_game_filename_info
+    from db_utils import get_all_game_filenames_info, get_all_home_filenames_info, get_all_1D_non_game_filename_info
 
     if table == "Games": return get_all_game_filenames_info()
     elif table == "home_filenames": get_all_home_filenames_info()
-    elif table == "drawn_filesnames": return get_non_game_filename_info(table)
-    elif table == "home_menu_filenames": return get_non_game_filename_info(table)
+    elif table == "drawn_filesnames": return get_all_1D_non_game_filename_info(table)
+    elif table == "home_menu_filenames": return get_all_1D_non_game_filename_info(table)
     elif table == "pokeball_filenames": pass
 
 
