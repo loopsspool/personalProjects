@@ -22,25 +22,6 @@ import os.path   # To skip a file if it already exists
 # TODO: Wikidex has 2 images for each back sprite in gen4, see if there are any other games like this and figure out how to get them
 # TODO: Wikidex animateds are all gifs, gen9 is webm.... determine if worthwhile to convert and color correct or keep as is. Consider RN and device compatibility
 
-# SPREADSHEET DATA
-pokemon_info = xlrd.open_workbook('C:\\Users\\ejone\\OneDrive\\Desktop\\Code\\Javascript\\p5\\projects\\Pokeball Pokemon Comparison\\Pokemon Info.xls')
-sheet = pokemon_info.sheet_by_index(0)
-
-def cell_value(row, col):
-    return (sheet.cell_value(row, col))
-
-def isnt_empty(row, col):
-    return (str(cell_value(row, col)) != "")
-
-def is_empty(row, col):
-    return (cell_value(row, col) == empty_cell.value)
-
-# Returns column number from column name
-def get_col_number(col_name):
-    for col in range(sheet.ncols):
-        if (cell_value(1, col) == col_name):
-            return col
-
 
 # WEB DATA
 sprite_page = requests.get("https://www.wikidex.net/wiki/Categor%C3%ADa:Sprites_de_Pok%C3%A9mon")
@@ -348,49 +329,6 @@ split_seperators_by_game = {
     "Gen8-Back Animated": " espalda",
     "Gen8-Back Animated Shiny": " espalda"
 }
-# Gets pokemon info from excel sheet
-class Pokemon:
-    def __init__(self, name, number, gen, has_f_var, has_mega, has_giganta, reg_forms, has_type_forms, has_misc_forms):
-        self.name = name
-        self.number = number
-        self.gen = gen
-        self.has_f_var = has_f_var
-        self.has_mega = has_mega
-        self.has_giganta = has_giganta
-        self.reg_forms = reg_forms
-        self.has_type_forms = has_type_forms
-        self.has_misc_forms = has_misc_forms
-
-# Gets column numbers from spreadsheet
-name_col = get_col_number("Name")
-num_col = get_col_number("#")
-gen_col = get_col_number("Gen")
-f_col = get_col_number("Female Variation")
-mega_col = get_col_number("Mega")
-giganta_col = get_col_number("Gigantamax")
-reg_forms_col = get_col_number("Regional Forms")
-type_forms_col = get_col_number("Type Forms")
-misc_forms_col = get_col_number("Misc Forms")
-
-# Adds pokemon info from spreadsheet to object array
-print("Getting pokemon info from spreadsheet...")
-pokedex = []
-for i in range(2, 900):
-    name = cell_value(i, name_col)
-    num = cell_value(i, num_col)
-    gen = int(cell_value(i, gen_col))
-    has_f_var = isnt_empty(i, f_col)
-    has_mega = isnt_empty(i, mega_col)
-    has_giganta = isnt_empty(i, giganta_col)
-    reg_forms = cell_value(i, reg_forms_col)
-    has_type_forms = isnt_empty(i, type_forms_col)
-    has_misc_forms = isnt_empty(i, misc_forms_col)
-
-    pokedex.append(Pokemon(name, num, gen, has_f_var, has_mega, has_giganta, reg_forms, has_type_forms, has_misc_forms))
-
-# Prints out each pokemon's relevant info from spreadsheet
-# for i in range(len(pokedex)):
-#     print(vars(pokedex[i]))
 
 game_hit = False
 outlier_sprites = []
