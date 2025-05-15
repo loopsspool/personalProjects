@@ -259,7 +259,7 @@ def get_file_info(table):
     from db_utils import get_all_game_filenames_info, get_non_game_filename_info
 
     if table == "Games": return get_all_game_filenames_info()
-    elif table == "home_filenames": pass
+    elif table == "home_filenames": get_all_home_filenames_info()
     elif table == "drawn_filesnames": return get_non_game_filename_info(table)
     elif table == "home_menu_filenames": return get_non_game_filename_info(table)
     elif table == "pokeball_filenames": pass

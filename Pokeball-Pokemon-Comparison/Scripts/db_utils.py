@@ -550,21 +550,35 @@ def get_all_game_filenames_info():
     return data
 
 
-def get_non_game_filename_info(table):
+def get_all_1D_non_game_filename_info(table):
     connection = sqlite3.connect(DB_PATH)
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
 
-    fields = "poke_num, form_id, filename, does_exist"
-    if table == "home_filenames": fields += ", sprite_id"   # Home sprites need sprite_id since they have shinies, animated, etc. Otherwise their identifiers (poke num, form) are non-unique
-
-    cursor.execute(f"SELECT {fields} FROM {table}")
+    cursor.execute(f"SELECT poke_num, form_id, filename, does_exist FROM {table}")
     rows = cursor.fetchall()
     data = {}
 
     for row in rows:
-        key = (row["poke_num"], row["form_id"]) if table != "home_filenames" else (row["poke_num"], row["form_id"], row["sprite_id"])   # Home sprites need sprite_id since they have shinies, animated, etc. Otherwise their identifiers (poke num, form) are non-unique
+        key = (row["poke_num"], row["form_id"])
         data[key] = {"filename": row["filename"], "exists": True if row["does_exist"] else False}
+
+    connection.close()
+    return data
+
+
+def get_all_home_filenames_info():
+    connection = sqlite3.connect(DB_PATH)
+    connection.row_factory = sqlite3.Row
+    cursor = connection.cursor()
+
+    cursor.execute("SELECT * FROM home_filenames")
+    rows = cursor.fetchall()
+    data = defaultdict(lambda: defaultdict(dict))
+
+    for row in rows:
+        main_key = (row["poke_num"], row["form_id"])
+        data[main_key][row["sprite_id"]]["exists"] = True if row["dows_exist"] else False
 
     connection.close()
     return data
