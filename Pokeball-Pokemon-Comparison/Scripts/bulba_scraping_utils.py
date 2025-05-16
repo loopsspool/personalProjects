@@ -1,6 +1,5 @@
 import requests # To retrieve webpages
 from bs4 import BeautifulSoup   # To parse webpages
-import urllib   # For downloading those images to my computer
 import re   # For filtering what images to download
 import os
 
@@ -9,29 +8,21 @@ from db_utils import get_missing_poke_imgs_by_table, get_missing_pokeball_imgs, 
 from bulba_translation_mapping import *
 from app_globals import *
 from image_tools import *
+from scraping_utils import *
 
-
-# NOTE: ALL DOWNLOADS MUST BE DONE IN THE FASHION BELOW
-    # Otherwise bulba has a check on if the site is being web scraped and it will block the download
-# This is to mask the fact I'm webscraping
-    # To use, call
-    # filename, headers = opener.retrieve(get_largest_png(img), path + save_name)
-opener = urllib.request.URLopener()
-opener.addheader('User-Agent', 'Mozilla/5.0')
 
 # Their links are only the info after this
 BULBA_FILE_STARTER_URL = "https://archives.bulbagarden.net/wiki/File:"
 
 
-def bulba_scrape(start_poke_num, stop_poke_num, allow_download=False):
+def bulba_scrape_pokemon(start_poke_num, stop_poke_num, allow_download=False):
     for poke_num in range(start_poke_num, stop_poke_num + 1):
-        print(f"\rGetting pokemon #{poke_num} missing images...", end='', flush=True)
+        print(f"\rScraping pokemon #{poke_num} bulba images...", end='', flush=True)
 
         scrape_game_imgs(poke_num, allow_download)
         scrape_drawn_imgs(poke_num, allow_download)
         scrape_home_sprite_imgs(poke_num, allow_download)
         scrape_home_menu_imgs(poke_num, allow_download)
-        #scrape_pokeballs(allow_download)
     
     # Resetting console line after updates from above
     print('\r' + ' '*55 + '\r', end='')
@@ -130,12 +121,7 @@ def determine_animation_status_before_downloading(img_url, save_path):
         if not img_is_animated:
             download_img(img_url, save_path)
         else: # Looking for still, but image is animated
-            # TODO: Test this
             save_first_frame(img_url, save_path)
-
-
-def download_img(url, save_path):
-    filename, headers = opener.retrieve(url, save_path)
 
 
 def bulba_img_exists(url):
@@ -410,9 +396,9 @@ def drawn_translate(my_filename, poke_info):
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     POKEBALL IMAGES     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
-def scrape_pokeballs(allow_download=False):
-    # Setting animated to True for gen5_Battle-Animated
-    scraping_if_no_extra_steps_needed("pokeball_filenames", pokeball_translate, True, allow_download, POKEBALL_SAVE_PATH)
+def bulba_scrape_pokeballs(allow_download=False):
+    # Setting animated to True for gen5_Battle-Animated, -1 for poke_num which just gets ignored for this table name anyways
+    scraping_if_no_extra_steps_needed(-1, "pokeball_filenames", pokeball_translate, True, allow_download, POKEBALL_SAVE_PATH)
 
 
 def pokeball_translate(my_filename, pokeball_info):
