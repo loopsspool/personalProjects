@@ -40,18 +40,10 @@ BULBA_GAME_MAP = {
 }
 
 
-# NOTE: If poke num here, cannot also be in BULBA_GAMES_SPECIFIC_FORM_MAP
-# NOTE: If there's spaces, replace them with an underscore for the url
-BULBA_GAME_INCONSISTENCIES = {
-    # Just an example for formatting, will try to find which image exists between A, -A, and ""
-    #201: { "-Form_A": ["A", "-A", ""]}
-}
-
-
 
 
 #|================================================================================================|
-#|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     UNIVERSAL TRANSLATIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+#|~~~~~~~~~~~~~~~~~~~~~~~~~~~[     UNIVERSAL FORM TRANSLATIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
 # This is to filter out these forms when translating species forms
