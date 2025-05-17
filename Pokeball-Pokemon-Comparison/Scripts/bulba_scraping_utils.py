@@ -97,20 +97,6 @@ def get_bulba_img(url, save_path, allow_download, has_animation=False):
                 download_img(img_url, save_path)
 
 
-def determine_animation_status_before_downloading(img_url, save_path):
-    img_is_animated = is_animated(img_url)
-    if "-Animated" in save_path:
-        if img_is_animated:
-            download_img(img_url, save_path)
-        else:
-            print(f"Could not download animated img for {save_path.split("\\")[-1]}")
-    else: # Looking for still
-        if not img_is_animated:
-            download_img(img_url, save_path)
-        else: # Looking for still, but image is animated
-            save_first_frame(img_url, save_path)
-
-
 def bulba_img_exists(url):
     img_page = requests.get(url)
     img_page_soup = BeautifulSoup(img_page.content, 'html.parser')
