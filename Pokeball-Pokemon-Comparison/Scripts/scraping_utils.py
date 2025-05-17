@@ -1,5 +1,8 @@
 import urllib   # For downloading those images to my computer
 import os
+import requests
+from bs4 import BeautifulSoup
+import re
 
 from db_utils import get_missing_poke_imgs_by_table, get_missing_pokeball_imgs
 from image_utils import save_first_frame, is_animated
@@ -33,6 +36,13 @@ def determine_animation_status_before_downloading(img_url, save_path):
             download_img(img_url, save_path)
         else: # Looking for still, but image is animated
             save_first_frame(img_url, save_path)
+
+
+def img_exists_at_url(url, nonexistant_string_denoter):
+    img_page = requests.get(url)
+    img_page_soup = BeautifulSoup(img_page.content, 'html.parser')
+    img_exists = not img_page_soup.find("p", string=re.compile(nonexistant_string_denoter))    # Negating a found non-existant statement on page
+    return (img_exists, img_page_soup)
 
 
 
