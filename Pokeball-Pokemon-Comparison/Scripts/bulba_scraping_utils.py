@@ -1,13 +1,8 @@
-import requests # To retrieve webpages
-from bs4 import BeautifulSoup   # To parse webpages
-import re   # For filtering what images to download
-import os
-
 from json_utils import *
 from db_utils import get_missing_poke_imgs_by_table, get_missing_pokeball_imgs, has_f_form, get_form_name, get_poke_name, get_pokeball_name, get_pokeball_img_type_name
 from bulba_translation_mapping import *
 from app_globals import *
-from image_tools import *
+from image_utils import *
 from scraping_utils import *
 
 
@@ -79,7 +74,7 @@ def get_bulba_translated_species_form(poke_info, my_filename, map_type):
 #|================================================================================================|
 
 def get_bulba_img(url, save_path, allow_download, has_animation=False):
-    img_exists, img_page_soup = bulba_img_exists(url)
+    img_exists, img_page_soup = img_exists_at_url(url, nonexistant_string_denoter=r"No file by this name exists.")
     if not img_exists:
         return ()
     else:
@@ -95,13 +90,6 @@ def get_bulba_img(url, save_path, allow_download, has_animation=False):
                 determine_animation_status_before_downloading(img_url, save_path)
             else:
                 download_img(img_url, save_path)
-
-
-def bulba_img_exists(url):
-    img_page = requests.get(url)
-    img_page_soup = BeautifulSoup(img_page.content, 'html.parser')
-    img_exists = not img_page_soup.find("p", string=re.compile(r"No file by this name exists."))    # Negating a found non-existant statement on page
-    return (img_exists, img_page_soup)
 
 
 def bulba_doesnt_have_images_for(my_filename):
@@ -303,8 +291,10 @@ def drawn_translate(my_filename, poke_info):
 #|================================================================================================|
 
 def bulba_scrape_pokeballs(allow_download=False):
+    bulba_scrape_config = generate_config_dict(BULBA_FILE_STARTER_URL, get_bulba_img, allow_download)
+
     # Setting animated to True for gen5_Battle-Animated, -1 for poke_num which just gets ignored for this table name anyways
-    scrape_imgs(-1, "pokeball_filenames", BULBA_FILE_STARTER_URL, pokeball_translate, get_bulba_img, exclusions=None, has_animation=True, allow_download=allow_download, save_path=POKEBALL_SAVE_PATH)
+    scrape_imgs(-1, "pokeball_filenames", pokeball_translate, exclusions=None, has_animation=True, save_path=POKEBALL_SAVE_PATH, config_dict=bulba_scrape_config)
 
 
 def pokeball_translate(my_filename, pokeball_info):
