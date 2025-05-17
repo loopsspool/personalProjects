@@ -6,6 +6,10 @@ import re   # To check each name is formatted properly
 import time     # To simulate a pause between each page opening
 import os.path   # To skip a file if it already exists
 
+from db_utils import get_missing_poke_imgs_by_table
+from app_globals import *
+from scraping_utils import *
+
 
 # ===============================================================================================================================================================================================
 # ===============================================================================================================================================================================================
@@ -26,7 +30,39 @@ import os.path   # To skip a file if it already exists
 
 # WEB DATA
 sprite_page = requests.get("https://www.wikidex.net/wiki/Categor%C3%ADa:Sprites_de_Pok%C3%A9mon")
+WIKIDEX_STARTER_URL = "https://www.wikidex.net/wiki/Archivo:"
 
+
+def wikidex_scrape_pokemon(start_poke_num, stop_poke_num, allow_download=False):
+    wikidex_scrape_config = generate_config_dict(WIKIDEX_STARTER_URL, wikidex_get_img, allow_download)
+
+    for poke_num in range(start_poke_num, stop_poke_num + 1):
+        print(f"\rScraping pokemon #{poke_num} wikidex images...", end='', flush=True)
+
+        scrape_imgs(poke_num, "obtainable_game_imgs", game_translate, exclusions=None, has_animation=True, save_path=GAME_SPRITE_SAVE_PATH, config_dict=wikidex_scrape_config)
+        scrape_imgs(poke_num, "home_filenames", home_translate, exclusions=None, has_animation=True, save_path=HOME_SAVE_PATH, config_dict=wikidex_scrape_config)
+        # NOTE: Technically Wikidex does have drawn images and home menu images, but bulba has every one so there's no need to scrape
+        # If this changes in the future, it may be useful to browse their archives via url thru https://www.wikidex.net/index.php?title=Categor%C3%ADa:Pokemon_name
+
+        # TODO: See what pokeballs they have in their archive
+    
+    # Resetting console line after updates from above
+    print('\r' + ' '*55 + '\r', end='')
+
+
+#|================================================================================================|
+#|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     GAME IMAGES     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+#|================================================================================================|
+
+def game_translate():
+    pass
+
+
+def wikidex_get_img():
+    pass
+
+def home_translate():
+    pass
 
 keyname = ""
 # No animated sprites below gen 5 on this website

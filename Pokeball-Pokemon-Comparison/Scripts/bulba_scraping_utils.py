@@ -16,19 +16,21 @@ BULBA_FILE_STARTER_URL = "https://archives.bulbagarden.net/wiki/File:"
 
 
 def bulba_scrape_pokemon(start_poke_num, stop_poke_num, allow_download=False):
+    bulba_scrape_config = generate_config_dict(BULBA_FILE_STARTER_URL, get_bulba_img, allow_download)
+
     for poke_num in range(start_poke_num, stop_poke_num + 1):
         print(f"\rScraping pokemon #{poke_num} bulba images...", end='', flush=True)
 
         # Game Sprites
-        scrape_imgs(poke_num, "obtainable_game_filenames", BULBA_FILE_STARTER_URL, bulba_game_sprite_translate, get_bulba_img, exclusions=bulba_doesnt_have_images_for, has_animation=True, allow_download=allow_download, save_path=GAME_SPRITE_SAVE_PATH)
+        scrape_imgs(poke_num, "obtainable_game_filenames", bulba_game_sprite_translate, exclusions=bulba_doesnt_have_images_for, has_animation=True, save_path=GAME_SPRITE_SAVE_PATH, config_dict=bulba_scrape_config)
         # Drawn Imgs
-        scrape_imgs(poke_num, "drawn_filenames", BULBA_FILE_STARTER_URL, drawn_translate, get_bulba_img, exclusions=None, has_animation=False, allow_download=allow_download, save_path=DRAWN_SAVE_PATH)
+        scrape_imgs(poke_num, "drawn_filenames", drawn_translate, exclusions=None, has_animation=False, save_path=DRAWN_SAVE_PATH, config_dict=bulba_scrape_config)
         # Home Sprites
         # NOTE: has_animation set to true (because it does, just not in bulba), if it were false and missing it would just download the still
         # As of writing (4-30-25) bulba doesn't have animated HOME sprites, but I do want to leave the option open if possible
-        scrape_imgs(poke_num, "home_filenames", BULBA_FILE_STARTER_URL, home_sprite_translate, get_bulba_img, exclusions=None, has_animation=True, allow_download=allow_download, save_path=HOME_SAVE_PATH)
+        scrape_imgs(poke_num, "home_filenames", home_sprite_translate, exclusions=None, has_animation=True, save_path=HOME_SAVE_PATH, config_dict=bulba_scrape_config)
         # Home Menu
-        scrape_imgs(poke_num, "home_menu_filenames", BULBA_FILE_STARTER_URL, home_menu_translate, get_bulba_img, exclusions=None, has_animation=False, allow_download=allow_download, save_path=HOME_MENU_SAVE_PATH)
+        scrape_imgs(poke_num, "home_menu_filenames", home_menu_translate, exclusions=None, has_animation=False, save_path=HOME_MENU_SAVE_PATH, config_dict=bulba_scrape_config)
     
     # Resetting console line after updates from above
     print('\r' + ' '*55 + '\r', end='')
