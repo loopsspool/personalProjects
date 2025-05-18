@@ -110,10 +110,12 @@ def bulba_doesnt_have_images_for(my_filename):
 #|================================================================================================|
 
 def bulba_game_sprite_translate(my_filename, poke_info):
+    # poke_info == (poke_num, form_id)
+
     # Starting bulba filename w their format
     bulba_filename = "Spr"
     if "-Back" in my_filename: bulba_filename += " b"
-    bulba_game = get_bulba_translated_game(my_filename)    # Not just adding it so I can evaluate it later
+    bulba_game = get_translated_game(my_filename, BULBA_GAME_MAP)    # Not just adding it so I can evaluate it later
     bulba_filename += bulba_game
     poke_num_int = poke_info[0]
     poke_num_leading_zeros = str(poke_num_int).zfill(3)  # Converting from 4 total digits to 3
@@ -125,14 +127,6 @@ def bulba_game_sprite_translate(my_filename, poke_info):
     if "-Shiny" in my_filename: bulba_filename += " s"
     bulba_filename += ".png"
     return(bulba_filename)
-
-
-def get_bulba_translated_game(my_filename):
-    for game, translation in BULBA_GAME_MAP.items():
-        if "-Back" in my_filename:
-            game = game.replace(" ", "_")
-        if game in my_filename:
-            return(f" {translation}")
 
 
 # NOTE: I hate to hardcode it this way, but attempting 2-3 page opens just to find the right name (via verify_bulba_inconsistency func)
