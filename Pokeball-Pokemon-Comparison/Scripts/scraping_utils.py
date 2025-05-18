@@ -95,3 +95,11 @@ def generate_config_dict(starter_url, download_func, allow_download):
         "Allow Download": allow_download
     }
     return config_dict
+
+
+def get_translated_game(my_filename, map_dict):
+    for game, translation in map_dict.items():
+        if "-Back" in my_filename:
+            game = game.replace(" ", "_")
+        if game in my_filename:
+            return(f" {translation}")
