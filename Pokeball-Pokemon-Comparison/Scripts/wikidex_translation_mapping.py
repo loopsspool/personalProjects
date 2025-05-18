@@ -39,7 +39,7 @@ WIKIDEX_GAME_MAP = {
     "Gen8 BDSP": "DBPR",
     "Gen9 SV": "EP"
 }
-    
+   
 
 
 
@@ -47,6 +47,18 @@ WIKIDEX_GAME_MAP = {
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~[     UNIVERSAL FORM TRANSLATIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
+# TODO: If same as HOME, can take GAMES out of var name
+# TODO: Check Urshifu
+# TODO: Mega X & Y formatted as Mega-Name X
+WIKIDEX_GAMES_UNIVERSAL_FORM_MAP = {
+    "-Mega": "Mega-",   # This after X&Y so when looping through Mega wont trigger a form meant to be X or Y
+    "-Gigantamax": "Gigamax",
+    # TODO: Can probably split these by underscore and preface w de so dont have to hardcode each new game
+    "-Region_Alola": "de Alola",
+    "-Region_Galar": "de Galar",
+    "-Region_Hisui": "de Hisui",
+    "-Region_Paldea": "de Paldea"
+}
 # TODO: Universal forms (including f/m)
 # if split_name.startswith("Mega") and split_name != "Meganium":
 #     mega = " Mega"

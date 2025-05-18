@@ -91,7 +91,7 @@ def game_translate(my_filename, poke_info):
     # poke_info == (poke_num, form_id)
     poke_name = get_poke_name(poke_info[0]) # TODO: Adjust e's for flabebe
     game = get_translated_game(my_filename, WIKIDEX_GAME_MAP)   # TODO: Figure out how to deal w B2W2, XYORAS, & USUM....
-    # TODO: Generalize get_bulba_translated_universal_form like how I did for get_translated_game?
+    u_form = get_translated_universal_form(my_filename, WIKIDEX_GAMES_UNIVERSAL_FORM_MAP)
 
 
 def home_translate():
