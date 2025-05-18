@@ -37,14 +37,6 @@ def bulba_scrape_pokemon(start_poke_num, stop_poke_num, allow_download=False):
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     UNIVERSAL TRANSLATIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
-
-# Mega and regional forms, not gigantamax (bc urshifu, see dict in file for more)
-def get_bulba_translated_universal_form(my_filename, mapping):
-    for u_form, translation in mapping.items():
-        if u_form in my_filename: return(translation)
-    return ("")
-
-
 def get_bulba_translated_species_form(poke_info, my_filename, map_type):
     poke_num = poke_info[0]
     form_id = poke_info[1]
@@ -120,7 +112,7 @@ def bulba_game_sprite_translate(my_filename, poke_info):
     poke_num_int = poke_info[0]
     poke_num_leading_zeros = str(poke_num_int).zfill(3)  # Converting from 4 total digits to 3
     bulba_filename += f" {poke_num_leading_zeros}"
-    bulba_filename += get_bulba_translated_universal_form(my_filename, BULBA_GAMES_UNIVERSAL_FORM_MAP)
+    bulba_filename += get_translated_universal_form(my_filename, BULBA_GAMES_UNIVERSAL_FORM_MAP)
     bulba_filename += get_bulba_translated_species_form(poke_info, my_filename, "Game")
     if "-Gigantamax" in my_filename: bulba_filename += "Gi"    # Put here because of Urshifu, form before gigantamax denoter
     bulba_filename += get_gender_denoter(poke_num_int, my_filename, is_game_sprite=True)
@@ -198,7 +190,7 @@ def home_sprite_translate(my_filename, poke_info):
     poke_num = poke_info[0]
     poke_num_leading_zeros = str(poke_num).zfill(4)
     home_sprite_filename = f"HOME{poke_num_leading_zeros}"
-    home_sprite_filename += get_bulba_translated_universal_form(my_filename, BULBA_GAMES_UNIVERSAL_FORM_MAP)
+    home_sprite_filename += get_translated_universal_form(my_filename, BULBA_GAMES_UNIVERSAL_FORM_MAP)
     home_sprite_filename += get_bulba_translated_species_form(poke_info, my_filename, "Game")
     if "-Gigantamax" in my_filename: home_sprite_filename += "Gi"    # Put here because of Urshifu, form before gigantamax denoter
     home_sprite_filename += get_gender_denoter(poke_num, my_filename, is_game_sprite=False)
@@ -219,7 +211,7 @@ def home_menu_translate(my_filename, poke_info):
     home_menu_filename = f"Menu HOME {poke_num_leading_zeros}"
     # Urshifu order doesn't matter because no gigantamax home menu sprites
     # TODO: But also doesn't have form menu sprites either? See if thats the case for others after download
-    home_menu_filename += get_bulba_translated_universal_form(my_filename, DRAWN_IMAGES_UNIVERSAL_FORMS_MAP)
+    home_menu_filename += get_translated_universal_form(my_filename, DRAWN_IMAGES_UNIVERSAL_FORMS_MAP)
     home_menu_filename += get_home_menu_translated_species_form(poke_info, my_filename)
     home_menu_filename += ".png"
     return home_menu_filename
@@ -264,7 +256,7 @@ def drawn_translate(my_filename, poke_info):
     bulba_drawn_filename = f"{poke_num_leading_zeros}{poke_name}"
     if poke_num == 29: bulba_drawn_filename = bulba_drawn_filename.replace(" f", "")
     if poke_num == 32: bulba_drawn_filename = bulba_drawn_filename.replace(" m", "")
-    bulba_drawn_filename += get_bulba_translated_universal_form(my_filename, DRAWN_IMAGES_UNIVERSAL_FORMS_MAP)
+    bulba_drawn_filename += get_translated_universal_form(my_filename, DRAWN_IMAGES_UNIVERSAL_FORMS_MAP)
     bulba_drawn_filename += get_bulba_translated_species_form(poke_info, my_filename, "Drawn")
     bulba_drawn_filename += ".png"
 
