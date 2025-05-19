@@ -18,85 +18,28 @@
 
 # TODO: Convert to dicts
 WIKIDEX_GAME_MAP = {
-    "Gen1 Red_Blue": "RA",
-    "Gen1 Red_Green": "V",
-    "Gen1 Yellow": "A",
-    "Gen2 Crystal": "cristal",
-    "Gen2 Gold": "oro",
-    "Gen2 Silver": "plata",
-    "Gen3 Emerald": "E",
-    "Gen3 FRLG": "RFVH",
-    "Gen3 Ruby_Sapphire": "RZ",
-    "Gen4 Diamond_Pearl": "DP",
-    "Gen4 HGSS": "HGSS",
-    "Gen4 Platinum": "Pt",
-    "Gen5 BW_B2W2": "NB",   # TODO: Also N2B2
-    "Gen6 XY_ORAS": "XY",   # TODO: Also ROZA
-    "Gen7 SM_USUM": "SL",   # TODO: Also USUL
-    "Gen7 LGPE": "LGPE",
-    "Gen8 SwSh": "EpEc",
-    "Gen8 LA": "LPA",
-    "Gen8 BDSP": "DBPR",
-    "Gen9 SV": "EP"
+    "Gen1 Red_Blue": " RA",
+    "Gen1 Red_Green": " V",
+    "Gen1 Yellow": " A",
+    "Gen2 Crystal": " cristal",
+    "Gen2 Gold": " oro",
+    "Gen2 Silver": " plata",
+    "Gen3 Emerald": " E",
+    "Gen3 FRLG": " RFVH",
+    "Gen3 Ruby_Sapphire": " RZ",
+    "Gen4 Diamond_Pearl": " DP",
+    "Gen4 HGSS": " HGSS",
+    "Gen4 Platinum": " Pt",
+    "Gen5 BW_B2W2": " NB",   # TODO: Also N2B2
+    "Gen6 XY_ORAS": " XY",   # TODO: Also ROZA
+    "Gen7 SM_USUM": " SL",   # TODO: Also USUL
+    "Gen7 LGPE": " LGPE",
+    "Gen8 SwSh": " EpEc",
+    "Gen8 LA": " LPA",
+    "Gen8 BDSP": " DBPR",
+    "Gen9 SV": " EP"
 }
    
-
-
-
-#|================================================================================================|
-#|~~~~~~~~~~~~~~~~~~~~~~~~~~~[     UNIVERSAL FORM TRANSLATIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
-#|================================================================================================|
-
-# TODO: If same as HOME, can take GAMES out of var name
-# TODO: Check Urshifu
-# TODO: Mega X & Y formatted as Mega-Name X
-WIKIDEX_GAMES_UNIVERSAL_FORM_MAP = {
-    "-Mega": "Mega-",   # This after X&Y so when looping through Mega wont trigger a form meant to be X or Y
-    "-Gigantamax": "Gigamax",
-    # TODO: Can probably split these by underscore and preface w de so dont have to hardcode each new game
-    "-Region_Alola": "de Alola",
-    "-Region_Galar": "de Galar",
-    "-Region_Hisui": "de Hisui",
-    "-Region_Paldea": "de Paldea"
-}
-# TODO: Universal forms (including f/m)
-# if split_name.startswith("Mega") and split_name != "Meganium":
-#     mega = " Mega"
-#     split_name = split_name.split("Mega-")[1]
-#     if split_name.endswith("X"):
-#         mega = " MegaX"
-#         split_name = split_name.split(" X")[0]
-#     if split_name.endswith("Y"):
-#         mega = " MegaY"
-#         split_name = split_name.split(" Y")[0]
-# # Handling Dynamax (Except Eternatus Eternamax)
-# dyna = ""
-# if split_name.endswith("Dinamax") and not split_name.startswith("\nEternatus"):
-#     dyna = " Dynamax"
-#     split_name = split_name.split(" Dinamax")[0]
-# # Handling Gigantamax
-# giganta = ""
-# if split_name.endswith("Gigamax"):
-#     giganta = " Gigantamax"
-#     split_name = split_name.split(" Gigamax")[0]
-# # Handling regions
-# region = ""
-# if split_name.endswith("de Alola"):
-#     region = " Alolan"
-#     split_name = split_name.split(" de Alola")[0]
-# if split_name.endswith("de Galar"):
-#     region = " Galarian"
-#     split_name = split_name.split(" de Galar")[0]
-
-# # Doing forms becuase accumulation over all generations, shiny, static/animated, and back sprites would easily get into the thousands
-# form = ""
-# # Nidoran Genders in name
-# if "Nidoran" in split_name and gender != "":
-#     if gender == " f":
-#         split_name = split_name.replace("hembra", "f")
-#     if gender == " m":
-#         split_name = split_name.replace("macho", "m")
-
 
 
 
