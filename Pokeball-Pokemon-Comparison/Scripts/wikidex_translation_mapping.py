@@ -68,8 +68,9 @@ WIKIDEX_TYPE_FORM_MAP = {
     "-Form_Qmark": "?"
 }
 
-
+# TODO: Confirm this is all forms w info spreadsheet
 WIKIDEX_POKE_FORM_TRANSLATION_MAP = {
+    # Pikachu
     "25": {
         "-Form_Cap_Alola": "Alola",
         "-Form_Cap_Hoenn": "Hoenn",
@@ -77,24 +78,30 @@ WIKIDEX_POKE_FORM_TRANSLATION_MAP = {
         "-Form_Cap_Original": "original",
         "-Form_Cap_Sinnoh": "Sinnoh",
         "-Form_Cap_Unova": "Teselia",
-        "-Form_Cap_Partner": "P",
-        "-Form_Cap_World": "W",
-        "-Form_Cosplay_Belle": "B",
-        "-Form_Cosplay_Libre": "L",
-        "-Form_Cosplay_PhD": "PhD",
-        "-Form_Cosplay_Pop_Star": "Pop",
-        "-Form_Cosplay_Rock_Star": "Ro"
+        "-Form_Cap_Partner": "compañero",
+        "-Form_Cap_World": "trotamundos",
+
+        "-Form_Cosplay_Belle": "aristócrata",
+        "-Form_Cosplay_Libre": "enmascarada",
+        "-Form_Cosplay_PhD": "erudita",
+        "-Form_Cosplay_Pop_Star": "superstar",
+        "-Form_Cosplay_Rock_Star": "roquera"
     },
+
+    # Tauros
     "128": {
-        "-Form_Combat": "C",
-        "-Form_Blaze": "B",
-        "-Form_Aqua": "A"
+        "-Form_Combat": "combatiente",
+        "-Form_Blaze": "ardiente",
+        "-Form_Aqua": "acuática"
     },
+
+    # Pichu
     "172": {
-        "-Form_Spiky_Eared": "N"
+        "-Form_Spiky_Eared": "picoreja"
     },
+
     "201": {
-        "-Form_A": "",
+        "-Form_A": "A",
         "-Form_B": "B",
         "-Form_C": "C",
         "-Form_D": "D",
@@ -110,7 +117,7 @@ WIKIDEX_POKE_FORM_TRANSLATION_MAP = {
         "-Form_N": "N",
         "-Form_O": "O",
         "-Form_P": "P",
-        "-Form_Qmark": "QU",
+        "-Form_Qmark": "?",
         "-Form_Q": "Q",
         "-Form_R": "R",
         "-Form_S": "S",
@@ -121,312 +128,360 @@ WIKIDEX_POKE_FORM_TRANSLATION_MAP = {
         "-Form_X": "X",
         "-Form_Y": "Y",
         "-Form_Z": "Z",
-        "-Form_!": "EX"
+        "-Form_!": "!"
     },
+
+    # Sneasel
     "215": {
-        "-Region_Hisui-f": ""
+        "-Region_Hisui-f": ""   # Handled w universal & female forms in wikidex scraping, blank so it doesn't get flagged as missing key
     },
+
+    # Castform
     "351": {
-        "-Form_Rainy": "R",
-        "-Form_Snowy": "H",
-        "-Form_Sunny": "S"
+        "-Form_Rainy": "lluvia",
+        "-Form_Snowy": "nieve",
+        "-Form_Sunny": "sol"
     },
+
+    # Kyogre & Groudon
     "382": {
-        "-Form_Primal": "P"
+        "-Form_Primal": "primigenio"
     },
     "383": {
-        "-Form_Primal": "P"
+        "-Form_Primal": "primigenio"
     },
+
+    # Deoxys
     "386": {
-        "-Form_Attack": "A",
-        "-Form_Defense": "D",
-        "-Form_Speed": "S"
+        "-Form_Attack": "ataque",
+        "-Form_Defense": "defensa",
+        "-Form_Speed": "velocidad"
     },
+
+    # Burmy & Wormadam
     "412": {
-        "-Form_Plant_Cloak": "",
-        "-Form_Sandy_Cloak": "G",
-        "-Form_Trash_Cloak": "S"
+        "-Form_Plant_Cloak": "planta",
+        "-Form_Sandy_Cloak": "arena",
+        "-Form_Trash_Cloak": "basura"
     },
     "413": {
-        "-Form_Plant_Cloak": "",
-        "-Form_Sandy_Cloak": "G",
-        "-Form_Trash_Cloak": "S"
+        "-Form_Plant_Cloak": "planta",
+        "-Form_Sandy_Cloak": "arena",
+        "-Form_Trash_Cloak": "basura"
     },
+
+    # Cherrim
     "421": {
-        "-Form_Overcast": "",
-        "-Form_Sunshine": "S"
+        "-Form_Overcast": "encapotado",
+        "-Form_Sunshine": "soleado"
     },
+
+    # Shellos & Gastrodon
     "422": {
-        "-Form_West": "",
-        "-Form_East": "E"
+        "-Form_West": "oeste",
+        "-Form_East": "este"
     },
     "423": {
-        "-Form_West": "",
-        "-Form_East": "E"
+        "-Form_West": "oeste",
+        "-Form_East": "este"
     },
+
+    # Rotom
     "479": {
-        "-Form_Fan": "F",
-        "-Form_Frost": "R",
-        "-Form_Heat": "O",
-        "-Form_Mow": "L",
-        "-Form_Wash": "W"
+        "-Form_Fan": "ventilador",
+        "-Form_Frost": "frío",
+        "-Form_Heat": "calor",
+        "-Form_Mow": "corte",
+        "-Form_Wash": "lavado"
     },
+
+    # Dialga & Palkia
     "483": {
-        "-Form_Origin": "O"
+        "-Form_Origin": "origen"
     },
     "484": {
-        "-Form_Origin": "O"
+        "-Form_Origin": "origen"
     },
+
+    # Giratina
     "487": {
-        "-Form_Altered": "",
-        "-Form_Origin": "O"
+        "-Form_Altered": "modificada",
+        "-Form_Origin": "origen"
     },
+
+    # Shaymin
     "492": {
-        "-Form_Land": "",
-        "-Form_Sky": "S"
+        "-Form_Land": "tierra",
+        "-Form_Sky": "cielo"
     },
-    "493": {
-        "-Form_Normal": "",
-        "-Form_Fighting": "-Fighting",
-        "-Form_Flying": "-Flying",
-        "-Form_Poison": "-Poison",
-        "-Form_Ground": "-Ground",
-        "-Form_Rock": "-Rock",
-        "-Form_Bug": "-Bug",
-        "-Form_Ghost": "-Ghost",
-        "-Form_Steel": "-Steel",
-        "-Form_Fire": "-Fire",
-        "-Form_Water": "-Water",
-        "-Form_Grass": "-Grass",
-        "-Form_Electric": "-Electric",
-        "-Form_Psychic": "-Psychic",
-        "-Form_Ice": "-Ice",
-        "-Form_Dragon": "-Dragon",
-        "-Form_Dark": "-Dark",
-        "-Form_Fairy": "-Fairy",
-        "-Form_Qmark": "-Unknown"
-    },
+
+    # Arceus
+    "493": WIKIDEX_TYPE_FORM_MAP,
+
+    #  Basculin
     "550": {
-        "-Form_Red_Striped": "",
-        "-Form_Blue_Striped": "B",
-        "-Form_White_Striped": "W"
+        "-Form_Red_Striped": "roja",
+        "-Form_Blue_Striped": "azul",
+        "-Form_White_Striped": "blanca"
     },
+
+    # Darmanitan
     "555": {
         "-Form_Standard": "",
-        "-Form_Zen": "Z"
+        "-Form_Zen": "daruma"
     },
+
+    # Deerling & Sawsbuck
     "585": {
-        "-Form_Spring": "",
-        "-Form_Autumn": "A",
-        "-Form_Summer": "S",
-        "-Form_Winter": "W"
+        "-Form_Spring": "primavera",
+        "-Form_Autumn": "otoño",
+        "-Form_Summer": "verano",
+        "-Form_Winter": "invierno"
     },
     "586": {
-        "-Form_Spring": "",
-        "-Form_Autumn": "A",
-        "-Form_Summer": "S",
-        "-Form_Winter": "W"
+        "-Form_Spring": "primavera",
+        "-Form_Autumn": "otoño",
+        "-Form_Summer": "verano",
+        "-Form_Winter": "invierno"
     },
+
+    # Forces of nature
     "641": {
-        "-Form_Incarnate": "",
-        "-Form_Therian": "T"
+        "-Form_Incarnate": "avatar",
+        "-Form_Therian": "tótem"
     },
     "642": {
-        "-Form_Incarnate": "",
-        "-Form_Therian": "T"
+        "-Form_Incarnate": "avatar",
+        "-Form_Therian": "tótem"
     },
     "645": {
-        "-Form_Incarnate": "",
-        "-Form_Therian": "T"
+        "-Form_Incarnate": "avatar",
+        "-Form_Therian": "tótem"
     },
+
+    # Kyurem
     "646": {
-        "-Form_Black": "DO_BY_HAND",
-        "-Form_Black_Overdrive": "DO_BY_HAND",
-        "-Form_White": "DO_BY_HAND",
-        "-Form_White_Overdrive": "DO_BY_HAND"
+        "-Form_Black": "negro inactivo",    # TODO: Sometimes just negro
+        "-Form_Black_Overdrive": "negro activo",
+        "-Form_White": "blanco inactivo",   # TODO: Sometimes just blanco
+        "-Form_White_Overdrive": "blanco activo"
     },
+
+    # Keldeo
     "647": {
         "-Form_Ordinary": "",
-        "-Form_Resolute": "R"
+        "-Form_Resolute": "brío"
     },
+
+    # Meloetta
     "648": {
-        "-Form_Aria": "",
-        "-Form_Pirouette": "P"
+        "-Form_Aria": "lírica",
+        "-Form_Pirouette": "danza"
     },
+
+    # Genesect
     "649": {
-        "-Form_Douse_Drive": "B",
-        "-Form_Burn_Drive": "R",
-        "-Form_Chill_Drive": "W",
-        "-Form_Shock_Drive": "Y"
+        "-Form_Douse_Drive": "hidroROM",
+        "-Form_Burn_Drive": "piroROM",
+        "-Form_Chill_Drive": "crioROM",
+        "-Form_Shock_Drive": "fulgoROM"
     },
+
+    # Greninja
     "658": {
-        "-Form_Ash": "A"
+        "-Form_Ash": "Ash"
     },
+
+    # Vivillon
     "666": {
-        "-Form_Meadow": "",
-        "-Form_Archipelago": "Arc",
-        "-Form_Continental": "Con",
-        "-Form_Elegant": "Ele",
-        "-Form_Garden": "Gar",
-        "-Form_High_Plains": "Hig",
-        "-Form_Icy_Snow": "Icy",
-        "-Form_Jungle": "Jun",
-        "-Form_Marine": "Mar",
-        "-Form_Modern": "Mod",
-        "-Form_Monsoon": "Mon",
-        "-Form_Ocean": "Oce",
-        "-Form_Polar": "Pol",
-        "-Form_River": "Riv",
-        "-Form_Sandstorm": "San",
-        "-Form_Savanna": "Sav",
-        "-Form_Sun": "Sun",
-        "-Form_Tundra": "Tun",
-        "-Form_Poke_Ball": "Pok",
-        "-Form_Fancy": "Fan"
+        "-Form_Meadow": "floral",
+        "-Form_Archipelago": "isleño",
+        "-Form_Continental": "continental",
+        "-Form_Elegant": "oriental",
+        "-Form_Garden": "vergel",
+        "-Form_High_Plains": "estepa",
+        "-Form_Icy_Snow": "polar",
+        "-Form_Jungle": "jungla",
+        "-Form_Marine": "marino",
+        "-Form_Modern": "moderno",
+        "-Form_Monsoon": "monzón",
+        "-Form_Ocean": "océano",
+        "-Form_Polar": "taiga",
+        "-Form_River": "oasis",
+        "-Form_Sandstorm": "desierto",
+        "-Form_Savanna": "pantano",
+        "-Form_Sun": "solar",
+        "-Form_Tundra": "tundra",
+        "-Form_Poke_Ball": "Poké Ball",
+        "-Form_Fancy": "fantasía"
     },
+
+    # Flabebe, Floette, and Florges
     "669": {
-        "-Form_Red_Flower": "",
-        "-Form_Blue_Flower": "B",
-        "-Form_Orange_Flower": "O",
-        "-Form_White_Flower": "W",
-        "-Form_Yellow_Flower": "Y"
+        "-Form_Red_Flower": "roja",
+        "-Form_Blue_Flower": "azul",
+        "-Form_Orange_Flower": "naranja",
+        "-Form_White_Flower": "blanca",
+        "-Form_Yellow_Flower": "amarilla"
     },
     "670": {
-        "-Form_Red_Flower": "",
-        "-Form_Blue_Flower": "B",
-        "-Form_Orange_Flower": "O",
-        "-Form_White_Flower": "W",
-        "-Form_Yellow_Flower": "Y",
-        "-Form_Eternal_Flower": "E"
+        "-Form_Red_Flower": "roja",
+        "-Form_Blue_Flower": "azul",
+        "-Form_Orange_Flower": "naranja",
+        "-Form_White_Flower": "blanca",
+        "-Form_Yellow_Flower": "amarilla",
+        "-Form_Eternal_Flower": "eterna"
     },
     "671": {
-        "-Form_Red_Flower": "",
-        "-Form_Blue_Flower": "B",
-        "-Form_Orange_Flower": "O",
-        "-Form_White_Flower": "W",
-        "-Form_Yellow_Flower": "Y"
+        "-Form_Red_Flower": "roja",
+        "-Form_Blue_Flower": "azul",
+        "-Form_Orange_Flower": "naranja",
+        "-Form_White_Flower": "blanca",
+        "-Form_Yellow_Flower": "amarilla"
     },
+
+    # Furfrou
     "676": {
-        "-Form_Dandy_Trim": "Da",
-        "-Form_Debutante_Trim": "De",
-        "-Form_Diamond_Trim": "Di",
-        "-Form_Heart_Trim": "He",
-        "-Form_Kabuki_Trim": "Ka",
-        "-Form_La_Reine_Trim": "La",
-        "-Form_Matron_Trim": "Ma",
-        "-Form_Pharaoh_Trim": "Ph",
-        "-Form_Star_Trim": "St"
+        "-Form_Dandy_Trim": "caballero",
+        "-Form_Debutante_Trim": "señorita",
+        "-Form_Diamond_Trim": "rombo",
+        "-Form_Heart_Trim": "corazón",
+        "-Form_Kabuki_Trim": "kabuki",
+        "-Form_La_Reine_Trim": "aristocrático",
+        "-Form_Matron_Trim": "dama",
+        "-Form_Pharaoh_Trim": "faraónico",
+        "-Form_Star_Trim": "estrella"
     },
+
+    # Aegislash
     "681": {
-        "-Form_Shield": "",
-        "-Form_Blade": "B"
+        "-Form_Shield": "escudo",
+        "-Form_Blade": "filo"
     },
+
+    # Pumpkaboo and Gourgeist
     "710": {
         "-Form_Average_Size": "",
-        "-Form_Small_Size": "Sm",
-        "-Form_Large_Size": "La",
-        "-Form_Super_Size": "Su"
+        "-Form_Small_Size": "pequeño",
+        "-Form_Large_Size": "grande",
+        "-Form_Super_Size": "extragrande"
     },
     "711": {
         "-Form_Average_Size": "",
-        "-Form_Small_Size": "Sm",
-        "-Form_Large_Size": "La",
-        "-Form_Super_Size": "Su"
+        "-Form_Small_Size": "pequeño",
+        "-Form_Large_Size": "grande",
+        "-Form_Super_Size": "extragrande"
     },
+
+    # Xerneas
     "716": {
         "-Form_Active": "",
-        "-Form_Neutral": "N"
+        "-Form_Neutral": "relajada"
     },
+
+    # Zygarde
     "718": {
         "-Form_50%": "",
-        "-Form_Complete": "C",
-        "-Form_10%": "T"
+        "-Form_Complete": "completo",
+        "-Form_10%": "al 10%"
     },
+
+    # Hoopa
     "720": {
         "-Form_Confined": "",
-        "-Form_Unbound": "U"
+        "-Form_Unbound": "desatado"
     },
+
+    # Oricorio
     "741": {
-        "-Form_Baile": "",
-        "-Form_Pa'u": "Pa",
-        "-Form_Pom_Pom": "Po",
-        "-Form_Sensu": "Se"
+        "-Form_Baile": "apasionado",
+        "-Form_Pa'u": "plácido",
+        "-Form_Pom_Pom": "animado",
+        "-Form_Sensu": "refinado"
     },
+
+    # Lycanroc
     "745": {
-        "-Form_Midday": "",
-        "-Form_Dusk": "D",
-        "-Form_Midnight": "Mn"
+        "-Form_Midday": "diurno",
+        "-Form_Dusk": "crepuscular",
+        "-Form_Midnight": "nocturno"
     },
+
+    # Wishiwashi
     "746": {
-        "-Form_Solo": "",
-        "-Form_School": "Sc"
+        "-Form_Solo": "individual",
+        "-Form_School": "banco"
     },
-    "773": {
-        "-Form_Normal": "",
-        "-Form_Fighting": "-Fighting",
-        "-Form_Flying": "-Flying",
-        "-Form_Poison": "-Poison",
-        "-Form_Ground": "-Ground",
-        "-Form_Rock": "-Rock",
-        "-Form_Bug": "-Bug",
-        "-Form_Ghost": "-Ghost",
-        "-Form_Steel": "-Steel",
-        "-Form_Fire": "-Fire",
-        "-Form_Water": "-Water",
-        "-Form_Grass": "-Grass",
-        "-Form_Electric": "-Electric",
-        "-Form_Psychic": "-Psychic",
-        "-Form_Ice": "-Ice",
-        "-Form_Dragon": "-Dragon",
-        "-Form_Dark": "-Dark",
-        "-Form_Fairy": "-Fairy",
-        "-Form_Qmark": "-Unknown"
-    },
+
+    # Silvally
+    "773": WIKIDEX_TYPE_FORM_MAP,
+
+    # Minior
     "774": {
-        "-Form_Meteor": "",
-        "-Form_Blue_Core": "B",
-        "-Form_Green_Core": "G",
-        "-Form_Indigo_Core": "I",
-        "-Form_Orange_Core": "O",
-        "-Form_Red_Core": "R",
-        "-Form_Violet_Core": "V",
-        "-Form_Yellow_Core": "Y",
-        "-Form_Core": "R"
+        "-Form_Meteor": "meteorito",
+        "-Form_Blue_Core": "azul",
+        "-Form_Green_Core": "verde",
+        "-Form_Indigo_Core": "añil",
+        "-Form_Orange_Core": "naranja",
+        "-Form_Red_Core": "rojo",
+        "-Form_Violet_Core": "violeta",
+        "-Form_Yellow_Core": "amarillo",
+        "-Form_Core": "núcleo"
     },
+
+    # Mimikyu
     "778": {
         "-Form_Disguised": "",
-        "-Form_Busted": "B"
+        "-Form_Busted": "descubierto"
     },
+
+    # Solgaleo
     "791": {
-        "-Form_Radiant_Sun": "R"
+        "-Form_Radiant_Sun": "-DOES_NOT_EXIST"
     },
+
+    # Lunala
     "792": {
-        "-Form_Full_Moon": "F"
+        "-Form_Full_Moon": "-DOES_NOT_EXIST"
     },
+
+    # Necrozma
     "800": {
-        "-Form_Dawn_Wings": "DW",
-        "-Form_Dusk_Mane": "DM",
-        "-Form_Ultra": "U"
+        "-Form_Dawn_Wings": "alas del alba",
+        "-Form_Dusk_Mane": "melena crepuscular",
+        "-Form_Ultra": ""   # TODO: Adds Ultra- before poke_name
     },
+
+    # Magearna
     "801": {
-        "-Form_Original_Color": "O"
+        "-Form_Original_Color": "vetusta"
     },
+
+    # Cramorant
     "845": {
-        "-Form_Gorging": "Go",
-        "-Form_Gulping": "Gu"
+        "-Form_Gorging": "engulletodo",
+        "-Form_Gulping": "tragatodo"
     },
+
+    # Toxtricity
     "849": {
-        "-Form_Amped": "",
-        "-Form_Low_Key": "L"
+        "-Form_Amped": "aguda",
+        "-Form_Low_Key": "grave"
     },
+
+    # Sinistea & Polteageist
+    # Only used by HOME for the show stamp sprites. All other images (since identical) are default form
     "854": {
-        "-Form_Phony": " b",
-        "-Form_Antique": "A b"
+        "-Form_Phony": "falsificada",
+        "-Form_Antique": "genuina"
     },
     "855": {
-        "-Form_Phony": " b",
-        "-Form_Antique": "A b"
+        "-Form_Phony": "falsificada",
+        "-Form_Antique": "genuina"
     },
+
+    # TODO: Combine creams & sweets from file_utils.py
+    # Alcremie
     "869": {
         "-Form_Caramel_Swirl_Berry_Sweet": "CaSB",
         "-Form_Caramel_Swirl_Clover_Sweet": "CaSC",
@@ -499,36 +554,52 @@ WIKIDEX_POKE_FORM_TRANSLATION_MAP = {
         "-Form_Star_Sweet": "S",
         "-Form_Strawberry_Sweet": ""
     },
+
+    # Eiscue
     "875": {
         "-Form_Ice_Face": "",
-        "-Form_Noice_Face": "N"
+        "-Form_Noice_Face": "cara deshielo"
     },
+
+    # Morpeko
     "877": {
         "-Form_Full_Belly": "",
-        "-Form_Hangry": "H"
+        "-Form_Hangry": "voraz"
     },
+
+    # Zacian & Zamazenta
     "888": {
         "-Form_Hero_of_Many_Battles": "",
-        "-Form_Crowned_Sword": "C"
+        "-Form_Crowned_Sword": "espada suprema"
     },
     "889": {
         "-Form_Hero_of_Many_Battles": "",
-        "-Form_Crowned_Shield": "C"
+        "-Form_Crowned_Shield": "escudo supremo"
     },
+
+    # Eternatus
     "890": {
-        "-Form_Eternamax": "E"
+        "-Form_Eternamax": "Dinamax infinito"
     },
+
+    # Urshifu
     "892": {
-        "-Form_Single_Strike": "",
-        "-Form_Rapid_Strike": "R"
+        "-Form_Single_Strike": "brusco",
+        "-Form_Rapid_Strike": "fluido"
     },
+
+    # Zarude
     "893": {
-        "-Form_Dada": "D"
+        "-Form_Dada": "papá"
     },
+
+    # Calyrex
     "898": {
-        "-Form_Ice_Rider": "I",
-        "-Form_Shadow_Rider": "R"
+        "-Form_Ice_Rider": "jinete glacial",
+        "-Form_Shadow_Rider": "jinete espectral"
     },
+
+    # TODO: Fill in the below
     "901": {
         "-Form_Bloodmoon": "B"
     },
