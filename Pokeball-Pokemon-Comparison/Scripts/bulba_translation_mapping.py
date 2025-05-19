@@ -1,12 +1,10 @@
-# TODO: Also put db_utils exclusions and exceptions into a seperate file
-
 #|================================================================================================|
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     GAME IMAGE TRANSLATIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
 # These will be excluded if tried to run through the game sprite image downloader
 # Animated gets processed further in bulba_scraping_utils to only filter animated > Gen5/HOME
-# 
+# -Gen5_Battle_Static is for the still frames of an animated gen5 pokeball, which bulba doesn't have -- I process them
 BULBA_DOESNT_HAVE_GAME_IMGS_FOR = ["Gen9 SV", "Gen9_SV", "Gen8 BDSP", "Gen8_BDSP", "-Animated", "-Gen5_Battle-Static_"]
 
 # Only allows male denoter on bulba translated file if these strings not in my filename
@@ -46,22 +44,6 @@ BULBA_GAME_MAP = {
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~[     UNIVERSAL FORM TRANSLATIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
-# This is to filter out these forms when translating species forms
-# The exceptions that have a universal AND species form (See 555 Galarian Darmanitan Zen form) have their own unique form id generated in db_utils > FORM_EXCEPTION_POKEMON
-UNIVERSAL_FORMS = {
-    "Default", 
-    "-f", 
-    "-Mega", 
-    "-Mega_X", 
-    "-Mega_Y", 
-    "-Gigantamax", 
-    "-Region_Alola", 
-    "-Region_Galar", 
-    "-Region_Hisui", 
-    "-Region_Paldea"
-}
-
-
 # NOTE: Gigantamax pulled out due to Urshifu bulba names, where forms are put before gigantamax
 BULBA_GAMES_UNIVERSAL_FORM_MAP = {
     "-Mega_X": "MX",
@@ -74,6 +56,7 @@ BULBA_GAMES_UNIVERSAL_FORM_MAP = {
 }
 
 
+# TODO: Can I just set this to be the same and replace _ with a space? See
 # NOTE: Unlike game sprites, drawn Urshifu has Giganta before forms, so gigantamax can be included here
 DRAWN_IMAGES_UNIVERSAL_FORMS_MAP = {
     "-Mega_X": "-Mega X",
@@ -1311,7 +1294,9 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
         }
     }
 }
-
+import json
+subset = {k:v["Game"] for k,v in BULBA_POKE_FORM_TRANSLATION_MAP.items()}
+print(json.dumps(subset, indent=4))
 
 
 
