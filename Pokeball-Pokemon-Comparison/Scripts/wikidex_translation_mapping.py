@@ -599,58 +599,78 @@ WIKIDEX_POKE_FORM_TRANSLATION_MAP = {
         "-Form_Shadow_Rider": "jinete espectral"
     },
 
-    # TODO: Fill in the below
+    # Ursaluna
     "901": {
-        "-Form_Bloodmoon": "B"
+        "-Form_Bloodmoon": "luna carmesí"
     },
+
+    # Enamorus
     "905": {
-        "-Form_Incarnate": "",
-        "-Form_Therian": "T"
+        "-Form_Incarnate": "avatar",
+        "-Form_Therian": "tótem"
     },
+
+    # Maushold
     "925": {
-        "-Form_Family_of_Three": "T",
-        "-Form_Family_of_Four": ""
+        "-Form_Family_of_Three": "familia de tres",
+        "-Form_Family_of_Four": "familia de cuatro"
     },
+
+    # Squawkabilly
     "931": {
-        "-Form_Blue_Plumage": "B",
-        "-Form_Green_Plumage": "",
-        "-Form_White_Plumage": "W",
-        "-Form_Yellow_Plumage": "Y"
+        "-Form_Blue_Plumage": "azul",
+        "-Form_Green_Plumage": "verde",
+        "-Form_White_Plumage": "blanco",
+        "-Form_Yellow_Plumage": "amarillo"
     },
+
+    # Palafin
     "964": {
-        "-Form_Zero": "",
-        "-Form_Hero": "H"
+        "-Form_Zero": "Ingenua",
+        "-Form_Hero": "heroica"
     },
+
+    # Tatsugiri
     "978": {
-        "-Form_Curly": "",
-        "-Form_Droopy": "D",
-        "-Form_Stretchy": "S"
+        "-Form_Curly": "curvada",
+        "-Form_Droopy": "lánguida",
+        "-Form_Stretchy": "recta"
     },
+
+    # Dudunsparce
     "982": {
-        "-Form_Two_Segment": "",
-        "-Form_Three_Segment": "-DOES_NOT_EXIST"
+        "-Form_Two_Segment": "binodular",
+        "-Form_Three_Segment": "trinodular"
     },
+
+    # Gimmighoul
     "999": {
-        "-Form_Chest": "",
-        "-Form_Roaming": "R"
+        "-Form_Chest": "cofre",
+        "-Form_Roaming": "andante"
     },
+
+    # Poltchageist & Sinistcha
     "1012": {
-        "-Form_Artisan": "A b",
-        "-Form_Counterfeit": " b"
+        "-Form_Artisan": "opulenta",
+        "-Form_Counterfeit": "fraudulenta"
     },
     "1013": {
-        "-Form_Masterpiece": "M b",
-        "-Form_Unremarkable": " b"
+        "-Form_Masterpiece": "exquisita",
+        "-Form_Unremarkable": "mediocre"
     },
+
+    # Ogerpon
     "1017": {
-        "-Form_Cornerstone_Mask": "C",
-        "-Form_Hearthflame_Mask": "H",
-        "-Form_Teal_Mask": "",
-        "-Form_Wellspring_Mask": "W"
+        "-Form_Cornerstone_Mask": "máscara cimiento",
+        "-Form_Hearthflame_Mask": "máscara horno",
+        "-Form_Teal_Mask": "máscara turquesa",
+        "-Form_Wellspring_Mask": "máscara fuente"
     },
+
+    # Terapagos
     "1024": {
-        "-Form_Normal": "",
-        "-Form_Terastal": "T",
-        "-Form_Stellar": "S"
+        "-Form_Normal": "normal",
+        "-Form_Terastal": "Teracristal",
+        "-Form_Stellar": "astral"
     }
 }
