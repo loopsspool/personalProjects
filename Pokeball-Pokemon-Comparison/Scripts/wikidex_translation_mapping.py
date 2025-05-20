@@ -71,7 +71,7 @@ WIKIDEX_TYPE_FORM_MAP = {
 
 WIKIDEX_POKE_FORM_TRANSLATION_MAP = {
     # Pikachu
-    "25": {
+    25: {
         "-Form_Cap_Alola": "Alola",
         "-Form_Cap_Hoenn": "Hoenn",
         "-Form_Cap_Kalos": "Kalos",
@@ -89,18 +89,18 @@ WIKIDEX_POKE_FORM_TRANSLATION_MAP = {
     },
 
     # Tauros
-    "128": {
+    128: {
         "-Form_Combat": "combatiente",
         "-Form_Blaze": "ardiente",
         "-Form_Aqua": "acuática"
     },
 
     # Pichu
-    "172": {
+    172: {
         "-Form_Spiky_Eared": "picoreja"
     },
 
-    "201": {
+    201: {
         "-Form_A": "A",
         "-Form_B": "B",
         "-Form_C": "C",
@@ -132,62 +132,62 @@ WIKIDEX_POKE_FORM_TRANSLATION_MAP = {
     },
 
     # Sneasel
-    "215": {
+    215: {
         "-Region_Hisui-f": ""   # Handled w universal & female forms in wikidex scraping, blank so it doesn't get flagged as missing key
     },
 
     # Castform
-    "351": {
+    351: {
         "-Form_Rainy": "lluvia",
         "-Form_Snowy": "nieve",
         "-Form_Sunny": "sol"
     },
 
     # Kyogre & Groudon
-    "382": {
+    382: {
         "-Form_Primal": "primigenio"
     },
-    "383": {
+    383: {
         "-Form_Primal": "primigenio"
     },
 
     # Deoxys
-    "386": {
+    386: {
         "-Form_Attack": "ataque",
         "-Form_Defense": "defensa",
         "-Form_Speed": "velocidad"
     },
 
     # Burmy & Wormadam
-    "412": {
+    412: {
         "-Form_Plant_Cloak": "planta",
         "-Form_Sandy_Cloak": "arena",
         "-Form_Trash_Cloak": "basura"
     },
-    "413": {
+    413: {
         "-Form_Plant_Cloak": "planta",
         "-Form_Sandy_Cloak": "arena",
         "-Form_Trash_Cloak": "basura"
     },
 
     # Cherrim
-    "421": {
+    421: {
         "-Form_Overcast": "encapotado",
         "-Form_Sunshine": "soleado"
     },
 
     # Shellos & Gastrodon
-    "422": {
+    422: {
         "-Form_West": "oeste",
         "-Form_East": "este"
     },
-    "423": {
+    423: {
         "-Form_West": "oeste",
         "-Form_East": "este"
     },
 
     # Rotom
-    "479": {
+    479: {
         "-Form_Fan": "ventilador",
         "-Form_Frost": "frío",
         "-Form_Heat": "calor",
@@ -196,49 +196,49 @@ WIKIDEX_POKE_FORM_TRANSLATION_MAP = {
     },
 
     # Dialga & Palkia
-    "483": {
+    483: {
         "-Form_Origin": "origen"
     },
-    "484": {
+    484: {
         "-Form_Origin": "origen"
     },
 
     # Giratina
-    "487": {
+    487: {
         "-Form_Altered": "modificada",
         "-Form_Origin": "origen"
     },
 
     # Shaymin
-    "492": {
+    492: {
         "-Form_Land": "tierra",
         "-Form_Sky": "cielo"
     },
 
     # Arceus
-    "493": WIKIDEX_TYPE_FORM_MAP,
+    493: WIKIDEX_TYPE_FORM_MAP,
 
     #  Basculin
-    "550": {
+    550: {
         "-Form_Red_Striped": "roja",
         "-Form_Blue_Striped": "azul",
         "-Form_White_Striped": "blanca"
     },
 
     # Darmanitan
-    "555": {
+    555: {
         "-Form_Standard": "",
         "-Form_Zen": "daruma"
     },
 
     # Deerling & Sawsbuck
-    "585": {
+    585: {
         "-Form_Spring": "primavera",
         "-Form_Autumn": "otoño",
         "-Form_Summer": "verano",
         "-Form_Winter": "invierno"
     },
-    "586": {
+    586: {
         "-Form_Spring": "primavera",
         "-Form_Autumn": "otoño",
         "-Form_Summer": "verano",
@@ -246,21 +246,21 @@ WIKIDEX_POKE_FORM_TRANSLATION_MAP = {
     },
 
     # Forces of nature
-    "641": {
+    641: {
         "-Form_Incarnate": "avatar",
         "-Form_Therian": "tótem"
     },
-    "642": {
+    642: {
         "-Form_Incarnate": "avatar",
         "-Form_Therian": "tótem"
     },
-    "645": {
+    645: {
         "-Form_Incarnate": "avatar",
         "-Form_Therian": "tótem"
     },
 
     # Kyurem
-    "646": {
+    646: {
         "-Form_Black": "negro inactivo",    # TODO: Sometimes just negro
         "-Form_Black_Overdrive": "negro activo",
         "-Form_White": "blanco inactivo",   # TODO: Sometimes just blanco
@@ -268,19 +268,19 @@ WIKIDEX_POKE_FORM_TRANSLATION_MAP = {
     },
 
     # Keldeo
-    "647": {
+    647: {
         "-Form_Ordinary": "",
         "-Form_Resolute": "brío"
     },
 
     # Meloetta
-    "648": {
+    648: {
         "-Form_Aria": "lírica",
         "-Form_Pirouette": "danza"
     },
 
     # Genesect
-    "649": {
+    649: {
         "-Form_Douse_Drive": "hidroROM",
         "-Form_Burn_Drive": "piroROM",
         "-Form_Chill_Drive": "crioROM",
@@ -288,12 +288,12 @@ WIKIDEX_POKE_FORM_TRANSLATION_MAP = {
     },
 
     # Greninja
-    "658": {
+    658: {
         "-Form_Ash": "Ash"
     },
 
     # Vivillon
-    "666": {
+    666: {
         "-Form_Meadow": "floral",
         "-Form_Archipelago": "isleño",
         "-Form_Continental": "continental",
@@ -317,14 +317,14 @@ WIKIDEX_POKE_FORM_TRANSLATION_MAP = {
     },
 
     # Flabebe, Floette, and Florges
-    "669": {
+    669: {
         "-Form_Red_Flower": "roja",
         "-Form_Blue_Flower": "azul",
         "-Form_Orange_Flower": "naranja",
         "-Form_White_Flower": "blanca",
         "-Form_Yellow_Flower": "amarilla"
     },
-    "670": {
+    670: {
         "-Form_Red_Flower": "roja",
         "-Form_Blue_Flower": "azul",
         "-Form_Orange_Flower": "naranja",
@@ -332,7 +332,7 @@ WIKIDEX_POKE_FORM_TRANSLATION_MAP = {
         "-Form_Yellow_Flower": "amarilla",
         "-Form_Eternal_Flower": "eterna"
     },
-    "671": {
+    671: {
         "-Form_Red_Flower": "roja",
         "-Form_Blue_Flower": "azul",
         "-Form_Orange_Flower": "naranja",
@@ -341,7 +341,7 @@ WIKIDEX_POKE_FORM_TRANSLATION_MAP = {
     },
 
     # Furfrou
-    "676": {
+    676: {
         "-Form_Dandy_Trim": "caballero",
         "-Form_Debutante_Trim": "señorita",
         "-Form_Diamond_Trim": "rombo",
@@ -354,19 +354,19 @@ WIKIDEX_POKE_FORM_TRANSLATION_MAP = {
     },
 
     # Aegislash
-    "681": {
+    681: {
         "-Form_Shield": "escudo",
         "-Form_Blade": "filo"
     },
 
     # Pumpkaboo and Gourgeist
-    "710": {
+    710: {
         "-Form_Average_Size": "",
         "-Form_Small_Size": "pequeño",
         "-Form_Large_Size": "grande",
         "-Form_Super_Size": "extragrande"
     },
-    "711": {
+    711: {
         "-Form_Average_Size": "",
         "-Form_Small_Size": "pequeño",
         "-Form_Large_Size": "grande",
@@ -374,26 +374,26 @@ WIKIDEX_POKE_FORM_TRANSLATION_MAP = {
     },
 
     # Xerneas
-    "716": {
+    716: {
         "-Form_Active": "",
         "-Form_Neutral": "relajada"
     },
 
     # Zygarde
-    "718": {
+    718: {
         "-Form_50%": "",
         "-Form_Complete": "completo",
         "-Form_10%": "al 10%"
     },
 
     # Hoopa
-    "720": {
+    720: {
         "-Form_Confined": "",
         "-Form_Unbound": "desatado"
     },
 
     # Oricorio
-    "741": {
+    741: {
         "-Form_Baile": "apasionado",
         "-Form_Pa'u": "plácido",
         "-Form_Pom_Pom": "animado",
@@ -401,23 +401,23 @@ WIKIDEX_POKE_FORM_TRANSLATION_MAP = {
     },
 
     # Lycanroc
-    "745": {
+    745: {
         "-Form_Midday": "diurno",
         "-Form_Dusk": "crepuscular",
         "-Form_Midnight": "nocturno"
     },
 
     # Wishiwashi
-    "746": {
+    746: {
         "-Form_Solo": "individual",
         "-Form_School": "banco"
     },
 
     # Silvally
-    "773": WIKIDEX_TYPE_FORM_MAP,
+    773: WIKIDEX_TYPE_FORM_MAP,
 
     # Minior
-    "774": {
+    774: {
         "-Form_Meteor": "meteorito",
         "-Form_Blue_Core": "azul",
         "-Form_Green_Core": "verde",
@@ -430,58 +430,58 @@ WIKIDEX_POKE_FORM_TRANSLATION_MAP = {
     },
 
     # Mimikyu
-    "778": {
+    778: {
         "-Form_Disguised": "",
         "-Form_Busted": "descubierto"
     },
 
     # Solgaleo
-    "791": {
+    791: {
         "-Form_Radiant_Sun": "-DOES_NOT_EXIST"
     },
 
     # Lunala
-    "792": {
+    792: {
         "-Form_Full_Moon": "-DOES_NOT_EXIST"
     },
 
     # Necrozma
-    "800": {
+    800: {
         "-Form_Dawn_Wings": "alas del alba",
         "-Form_Dusk_Mane": "melena crepuscular",
         "-Form_Ultra": ""   # TODO: Adds Ultra- before poke_name
     },
 
     # Magearna
-    "801": {
+    801: {
         "-Form_Original_Color": "vetusta"
     },
 
     # Cramorant
-    "845": {
+    845: {
         "-Form_Gorging": "engulletodo",
         "-Form_Gulping": "tragatodo"
     },
 
     # Toxtricity
-    "849": {
+    849: {
         "-Form_Amped": "aguda",
         "-Form_Low_Key": "grave"
     },
 
     # Sinistea & Polteageist
     # Only used by HOME for the show stamp sprites. All other images (since identical) are default form
-    "854": {
+    854: {
         "-Form_Phony": "falsificada",
         "-Form_Antique": "genuina"
     },
-    "855": {
+    855: {
         "-Form_Phony": "falsificada",
         "-Form_Antique": "genuina"
     },
 
     # Alcremie
-    "869": {
+    869: {
         "-Form_Caramel_Swirl_Berry_Sweet": "mezcla caramelo fruto",
         "-Form_Caramel_Swirl_Clover_Sweet": "mezcla caramelo trébol",
         "-Form_Caramel_Swirl_Flower_Sweet": "mezcla caramelo flor",
@@ -555,68 +555,68 @@ WIKIDEX_POKE_FORM_TRANSLATION_MAP = {
     },
 
     # Eiscue
-    "875": {
+    875: {
         "-Form_Ice_Face": "",
         "-Form_Noice_Face": "cara deshielo"
     },
 
     # Morpeko
-    "877": {
+    877: {
         "-Form_Full_Belly": "",
         "-Form_Hangry": "voraz"
     },
 
     # Zacian & Zamazenta
-    "888": {
+    888: {
         "-Form_Hero_of_Many_Battles": "",
         "-Form_Crowned_Sword": "espada suprema"
     },
-    "889": {
+    889: {
         "-Form_Hero_of_Many_Battles": "",
         "-Form_Crowned_Shield": "escudo supremo"
     },
 
     # Eternatus
-    "890": {
+    890: {
         "-Form_Eternamax": "Dinamax infinito"
     },
 
     # Urshifu
-    "892": {
+    892: {
         "-Form_Single_Strike": "brusco",
         "-Form_Rapid_Strike": "fluido"
     },
 
     # Zarude
-    "893": {
+    893: {
         "-Form_Dada": "papá"
     },
 
     # Calyrex
-    "898": {
+    898: {
         "-Form_Ice_Rider": "jinete glacial",
         "-Form_Shadow_Rider": "jinete espectral"
     },
 
     # Ursaluna
-    "901": {
+    901: {
         "-Form_Bloodmoon": "luna carmesí"
     },
 
     # Enamorus
-    "905": {
+    905: {
         "-Form_Incarnate": "avatar",
         "-Form_Therian": "tótem"
     },
 
     # Maushold
-    "925": {
+    925: {
         "-Form_Family_of_Three": "familia de tres",
         "-Form_Family_of_Four": "familia de cuatro"
     },
 
     # Squawkabilly
-    "931": {
+    931: {
         "-Form_Blue_Plumage": "azul",
         "-Form_Green_Plumage": "verde",
         "-Form_White_Plumage": "blanco",
@@ -624,42 +624,42 @@ WIKIDEX_POKE_FORM_TRANSLATION_MAP = {
     },
 
     # Palafin
-    "964": {
+    964: {
         "-Form_Zero": "Ingenua",
         "-Form_Hero": "heroica"
     },
 
     # Tatsugiri
-    "978": {
+    978: {
         "-Form_Curly": "curvada",
         "-Form_Droopy": "lánguida",
         "-Form_Stretchy": "recta"
     },
 
     # Dudunsparce
-    "982": {
+    982: {
         "-Form_Two_Segment": "binodular",
         "-Form_Three_Segment": "trinodular"
     },
 
     # Gimmighoul
-    "999": {
+    999: {
         "-Form_Chest": "cofre",
         "-Form_Roaming": "andante"
     },
 
     # Poltchageist & Sinistcha
-    "1012": {
+    1012: {
         "-Form_Artisan": "opulenta",
         "-Form_Counterfeit": "fraudulenta"
     },
-    "1013": {
+    1013: {
         "-Form_Masterpiece": "exquisita",
         "-Form_Unremarkable": "mediocre"
     },
 
     # Ogerpon
-    "1017": {
+    1017: {
         "-Form_Cornerstone_Mask": "máscara cimiento",
         "-Form_Hearthflame_Mask": "máscara horno",
         "-Form_Teal_Mask": "máscara turquesa",
@@ -667,7 +667,7 @@ WIKIDEX_POKE_FORM_TRANSLATION_MAP = {
     },
 
     # Terapagos
-    "1024": {
+    1024: {
         "-Form_Normal": "normal",
         "-Form_Terastal": "Teracristal",
         "-Form_Stellar": "astral"
