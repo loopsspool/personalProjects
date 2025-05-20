@@ -36,14 +36,15 @@ sprite_page = requests.get("https://www.wikidex.net/wiki/Categor%C3%ADa:Sprites_
 WIKIDEX_STARTER_URL = "https://www.wikidex.net/wiki/Archivo:"
 
 
+# NOTE: If ever decide to use Wikidex for menu sprites, drawn, etc. this will have to be nested like bulbas
 def wikidex_scrape_pokemon(start_poke_num, stop_poke_num, allow_download=False):
     wikidex_scrape_config = generate_config_dict(WIKIDEX_STARTER_URL, wikidex_get_img, allow_download)
 
     for poke_num in range(start_poke_num, stop_poke_num + 1):
         print(f"\rScraping pokemon #{poke_num} wikidex images...", end='', flush=True)
 
-        scrape_imgs(poke_num, "obtainable_game_imgs", wikidex_game_translate, exclusions=None, has_animation=True, save_path=GAME_SPRITE_SAVE_PATH, config_dict=wikidex_scrape_config)
-        scrape_imgs(poke_num, "home_filenames", home_translate, exclusions=None, has_animation=True, save_path=HOME_SAVE_PATH, config_dict=wikidex_scrape_config)
+        scrape_imgs(poke_num, "obtainable_game_filenames", wikidex_translate, exclusions=None, has_animation=True, save_path=GAME_SPRITE_SAVE_PATH, config_dict=wikidex_scrape_config)
+        scrape_imgs(poke_num, "home_filenames", wikidex_translate, exclusions=None, has_animation=True, save_path=HOME_SAVE_PATH, config_dict=wikidex_scrape_config)
         # NOTE: Technically Wikidex does have drawn images and home menu images, but bulba has every one so there's no need to scrape
         # If this changes in the future, it may be useful to browse their archives via url thru https://www.wikidex.net/index.php?title=Categor%C3%ADa:Pokemon_name
 
@@ -88,7 +89,7 @@ def wikidex_get_img(url, save_path, allow_download,has_animation=False):
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     UNIVERSAL TRANSLATIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
-def get_bulba_translated_species_form(poke_info, my_filename, map_type):
+def get_wikidex_translated_species_form(poke_info, my_filename):
     poke_num = poke_info[0]
     form_id = poke_info[1]
     form_name = get_form_name(form_id)
@@ -98,7 +99,7 @@ def get_bulba_translated_species_form(poke_info, my_filename, map_type):
         return("")
 
     if poke_num in WIKIDEX_POKE_FORM_TRANSLATION_MAP:
-        for form, translation in WIKIDEX_POKE_FORM_TRANSLATION_MAP[poke_num][map_type].items():
+        for form, translation in WIKIDEX_POKE_FORM_TRANSLATION_MAP[poke_num].items():
             if form in form_name:
                 return(translation)
     
@@ -112,29 +113,34 @@ def get_bulba_translated_species_form(poke_info, my_filename, map_type):
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     GAME IMAGES     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
-def wikidex_game_translate(my_filename, poke_info):
+
+# TODO: Necrozma Ultra form actually changes filename to Ultra-Necrozma
+# TODO: # Type: Null name is completely translated "Type Null": "Código Cero"
+def wikidex_translate(my_filename, poke_info):
     # poke_info == (poke_num, form_id)
     poke_name = get_poke_name(poke_info[0])
     poke_name = adjust_poke_name(poke_name)
     form_name = get_form_name(poke_info[1])
     
     u_form_adj_poke_name = wikidex_incorporate_mega_or_regional_universal_form(poke_name, form_name)
-    translated_form = get_bulba_translated_species_form(poke_info, my_filename, "Game")
+    translated_form = get_wikidex_translated_species_form(poke_info, my_filename)
     form_tag = f" {translated_form}" if translated_form != "" else ""
     gigantamax_tag = " Gigamax" if "-Gigantamax" in form_name else ""
     back_tag = " espalda" if "-Back" in my_filename else ""
-    if back_tag == "":
-        platform = " " + get_translated_game(my_filename, WIKIDEX_GAME_MAP)   # TODO: Figure out how to deal w B2W2, XYORAS, & USUM....
+    if " HOME" in my_filename: platform = " HOME"
+    elif back_tag == "":    # Img is front game sprite, get game
+        platform = get_translated_game(my_filename, WIKIDEX_GAME_MAP)   # TODO: Figure out how to deal w B2W2, XYORAS, & USUM....
     else:   # Get back gen
-        # TODO: Map my Gen to theirs (ie G4)
-        # TODO: Add cristal if for crystal, check if any others like this
-        pass
+        platform = re.search(r' Gen(\d+)', my_filename) # Extracting gen from my filename
+        platform = f" G{platform.group(1)}"  # Getting just the gen number
+        if "Gen2_Crystal" in my_filename: platform += " cristal"
     shiny_tag = " variocolor" if "-Shiny" in my_filename else ""
     female_tag = " hembra" if "-f" in form_name else ""
 
+    # TODO: Implement file ext -- stills pngs, anis gif below gen9? Check, gen has gifs and webm?
     wikidex_filename = f"{u_form_adj_poke_name}{form_tag}{gigantamax_tag}{back_tag}{platform}{shiny_tag}{female_tag}"
-    # TODO: Implement file ext -- stills pngs, anis gif below gen9? Check
-    # TODO: check Urshifu form before gigantamax, darmanitan region before zen form, tauros region before form
+    return (wikidex_filename)
+    
 
 
 def adjust_poke_name(poke_name):
@@ -142,26 +148,24 @@ def adjust_poke_name(poke_name):
     if poke_name == "Nidoran m": return poke_name.replace("m", "macho")
     # TODO: Put this in a function so I can just call it across the project
     if poke_name == "Flabebe": return poke_name.replace("e", "\u00e9")
+    return poke_name
 
 
 def wikidex_incorporate_mega_or_regional_universal_form(poke_name, form_name):
+    adj_poke_name = poke_name
+
     if "-Mega" in form_name:
         adj_poke_name = "Mega-" + poke_name
         if "-Mega_X" in form_name: adj_poke_name += " X"
         if "-Mega_Y" in form_name: adj_poke_name += " Y"
     elif "-Region" in form_name:
-        region_tag = form_name.split("-")[0]   # This splits off the -f from female Hisuian sneasel
+        region_tag = form_name.split("-")[1]   # This splits off the -f from female Hisuian sneasel. 1 bc split char (-) will always be at front of form name
         region = region_tag.replace("Region_", "")  # This leaves just the region
         adj_poke_name += f" de {region}"
 
     return (adj_poke_name)
 
 
-
-def home_translate():
-    pass
-
-keyname = ""
 
 # pokemon_img_dict[filename] = imgs[i].a.img["src"]
 # # Saves first-frame statics as png from gif for Crystal & Emerald
