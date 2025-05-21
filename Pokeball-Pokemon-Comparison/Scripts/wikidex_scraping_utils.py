@@ -113,6 +113,9 @@ def get_wikidex_translated_species_form(poke_info, my_filename):
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     GAME IMAGES     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
+# TODO: Early games (Emerald, Crystal? FRLG? Check animation capable games) ONLY have animated sprites in gif... So add them to WIKIDEX DOESNT HAVE dict
+# TODO: See how check animated status and trying to get the still would affect things since these are gifs and those were intended for same name pngs
+
 def wikidex_translate(my_filename, poke_info):
     # poke_info == (poke_num, form_id)
     poke_num = poke_info[0]
@@ -127,16 +130,16 @@ def wikidex_translate(my_filename, poke_info):
     platform = determine_platform(my_filename, back_tag)    # Determines if wikidex translate should have HOME, Game denoter, or Gen# for back sprites
     shiny_tag = " variocolor" if "-Shiny" in my_filename else ""
     female_tag = " hembra" if "-f" in form_name else ""
+    file_ext = determine_file_extension(platform, my_filename)
 
-    # TODO: Implement file ext -- stills pngs, anis gif below gen9? Check, gen has gifs and webm?
-    wikidex_filename = f"{adj_poke_name}{form_tag}{gigantamax_tag}{back_tag}{platform}{shiny_tag}{female_tag}"
+    wikidex_filename = f"{adj_poke_name}{form_tag}{gigantamax_tag}{back_tag}{platform}{shiny_tag}{female_tag}{file_ext}"
     return (wikidex_filename)
     
 
 def adjust_poke_name(poke_name, form_name):
-    for condition, adjust in POKE_NAME_ADJ_NEEDED:
-        if condition(poke_name, form_name):
-            adjusted_name = adjust(poke_name, form_name)
+    for poke_form_needs_adj, adjust_name in POKE_NAME_ADJ_NEEDED:
+        if poke_form_needs_adj(poke_name, form_name):
+            adjusted_name = adjust_name(poke_name, form_name)
             return adjusted_name
         
     # If no need to adjust the name, just return it
@@ -153,6 +156,26 @@ def determine_platform(my_filename, back_tag):
         if "Gen2_Crystal" in my_filename: platform += " cristal"
 
     return platform
+
+
+def determine_file_extension(platform, my_filename):
+    gen = 0
+    if "-Animated" not in my_filename: return ".png"
+    # Wikidex transitioned to .webm for animated HOME/Gen9. Gen8 below is .gif
+    else:
+        if platform == " HOME": return ".webm"
+        elif " Gen" in platform:  # Back game sprite
+            gen = int(platform.replace(" Gen", ""))  # Getting just gen#
+        # TODO: Depending on how you check for multiple games, this may need to be rethought
+        else:   # Front game sprite
+            for my_game, translated_game in WIKIDEX_GAME_MAP.items():
+                if translated_game == platform:
+                    game = my_game
+                    gen = int(''.join(re.findall(r'\d+', game)))    # Grabbing digits after Gen from my game naming convention
+        
+        if gen < 9: return ".gif"
+        else: return ".webm"
+    
 
 
 # pokemon_img_dict[filename] = imgs[i].a.img["src"]
