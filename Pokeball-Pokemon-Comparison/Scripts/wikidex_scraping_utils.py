@@ -113,20 +113,37 @@ def get_wikidex_translated_species_form(poke_info, my_filename):
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     GAME IMAGES     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
-
-# TODO: Necrozma Ultra form actually changes filename to Ultra-Necrozma
-# TODO: # Type: Null name is completely translated "Type Null": "Código Cero"
 def wikidex_translate(my_filename, poke_info):
     # poke_info == (poke_num, form_id)
-    poke_name = get_poke_name(poke_info[0])
-    poke_name = adjust_poke_name(poke_name)
+    poke_num = poke_info[0]
+    poke_name = get_poke_name(poke_num)
     form_name = get_form_name(poke_info[1])
     
-    u_form_adj_poke_name = wikidex_incorporate_mega_or_regional_universal_form(poke_name, form_name)
+    adj_poke_name = adjust_poke_name(poke_name, form_name)
     translated_form = get_wikidex_translated_species_form(poke_info, my_filename)
     form_tag = f" {translated_form}" if translated_form != "" else ""
     gigantamax_tag = " Gigamax" if "-Gigantamax" in form_name else ""
     back_tag = " espalda" if "-Back" in my_filename else ""
+    platform = determine_platform(my_filename, back_tag)    # Determines if wikidex translate should have HOME, Game denoter, or Gen# for back sprites
+    shiny_tag = " variocolor" if "-Shiny" in my_filename else ""
+    female_tag = " hembra" if "-f" in form_name else ""
+
+    # TODO: Implement file ext -- stills pngs, anis gif below gen9? Check, gen has gifs and webm?
+    wikidex_filename = f"{adj_poke_name}{form_tag}{gigantamax_tag}{back_tag}{platform}{shiny_tag}{female_tag}"
+    return (wikidex_filename)
+    
+
+def adjust_poke_name(poke_name, form_name):
+    for condition, adjust in POKE_NAME_ADJ_NEEDED:
+        if condition(poke_name, form_name):
+            adjusted_name = adjust(poke_name, form_name)
+            return adjusted_name
+        
+    # If no need to adjust the name, just return it
+    return poke_name
+
+
+def determine_platform(my_filename, back_tag):
     if " HOME" in my_filename: platform = " HOME"
     elif back_tag == "":    # Img is front game sprite, get game
         platform = get_translated_game(my_filename, WIKIDEX_GAME_MAP)   # TODO: Figure out how to deal w B2W2, XYORAS, & USUM....
@@ -134,37 +151,8 @@ def wikidex_translate(my_filename, poke_info):
         platform = re.search(r' Gen(\d+)', my_filename) # Extracting gen from my filename
         platform = f" G{platform.group(1)}"  # Getting just the gen number
         if "Gen2_Crystal" in my_filename: platform += " cristal"
-    shiny_tag = " variocolor" if "-Shiny" in my_filename else ""
-    female_tag = " hembra" if "-f" in form_name else ""
 
-    # TODO: Implement file ext -- stills pngs, anis gif below gen9? Check, gen has gifs and webm?
-    wikidex_filename = f"{u_form_adj_poke_name}{form_tag}{gigantamax_tag}{back_tag}{platform}{shiny_tag}{female_tag}"
-    return (wikidex_filename)
-    
-
-
-def adjust_poke_name(poke_name):
-    if poke_name == "Nidoran f": return poke_name.replace("f", "hembra")
-    if poke_name == "Nidoran m": return poke_name.replace("m", "macho")
-    # TODO: Put this in a function so I can just call it across the project
-    if poke_name == "Flabebe": return poke_name.replace("e", "\u00e9")
-    return poke_name
-
-
-def wikidex_incorporate_mega_or_regional_universal_form(poke_name, form_name):
-    adj_poke_name = poke_name
-
-    if "-Mega" in form_name:
-        adj_poke_name = "Mega-" + poke_name
-        if "-Mega_X" in form_name: adj_poke_name += " X"
-        if "-Mega_Y" in form_name: adj_poke_name += " Y"
-    elif "-Region" in form_name:
-        region_tag = form_name.split("-")[1]   # This splits off the -f from female Hisuian sneasel. 1 bc split char (-) will always be at front of form name
-        region = region_tag.replace("Region_", "")  # This leaves just the region
-        adj_poke_name += f" de {region}"
-
-    return (adj_poke_name)
-
+    return platform
 
 
 # pokemon_img_dict[filename] = imgs[i].a.img["src"]
