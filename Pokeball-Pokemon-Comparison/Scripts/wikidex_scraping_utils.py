@@ -164,14 +164,14 @@ def determine_file_extension(platform, my_filename):
     # Wikidex transitioned to .webm for animated HOME/Gen9. Gen8 below is .gif
     else:
         if platform == " HOME": return ".webm"
-        elif " Gen" in platform:  # Back game sprite
-            gen = int(platform.replace(" Gen", ""))  # Getting just gen#
+        elif " G" in platform:  # Back game sprite
+            gen = int(platform.replace(" G", ""))  # Getting just gen#
         # TODO: Depending on how you check for multiple games, this may need to be rethought
         else:   # Front game sprite
             for my_game, translated_game in WIKIDEX_GAME_MAP.items():
-                if translated_game == platform:
-                    game = my_game
-                    gen = int(''.join(re.findall(r'\d+', game)))    # Grabbing digits after Gen from my game naming convention
+                if platform == f" {translated_game}":
+                    gen_str = re.search(r'Gen(\d+)', my_game)   # Grabbing Gen string from my game naming convention
+                    gen = int(gen_str.group(1))     # Getting just the digits
         
         if gen < 9: return ".gif"
         else: return ".webm"
