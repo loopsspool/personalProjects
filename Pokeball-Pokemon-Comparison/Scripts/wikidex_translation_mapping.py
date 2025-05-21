@@ -38,7 +38,31 @@ WIKIDEX_GAME_MAP = {
     "Gen8 BDSP": "DBPR",
     "Gen9 SV": "EP"
 }
-   
+
+
+
+
+#|================================================================================================|
+#|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     NAME ADJUSTMENTS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+#|================================================================================================|
+
+POKE_NAME_ADJ_NEEDED = [
+    # (condition, return name)
+
+    ##### Species
+    (lambda poke_name, form_name: poke_name == "Nidoran f", lambda poke_name, form_name: "Nidoran hembra"),
+    (lambda poke_name, form_name: poke_name == "Nidoran m", lambda poke_name, form_name: "Nidoran macho"),
+    (lambda poke_name, form_name: poke_name == "Flabebe", lambda poke_name, form_name: "Flabébé"),
+    (lambda poke_name, form_name: poke_name == "Type Null", lambda poke_name, form_name: "Código Cero"),
+    (lambda poke_name, form_name: poke_name == "Necrozma" and form_name == "-Form_Ultra", lambda poke_name, form_name: "Ultra-Necrozma"),
+
+    ##### Universal Forms
+    (lambda poke_name, form_name: "-Mega_X" in form_name, lambda poke_name, form_name: f"Mega-{poke_name} X"),
+    (lambda poke_name, form_name: "-Mega_Y" in form_name, lambda poke_name, form_name: f"Mega-{poke_name} Y"),
+    (lambda poke_name, form_name: "-Mega" in form_name, lambda poke_name, form_name: f"Mega-{poke_name}"),
+    (lambda poke_name, form_name: "-Region_" in form_name, lambda poke_name, form_name: f"{poke_name} de {form_name.split("-")[1].replace("Region_", "")}")     # Split seperates -f from Female Hisuian Sneasel, replacing Region_ allows me to just get the region name to add that to the pokemon name
+]
+
 
 
 
