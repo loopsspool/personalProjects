@@ -123,12 +123,12 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Cap_Unova": "U",
             "-Form_Cap_Partner": "P",
             "-Form_Cap_World": "W",
-            # The cosplays aren't actually in bulba, I just don't want them to pull the default by returning an empty string
-            "-Form_Cosplay_Belle": "B",
-            "-Form_Cosplay_Libre": "L",
-            "-Form_Cosplay_PhD": "PhD",
-            "-Form_Cosplay_Pop_Star": "Pop",
-            "-Form_Cosplay_Rock_Star": "Ro"
+            "-Form_Cosplay": "-DO_BY_HAND",     # 6o, not 6x   
+            "-Form_Cosplay_Belle": "-DOES_NOT_EXIST",
+            "-Form_Cosplay_Libre": "-DOES_NOT_EXIST",
+            "-Form_Cosplay_PhD": "-DOES_NOT_EXIST",
+            "-Form_Cosplay_Pop_Star": "-DOES_NOT_EXIST",
+            "-Form_Cosplay_Rock_Star": "-DOES_NOT_EXIST"
         },
         "Drawn": {
             "-Form_Cap_Alola": "-Alola Cap",
@@ -1294,9 +1294,7 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
         }
     }
 }
-import json
-subset = {k:v["Game"] for k,v in BULBA_POKE_FORM_TRANSLATION_MAP.items()}
-print(json.dumps(subset, indent=4))
+
 
 
 
