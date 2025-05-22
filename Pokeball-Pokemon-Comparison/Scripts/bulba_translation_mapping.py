@@ -38,9 +38,9 @@ BULBA_GAME_MAP = {
 }
 
 BULBA_ALT_GAME_MAP = {
-    "Gen5 BW_B2W2": "5b2",
-    "Gen6 XY_ORAS": "6o",
-    "Gen7 SM_USUM": "7u",
+    "BW_B2W2": "5b2",
+    "XY_ORAS": "6o",
+    "SM_USUM": "7u",
 }
 
 
