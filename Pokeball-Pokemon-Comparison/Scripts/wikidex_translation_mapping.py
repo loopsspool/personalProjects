@@ -29,14 +29,21 @@ WIKIDEX_GAME_MAP = {
     "Gen4 Diamond_Pearl": "DP",
     "Gen4 HGSS": "HGSS",
     "Gen4 Platinum": "Pt",
-    "Gen5 BW_B2W2": "NB",   # TODO: Also N2B2
-    "Gen6 XY_ORAS": "XY",   # TODO: Also ROZA
-    "Gen7 SM_USUM": "SL",   # TODO: Also USUL
+    "Gen5 BW_B2W2": "NB",
+    "Gen6 XY_ORAS": "XY",
+    "Gen7 SM_USUM": "SL",
     "Gen7 LGPE": "LGPE",
     "Gen8 SwSh": "EpEc",
     "Gen8 LA": "LPA",
     "Gen8 BDSP": "DBPR",
     "Gen9 SV": "EP"
+}
+
+
+WIKIDEX_ALT_GAME_MAP = {
+    "BW_B2W2": "N2B2",
+    "XY_ORAS": "ROZA",
+    "SM_USUM": "USUL"
 }
 
 
@@ -56,7 +63,7 @@ POKE_NAME_ADJ_NEEDED = [
     (lambda poke_name, form_name: poke_name == "Type Null", lambda poke_name, form_name: "Código Cero"),
     (lambda poke_name, form_name: poke_name == "Necrozma" and form_name == "-Form_Ultra", lambda poke_name, form_name: "Ultra-Necrozma"),
 
-    ##### Universal Forms
+    ##### Universal Forms (Needed here bc they add a denoter before the actual pokemon name)
     (lambda poke_name, form_name: "-Mega_X" in form_name, lambda poke_name, form_name: f"Mega-{poke_name} X"),
     (lambda poke_name, form_name: "-Mega_Y" in form_name, lambda poke_name, form_name: f"Mega-{poke_name} Y"),
     (lambda poke_name, form_name: "-Mega" in form_name, lambda poke_name, form_name: f"Mega-{poke_name}"),
@@ -105,6 +112,7 @@ WIKIDEX_POKE_FORM_TRANSLATION_MAP = {
         "-Form_Cap_Partner": "compañero",
         "-Form_Cap_World": "trotamundos",
 
+        "-Form_Cosplay": "coqueta",
         "-Form_Cosplay_Belle": "aristócrata",
         "-Form_Cosplay_Libre": "enmascarada",
         "-Form_Cosplay_PhD": "erudita",
@@ -285,10 +293,10 @@ WIKIDEX_POKE_FORM_TRANSLATION_MAP = {
 
     # Kyurem
     646: {
-        "-Form_Black": "negro inactivo",    # TODO: Sometimes just negro
-        "-Form_Black_Overdrive": "negro activo",
-        "-Form_White": "blanco inactivo",   # TODO: Sometimes just blanco
-        "-Form_White_Overdrive": "blanco activo"
+        "-Form_Black": "-DO_BY_HAND",
+        "-Form_Black_Overdrive": "-DO_BY_HAND",
+        "-Form_White": "-DO_BY_HAND",
+        "-Form_White_Overdrive": "-DO_BY_HAND"
     },
 
     # Keldeo
@@ -473,7 +481,7 @@ WIKIDEX_POKE_FORM_TRANSLATION_MAP = {
     800: {
         "-Form_Dawn_Wings": "alas del alba",
         "-Form_Dusk_Mane": "melena crepuscular",
-        "-Form_Ultra": ""   # TODO: Adds Ultra- before poke_name
+        "-Form_Ultra": ""   # NOTE: Taken care of in adjust_poke_name and POKE_NAME_ADJ_NEEDED
     },
 
     # Magearna
