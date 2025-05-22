@@ -1,14 +1,12 @@
-# ===============================================================================================================================================================================================
-# ===============================================================================================================================================================================================
+#|================================================================================================|
+#|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     EXCLUSIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+#|================================================================================================|
 
-#   N   N    OOO   TTTTT  EEEEE
-#   NN  N   O   O    T    E       ::
-#   N N N   O   O    T    EEEE           This is a really old file, broken off from a longer script I wrote... Not updated yet to reflect best practice/work with other scripts
-#   N  NN   O   O    T    E       ::
-#   N   N    OOO     T    EEEEE 
+# Technically no static Crystal or emerald front sprites & they're gifs so might not color convert to apng nicely programatically, but Bulba has all stills for these gens, so all good as long as bulba scraped first
+# Tehcnically no gen8 static shiny back sprites but the animateds exist, so we can pull first frame
+# Take careful look at backs since wikidex lumps them by gen, not game
+WIKIDEX_DOESNT_HAVE_IMGS_FOR = {("Gen7_LGPE", "-Back"), ("Gen8 BDSP", "-Animated"), ("Gen8_BDSP", "-Back"), ("Gen8_LA", "-Back"), ("Gen9_SV", "-Back")}
 
-# ===============================================================================================================================================================================================
-# ===============================================================================================================================================================================================
 
 
 
