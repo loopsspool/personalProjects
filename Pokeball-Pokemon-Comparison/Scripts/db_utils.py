@@ -6,6 +6,7 @@ from contextlib import contextmanager
 from app_globals import *
 from db_reference_data import *
 from spreadsheet_utils import *
+from translation_utils import get_game_needing_special_translation_for_mid_gen_pokes
 
 
 #|================================================================================================|
@@ -595,6 +596,7 @@ def get_pokeball_filename_info():
     connection.close()
     return data
 
+
 def get_missing_poke_imgs_by_table(poke_num, table, cursor=None):
     data = defaultdict(list)
     
@@ -913,7 +915,8 @@ def check_for_usable_game_file(filename, obtainable):
 def check_for_game_file_substitution(filename):
     for game in GAME_FALLBACKS:
         game_adj = game_adjustment_for_back(filename, game)
-        if game_adj in filename:
+        # The latter performs a check if the pokemon was a mid-gen introduction, therefore may have been denoted as a different game on previous scrapes. No need to substitute these sprites with others if they exist
+        if game_adj in filename and not get_game_needing_special_translation_for_mid_gen_pokes(filename):
             for repl in GAME_FALLBACKS[game]:
                 repl = game_adjustment_for_back(filename, repl)
                 replacement_filename = filename.replace(game_adj, repl)
