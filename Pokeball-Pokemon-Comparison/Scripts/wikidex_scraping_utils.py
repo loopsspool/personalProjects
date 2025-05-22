@@ -149,11 +149,16 @@ def adjust_poke_name(poke_name, form_name):
 def determine_platform(my_filename, back_tag):
     if " HOME" in my_filename: platform = " HOME"
     elif back_tag == "":    # Img is front game sprite, get game
-        platform = get_translated_game(my_filename, WIKIDEX_GAME_MAP)   # TODO: Figure out how to deal w B2W2, XYORAS, & USUM....
+        platform = get_translated_game(my_filename, WIKIDEX_GAME_MAP)
+        # Check if its a pokemon introduced mid-gen, if so adjust game name appropriately
+        mid_gen_poke_intro = get_game_needing_special_translation_for_mid_gen_pokes(my_filename)
+        if mid_gen_poke_intro: platform = f" {WIKIDEX_ALT_GAME_MAP[mid_gen_poke_intro]}"
     else:   # Get back gen
-        platform = re.search(r' Gen(\d+)', my_filename) # Extracting gen from my filename
-        platform = f" G{platform.group(1)}"  # Getting just the gen number
+        # TODO: Put this gen extraction in its own func
+        platform = f" G{extract_gen_num_from_my_filename(my_filename)}"  # Getting just the gen number
         if "Gen2_Crystal" in my_filename: platform += " cristal"
+
+    
 
     return platform
 
@@ -164,14 +169,7 @@ def determine_file_extension(platform, my_filename):
     # Wikidex transitioned to .webm for animated HOME/Gen9. Gen8 below is .gif
     else:
         if platform == " HOME": return ".webm"
-        elif " G" in platform:  # Back game sprite
-            gen = int(platform.replace(" G", ""))  # Getting just gen#
-        # TODO: Depending on how you check for multiple games, this may need to be rethought
-        else:   # Front game sprite
-            for my_game, translated_game in WIKIDEX_GAME_MAP.items():
-                if platform == f" {translated_game}":
-                    gen_str = re.search(r'Gen(\d+)', my_game)   # Grabbing Gen string from my game naming convention
-                    gen = int(gen_str.group(1))     # Getting just the digits
+        gen = extract_gen_num_from_my_filename(my_filename)
         
         if gen < 9: return ".gif"
         else: return ".webm"
