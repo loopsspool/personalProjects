@@ -26,7 +26,6 @@ from translation_utils import *
 # ===============================================================================================================================================================================================
 # ===============================================================================================================================================================================================
 
-# TODO: Wikidex animateds are all gifs, gen9 is webm.... determine if worthwhile to convert and color correct or keep as is. Consider RN and device compatibility
 # NOTE: No animated sprites below gen5 except Crystal
 
 
@@ -184,7 +183,13 @@ def determine_file_extension(my_filename):
 
 def wikidex_doesnt_have_images_for(my_filename):
     for exclusion in WIKIDEX_DOESNT_HAVE_IMGS_FOR:
-        if all(keyword in my_filename for keyword in exclusion):
+        # No animateds below gen5 except emerald and crystal
+        if exclusion == ("-Animated") and "-Animated" in my_filename:
+            if extract_gen_num_from_my_filename(my_filename) < 5:
+                if "Gen3 Emerald" not in my_filename and "Gen2 Crystal" not in my_filename:
+                    return True
+                return False
+        elif all(keyword in my_filename for keyword in exclusion):
             return True
     return False
 

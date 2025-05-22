@@ -6,8 +6,9 @@ from translation_utils import EXCLUDE_TRANSLATIONS_MAP
 
 # Technically no static Crystal or emerald front sprites & they're gifs so might not color convert to apng nicely programatically, but Bulba has all stills for these gens, so all good as long as bulba scraped first
 # Tehcnically no gen8 static shiny back sprites but the animateds exist, so we can pull first frame
+# Animated only applies to below gen5, excluding Crystal and Emerald
 # Take careful look at backs since wikidex lumps them by gen, not game
-WIKIDEX_DOESNT_HAVE_IMGS_FOR = {("Gen7_LGPE", "-Back"), ("Gen8 BDSP", "-Animated"), ("Gen8_BDSP", "-Back"), ("Gen8_LA", "-Back"), ("Gen9_SV", "-Back")}
+WIKIDEX_DOESNT_HAVE_IMGS_FOR = {("-Animated"), ("Gen7_LGPE", "-Back"), ("Gen8 BDSP", "-Animated"), ("Gen8_BDSP", "-Back"), ("Gen8_LA", "-Back"), ("Gen9_SV", "-Back")}
 
 
 
