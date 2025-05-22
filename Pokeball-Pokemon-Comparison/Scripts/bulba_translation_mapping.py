@@ -28,13 +28,19 @@ BULBA_GAME_MAP = {
     "Gen4 Diamond_Pearl": "4d",
     "Gen4 HGSS": "4h",
     "Gen4 Platinum": "4p",
-    "Gen5 BW_B2W2": "5b",   # TODO: 5b2 may exist? Check on any missing after
-    "Gen6 XY_ORAS": "6x",   # TODO: 6o may exist? Check on any missing after
+    "Gen5 BW_B2W2": "5b",
+    "Gen6 XY_ORAS": "6x",
     "Gen7 SM_USUM": "7s",
     "Gen7 LGPE": "7p",
     "Gen8 SwSh": "8s",
     # Doesn't look like bulba has any BDSP sprites... Can confirm by checking pokes unavailable in SwSh & LA
     "Gen8 LA": "8a"
+}
+
+BULBA_ALT_GAME_MAP = {
+    "Gen5 BW_B2W2": "5b2",
+    "Gen6 XY_ORAS": "6o",
+    "Gen7 SM_USUM": "7u",
 }
 
 
