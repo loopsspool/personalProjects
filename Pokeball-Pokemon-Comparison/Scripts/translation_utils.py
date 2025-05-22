@@ -4,8 +4,12 @@ import re
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     TRANSLATIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
-def get_translated_game(my_filename, map_dict):
-    for game, translation in map_dict.items():
+def get_translated_game(my_filename, game_map_dict, mid_gen_poke_intro_game_map_dict):
+    # Check if its a pokemon introduced mid-gen, if so adjust game name appropriately
+    mid_gen_poke_intro_game = get_game_needing_special_translation_for_mid_gen_pokes(my_filename)
+    if mid_gen_poke_intro_game: return f" {mid_gen_poke_intro_game_map_dict[mid_gen_poke_intro_game]}"
+
+    for game, translation in game_map_dict.items():
         if "-Back" in my_filename:
             game = game.replace(" ", "_")
         if game in my_filename:

@@ -149,10 +149,7 @@ def adjust_poke_name(poke_name, form_name):
 def determine_platform(my_filename, back_tag):
     if " HOME" in my_filename: platform = " HOME"
     elif back_tag == "":    # Img is front game sprite, get game
-        platform = get_translated_game(my_filename, WIKIDEX_GAME_MAP)
-        # Check if its a pokemon introduced mid-gen, if so adjust game name appropriately
-        mid_gen_poke_intro = get_game_needing_special_translation_for_mid_gen_pokes(my_filename)
-        if mid_gen_poke_intro: platform = f" {WIKIDEX_ALT_GAME_MAP[mid_gen_poke_intro]}"
+        platform = get_translated_game(my_filename, WIKIDEX_GAME_MAP, WIKIDEX_ALT_GAME_MAP)
     else:   # Get back gen
         # TODO: Put this gen extraction in its own func
         platform = f" G{extract_gen_num_from_my_filename(my_filename)}"  # Getting just the gen number
