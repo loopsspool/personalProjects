@@ -28,10 +28,46 @@ def extract_gen_num_from_my_filename(my_filename):
     return gen_int
 
 
+def get_game_needing_special_translation_for_mid_gen_pokes(my_filename):
+    for game, pokes in ALT_GAME_MAP.items():
+        for poke in pokes:
+            if game in my_filename and poke[0] in my_filename and poke[1] in my_filename:
+                return game
+            
+    return None
+
+
+
+
+#|================================================================================================|
+#|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     DEFINITIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+#|================================================================================================|
+
+# This is to filter out these forms when translating species forms
+# The exceptions that have a universal AND species form (See 555 Galarian Darmanitan Zen form) have their own unique form id generated in db_utils > FORM_EXCEPTION_POKEMON
+UNIVERSAL_FORMS = {
+    "Default", 
+    "-f", 
+    "-Mega", 
+    "-Mega_X", 
+    "-Mega_Y", 
+    "-Gigantamax", 
+    "-Region_Alola", 
+    "-Region_Galar", 
+    "-Region_Hisui", 
+    "-Region_Paldea"
+}
+
+
+EXCLUDE_TRANSLATIONS_MAP = {
+    "DBH": "-DO_BY_HAND",
+    "DNE": "-DOES_NOT_EXIST_ON_PLATFORM"
+}
 
 
 
 # This dict maps the few pokemon introduced later in the same gen for games that share sprites, so they are potentially denoted differently on websites
+# NOTE: These pokes & Games are excluded from GEN_FALLBACK (file substitution)
 ALT_GAME_MAP = {
     # NOTE: Technically the gen5 starters have different animations (NOT statics) for b2w2 vs bw, but I'm not going to put that logic in since I'm axing alts
     "BW_B2W2": {
@@ -43,8 +79,6 @@ ALT_GAME_MAP = {
         ("Tornadus", "-Form_Therian")
     },
 
-    # TODO: Exclude these from GAME_FALLBACK
-    # NOTE: SM_USUM is a GAME_FALLBACK for XY_ORAS, and vice versa
     "XY_ORAS": {
         ("Groudon", "-Form_Primal"),
         ("Kyogre", "-Form_Primal"),
@@ -87,35 +121,4 @@ ALT_GAME_MAP = {
         ("Stakataka", ""),
         ("Zeraora", "")
     }
-}
-
-
-def get_game_needing_special_translation_for_mid_gen_pokes(my_filename):
-    for game, pokes in ALT_GAME_MAP.items():
-        for poke in pokes:
-            if game in my_filename and poke[0] in my_filename and poke[1] in my_filename:
-                return game
-            
-    return None
-
-
-
-
-#|================================================================================================|
-#|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     DEFINITIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
-#|================================================================================================|
-
-# This is to filter out these forms when translating species forms
-# The exceptions that have a universal AND species form (See 555 Galarian Darmanitan Zen form) have their own unique form id generated in db_utils > FORM_EXCEPTION_POKEMON
-UNIVERSAL_FORMS = {
-    "Default", 
-    "-f", 
-    "-Mega", 
-    "-Mega_X", 
-    "-Mega_Y", 
-    "-Gigantamax", 
-    "-Region_Alola", 
-    "-Region_Galar", 
-    "-Region_Hisui", 
-    "-Region_Paldea"
 }

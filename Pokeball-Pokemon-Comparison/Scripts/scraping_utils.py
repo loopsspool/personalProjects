@@ -6,6 +6,7 @@ import re
 
 from db_utils import get_missing_poke_imgs_by_table, get_missing_pokeball_imgs
 from image_utils import save_first_frame, is_animated
+from translation_utils import EXCLUDE_TRANSLATIONS_MAP
 
 
 
@@ -15,6 +16,8 @@ from image_utils import save_first_frame, is_animated
 #|================================================================================================|
 
 # TODO: Add scraping countermeasures: 1-3 sec wait between downloads, rotate IPs w proxy pools, session spoofing?
+# TODO: Add DOES_NOT_EXIST, DO_BY_HAND, etc to dict in translation utils, and check for those phrases in a file before looking up the page, if they exist continue
+# TODO: Keep track of files that didn't exist and make sure it doesn't try to get run again (animateds, back sprites in Wikidex, etc)
 
 # NOTE: ALL DOWNLOADS MUST BE DONE IN THE FASHION BELOW -- Otherwise bulba has a check on if the site is being web scraped and it will block the download
 opener = urllib.request.URLopener()
@@ -24,6 +27,8 @@ def download_img(url, save_path):
     filename, headers = opener.retrieve(url, save_path)
 
 
+# NOTE: Only reason this works is because bulba uses same file extension for static/animated sprites
+# Wikidex has some logic for same filename, different extensions, may be worth expanding on if ever scraping more sites
 def determine_animation_status_before_downloading(img_url, save_path):
     img_is_animated = is_animated(img_url)
     if "-Animated" in save_path:
@@ -59,6 +64,7 @@ def scrape_imgs(poke_num, filename_table, translate_func, exclusions, has_animat
         for file in files:
             # poke_info == (poke_num, form_id) or (pokeball_id, img_type_id) if pokeball img
             # file == (my_file_naming_convention, translated_url)
+            print(f"{file[1]} \t<-->\t {file[0]}")
             my_filename = file[0] + ".png"
             save_path = os.path.join(save_path, my_filename)
             if config_dict["Allow Download"]:  # Putting this here in addition to the actual download func, so func doesnt try to open pages to check for existence
@@ -70,12 +76,16 @@ def translate_all_my_filenames_to_url(filename_dict, translate_func, exclude, st
         print(f"\rTranslating #{poke_info[0]} filenames to urls...", end='', flush=True)
         urls = []
         for my_filename in files:
-            # Right now this filters out SV & BDSP Sprites, and animateds > Gen5 since bulba doesnt have them
             if exclude != None and exclude(my_filename):
                 continue
+
             translated_filename = translate_func(my_filename, poke_info)
+            for excl_term in EXCLUDE_TRANSLATIONS_MAP.values(): # These are forms that are translated to DO_BY_HAND, DOES_NOT_EXIST, etc
+                if excl_term in translated_filename: continue
+
             translated_filename_url = convert_translated_filename_to_url(starter_url, translated_filename)
             urls.append((my_filename, translated_filename_url))
+            
         filename_dict[poke_info] = urls
     # Resetting console line after updates from above
     print('\r' + ' '*55 + '\r', end='')

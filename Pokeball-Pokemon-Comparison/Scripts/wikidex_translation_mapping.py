@@ -1,3 +1,5 @@
+from translation_utils import EXCLUDE_TRANSLATIONS_MAP
+
 #|================================================================================================|
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     EXCLUSIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
@@ -291,10 +293,10 @@ WIKIDEX_POKE_FORM_TRANSLATION_MAP = {
 
     # Kyurem
     646: {
-        "-Form_Black": "-DO_BY_HAND",
-        "-Form_Black_Overdrive": "-DO_BY_HAND",
-        "-Form_White": "-DO_BY_HAND",
-        "-Form_White_Overdrive": "-DO_BY_HAND"
+        "-Form_Black": EXCLUDE_TRANSLATIONS_MAP["DBH"],
+        "-Form_Black_Overdrive": EXCLUDE_TRANSLATIONS_MAP["DBH"],
+        "-Form_White": EXCLUDE_TRANSLATIONS_MAP["DBH"],
+        "-Form_White_Overdrive": EXCLUDE_TRANSLATIONS_MAP["DBH"]
     },
 
     # Keldeo
@@ -467,12 +469,12 @@ WIKIDEX_POKE_FORM_TRANSLATION_MAP = {
 
     # Solgaleo
     791: {
-        "-Form_Radiant_Sun": "-DOES_NOT_EXIST"
+        "-Form_Radiant_Sun": EXCLUDE_TRANSLATIONS_MAP["DNE"]
     },
 
     # Lunala
     792: {
-        "-Form_Full_Moon": "-DOES_NOT_EXIST"
+        "-Form_Full_Moon": EXCLUDE_TRANSLATIONS_MAP["DNE"]
     },
 
     # Necrozma

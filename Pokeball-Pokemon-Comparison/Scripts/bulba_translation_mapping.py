@@ -1,3 +1,5 @@
+from translation_utils import EXCLUDE_TRANSLATIONS_MAP
+
 #|================================================================================================|
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     GAME IMAGE TRANSLATIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
@@ -129,12 +131,12 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Cap_Unova": "U",
             "-Form_Cap_Partner": "P",
             "-Form_Cap_World": "W",
-            "-Form_Cosplay": "-DO_BY_HAND",     # 6o, not 6x   
-            "-Form_Cosplay_Belle": "-DOES_NOT_EXIST",
-            "-Form_Cosplay_Libre": "-DOES_NOT_EXIST",
-            "-Form_Cosplay_PhD": "-DOES_NOT_EXIST",
-            "-Form_Cosplay_Pop_Star": "-DOES_NOT_EXIST",
-            "-Form_Cosplay_Rock_Star": "-DOES_NOT_EXIST"
+            "-Form_Cosplay": EXCLUDE_TRANSLATIONS_MAP["DBH"],     # 6o, not 6x   
+            "-Form_Cosplay_Belle": EXCLUDE_TRANSLATIONS_MAP["DNE"],
+            "-Form_Cosplay_Libre": EXCLUDE_TRANSLATIONS_MAP["DNE"],
+            "-Form_Cosplay_PhD": EXCLUDE_TRANSLATIONS_MAP["DNE"],
+            "-Form_Cosplay_Pop_Star": EXCLUDE_TRANSLATIONS_MAP["DNE"],
+            "-Form_Cosplay_Rock_Star": EXCLUDE_TRANSLATIONS_MAP["DNE"]
         },
         "Drawn": {
             "-Form_Cap_Alola": "-Alola Cap",
@@ -505,10 +507,10 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
     646: {
         "Game": {
             # These are all over the place by game/denoters, easier to just do by hand
-            "-Form_Black": "DO_BY_HAND",
-            "-Form_Black_Overdrive": "DO_BY_HAND",
-            "-Form_White": "DO_BY_HAND",
-            "-Form_White_Overdrive": "DO_BY_HAND"
+            "-Form_Black": EXCLUDE_TRANSLATIONS_MAP["DBH"],
+            "-Form_Black_Overdrive": EXCLUDE_TRANSLATIONS_MAP["DBH"],
+            "-Form_White": EXCLUDE_TRANSLATIONS_MAP["DBH"],
+            "-Form_White_Overdrive": EXCLUDE_TRANSLATIONS_MAP["DBH"]
         },
         "Drawn": {
             "-Form_Black_Overdrive": "-Black2",
@@ -867,7 +869,7 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Busted": drawn_dream_translation("Busted")
         },
         "Menu": {
-            "-Form_Busted": "-DOES_NOT_EXIST"
+            "-Form_Busted": EXCLUDE_TRANSLATIONS_MAP["DNE"]
         }
     },
 
@@ -880,7 +882,7 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Radiant_Sun": "-RadiantSunPhase"
         },
         "Menu": {
-            "-Form_Radiant_Sun": "-DOES_NOT_EXIST"
+            "-Form_Radiant_Sun": EXCLUDE_TRANSLATIONS_MAP["DNE"]
         }
     },
 
@@ -893,7 +895,7 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Full_Moon": "-FullMoonPhase"
         },
         "Menu": {
-            "-Form_Full_Moon": "-DOES_NOT_EXIST"
+            "-Form_Full_Moon": EXCLUDE_TRANSLATIONS_MAP["DNE"]
         }
     },
 
@@ -912,7 +914,7 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Original_Color": "O"
         },
         "Drawn": {
-            "-Form_Original_Color": "-BULBA_DOESNT_HAVE"
+            "-Form_Original_Color": EXCLUDE_TRANSLATIONS_MAP["DNE"]
         },
         "Menu": {
             "-Form_Original_Color": "-Original Color"
@@ -1118,7 +1120,7 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Eternamax": "E"
         },
         "Drawn": {
-            "-Form_Eternamax": "-DOES_NOT_EXIST"
+            "-Form_Eternamax": EXCLUDE_TRANSLATIONS_MAP["DNE"]
         }
     },
     
@@ -1133,9 +1135,9 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Rapid_Strike": " Rapid Strike"
         },
         "Menu": {
-            # Doesn't have either form??? So downloading default for both ig
-            "-Form_Single_Strike": "",
-            "-Form_Rapid_Strike": ""
+            # Doesn't have either form???
+            "-Form_Single_Strike": EXCLUDE_TRANSLATIONS_MAP["DNE"],
+            "-Form_Rapid_Strike": EXCLUDE_TRANSLATIONS_MAP["DNE"]
         }
     },
 
@@ -1245,7 +1247,7 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
         },
         "Game": {
             "-Form_Two_Segment": "",
-            "-Form_Three_Segment": "-DOES_NOT_EXIST"
+            "-Form_Three_Segment": EXCLUDE_TRANSLATIONS_MAP["DNE"]
         },
     },
 
