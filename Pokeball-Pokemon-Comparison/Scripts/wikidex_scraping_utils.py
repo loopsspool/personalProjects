@@ -1,32 +1,9 @@
-import requests     # For fetching HTML
-from bs4 import BeautifulSoup   # For parsing HTML
-import xlrd     # For reading excel data (female, forms, etc)
-import urllib.request      # For saving images
-import re   # To check each name is formatted properly
-import time     # To simulate a pause between each page opening
-import os.path   # To skip a file if it already exists
-
 from wikidex_translation_mapping import *
-from db_utils import get_poke_name, get_form_name
+from db_utils import get_poke_name, get_form_name, get_pokeball_name, get_pokeball_img_type_name
 from app_globals import *
 from scraping_utils import *
 from image_utils import get_largest_png
 from translation_utils import *
-
-
-# ===============================================================================================================================================================================================
-# ===============================================================================================================================================================================================
-
-#   N   N    OOO   TTTTT  EEEEE
-#   NN  N   O   O    T    E       ::
-#   N N N   O   O    T    EEEE           This is a really old file, broken off from a longer script I wrote... Not updated yet to reflect best practice/work with other scripts
-#   N  NN   O   O    T    E       ::
-#   N   N    OOO     T    EEEEE 
-
-# ===============================================================================================================================================================================================
-# ===============================================================================================================================================================================================
-
-# NOTE: No animated sprites below gen5 except Crystal
 
 
 # WEB DATA
@@ -45,8 +22,6 @@ def wikidex_scrape_pokemon(start_poke_num, stop_poke_num, allow_download=False):
         scrape_imgs(poke_num, "home_filenames", wikidex_translate, exclusions=None, has_animation=True, save_path=HOME_SAVE_PATH, config_dict=wikidex_scrape_config)
         # NOTE: Technically Wikidex does have drawn images and home menu images, but bulba has every one so there's no need to scrape
         # If this changes in the future, it may be useful to browse their archives via url thru https://www.wikidex.net/index.php?title=Categor%C3%ADa:Pokemon_name
-
-        # TODO: See what pokeballs they have in their archive
     
     # Resetting console line after updates from above
     print('\r' + ' '*55 + '\r', end='')
@@ -73,9 +48,9 @@ def wikidex_get_img(url, save_path, allow_download, has_animation=False):
     print('\r' + ' '*75 + '\r', end='')
     
     if allow_download:
-        # TODO: Try and find one with a larger avail image, all so far say no higher resolution available
-        # TODO: DL if "Not available at a higher resolution" otherwise print filename so I can figure out how to get highest resolution
+        # TODO: determine higher res or not
         # Found one: https://www.wikidex.net/wiki/Archivo:Abomasnow_EP_hembra.webm
+        # Link text Mostrar imagen en alta resolución
         img_url = get_largest_png(img_page_soup)
 
         if has_animation:
@@ -84,14 +59,26 @@ def wikidex_get_img(url, save_path, allow_download, has_animation=False):
             download_img(img_url, save_path)
 
 
-
 def does_ani_file_exist_for_still(url, my_filename):
     if "-Animated" in my_filename: return False, None
     else:   # Can only look up animated imgs for stills
         fake_ani_filename = f"-Animated {my_filename}"  # This will trick my determine_file_ext func into triggering getting an animated file ext based of gen
         ani_file_ext = determine_file_extension(fake_ani_filename)
         ani_url = url.replace(".png", ani_file_ext)
-        return img_exists_at_url(ani_url, nonexistant_string_denoter=r"No existe ningún archivo con este nombre.")            
+        return img_exists_at_url(ani_url, nonexistant_string_denoter=r"No existe ningún archivo con este nombre.")
+    
+
+def wikidex_doesnt_have_images_for(my_filename):
+    for exclusion in WIKIDEX_DOESNT_HAVE_IMGS_FOR:
+        # No animateds below gen5 except emerald and crystal
+        if exclusion == ("-Animated") and "-Animated" in my_filename:
+            if extract_gen_num_from_my_filename(my_filename) < 5:
+                if "Gen3 Emerald" not in my_filename and "Gen2 Crystal" not in my_filename:
+                    return True
+                return False
+        elif all(keyword in my_filename for keyword in exclusion):
+            return True
+    return False
 
 
 
@@ -124,7 +111,6 @@ def get_wikidex_translated_species_form(poke_info, my_filename):
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     GAME IMAGES     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
-# TODO: Early games (Emerald, Crystal? FRLG? Check animation capable games) ONLY have animated sprites in gif... So add them to WIKIDEX DOESNT HAVE dict
 # TODO: See how check animated status and trying to get the still would affect things since these are gifs and those were intended for same name pngs
 
 def wikidex_translate(my_filename, poke_info):
@@ -179,19 +165,9 @@ def determine_file_extension(my_filename):
         
         if gen < 9: return ".gif"
         else: return ".webm"
-    
 
-def wikidex_doesnt_have_images_for(my_filename):
-    for exclusion in WIKIDEX_DOESNT_HAVE_IMGS_FOR:
-        # No animateds below gen5 except emerald and crystal
-        if exclusion == ("-Animated") and "-Animated" in my_filename:
-            if extract_gen_num_from_my_filename(my_filename) < 5:
-                if "Gen3 Emerald" not in my_filename and "Gen2 Crystal" not in my_filename:
-                    return True
-                return False
-        elif all(keyword in my_filename for keyword in exclusion):
-            return True
-    return False
+
+
 
 # pokemon_img_dict[filename] = imgs[i].a.img["src"]
 # # Saves first-frame statics as png from gif for Crystal & Emerald
