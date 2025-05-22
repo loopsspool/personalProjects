@@ -26,7 +26,6 @@ from translation_utils import *
 # ===============================================================================================================================================================================================
 # ===============================================================================================================================================================================================
 
-# TODO: Wikidex has 2 images for each back sprite in gen4, see if there are any other games like this and figure out how to get them
 # TODO: Wikidex animateds are all gifs, gen9 is webm.... determine if worthwhile to convert and color correct or keep as is. Consider RN and device compatibility
 # NOTE: No animated sprites below gen5 except Crystal
 
@@ -43,7 +42,7 @@ def wikidex_scrape_pokemon(start_poke_num, stop_poke_num, allow_download=False):
     for poke_num in range(start_poke_num, stop_poke_num + 1):
         print(f"\rScraping pokemon #{poke_num} wikidex images...", end='', flush=True)
 
-        scrape_imgs(poke_num, "obtainable_game_filenames", wikidex_translate, exclusions=None, has_animation=True, save_path=GAME_SPRITE_SAVE_PATH, config_dict=wikidex_scrape_config)
+        scrape_imgs(poke_num, "obtainable_game_filenames", wikidex_translate, exclusions=wikidex_doesnt_have_images_for, has_animation=True, save_path=GAME_SPRITE_SAVE_PATH, config_dict=wikidex_scrape_config)
         scrape_imgs(poke_num, "home_filenames", wikidex_translate, exclusions=None, has_animation=True, save_path=HOME_SAVE_PATH, config_dict=wikidex_scrape_config)
         # NOTE: Technically Wikidex does have drawn images and home menu images, but bulba has every one so there's no need to scrape
         # If this changes in the future, it may be useful to browse their archives via url thru https://www.wikidex.net/index.php?title=Categor%C3%ADa:Pokemon_name
@@ -60,27 +59,40 @@ def wikidex_scrape_pokemon(start_poke_num, stop_poke_num, allow_download=False):
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     DOWNLOADING FUNCTIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
-def wikidex_get_img(url, save_path, allow_download,has_animation=False):
+def wikidex_get_img(url, save_path, allow_download, has_animation=False):
+    my_filename = save_path.split("\\")[-1]
     img_exists, img_page_soup = img_exists_at_url(url, nonexistant_string_denoter=r"No existe ningún archivo con este nombre.")
     if not img_exists:
-        return ()
-    else:
-        # Printing filename
-        print(f"\r{save_path.split("\\")[-1]}", end='', flush=True)
-        # Resetting console line after updates from above
-        print('\r' + ' '*75 + '\r', end='')
-        
-        if allow_download:
-            # TODO: Try and find one with a larger avail image, all so far say no higher resolution available
-            # TODO: DL if "Not available at a higher resolution" otherwise print filename so I can figure out how to get highest resolution
-            # Found one: https://www.wikidex.net/wiki/Archivo:Abomasnow_EP_hembra.webm
-            img_url = get_largest_png(img_page_soup)
+        # TODO: Test this, applies to Gen8 Shiny Back Statics
+        img_exists, img_page_soup = does_ani_file_exist_for_still(url, my_filename) # Looks for animated img under different file ext
+        if not img_exists:
+            return ()
+    
+    # Printing filename
+    print(f"\r{my_filename}", end='', flush=True)
+    # Resetting console line after updates from above
+    print('\r' + ' '*75 + '\r', end='')
+    
+    if allow_download:
+        # TODO: Try and find one with a larger avail image, all so far say no higher resolution available
+        # TODO: DL if "Not available at a higher resolution" otherwise print filename so I can figure out how to get highest resolution
+        # Found one: https://www.wikidex.net/wiki/Archivo:Abomasnow_EP_hembra.webm
+        img_url = get_largest_png(img_page_soup)
 
-            if has_animation:
-                # TODO: Wikidex urls are the same for animated, except end in gif/webm/etc... That's why they arent apngs
-                determine_animation_status_before_downloading(img_url, save_path)
-            else:
-                download_img(img_url, save_path)
+        if has_animation:
+            determine_animation_status_before_downloading(img_url, save_path)
+        else:
+            download_img(img_url, save_path)
+
+
+
+def does_ani_file_exist_for_still(url, my_filename):
+    if "-Animated" in my_filename: return False, None
+    else:   # Can only look up animated imgs for stills
+        fake_ani_filename = f"-Animated {my_filename}"  # This will trick my determine_file_ext func into triggering getting an animated file ext based of gen
+        ani_file_ext = determine_file_extension(fake_ani_filename)
+        ani_url = url.replace(".png", ani_file_ext)
+        return img_exists_at_url(ani_url, nonexistant_string_denoter=r"No existe ningún archivo con este nombre.")            
 
 
 
@@ -130,7 +142,7 @@ def wikidex_translate(my_filename, poke_info):
     platform = determine_platform(my_filename, back_tag)    # Determines if wikidex translate should have HOME, Game denoter, or Gen# for back sprites
     shiny_tag = " variocolor" if "-Shiny" in my_filename else ""
     female_tag = " hembra" if "-f" in form_name else ""
-    file_ext = determine_file_extension(platform, my_filename)
+    file_ext = determine_file_extension(my_filename)
 
     wikidex_filename = f"{adj_poke_name}{form_tag}{gigantamax_tag}{back_tag}{platform}{shiny_tag}{female_tag}{file_ext}"
     return (wikidex_filename)
@@ -151,27 +163,30 @@ def determine_platform(my_filename, back_tag):
     elif back_tag == "":    # Img is front game sprite, get game
         platform = get_translated_game(my_filename, WIKIDEX_GAME_MAP, WIKIDEX_ALT_GAME_MAP)
     else:   # Get back gen
-        # TODO: Put this gen extraction in its own func
-        platform = f" G{extract_gen_num_from_my_filename(my_filename)}"  # Getting just the gen number
+        # NOTE: Wikidex lumps backs together by gen, so gen8 is noted as gen8 but is only SwSh, no BDSP or LA back sprites in there
+        platform = f" G{extract_gen_num_from_my_filename(my_filename)}"
         if "Gen2_Crystal" in my_filename: platform += " cristal"
-
-    
 
     return platform
 
 
-def determine_file_extension(platform, my_filename):
+def determine_file_extension(my_filename):
     gen = 0
     if "-Animated" not in my_filename: return ".png"
     # Wikidex transitioned to .webm for animated HOME/Gen9. Gen8 below is .gif
     else:
-        if platform == " HOME": return ".webm"
+        if " HOME" in my_filename: return ".webm"
         gen = extract_gen_num_from_my_filename(my_filename)
         
         if gen < 9: return ".gif"
         else: return ".webm"
     
 
+def wikidex_doesnt_have_images_for(my_filename):
+    for exclusion in WIKIDEX_DOESNT_HAVE_IMGS_FOR:
+        if all(keyword in my_filename for keyword in exclusion):
+            return True
+    return False
 
 # pokemon_img_dict[filename] = imgs[i].a.img["src"]
 # # Saves first-frame statics as png from gif for Crystal & Emerald
