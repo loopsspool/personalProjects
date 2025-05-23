@@ -68,14 +68,8 @@ def does_ani_file_exist_for_still(url, my_filename):
     
 
 def wikidex_doesnt_have_images_for(my_filename):
-    for exclusion in WIKIDEX_DOESNT_HAVE_IMGS_FOR:
-        # No animateds below gen5 except emerald and crystal
-        if exclusion == ("-Animated") and "-Animated" in my_filename:
-            if extract_gen_num_from_my_filename(my_filename) < 5:
-                if "Gen3 Emerald" not in my_filename and "Gen2 Crystal" not in my_filename:
-                    return True
-                return False
-        elif all(keyword in my_filename for keyword in exclusion):
+    for exclude in WIKIDEX_DOESNT_HAVE_IMGS_FOR.values():
+        if exclude(my_filename):
             return True
     return False
 
