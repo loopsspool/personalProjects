@@ -102,7 +102,7 @@ def get_wikidex_translated_species_form(poke_info, my_filename):
                 return(translation)
     
     print(f"Couldn't search for image to download... No respective form in map set for \t{my_filename}")
-    return("-FORM_NOT_IN_MAP_SET")
+    return(EXCLUDE_TRANSLATIONS_MAP["NIM"])
 
 
 
