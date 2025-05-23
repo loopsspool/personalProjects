@@ -16,7 +16,6 @@ from translation_utils import EXCLUDE_TRANSLATIONS_MAP
 #|================================================================================================|
 
 # TODO: Add scraping countermeasures: 1-3 sec wait between downloads, rotate IPs w proxy pools, session spoofing?
-# TODO: Add DOES_NOT_EXIST, DO_BY_HAND, etc to dict in translation utils, and check for those phrases in a file before looking up the page, if they exist continue
 # TODO: Keep track of files that didn't exist and make sure it doesn't try to get run again (animateds, back sprites in Wikidex, etc)
 
 # NOTE: ALL DOWNLOADS MUST BE DONE IN THE FASHION BELOW -- Otherwise bulba has a check on if the site is being web scraped and it will block the download
@@ -64,8 +63,11 @@ def scrape_imgs(poke_num, filename_table, translate_func, exclusions, has_animat
         for file in files:
             # poke_info == (poke_num, form_id) or (pokeball_id, img_type_id) if pokeball img
             # file == (my_file_naming_convention, translated_url)
-            print(f"{file[1]} \t<-->\t {file[0]}")
-            my_filename = file[0] + ".png"
+            
+            url_file_ext = file[1][-4:]
+            my_filename = file[0] + url_file_ext
+
+            print(f"{file[1]} \t<-->\t {my_filename}")
             save_path = os.path.join(save_path, my_filename)
             if config_dict["Allow Download"]:  # Putting this here in addition to the actual download func, so func doesnt try to open pages to check for existence
                 config_dict["Site DL Logic Function"](file[1], save_path, config_dict["Allow Download"], has_animation)
@@ -76,20 +78,24 @@ def translate_all_my_filenames_to_url(filename_dict, translate_func, exclude, st
         print(f"\rTranslating #{poke_info[0]} filenames to urls...", end='', flush=True)
         urls = []
         for my_filename in files:
-            if exclude != None and exclude(my_filename):
-                continue
+            if exclude != None and exclude(my_filename): continue
 
             translated_filename = translate_func(my_filename, poke_info)
-            for excl_term in EXCLUDE_TRANSLATIONS_MAP.values(): # These are forms that are translated to DO_BY_HAND, DOES_NOT_EXIST, etc
-                if excl_term in translated_filename: continue
+            if found_excluded_term(translated_filename): continue
 
             translated_filename_url = convert_translated_filename_to_url(starter_url, translated_filename)
             urls.append((my_filename, translated_filename_url))
-            
+
         filename_dict[poke_info] = urls
     # Resetting console line after updates from above
     print('\r' + ' '*55 + '\r', end='')
     return filename_dict
+
+
+def found_excluded_term(translated_filename):
+    for excl_term in EXCLUDE_TRANSLATIONS_MAP.values(): # These are forms that are translated to DO_BY_HAND, DOES_NOT_EXIST, etc
+        if excl_term in translated_filename: 
+            return True
 
 
 def convert_translated_filename_to_url(starter_url, translated_filename):
