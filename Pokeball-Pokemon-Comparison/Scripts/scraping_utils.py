@@ -68,9 +68,9 @@ def scrape_imgs(poke_num, filename_table, translate_func, exclusions, has_animat
             my_filename = file[0] + url_file_ext
 
             print(f"{file[1]} \t<-->\t {my_filename}")
-            save_path = os.path.join(save_path, my_filename)
+            file_save_path = os.path.join(save_path, my_filename)
             if config_dict["Allow Download"]:  # Putting this here in addition to the actual download func, so func doesnt try to open pages to check for existence
-                config_dict["Site DL Logic Function"](file[1], save_path, config_dict["Allow Download"], has_animation)
+                config_dict["Site DL Logic Function"](file[1], file_save_path, config_dict["Allow Download"], has_animation)
 
 
 def translate_all_my_filenames_to_url(filename_dict, translate_func, exclude, starter_url):

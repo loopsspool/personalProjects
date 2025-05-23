@@ -71,13 +71,8 @@ def get_bulba_img(url, save_path, allow_download, has_animation=False):
     if not img_exists:
         return ()
     else:
-        # Printing filename
-        print(f"\r{save_path.split("\\")[-1]}", end='', flush=True)
-        # Resetting console line after updates from above
-        print('\r' + ' '*75 + '\r', end='')
-        
         if allow_download:
-            img_url = get_largest_png(img_page_soup)
+            img_url = bulba_get_largest_png(img_page_soup)
 
             if has_animation:
                 determine_animation_status_before_downloading(img_url, save_path)
