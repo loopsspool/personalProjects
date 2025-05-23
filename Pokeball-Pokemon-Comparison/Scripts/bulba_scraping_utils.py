@@ -57,6 +57,7 @@ def get_bulba_translated_species_form(poke_info, my_filename, map_type):
     
     if map_type not in ("Drawn", "Menu"):   # Drawn/HOME Menu forms will frequently omit forms to just run my filename
         print(f"Couldn't search for image to download... No respective form in map set for \t{my_filename}")
+    # TODO: Add all these to the EXCLUDE_TRANSLATIONS_MAP in translation_utils
     return("-FORM_NOT_IN_MAP_SET")
 
 
@@ -292,7 +293,7 @@ def pokeball_translate(my_filename, pokeball_info):
 
     if pokeball_name == "Poke Ball" and img_type_name != "Drawn": pokeball_name = pokeball_name.replace("e", "\u00e9")
     # NOTE: Hisuian pokeballs do not get any bulba denotion for bag sprites (so poke ball and hisuian poke ball are formatted the same), just that they are the only ones to exist in LA & HOME bag sprites...
-    if "-Hisui" in pokeball_name and any(types in img_type_name for types in ("-Bag", "LA_Summary")): pokeball_name = pokeball_name.replace("-Hisui", "")
+    if "-Hisui" in pokeball_name and any(types in img_type_name for types in ("Bag", "LA")): pokeball_name = pokeball_name.replace("-Hisui", "")
     
     if "Bag" in img_type_name:
         bag_platform = get_bulba_translated_pokeball_info(img_type_name)
@@ -302,7 +303,7 @@ def pokeball_translate(my_filename, pokeball_info):
     elif img_type_name == "Drawn":
         no_space_ball_name = pokeball_name.replace(" ", "")
         bulba_filename = f"Sugimori{no_space_ball_name}.png"
-    elif "-Hisui" in pokeball_name and img_type_name == "HOME":
+    elif "-Hisui" in pokeball_name and "HOME" in img_type_name:
         pokeball_name = pokeball_name.replace("-Hisui", "")
         bulba_filename = f"Hisuian {pokeball_name} HOME.png"
     else:
