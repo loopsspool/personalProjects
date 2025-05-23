@@ -2,7 +2,7 @@ from wikidex_translation_mapping import *
 from db_utils import get_poke_name, get_form_name, get_pokeball_name, get_pokeball_img_type_name
 from app_globals import *
 from scraping_utils import *
-from image_utils import get_largest_png
+from image_utils import wikidex_get_largest_img
 from translation_utils import *
 
 
@@ -37,7 +37,6 @@ def wikidex_get_img(url, save_path, allow_download, has_animation=False):
     my_filename = save_path.split("\\")[-1]
     img_exists, img_page_soup = img_exists_at_url(url, nonexistant_string_denoter=r"No existe ningún archivo con este nombre.")
     if not img_exists:
-        # TODO: Test this, applies to Gen8 Shiny Back Statics
         img_exists, img_page_soup = does_ani_file_exist_for_still(url, my_filename) # Looks for animated img under different file ext
         if not img_exists:
             return ()
@@ -48,10 +47,13 @@ def wikidex_get_img(url, save_path, allow_download, has_animation=False):
     print('\r' + ' '*75 + '\r', end='')
     
     if allow_download:
-        # TODO: determine higher res or not
-        # Found one: https://www.wikidex.net/wiki/Archivo:Abomasnow_EP_hembra.webm
-        # Link text Mostrar imagen en alta resolución
-        img_url = get_largest_png(img_page_soup)
+        img_url = wikidex_get_largest_img(img_page_soup)
+
+        # If file extensions dont match, make save file match url (This can happen when still sprite takes from animated)
+        img_url_file_ext = img_url[-4:]
+        my_filename_file_ext = save_path[-4:]
+        if img_url_file_ext != my_filename_file_ext:
+            save_path = save_path.replace(my_filename_file_ext, img_url_file_ext)
 
         if has_animation:
             determine_animation_status_before_downloading(img_url, save_path)
@@ -111,8 +113,6 @@ def get_wikidex_translated_species_form(poke_info, my_filename):
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     GAME IMAGES     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
-# TODO: See how check animated status and trying to get the still would affect things since these are gifs and those were intended for same name pngs
-
 def wikidex_translate(my_filename, poke_info):
     # poke_info == (poke_num, form_id)
     poke_num = poke_info[0]
@@ -165,35 +165,3 @@ def determine_file_extension(my_filename):
         
         if gen < 9: return ".gif"
         else: return ".webm"
-
-
-
-
-# pokemon_img_dict[filename] = imgs[i].a.img["src"]
-# # Saves first-frame statics as png from gif for Crystal & Emerald
-#     # TODO: THIS CONVERTS IT TO AN ANIMATED PNG (open in Chrome) -- WILL HAVE TO FIND ANOTHER WAY TO DO THIS
-# # if game == "Gen2 Crystal Animated" or game == "Gen2 Crystal Animated Shiny" or game == "Gen3 Emerald Animated" or game == "Gen3 Emerald Animated Shiny":
-# #     filename = filename.replace("Animated", "Static")
-# #     filename = filename.replace(".gif", ".png")
-# #     pokemon_img_dict[filename] = imgs[i].a.img["src"]
-
-
-# print("Downloading", amount_of_imgs, "Images...")
-# # If done with all images for the game, save them
-# for file_name, poke_link in pokemon_img_dict.items():
-# if os.path.exists("Images/Pokemon/" + file_name):
-#     current_img += 1
-#     continue
-# print("Downloading %s/%s" % (current_img, amount_of_imgs),  file_name, "...")
-# download_time = time.time()
-# urllib.request.urlretrieve(poke_link, "Images/Pokemon/" + file_name)
-# download_time = time.time() - download_time
-# print("Downloaded %s/%s" % (current_img, amount_of_imgs), file_name)
-# pokes_since_time += 1
-# total_time = (time.time() - start_time)/60
-# print("Download took %.1f seconds" % download_time)
-# print("Downloading average: %.0f pokemon per minute" % (pokes_since_time/total_time))
-# print("Downloading average: %.0f pokemon per hr" % ((pokes_since_time/total_time) * 60))
-# print("Minutes elapsed: %.1f with %s pokemon downloaded" % (total_time, pokes_since_time))
-# current_img += 1
-# time.sleep(0.3)
