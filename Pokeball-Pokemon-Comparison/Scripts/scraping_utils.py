@@ -7,6 +7,7 @@ import re
 from db_utils import get_missing_poke_imgs_by_table, get_missing_pokeball_imgs
 from image_utils import save_first_frame, is_animated
 from translation_utils import EXCLUDE_TRANSLATIONS_MAP
+from app_globals import get_file_ext
 
 
 
@@ -43,7 +44,12 @@ def determine_animation_status_before_downloading(img_url, save_path):
 
 
 def img_exists_at_url(url, nonexistant_string_denoter):
-    img_page = requests.get(url)
+    img_page = requests.get(url, allow_redirects=False)
+    # The below catches a redirect... Can happen for instance trying to get gen6 pokemon back sprites for gen 7, which just downloads the same image twice when I already have the games as fallbacks in my db
+    # Generally, I want my URLs to go to that exact image, and if it links to another, my db should also link to another... But TODO: Check after scrape, if oddballs missing this may be why
+    if 300 <= img_page.status_code < 400:
+        return False, None
+    
     img_page_soup = BeautifulSoup(img_page.content, 'html.parser')
     img_exists = not img_page_soup.find("p", string=re.compile(nonexistant_string_denoter))    # Negating a found non-existant statement on page
     return (img_exists, img_page_soup)
@@ -64,8 +70,8 @@ def scrape_imgs(poke_num, filename_table, translate_func, exclusions, has_animat
             # poke_info == (poke_num, form_id) or (pokeball_id, img_type_id) if pokeball img
             # file == (my_file_naming_convention, translated_url)
             
-            url_file_ext = file[1][-4:]
-            my_filename = file[0] + url_file_ext
+            url_file_ext = get_file_ext(file[1])
+            my_filename = f"{file[0]}{url_file_ext}"
 
             print(f"{file[1]} \t<-->\t {my_filename}")
             file_save_path = os.path.join(save_path, my_filename)
