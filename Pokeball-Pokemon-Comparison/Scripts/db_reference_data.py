@@ -98,45 +98,44 @@ FORM_EXCLUSIONS = {
     "filtering for SV dex if needed": lambda poke_form, game: game["name"] == "SV" and lazy_import("spreadsheet_utils").poke_isnt_in_game(poke_form["poke num"], "SV"),
 
     # Universal Rules
-    "no_pokemon_with_a_higher_generation_than_game_generation": lambda poke_form, game: poke_form["poke gen"] > game["gen"],
-    "no_f_form_visual_differences_before_gen_4": lambda poke_form, game: poke_form["form name"] == "-f" and game["gen"] < 4,
-    "no_fairy_forms_before_gen_6": lambda poke_form, game: poke_form["form name"] == "-Form_Fairy" and game["gen"] < 6,
-    "no_megas_outside_XY_ORAS_SM_USUM_LGPE": lambda poke_form, game: "-Mega" in poke_form["form name"] and game["name"] not in ("XY_ORAS", "SM_USUM", "LGPE"),
-    "no_gigantamax_outside_SwSh": lambda poke_form, game: poke_form["form name"] == "-Gigantamax" and game["name"] != "SwSh",
-    "no_regional_forms_before_gen_7": lambda poke_form, game: "-Region" in poke_form["form name"] and game["gen"] < 7,
-    "no_alolan_forms_before_SM_USUM": lambda poke_form, game: "-Region_Alola" in poke_form["form name"] and lazy_import("db_utils").get_game_id(game["name"]) < lazy_import("db_utils").get_game_id("SM_USUM"),
-    "no_galarian_forms_before_SwSh": lambda poke_form, game: "-Region_Galar" in poke_form["form name"] and lazy_import("db_utils").get_game_id(game["name"]) < lazy_import("db_utils").get_game_id("SwSh"),
-    "no_hisuian_forms_before_LA": lambda poke_form, game: "-Region_Hisui" in poke_form["form name"] and lazy_import("db_utils").get_game_id(game["name"]) < lazy_import("db_utils").get_game_id("LA"),
-    "no_paldean_forms_before_SV": lambda poke_form, game: "-Region_Paldea" in poke_form["form name"] and lazy_import("db_utils").get_game_id(game["name"]) < lazy_import("db_utils").get_game_id("SV"),
-    "no_regional_forms_in_BDSP": lambda poke_form, game: game["name"] == "BDSP" and "-Region" in poke_form["form name"],
-    "no_regional_forms_in_LA_other_than_hisui_and_alola_kitties": lambda poke_form, game: game["name"] == "LA" and "-Region" in poke_form["form name"] and "-Region_Hisui" not in poke_form["form name"] and not (poke_form["poke name"] in ("Vulpix", "Ninetales") and poke_form["form name"] == "-Region_Alola"),
+    "no pokemon with a higher generation than game generation": lambda poke_form, game: poke_form["poke gen"] > game["gen"],
+    "no f form visual differences before gen 4": lambda poke_form, game: poke_form["form name"] == "-f" and game["gen"] < 4,
+    "no fairy forms before gen 6": lambda poke_form, game: poke_form["form name"] == "-Form_Fairy" and game["gen"] < 6,
+    "no megas outside XY ORAS SM USUM LGPE": lambda poke_form, game: "-Mega" in poke_form["form name"] and game["name"] not in ("XY_ORAS", "SM_USUM", "LGPE"),
+    "no gigantamax outside SwSh": lambda poke_form, game: poke_form["form name"] == "-Gigantamax" and game["name"] != "SwSh",
+    "no regional forms before gen 7": lambda poke_form, game: "-Region" in poke_form["form name"] and game["gen"] < 7,
+    "no alolan forms before SM USUM": lambda poke_form, game: "-Region_Alola" in poke_form["form name"] and lazy_import("db_utils").get_game_id(game["name"]) < lazy_import("db_utils").get_game_id("SM_USUM"),
+    "no galarian forms before SwSh": lambda poke_form, game: "-Region_Galar" in poke_form["form name"] and lazy_import("db_utils").get_game_id(game["name"]) < lazy_import("db_utils").get_game_id("SwSh"),
+    "no hisuian forms before LA": lambda poke_form, game: "-Region_Hisui" in poke_form["form name"] and lazy_import("db_utils").get_game_id(game["name"]) < lazy_import("db_utils").get_game_id("LA"),
+    "no paldean forms before SV": lambda poke_form, game: "-Region_Paldea" in poke_form["form name"] and lazy_import("db_utils").get_game_id(game["name"]) < lazy_import("db_utils").get_game_id("SV"),
+    "no regional forms in BDSP": lambda poke_form, game: game["name"] == "BDSP" and "-Region" in poke_form["form name"],
+    "no regional forms in LA other than hisui and alola kitties": lambda poke_form, game: game["name"] == "LA" and "-Region" in poke_form["form name"] and "-Region_Hisui" not in poke_form["form name"] and not (poke_form["poke name"] in ("Vulpix", "Ninetales") and poke_form["form name"] == "-Region_Alola"),
     "no default forms of pokes that have hisuian forms in LA except sneasel": lambda poke_form, game: game["name"] == "LA" and poke_form["form name"] == "Default" and lazy_import("db_utils").has_regional_form(poke_form["poke num"], "Hisui") and not poke_form["poke num"] == 215,
 
     # Specific pokemon
-    "no_cosplay_pikachu_outside_ORAS": lambda poke_form, game: poke_form["poke num"] == 25 and "-Form_Cosplay" in poke_form["form name"] and game["name"] != "XY_ORAS",
-    "no_cap_pikachu_before_gen_7": lambda poke_form, game: poke_form["poke num"] == 25 and "-Form_Cap" in poke_form["form name"] and game["gen"] < 7,
-    "no_cap_pikachu_in_these_games": lambda poke_form, game: poke_form["poke num"] == 25 and "-Form_Cap" in poke_form["form name"] and game["name"] in ("LGPE", "BDSP", "LA"),  # Don't have to add earlier games because line above filters out everything below gen 7
-    "no_world_cap_pikachu_in_SM_USUM": lambda poke_form, game: poke_form["poke num"] == 25 and poke_form["form name"] == "-Form_Cap_World" and game["name"] == "SM_USUM",
-    "no_female_form_eevees_until_gen_8": lambda poke_form, game: poke_form["poke num"] == 133 and poke_form["form name"] == "-f" and game["gen"] < 8,
-    "no_spiky_eared_pichu_outside_HGSS": lambda poke_form, game: poke_form["poke num"] == 172 and poke_form["form name"] == "-Form_Spiky_Eared" and game["name"] != "HGSS",
-    "no_unown_punctuation_before_gen_3": lambda poke_form, game: poke_form["poke num"] == 201 and poke_form["form name"] in ("-Form_!", "-Form_Qmark") and game["gen"] < 3,
-    "no_primal_kyogre_or_groudon_outside_XY_ORAS_and_SM_USUM": lambda poke_form, game: (poke_form["poke num"] in (382, 383)) and poke_form["form name"] == "-Form_Primal" and game["name"] not in ("XY_ORAS", "SM_USUM"),
-    "no_deoxys_non_normal_forms_in_ruby_sapphire": lambda poke_form, game: poke_form["poke num"] == 386 and game["name"] == "Ruby_Sapphire" and poke_form["form name"] != "Default",
-    "no_deoxys_speed_form_in_FRLG": lambda poke_form, game: poke_form["poke num"] == 386 and game["name"] == "FRLG" and poke_form["form name"] == "-Form_Speed",
-    "no_deoxys_attack_and_defense_form_in_emerald": lambda poke_form, game: poke_form["poke num"] == 386 and game["name"] == "Emerald" and poke_form["form name"] in ("-Form_Attack", "-Form_Defense"),
-    "no_rotom_forms_until_after_platinum": lambda poke_form, game: poke_form["poke num"] == 479 and poke_form["form name"] != "Default" and lazy_import("db_utils").get_game_id(game["name"]) < lazy_import("db_utils").get_game_id("Platinum"),
-    "no_origin_dialga_palkia_forms_until_after_LA": lambda poke_form, game: poke_form["poke num"] in (483, 484) and poke_form["form name"] == "-Form_Origin" and lazy_import("db_utils").get_game_id(game["name"]) < lazy_import("db_utils").get_game_id("LA"),
-    "no_origin_form_giratina_until_after_platinum": lambda poke_form, game: poke_form["poke num"] == 487 and poke_form["form name"] == "-Form_Origin" and lazy_import("db_utils").get_game_id(game["name"]) < lazy_import("db_utils").get_game_id("Platinum"),
-    "no_sky_form_shaymin_until_after_platinum": lambda poke_form, game: poke_form["poke num"] == 492 and poke_form["form name"] == "-Form_Sky" and lazy_import("db_utils").get_game_id(game["name"]) < lazy_import("db_utils").get_game_id("Platinum"),
-    "no_???_arceus_form_outside_of_gen_4": lambda poke_form, game: poke_form["poke num"] == 493 and poke_form["form name"] == "-Form_Qmark" and game["gen"] != 4,
-    "no_white_striped_basculin_until_LA": lambda poke_form, game: poke_form["poke num"] == 550 and poke_form["form name"] == "-Form_White_Striped" and lazy_import("db_utils").get_game_id(game["name"]) < lazy_import("db_utils").get_game_id("LA"),
+    "no cosplay pikachu outside ORAS": lambda poke_form, game: poke_form["poke num"] == 25 and "-Form_Cosplay" in poke_form["form name"] and game["name"] != "XY_ORAS",
+    "no cap pikachu before gen 7": lambda poke_form, game: poke_form["poke num"] == 25 and "-Form_Cap" in poke_form["form name"] and game["gen"] < 7,
+    "no cap pikachu in these games": lambda poke_form, game: poke_form["poke num"] == 25 and "-Form_Cap" in poke_form["form name"] and game["name"] in ("LGPE", "BDSP", "LA"),  # Don't have to add earlier games because line above filters out everything below gen 7
+    "no world cap pikachu in SM USUM": lambda poke_form, game: poke_form["poke num"] == 25 and poke_form["form name"] == "-Form_Cap_World" and game["name"] == "SM_USUM",
+    "no female form eevees until gen 8": lambda poke_form, game: poke_form["poke num"] == 133 and poke_form["form name"] == "-f" and game["gen"] < 8,
+    "no spiky eared pichu outside HGSS": lambda poke_form, game: poke_form["poke num"] == 172 and poke_form["form name"] == "-Form_Spiky_Eared" and game["name"] != "HGSS",
+    "no unown punctuation before gen 3": lambda poke_form, game: poke_form["poke num"] == 201 and poke_form["form name"] in ("-Form_!", "-Form_Qmark") and game["gen"] < 3,
+    "no primal kyogre or groudon outside XY ORAS and SM USUM": lambda poke_form, game: (poke_form["poke num"] in (382, 383)) and poke_form["form name"] == "-Form_Primal" and game["name"] not in ("XY_ORAS", "SM_USUM"),
+    "no deoxys non normal forms in ruby sapphire": lambda poke_form, game: poke_form["poke num"] == 386 and game["name"] == "Ruby_Sapphire" and poke_form["form name"] != "Default",
+    "no deoxys speed form in FRLG": lambda poke_form, game: poke_form["poke num"] == 386 and game["name"] == "FRLG" and poke_form["form name"] == "-Form_Speed",
+    "no deoxys attack and defense form in emerald": lambda poke_form, game: poke_form["poke num"] == 386 and game["name"] == "Emerald" and poke_form["form name"] in ("-Form_Attack", "-Form_Defense"),
+    "no rotom forms until after platinum": lambda poke_form, game: poke_form["poke num"] == 479 and poke_form["form name"] != "Default" and lazy_import("db_utils").get_game_id(game["name"]) < lazy_import("db_utils").get_game_id("Platinum"),
+    "no origin dialga palkia forms until after LA": lambda poke_form, game: poke_form["poke num"] in (483, 484) and poke_form["form name"] == "-Form_Origin" and lazy_import("db_utils").get_game_id(game["name"]) < lazy_import("db_utils").get_game_id("LA"),
+    "no origin form giratina until after platinum": lambda poke_form, game: poke_form["poke num"] == 487 and poke_form["form name"] == "-Form_Origin" and lazy_import("db_utils").get_game_id(game["name"]) < lazy_import("db_utils").get_game_id("Platinum"),
+    "no sky form shaymin until after platinum": lambda poke_form, game: poke_form["poke num"] == 492 and poke_form["form name"] == "-Form_Sky" and lazy_import("db_utils").get_game_id(game["name"]) < lazy_import("db_utils").get_game_id("Platinum"),
+    "no ??? arceus form outside of gen 4": lambda poke_form, game: poke_form["poke num"] == 493 and poke_form["form name"] == "-Form_Qmark" and game["gen"] != 4,
+    "no white striped basculin until LA": lambda poke_form, game: poke_form["poke num"] == 550 and poke_form["form name"] == "-Form_White_Striped" and lazy_import("db_utils").get_game_id(game["name"]) < lazy_import("db_utils").get_game_id("LA"),
     "no other striped basculin in LA except white": lambda poke_form, game: poke_form["poke num"] == 550 and poke_form["form name"] != "-Form_White_Striped",
-    "no_ash_greninja_outside_of_SM_USUM": lambda poke_form, game: poke_form["poke num"] == 658 and poke_form["form name"] == "-Form_Ash" and game["name"] != "SM_USUM",
-    "no_zygarde_forms_until_gen_7": lambda poke_form, game: poke_form["poke num"] == 718 and poke_form["form name"] != "-Form_50%" and game["gen"] < 7,
-    "no_solgaleo_lunala_forms_outside_SM_USUM": lambda poke_form, game: poke_form["poke num"] in (791, 792) and poke_form["form name"] != "Default" and game["name"] != "SM_USUM",
-    "no_zenith_marshadow_form_outside_gen_SM_USUM": lambda poke_form, game: poke_form["poke num"] == 802 and poke_form["form name"] != "Default" and game["name"] != "SM_USUM",
-    "no_meltan_or_melmetal_until_LGPE": lambda poke_form, game: poke_form["poke num"] in (808, 809) and lazy_import("db_utils").get_game_id(game["name"]) < lazy_import("db_utils").get_game_id("LGPE"),    # Technically these are gen 7 pokemon, they just werent introduced until LGPE
-    "no_stamped_poke_sprites_in_games": lambda poke_form, game: poke_form["poke num"] in (854, 855, 1012, 1013) and poke_form["form name"] != "Default"     # Both forms look the same except for the stamp, which is really only visible in HOME anyways. This is where the stamp img will be downloaded
+    "no ash greninja outside of SM USUM": lambda poke_form, game: poke_form["poke num"] == 658 and poke_form["form name"] == "-Form_Ash" and game["name"] != "SM_USUM",
+    "no zygarde forms until gen 7": lambda poke_form, game: poke_form["poke num"] == 718 and poke_form["form name"] != "-Form_50%" and game["gen"] < 7,
+    "no solgaleo lunala forms outside SM USUM": lambda poke_form, game: poke_form["poke num"] in (791, 792) and poke_form["form name"] != "Default" and game["name"] != "SM_USUM",
+    "no meltan or melmetal until LGPE": lambda poke_form, game: poke_form["poke num"] in (808, 809) and lazy_import("db_utils").get_game_id(game["name"]) < lazy_import("db_utils").get_game_id("LGPE"),    # Technically these are gen 7 pokemon, they just werent introduced until LGPE
+    "no stamped poke sprites in games": lambda poke_form, game: poke_form["poke num"] in (854, 855, 1012, 1013) and poke_form["form name"] != "Default"     # Both forms look the same except for the stamp, which is really only visible in HOME anyways. This is where the stamp img will be downloaded
 }
 
 
@@ -154,30 +153,30 @@ HOME_SPRITE_EXCLUDE = {"-Back-Animated", "-Shiny-Back-Animated"}
 # Certain rules to be excluded but exist elsewhere, for nonexistant sprites, see NONEXISTANT_SPRITES
 SPRITE_EXCLUSIONS = {
     # UNIVERSAL EXCLUSIONS
-    "no_sprites_if_form_is_unavailable": lambda pfgo_info, sprite_type: pfgo_info["obtainable"] == 0,
-    "no_shiny_sprites_in_gen_1": lambda pfgo_info, sprite_type: pfgo_info["game gen"] == 1 and "Shiny" in sprite_type,
-    "no_animated_sprites_in_gen_1": lambda pfgo_info, sprite_type: pfgo_info["game gen"] == 1 and "Animated" in sprite_type,
-    "no_animated_back_sprites_below_gen_5": lambda pfgo_info, sprite_type: pfgo_info["game gen"] < 5 and "-Back-Animated" in sprite_type,
-    "no_animated_sprites_in_these_games": lambda pfgo_info, sprite_type: pfgo_info["game name"] in ("Gold", "Silver", "FRLG", "Ruby_Sapphire") and "Animated" in sprite_type,
+    "no sprites if form is unavailable": lambda pfgo_info, sprite_type: pfgo_info["obtainable"] == 0,
+    "no shiny sprites in gen 1": lambda pfgo_info, sprite_type: pfgo_info["game gen"] == 1 and "Shiny" in sprite_type,
+    "no animated sprites in gen 1": lambda pfgo_info, sprite_type: pfgo_info["game gen"] == 1 and "Animated" in sprite_type,
+    "no animated back sprites below gen 5": lambda pfgo_info, sprite_type: pfgo_info["game gen"] < 5 and "-Back-Animated" in sprite_type,
+    "no animated sprites in these games": lambda pfgo_info, sprite_type: pfgo_info["game name"] in ("Gold", "Silver", "FRLG", "Ruby_Sapphire") and "Animated" in sprite_type,
 
     # INDIVIDUAL POKEMON
-    "no_shiny_castform_forms_until_gen_8": lambda pfgo_info, sprite_type: pfgo_info["poke num"] == 351 and pfgo_info["form name"] != "Default" and "Shiny" in sprite_type and pfgo_info["game gen"] < 8
+    "no shiny castform forms until gen 8": lambda pfgo_info, sprite_type: pfgo_info["poke num"] == 351 and pfgo_info["form name"] != "Default" and "Shiny" in sprite_type and pfgo_info["game gen"] < 8
 }
 
 
 # Sprites that don't exist. Shouldn't even be marked unobtainable, which is why theyre here not SPRITE_EXCLUSIONS
 NONEXISTANT_SPRITES={
     # UNIVERSAL EXCLUSIONS
-    "skip_all_shared_shiny_forms_that_arent_adjusted_appropriately": lambda poke_num, form_name, sprite_type: poke_num in SHARED_SHINY_FORMS and "Shiny" in sprite_type and form_name not in SHARED_SHINY_FORMS[poke_num],
-    "skip_all_non_shiny_sprites_for_shared_shinies_that_are_adjusted": lambda poke_num, form_name, sprite_type: poke_num in SHARED_SHINY_FORMS and "Shiny" not in sprite_type and form_name in SHARED_SHINY_FORMS[poke_num],
+    "skip all shared shiny forms that arent adjusted appropriately": lambda poke_num, form_name, sprite_type: poke_num in SHARED_SHINY_FORMS and "Shiny" in sprite_type and form_name not in SHARED_SHINY_FORMS[poke_num],
+    "skip all non shiny sprites for shared shinies that are adjusted": lambda poke_num, form_name, sprite_type: poke_num in SHARED_SHINY_FORMS and "Shiny" not in sprite_type and form_name in SHARED_SHINY_FORMS[poke_num],
 
     # INDIVIDUAL POKEMON
     # Now, technically the games had cosplay pikachu shiny locked. However, you can get around this and Wikidex has sprites for it, so why not include it
-    #"no_shiny_cosplay_pikachu": lambda poke_num, form_name, sprite_type: poke_num == 25 and "-Form_Cosplay" in form_name and "Shiny" in sprite_type,
-    "no_shiny_cap_pikachu": lambda poke_num, form_name, sprite_type: poke_num == 25 and "-Form_Cap" in form_name and "Shiny" in sprite_type,
+    #"no shiny cosplay pikachu": lambda poke_num, form_name, sprite_type: poke_num == 25 and "-Form_Cosplay" in form_name and "Shiny" in sprite_type,
+    "no shiny cap pikachu": lambda poke_num, form_name, sprite_type: poke_num == 25 and "-Form_Cap" in form_name and "Shiny" in sprite_type,
     # The below only affects home because (non-default) forms of the stamped pokes were already marked as unobtainable in games (since no way to see stamp in game and all other sprites are identical)
     # Further processing is done in the generate_home_filenames function to exclude default form back sprites (couldn't include here bc would also filter them for games)
-    "no_stamped_poke_forms_except_show_stamp_back_sprite": lambda poke_num, form_name, sprite_type: poke_num in (854, 855, 1012, 1013) and form_name != "Default" and sprite_type not in ("-Back", "-Shiny-Back")
+    "no stamped poke forms except show stamp back sprite": lambda poke_num, form_name, sprite_type: poke_num in (854, 855, 1012, 1013) and form_name != "Default" and sprite_type not in ("-Back", "-Shiny-Back")
 }
 
 
@@ -251,21 +250,21 @@ GAMES_W_BALL_EXCLUSIVES = ["LA"]
 # If lambda evaluates to True, will be excluded
 POKEBALL_IMG_EXCLUSIONS = {
     # Universal
-    "ball_intoductory_gen_should_be_less_than_or_equal_to_img_type_gen": lambda ball_info, img_type_info: img_type_info["gen"] != -1 and img_type_info["gen"] < ball_info["gen"],
-    "game_exclusive_balls_should_only_have_img_types_with_those_games_in_it": lambda ball_info, img_type_info: ball_info["exclusive_to"] is not None and not any(platform in img_type_info["name"] for platform in ball_info["exclusive_to"].split(", ")),
-    "non_game_exclusive_balls_should_not_be_included_in_exclusionary_games_except_strange_ball": lambda ball_info, img_type_info: ball_info["exclusive_to"] == None and any(game in img_type_info["name"] for game in GAMES_W_BALL_EXCLUSIVES) and ball_info["name"] != "Strange Ball",
-    "no_HOME_bag_sprites_for_pokeballs_introduced_before_gen8": lambda ball_info, img_type_info: ball_info["gen"] < 8 and img_type_info["name"] == "Bag_HOME",
-    "no_PGL_dream_imgs_after_discontinued_in_gen_7": lambda ball_info, img_type_info: ball_info["gen"] > 7 and img_type_info["name"] == "PGL",
+    "ball intoductory gen should be less than or equal to img type gen": lambda ball_info, img_type_info: img_type_info["gen"] != -1 and img_type_info["gen"] < ball_info["gen"],
+    "game exclusive balls should only have img types with those games in it": lambda ball_info, img_type_info: ball_info["exclusive_to"] is not None and not any(platform in img_type_info["name"] for platform in ball_info["exclusive_to"].split(", ")),
+    "non game exclusive balls should not be included in exclusionary games except strange ball": lambda ball_info, img_type_info: ball_info["exclusive_to"] == None and any(game in img_type_info["name"] for game in GAMES_W_BALL_EXCLUSIVES) and ball_info["name"] != "Strange Ball",
+    "no HOME bag sprites for pokeballs introduced before gen8": lambda ball_info, img_type_info: ball_info["gen"] < 8 and img_type_info["name"] == "Bag_HOME",
+    "no PGL dream imgs after discontinued in gen 7": lambda ball_info, img_type_info: ball_info["gen"] > 7 and img_type_info["name"] == "PGL",
 
     # Image types
-    "gen4_bag_sprites_only_for_gen_4_diifferences": lambda ball_info, img_type_info: img_type_info["name"] == "Bag_Gen4" and ball_info["name"] not in ("Lure Ball", "Park Ball"),
-    "gen5_summary_only_for_balls_w_gen_4_diifferences": lambda ball_info, img_type_info: img_type_info["name"] == "Gen5_Summary" and ball_info["name"] not in ("Lure Ball", "Park Ball"),
-    "gen7_battle_only_for_beast_ball": lambda ball_info, img_type_info: img_type_info["name"] == "Gen7" and ball_info["name"] != "Beast Ball",
+    "gen4 bag sprites only for gen 4 diifferences": lambda ball_info, img_type_info: img_type_info["name"] == "Bag_Gen4" and ball_info["name"] not in ("Lure Ball", "Park Ball"),
+    "gen5 summary only for balls w gen 4 diifferences": lambda ball_info, img_type_info: img_type_info["name"] == "Gen5_Summary" and ball_info["name"] not in ("Lure Ball", "Park Ball"),
+    "gen7 battle only for beast ball": lambda ball_info, img_type_info: img_type_info["name"] == "Gen7" and ball_info["name"] != "Beast Ball",
 
     # Balls
     # Putting this here so I dont have to make it game exclusive and add a new game every time one releases, since this ball is probably sticking around
     # Also excluded older games for the same reason, so a newer game doesn't have to be explicitly added
-    "strange_ball_img_exclusions": lambda ball_info, img_type_info: ball_info["name"] == "Strange Ball" and img_type_info["name"] in ("Bag")
+    "strange ball img exclusions": lambda ball_info, img_type_info: ball_info["name"] == "Strange Ball" and img_type_info["name"] in ("Bag")
 }
 
 
