@@ -91,11 +91,11 @@ SHARED_SHINY_FORMS = {  774: ["-Form_Core"],
 
 FORM_EXCLUSIONS = {
     # Species game availability
-    "filtering_for_LGPE_dex_if_needed": lambda poke_form, game: game["name"] == "LGPE" and lazy_import("spreadsheet_utils").poke_isnt_in_game(poke_form["poke num"], "LGPE"),
-    "filtering_for_SwSh_dex_if_needed": lambda poke_form, game: game["name"] == "SwSh" and lazy_import("spreadsheet_utils").poke_isnt_in_game(poke_form["poke num"], "SwSh"),
-    "filtering_for_BDSP_dex_if_needed": lambda poke_form, game: game["name"] == "BDSP" and lazy_import("spreadsheet_utils").poke_isnt_in_game(poke_form["poke num"], "BDSP"),
-    "filtering_for_LA_dex_if_needed": lambda poke_form, game: game["name"] == "LA" and lazy_import("spreadsheet_utils").poke_isnt_in_game(poke_form["poke num"], "LA"),
-    "filtering_for_SV_dex_if_needed": lambda poke_form, game: game["name"] == "SV" and lazy_import("spreadsheet_utils").poke_isnt_in_game(poke_form["poke num"], "SV"),
+    "filtering for LGPE dex if needed": lambda poke_form, game: game["name"] == "LGPE" and lazy_import("spreadsheet_utils").poke_isnt_in_game(poke_form["poke num"], "LGPE"),
+    "filtering for SwSh dex if needed": lambda poke_form, game: game["name"] == "SwSh" and lazy_import("spreadsheet_utils").poke_isnt_in_game(poke_form["poke num"], "SwSh"),
+    "filtering for BDSP dex if needed": lambda poke_form, game: game["name"] == "BDSP" and lazy_import("spreadsheet_utils").poke_isnt_in_game(poke_form["poke num"], "BDSP"),
+    "filtering for LA dex if needed": lambda poke_form, game: game["name"] == "LA" and lazy_import("spreadsheet_utils").poke_isnt_in_game(poke_form["poke num"], "LA"),
+    "filtering for SV dex if needed": lambda poke_form, game: game["name"] == "SV" and lazy_import("spreadsheet_utils").poke_isnt_in_game(poke_form["poke num"], "SV"),
 
     # Universal Rules
     "no_pokemon_with_a_higher_generation_than_game_generation": lambda poke_form, game: poke_form["poke gen"] > game["gen"],
@@ -110,6 +110,7 @@ FORM_EXCLUSIONS = {
     "no_paldean_forms_before_SV": lambda poke_form, game: "-Region_Paldea" in poke_form["form name"] and lazy_import("db_utils").get_game_id(game["name"]) < lazy_import("db_utils").get_game_id("SV"),
     "no_regional_forms_in_BDSP": lambda poke_form, game: game["name"] == "BDSP" and "-Region" in poke_form["form name"],
     "no_regional_forms_in_LA_other_than_hisui_and_alola_kitties": lambda poke_form, game: game["name"] == "LA" and "-Region" in poke_form["form name"] and "-Region_Hisui" not in poke_form["form name"] and not (poke_form["poke name"] in ("Vulpix", "Ninetales") and poke_form["form name"] == "-Region_Alola"),
+    "no default forms of pokes that have hisuian forms in LA except sneasel": lambda poke_form, game: game["name"] == "LA" and poke_form["form name"] == "Default" and lazy_import("db_utils").has_regional_form(poke_form["poke num"], "Hisui") and not poke_form["poke num"] == 215,
 
     # Specific pokemon
     "no_cosplay_pikachu_outside_ORAS": lambda poke_form, game: poke_form["poke num"] == 25 and "-Form_Cosplay" in poke_form["form name"] and game["name"] != "XY_ORAS",
@@ -129,6 +130,7 @@ FORM_EXCLUSIONS = {
     "no_sky_form_shaymin_until_after_platinum": lambda poke_form, game: poke_form["poke num"] == 492 and poke_form["form name"] == "-Form_Sky" and lazy_import("db_utils").get_game_id(game["name"]) < lazy_import("db_utils").get_game_id("Platinum"),
     "no_???_arceus_form_outside_of_gen_4": lambda poke_form, game: poke_form["poke num"] == 493 and poke_form["form name"] == "-Form_Qmark" and game["gen"] != 4,
     "no_white_striped_basculin_until_LA": lambda poke_form, game: poke_form["poke num"] == 550 and poke_form["form name"] == "-Form_White_Striped" and lazy_import("db_utils").get_game_id(game["name"]) < lazy_import("db_utils").get_game_id("LA"),
+    "no other striped basculin in LA except white": lambda poke_form, game: poke_form["poke num"] == 550 and poke_form["form name"] != "-Form_White_Striped",
     "no_ash_greninja_outside_of_SM_USUM": lambda poke_form, game: poke_form["poke num"] == 658 and poke_form["form name"] == "-Form_Ash" and game["name"] != "SM_USUM",
     "no_zygarde_forms_until_gen_7": lambda poke_form, game: poke_form["poke num"] == 718 and poke_form["form name"] != "-Form_50%" and game["gen"] < 7,
     "no_solgaleo_lunala_forms_outside_SM_USUM": lambda poke_form, game: poke_form["poke num"] in (791, 792) and poke_form["form name"] != "Default" and game["name"] != "SM_USUM",
