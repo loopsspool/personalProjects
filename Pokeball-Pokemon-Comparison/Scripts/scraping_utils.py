@@ -24,7 +24,14 @@ opener = urllib.request.URLopener()
 opener.addheader('User-Agent', 'Mozilla/5.0')
 
 def download_img(url, save_path):
-    filename, headers = opener.retrieve(url, save_path)
+    img_type = get_file_ext(url)
+
+    if img_type in (".png", ".gif"):
+        filename, headers = opener.retrieve(url, save_path)
+    elif img_type == ".webm":
+        ani_img = requests.get(url).content
+        with open(save_path, 'wb') as my_file:
+            my_file.write(ani_img)
 
 
 # NOTE: Only reason this works is because bulba uses same file extension for static/animated sprites

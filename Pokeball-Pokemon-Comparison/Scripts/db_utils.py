@@ -646,7 +646,7 @@ def record_exists(cursor, table, cols):
 
 def file_exists(filename, dir_file_list):
     # Keep .png first since it's most common img type for this
-    file_ext = [".png"]
+    file_ext = [".png", ".gif", ".webm"]
     #  Checking all extensions in path
     for ext in file_ext:
         filename_w_ext = filename + ext
@@ -657,6 +657,14 @@ def file_exists(filename, dir_file_list):
 def has_f_form(poke_num, cursor=None):
     with get_cursor(cursor) as cur:
         cur.execute(f"SELECT form_id FROM poke_forms WHERE poke_num={poke_num} AND form_id={get_form_id("-f")}")
+        result = cur.fetchone()
+    if result: return True
+    else: return False
+
+
+def has_regional_form(poke_num, region, cursor=None):
+    with get_cursor(cursor) as cur:
+        cur.execute(f"SELECT form_id FROM poke_forms WHERE poke_num={poke_num} AND form_id={get_form_id(f"-Region_{region}")}")
         result = cur.fetchone()
     if result: return True
     else: return False
