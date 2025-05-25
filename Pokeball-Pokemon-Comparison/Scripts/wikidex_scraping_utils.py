@@ -39,19 +39,19 @@ def wikidex_get_img(url, save_path, allow_download, has_animation=False):
     if not img_exists:
         img_exists, img_page_soup = does_ani_file_exist_for_still(url, my_filename) # Looks for animated img under different file ext
         if not img_exists:
-            return ()
+            return
     
     if allow_download:
         img_url = wikidex_get_largest_img(img_page_soup)
 
         # If file extensions dont match, make save file match url (This can happen when still sprite takes from animated)
-        # TODO: .webm is 5 digits, not 4 like png so will have to get chars after period and everywhere I update file ext
-        img_url_file_ext = img_url[-4:]
-        my_filename_file_ext = save_path[-4:]
+        img_url_file_ext = get_file_ext(img_url)
+        my_filename_file_ext = get_file_ext(save_path)
         if img_url_file_ext != my_filename_file_ext:
             save_path = save_path.replace(my_filename_file_ext, img_url_file_ext)
+            
+        save_path = os.path.join(determine_save_path_from_file_type(img_url_file_ext), my_filename)
 
-        # TODO: PIL.UnidentifiedImageError: cannot identify image file <_io.BytesIO object at 0x00000209C70193F0> for webm
         if has_animation:
             determine_animation_status_before_downloading(img_url, save_path)
         else:

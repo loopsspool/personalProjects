@@ -7,7 +7,7 @@ import re
 from db_utils import get_missing_poke_imgs_by_table, get_missing_pokeball_imgs
 from image_utils import save_first_frame, is_animated
 from translation_utils import EXCLUDE_TRANSLATIONS_MAP
-from app_globals import get_file_ext
+from app_globals import *
 
 
 
@@ -60,6 +60,13 @@ def img_exists_at_url(url, nonexistant_string_denoter):
     img_page_soup = BeautifulSoup(img_page.content, 'html.parser')
     img_exists = not img_page_soup.find("p", string=re.compile(nonexistant_string_denoter))    # Negating a found non-existant statement on page
     return (img_exists, img_page_soup)
+
+
+def determine_save_path_from_file_type(file_ext):
+    if file_ext == ".png": return GAME_SPRITE_SAVE_PATH
+    if file_ext == ".gif": return GIF_SAVE_PATH
+    if file_ext == ".webm": return WEBM_SAVE_PATH
+
 
 
 
