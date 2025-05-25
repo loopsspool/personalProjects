@@ -66,6 +66,7 @@ def save_first_frame_of_webm(url, save_path):
     os.remove(temp_image_path)
 
 
+# TODO: Put pause on this until after scraping, then incorporate it
 # NOTE: Cropping out pure white from the image made the body of certain pokes also transparent if they had white
 # Machine learning model necessary to create background mask based on frame-by-frame edges of the poke model
 # Even this had issues, so pre-processing each frame to increase contrast, saturation, and edges
@@ -85,32 +86,20 @@ def split_webm_into_frames(webm_path, save_path, fps=None):
 
 
 def preprocess_for_u2net(input_filepath, output_path):
-    CONTRAST_FACTOR = 2.0   # Can go to 2.0
-    SATURATION_FACTOR = 2.0   # Can go to 2.0
-    SHARPNESS_FACTOR = 1.5   # Can go to 1.5
-    BRIGHTNESS_THRESHOLD = 240  # Determines at what point the white in the sprite wont be touched to be overblown and masked out
+    CONTRAST_FACTOR = 2.5
+    SHARPNESS_FACTOR = 3.0
+    BRIGHTNESS_FACTOR = 1.5
 
-    img = Image.open(input_filepath).convert('RGB')
-    img_np = np.array(img)
+    img = Image.open(input_filepath).convert('L')
 
-    # Compute brightness
-    brightness = img_np.mean(axis=2)
+    img = ImageEnhance.Contrast(img).enhance(CONTRAST_FACTOR)
+    img = ImageEnhance.Sharpness(img).enhance(SHARPNESS_FACTOR)
+    #img = ImageEnhance.Brightness(img).enhance(BRIGHTNESS_FACTOR)
 
-    # Mask for non-white areas
-    mask = brightness < BRIGHTNESS_THRESHOLD
+    # Boost Edges
+    img = img.filter(ImageFilter.FIND_EDGES)
 
-    img_enhanced = img.copy()
-    img_enhanced = ImageEnhance.Contrast(img_enhanced).enhance(CONTRAST_FACTOR)
-    img_enhanced = ImageEnhance.Color(img_enhanced).enhance(SATURATION_FACTOR)
-    img_enhanced = ImageEnhance.Sharpness(img_enhanced).enhance(SHARPNESS_FACTOR)
-
-    enhanced_np = np.array(img_enhanced)
-
-    # Blend only non-white areas
-    img_np[mask] = enhanced_np[mask]
-
-    final_img = Image.fromarray(img_np)
-    final_img.save(output_path)
+    img.save(output_path)
 
 
 from app_globals import STAGING_PATH
