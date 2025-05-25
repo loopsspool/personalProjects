@@ -1,12 +1,13 @@
-from PIL import Image   # For converting URL image data to PIL Image object 
+from PIL import Image, ImageEnhance, ImageFilter   # For converting URL image data to PIL Image object 
 import requests # To retrieve webpages
 from bs4 import BeautifulSoup   # To parse webpages
 import re
 import os
-# import cv2  # To save first frame of webm
-# import numpy as np  # To parse webm
-import subprocess
-import tempfile     # To read webm
+import subprocess   # To run ffmpeg to download first frame of webm
+from apng import APNG   # To convert webm to apng
+import cv2  # To convert webm background to transparent
+import numpy as np  # To parse webm
+import tempfile     # To temporarily read webm
 
 
 def is_animated(url):
@@ -30,6 +31,7 @@ def save_first_frame_of_png_or_gif(url, save_path):
 
 # TODO: No webm videos have transparency, will need to set a different save file for these to remove later
     # Or write function to remove them now
+# TODO: This may no longer be necessary depending on how you convert to apng
 def save_first_frame_of_webm(url, save_path):
     # Download the video
     response = requests.get(url)
@@ -62,6 +64,66 @@ def save_first_frame_of_webm(url, save_path):
 
     os.remove(temp_video_path)
     os.remove(temp_image_path)
+
+
+# NOTE: Cropping out pure white from the image made the body of certain pokes also transparent if they had white
+# Machine learning model necessary to create background mask based on frame-by-frame edges of the poke model
+# Even this had issues, so pre-processing each frame to increase contrast, saturation, and edges
+# TODO: Save frames into folder to be bg excluded by u2net
+# TODO: Just download webm while scraping, save image/video processing for end since it takes a while
+def split_webm_into_frames(webm_path, save_path, fps=None):
+    webm_name = webm_path.split("//")[-1].replace(".webm", "")
+    cmd = [
+        "ffmpeg",
+        "-i", webm_path
+    ]
+    if fps: cmd += ["-vf", f"fps={fps}"]
+
+    cmd += [os.path.join(save_path, f"{webm_name}--Frame_%04d.png")]
+
+    subprocess.run(cmd, check=True)
+
+
+def preprocess_for_u2net(input_filepath, output_path):
+    CONTRAST_FACTOR = 2.0   # Can go to 2.0
+    SATURATION_FACTOR = 2.0   # Can go to 2.0
+    SHARPNESS_FACTOR = 1.5   # Can go to 1.5
+    BRIGHTNESS_THRESHOLD = 240  # Determines at what point the white in the sprite wont be touched to be overblown and masked out
+
+    img = Image.open(input_filepath).convert('RGB')
+    img_np = np.array(img)
+
+    # Compute brightness
+    brightness = img_np.mean(axis=2)
+
+    # Mask for non-white areas
+    mask = brightness < BRIGHTNESS_THRESHOLD
+
+    img_enhanced = img.copy()
+    img_enhanced = ImageEnhance.Contrast(img_enhanced).enhance(CONTRAST_FACTOR)
+    img_enhanced = ImageEnhance.Color(img_enhanced).enhance(SATURATION_FACTOR)
+    img_enhanced = ImageEnhance.Sharpness(img_enhanced).enhance(SHARPNESS_FACTOR)
+
+    enhanced_np = np.array(img_enhanced)
+
+    # Blend only non-white areas
+    img_np[mask] = enhanced_np[mask]
+
+    final_img = Image.fromarray(img_np)
+    final_img.save(output_path)
+
+
+from app_globals import STAGING_PATH
+# test_vid = os.path.join(STAGING_PATH, "test_vid.webm")
+# split_webm_into_frames(test_vid, STAGING_PATH)
+test_frames = os.path.join(STAGING_PATH, "Frames")
+for file in os.listdir(test_frames):
+    og_path = os.path.join(test_frames, file)
+    new_path = os.path.join(test_frames, f"2{file}")
+    preprocess_for_u2net(og_path, new_path)
+
+
+
 
 
 # TODO: Incorporate the below to save each frame of an animated png
