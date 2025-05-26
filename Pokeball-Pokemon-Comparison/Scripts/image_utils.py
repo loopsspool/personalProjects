@@ -19,7 +19,17 @@ def is_animated(url):
     elif file_type in (".webm"):
         return(True)
     else:
-        raise RuntimeError("Unkown file type")
+        raise RuntimeError(f"Unkown file type: {file_type}")
+
+
+def save_first_frame(url, save_path):
+    file_type = f".{url.split(".")[-1]}"
+    if file_type in (".png", ".gif"):
+        save_first_frame_of_png_or_gif(url, save_path)
+    elif file_type in (".webm"):
+        save_first_frame_of_webm(url, save_path)
+    else:
+        raise RuntimeError(f"Unkown file type: {file_type}")
 
 
 # TODO: Properly convert gif to png to preserve color
@@ -30,7 +40,6 @@ def save_first_frame_of_png_or_gif(url, save_path):
 
 
 # TODO: No webm videos have transparency, will need to set a different save file for these to remove later
-    # Or write function to remove them now
 # TODO: This may no longer be necessary depending on how you convert to apng
 def save_first_frame_of_webm(url, save_path):
     # Download the video
