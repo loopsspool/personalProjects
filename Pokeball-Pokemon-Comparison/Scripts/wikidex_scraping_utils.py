@@ -35,22 +35,17 @@ def wikidex_scrape_pokemon(start_poke_num, stop_poke_num, allow_download=False):
 
 def wikidex_get_img(url, save_path, allow_download, has_animation=False):
     my_filename = save_path.split("\\")[-1]
-    img_exists, img_page_soup = img_exists_at_url(url, nonexistant_string_denoter=r"No existe ningún archivo con este nombre.")
+    img_exists, img_page_soup = search_image_under_all_file_extensions(url, my_filename)
+
     if not img_exists:
-        img_exists, img_page_soup = does_ani_file_exist_for_still(url, my_filename) # Looks for animated img under different file ext
-        if not img_exists:
-            return
+        return
     
     if allow_download:
         img_url = wikidex_get_largest_img(img_page_soup)
 
-        # If file extensions dont match, make save file match url (This can happen when still sprite takes from animated)
-        img_url_file_ext = get_file_ext(img_url)
-        my_filename_file_ext = get_file_ext(save_path)
-        if img_url_file_ext != my_filename_file_ext:
-            save_path = save_path.replace(my_filename_file_ext, img_url_file_ext)
-            
-        save_path = os.path.join(determine_save_path_from_file_type(img_url_file_ext), my_filename)
+        # TODO: After implementing webm -> webp conversion, can implement this if want to save gif/webm
+        # Can't do now bc db wont recognize it as existing in these filepaths so will continuously try to download images    
+        #save_path = os.path.join(determine_save_path_from_file_type(img_url_file_ext), my_filename)
 
         if has_animation:
             determine_animation_status_before_downloading(img_url, save_path)
@@ -58,13 +53,20 @@ def wikidex_get_img(url, save_path, allow_download, has_animation=False):
             download_img(img_url, save_path)
 
 
-def does_ani_file_exist_for_still(url, my_filename):
-    if "-Animated" in my_filename: return False, None
-    else:   # Can only look up animated imgs for stills
-        fake_ani_filename = f"-Animated {my_filename}"  # This will trick my determine_file_ext func into triggering getting an animated file ext based of gen
-        ani_file_ext = determine_file_extension(fake_ani_filename)
-        ani_url = url.replace(".png", ani_file_ext)
-        return img_exists_at_url(ani_url, nonexistant_string_denoter=r"No existe ningún archivo con este nombre.")
+def search_image_under_all_file_extensions(url, my_filename):
+    file_exts_wikidex_uses = [".png", ".gif", ".webm"]
+
+    for file_ext in file_exts_wikidex_uses:
+        if "-Animated" in my_filename and file_ext == ".png": continue  # pngs for stills only
+        if " HOME" in my_filename and file_ext != ".webm": continue     # HOME sprites always webm (w/o transparency)
+        if file_ext not in url: url.replace(get_file_ext(url), file_ext)
+
+        img_exists, img_page_soup = img_exists_at_url(url, nonexistant_string_denoter=r"No existe ningún archivo con este nombre.")
+
+        if img_exists: return img_exists, img_page_soup
+
+    # No file extensions exist for sprite
+    return False, None
     
 
 def wikidex_doesnt_have_images_for(my_filename):
@@ -147,12 +149,9 @@ def determine_platform(my_filename, back_tag):
 
 
 def determine_file_extension(my_filename):
-    gen = 0
     if "-Animated" not in my_filename: return ".png"
     # Wikidex transitioned to .webm for animated HOME/Gen9. Gen8 below is .gif
+    # HOME always webm, Gen9 has a lot of gifs, so will try that first. If it doesn't exist it will search for a webm in wikidex_get_img
     else:
         if " HOME" in my_filename: return ".webm"
-        gen = extract_gen_num_from_my_filename(my_filename)
-        
-        if gen < 9: return ".gif"
-        else: return ".webm"
+        else: return ".gif"
