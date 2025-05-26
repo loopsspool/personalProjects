@@ -56,7 +56,6 @@ def save_first_frame_of_webm(url, save_path):
     filename = save_path.split("\\")[-1]
     still_save_path = os.path.join(NEED_TRANSPARENCY_SAVE_PATH, filename)
 
-    # TODO: This is not working
     # Extract first frame using ffmpeg
     try:
         subprocess.run([
@@ -75,8 +74,8 @@ def save_first_frame_of_webm(url, save_path):
     os.remove(temp_video_path)
 
 
-from app_globals import TEST_PATH
-save_first_frame_of_webm("https://images.wikidexcdn.net/mwuploads/wikidex/8/8c/latest/20240121112549/Grafaiai_EP.webm", os.path.join(TEST_PATH, "webm_still_test.png"))
+# from app_globals import TEST_PATH
+# save_first_frame_of_webm("https://images.wikidexcdn.net/mwuploads/wikidex/8/8c/latest/20240121112549/Grafaiai_EP.webm", os.path.join(TEST_PATH, "webm_still_test.png"))
 
 
 # TODO: Put pause on this until after scraping, then incorporate it
