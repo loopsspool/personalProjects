@@ -23,16 +23,15 @@ def is_animated(url):
 
 
 def save_first_frame(url, save_path):
-    file_type = f".{url.split(".")[-1]}"
-    if file_type in (".png", ".gif"):
+    url_file_type = f".{url.split(".")[-1]}"
+    if url_file_type in (".png", ".gif"):
         save_first_frame_of_png_or_gif(url, save_path)
-    elif file_type in (".webm"):
+    elif url_file_type in (".webm"):
         save_first_frame_of_webm(url, save_path)
     else:
-        raise RuntimeError(f"Unkown file type: {file_type}")
+        raise RuntimeError(f"Unkown url file type: {url_file_type}")
 
 
-# TODO: Properly convert gif to png to preserve color
 def save_first_frame_of_png_or_gif(url, save_path):
     img = Image.open(requests.get(url, stream = True).raw)
     first_frame = img.copy()    # Returns just first frame
@@ -40,39 +39,44 @@ def save_first_frame_of_png_or_gif(url, save_path):
 
 
 # TODO: No webm videos have transparency, will need to set a different save file for these to remove later
-# TODO: This may no longer be necessary depending on how you convert to apng
 def save_first_frame_of_webm(url, save_path):
+    from app_globals import NEED_TRANSPARENCY_SAVE_PATH
+
     # Download the video
     response = requests.get(url)
     response.raise_for_status()
 
-    # TODO: This always asks to overwrite an existing file, fix
     # Write to a temp video file
     with tempfile.NamedTemporaryFile(suffix=".webm", delete=False) as tmp:
         tmp.write(response.content)
         tmp.flush()
         temp_video_path = tmp.name
 
-    # Write to a temp image file
-    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as image_file:
-        temp_image_path = image_file.name
+    # TODO: Once transparency issue is resolved, these can instead be saved to passed save_path (game sprites/home sprites)
+    filename = save_path.split("\\")[-1]
+    still_save_path = os.path.join(NEED_TRANSPARENCY_SAVE_PATH, filename)
 
+    # TODO: This is not working
     # Extract first frame using ffmpeg
-    subprocess.run([
-        "ffmpeg",
-        "-i", temp_video_path,
-        "-vf", "select=eq(n\\,0)",
-        "-vframes", "1",
-        "-pix_fmt", "rgba",  # keep transparency
-        temp_image_path
-    ], check=True)
-
-    # Save Img
-    img = Image.open(temp_image_path)
-    img.save(save_path)
+    try:
+        subprocess.run([
+            "ffmpeg",
+            "-y",   # To overwrite file if it exists w/o asking
+            "-i", temp_video_path,
+            "-vf", "select=eq(n\\,0)",  # Only get first frame
+            "-frames:v", "1",   # Only output 1 frame
+            "-pix_fmt", "rgba",  # keep transparency/color
+            still_save_path
+        ], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    except subprocess.CalledProcessError as e:
+        print("FFmpeg failed:")
+        print(e.stderr.decode())  # print detailed FFmpeg error
 
     os.remove(temp_video_path)
-    os.remove(temp_image_path)
+
+
+from app_globals import TEST_PATH
+save_first_frame_of_webm("https://images.wikidexcdn.net/mwuploads/wikidex/8/8c/latest/20240121112549/Grafaiai_EP.webm", os.path.join(TEST_PATH, "webm_still_test.png"))
 
 
 # TODO: Put pause on this until after scraping, then incorporate it
@@ -82,7 +86,7 @@ def save_first_frame_of_webm(url, save_path):
 # TODO: Save frames into folder to be bg excluded by u2net
 # TODO: Just download webm while scraping, save image/video processing for end since it takes a while
 def split_webm_into_frames(webm_path, save_path, fps=None):
-    webm_name = webm_path.split("//")[-1].replace(".webm", "")
+    webm_name = webm_path.split("\\")[-1].replace(".webm", "")
     cmd = [
         "ffmpeg",
         "-i", webm_path
@@ -111,14 +115,15 @@ def preprocess_for_u2net(input_filepath, output_path):
     img.save(output_path)
 
 
-from app_globals import STAGING_PATH
-# test_vid = os.path.join(STAGING_PATH, "test_vid.webm")
-# split_webm_into_frames(test_vid, STAGING_PATH)
-test_frames = os.path.join(STAGING_PATH, "Frames")
-for file in os.listdir(test_frames):
-    og_path = os.path.join(test_frames, file)
-    new_path = os.path.join(test_frames, f"2{file}")
-    preprocess_for_u2net(og_path, new_path)
+# from app_globals import STAGING_PATH
+# # test_vid = os.path.join(STAGING_PATH, "test_vid.webm")
+# # split_webm_into_frames(test_vid, STAGING_PATH)
+# test_frames = os.path.join(STAGING_PATH, "Frames")
+# TODO: Change to just using 1 file for testing
+# for file in os.listdir(test_frames):
+#     og_path = os.path.join(test_frames, file)
+#     new_path = os.path.join(test_frames, f"2{file}")
+#     preprocess_for_u2net(og_path, new_path)
 
 
 
