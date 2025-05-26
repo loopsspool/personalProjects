@@ -1,5 +1,4 @@
 import os
-import shutil
 from app_globals import *
 
 
@@ -32,8 +31,9 @@ def replace_filename_in_all_dirs(replace, replace_with, just_print=False):
     replace_in_filename(HOME_SAVE_PATH, replace, replace_with, just_print)
     replace_in_filename(HOME_MENU_SAVE_PATH, replace, replace_with, just_print)
     replace_in_filename(POKEBALL_SAVE_PATH, replace, replace_with, just_print)
-    replace_in_filename(ANIMATED_PNGS_PRE_GIF_CONVERSION_PATH, replace, replace_with, just_print)
-    replace_in_filename(GIFS_POST_CONVERSION_PATH, replace, replace_with, just_print)
+    replace_in_filename(GIF_SAVE_PATH, replace, replace_with, just_print)
+    replace_in_filename(WEBM_SAVE_PATH, replace, replace_with, just_print)
+    replace_in_filename(NEED_TRANSPARENCY_SAVE_PATH, replace, replace_with, just_print)
     replace_in_filename(TEST_PATH, replace, replace_with, just_print)
     replace_in_filename(STAGING_PATH, replace, replace_with, just_print)
 
@@ -51,7 +51,8 @@ def print_files_with_from_all_dirs(s):
     print_files_with(HOME_SAVE_PATH, s)
     print_files_with(HOME_MENU_SAVE_PATH, s)
     print_files_with(POKEBALL_SAVE_PATH, s)
-    print_files_with(ANIMATED_PNGS_PRE_GIF_CONVERSION_PATH, s)
-    print_files_with(GIFS_POST_CONVERSION_PATH, s)
+    print_files_with(GIF_SAVE_PATH, s)
+    print_files_with(WEBM_SAVE_PATH, s)
+    print_files_with(NEED_TRANSPARENCY_SAVE_PATH, s)
     print_files_with(TEST_PATH, s)
     print_files_with(STAGING_PATH, s)
