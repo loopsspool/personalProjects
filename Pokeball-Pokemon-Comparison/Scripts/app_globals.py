@@ -52,8 +52,8 @@ SAVE_PATHS = {
 ALL_SAVED_GIFS = set(os.listdir(SAVE_PATHS["GIF"]))
 ALL_SAVED_WEBMS = set(os.listdir(SAVE_PATHS["WEBM"]))
 ALL_SAVED_NEED_TRANSPARENCY_IMGS = set(os.listdir(SAVE_PATHS["NEED_TRANSPARENCY"]))
-ALL_SAVED_TEST_IMGS = set(os.listdir(SAVE_PATHS["TEST_PATH"]))
-ALL_SAVED_STAGING_IMGS = set(os.listdir(SAVE_PATHS["STAGING_PATH"]))
+ALL_SAVED_TEST_IMGS = set(os.listdir(SAVE_PATHS["TEST"]))
+ALL_SAVED_STAGING_IMGS = set(os.listdir(SAVE_PATHS["STAGING"]))
 # Actual save paths
 ALL_SAVED_GAME_SPRITES = set(os.listdir(SAVE_PATHS["GAME_SPRITE"]))
 ALL_SAVED_GAME_SPRITES = ALL_SAVED_GAME_SPRITES | ALL_SAVED_NEED_TRANSPARENCY_IMGS   # This unions the two so db recognizes file existence and I don't download need transparency images every time I start a new scrape session. # TODO: Can remove once transparency issue resolved
