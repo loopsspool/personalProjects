@@ -72,7 +72,7 @@ def get_bulba_img(url, save_path, allow_download, has_animation=False):
 
     img_exists, img_page_soup = img_exists_at_url(url, nonexistant_string_denoter=r"No file by this name exists.")
     if not img_exists:
-        print_couldnt_dl_msg
+        print_couldnt_dl_msg(my_filename)
         return ()
     else:
         if allow_download:

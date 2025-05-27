@@ -70,6 +70,9 @@ def determine_save_path_from_file_type(file_ext):
     else: raise RuntimeError(f"Unkown file type: {file_ext}")
 
 
+def print_couldnt_dl_msg(file):
+    print(f"Couldn't download {file}")
+
 
 
 
