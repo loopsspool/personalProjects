@@ -2,6 +2,46 @@ import os
 from app_globals import *
 
 
+
+
+#|================================================================================================|
+#|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     UNIVERSAL FUNCS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+#|================================================================================================|
+
+def get_all_files_in_dir_w_str(path, str):
+    files = set(os.listdir(path))
+    matching_files = []
+
+    for file in files:
+        if not os.path.isfile(os.path.join(path, file)): continue   # If "file" is a directory, continue
+        if str in file:
+            matching_files.append(file)
+
+    return matching_files
+
+
+
+
+#|================================================================================================|
+#|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     PRINT FUNCS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+#|================================================================================================|
+
+def print_files_with(path, s):
+    file_matches = get_all_files_in_dir_w_str(path, s)
+    for f in file_matches: print(f)
+
+
+def print_files_with_from_all_dirs(s):
+    for path in SAVE_PATHS.values():
+        print_files_with(path, s)
+
+
+
+
+#|================================================================================================|
+#|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     TEXT FUNCS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+#|================================================================================================|
+
 def add_leading_zero(path):
     files = set(os.listdir(path))
     for f in files:
@@ -13,46 +53,27 @@ def add_leading_zero(path):
 
 
 def replace_in_filename(path, replace, replace_with, just_print=False):
-    files = set(os.listdir(path))
-    for f in files:
-        full_path = os.path.join(path, f)
-        if os.path.isfile(full_path):
-            if replace in f:
-                new_f = f.replace(replace, replace_with)
-                new_full_path = os.path.join(path, new_f)
-                print(f"{f}\t changed to \t{new_f}")
-                if not just_print:
-                    os.rename(full_path, new_full_path)
+    file_matches = get_all_files_in_dir_w_str(path, replace)
+
+    for file in file_matches:
+        full_path = os.path.join(path, file)
+        new_file = file.replace(replace, replace_with)
+        new_full_path = os.path.join(path, new_file)
+        print(f"{file}\t changed to \t{new_file}")
+        if not just_print:
+            os.rename(full_path, new_full_path)
 
 
 def replace_filename_in_all_dirs(replace, replace_with, just_print=False):
-    replace_in_filename(GAME_SPRITE_SAVE_PATH, replace, replace_with, just_print)
-    replace_in_filename(DRAWN_SAVE_PATH, replace, replace_with, just_print)
-    replace_in_filename(HOME_SAVE_PATH, replace, replace_with, just_print)
-    replace_in_filename(HOME_MENU_SAVE_PATH, replace, replace_with, just_print)
-    replace_in_filename(POKEBALL_SAVE_PATH, replace, replace_with, just_print)
-    replace_in_filename(GIF_SAVE_PATH, replace, replace_with, just_print)
-    replace_in_filename(WEBM_SAVE_PATH, replace, replace_with, just_print)
-    replace_in_filename(NEED_TRANSPARENCY_SAVE_PATH, replace, replace_with, just_print)
-    replace_in_filename(TEST_PATH, replace, replace_with, just_print)
-    replace_in_filename(STAGING_PATH, replace, replace_with, just_print)
+    for path in SAVE_PATHS.values():
+        replace_in_filename(path, replace, replace_with, just_print)
 
 
-def print_files_with(path, s):
-    files = set(os.listdir(path))
-    for f in files:
-        if s in f:
-            print(f)
 
 
-def print_files_with_from_all_dirs(s):
-    print_files_with(GAME_SPRITE_SAVE_PATH, s)
-    print_files_with(DRAWN_SAVE_PATH, s)
-    print_files_with(HOME_SAVE_PATH, s)
-    print_files_with(HOME_MENU_SAVE_PATH, s)
-    print_files_with(POKEBALL_SAVE_PATH, s)
-    print_files_with(GIF_SAVE_PATH, s)
-    print_files_with(WEBM_SAVE_PATH, s)
-    print_files_with(NEED_TRANSPARENCY_SAVE_PATH, s)
-    print_files_with(TEST_PATH, s)
-    print_files_with(STAGING_PATH, s)
+#|================================================================================================|
+#|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     DELETE FUNCS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+#|================================================================================================|
+
+def delete_all_files_with_str(path, str, just_print=False):
+    file_matches = get_all_files_in_dir_w_str(path, str)
