@@ -13,31 +13,32 @@ from wikidex_scraping_utils import wikidex_scrape_pokemon
 
 
 ################################# TODO: Complete all TODOs here and from all files before running... please ########################
-# TODO: Fix downloaded animated pokeballs if animation out of order (static I touched Fast Ball, Friend Ball, "Great Ball", "Heavy Ball", "Level Ball", "Love Ball", "Lure Ball", "Master Ball", "Moon Ball", "Nest Ball", "Poke Ball", "Premier Ball", "Repeat Ball", "Safari Ball", "Sport Ball", "Timer Ball", "Ultra Ball")
-# TODO: Look at certain missing pokeballs for gen3 (like fast ball)s
-# TODO: Add getting static frames to image_utils
+# TODO: Add Scraping stats? % Complete, num downloaded, etc.
 
 # Later TODOs (after scraping)
 # TODO: Add a check function for files spreadsheet to see if generation is complete. If not, output missing imgs
 # TODO: Run checks on existing images to find small sizes and check bulba for larger files
     # Wikidex most common file size (250x250? 180x180? Def small, Bulba has most gen 8 (all switch?) at 1024x1024)
 # TODO: Check if there's any female backs missing where male backs are present... May only have visual difference in front and sprite is recycled for back
-# TODO: Save each frame of animated pokeballs
+# TODO: Download meltan & Melmetal animated backs by hand (filtered out bc no other LGPE backs)
+# TODO: Delete all alts and remove them from db processing. Favor with still frames of animated images
+# TODO: Fix downloaded animated pokeballs if animation out of order (static I touched Fast Ball, Friend Ball, "Great Ball", "Heavy Ball", "Level Ball", "Love Ball", "Lure Ball", "Master Ball", "Moon Ball", "Nest Ball", "Poke Ball", "Premier Ball", "Repeat Ball", "Safari Ball", "Sport Ball", "Timer Ball", "Ultra Ball")
+# TODO: Look at certain missing pokeballs for gen3 (like fast ball)s
 
 
 def main():
-    ALLOW_DOWNLOAD = False
+    ALLOW_DOWNLOAD = True
     # NOTE: If program crashes a lot like last one, write this to a txt file. Each new pokemon would rewrite the line of the file where it picked up
     poke_num_start_scraping_from = 1
-    poke_to_go_after_start_num = 1
-    valid_start_poke_num, valid_stop_poke_num = validate_context(poke_num_start_scraping_from, poke_to_go_after_start_num, force_update=True)   # This will check downloads with missing imgs in database and update
+    poke_to_go_after_start_num = 0
+    valid_start_poke_num, valid_stop_poke_num = validate_context(poke_num_start_scraping_from, poke_to_go_after_start_num, force_update=False)   # This will check downloads with missing imgs in database and update
     
     #bulba_scrape_pokemon(valid_start_poke_num, valid_stop_poke_num, allow_download=ALLOW_DOWNLOAD)     # NOTE: Always check Bulba first, they have higher quality images
     #bulba_scrape_pokeballs(allow_download=ALLOW_DOWNLOAD)
     update_file_existence() # Updating before wikidex scrape so it doesn't duplicate imgs just downloaded from bulba
 
     wikidex_scrape_pokemon(valid_start_poke_num, valid_stop_poke_num, allow_download=ALLOW_DOWNLOAD)
-    update_file_existence()
+    #update_file_existence()
     # create_file_checklist_spreadsheet()
 
 
