@@ -21,13 +21,13 @@ def bulba_scrape_pokemon(start_poke_num, stop_poke_num, allow_download=False):
         # Game Sprites
         scrape_imgs(poke_num, "obtainable_game_filenames", bulba_game_sprite_translate, exclusions=bulba_doesnt_have_images_for, has_animation=True, save_path=SAVE_PATHS["GAME_SPRITE"], config_dict=bulba_scrape_config)
         # Drawn Imgs
-        scrape_imgs(poke_num, "drawn_filenames", drawn_translate, exclusions=None, has_animation=False, save_path=SAVE_PATHS["DRAWN_SAVE_PATH"], config_dict=bulba_scrape_config)
+        scrape_imgs(poke_num, "drawn_filenames", drawn_translate, exclusions=None, has_animation=False, save_path=SAVE_PATHS["DRAWN"], config_dict=bulba_scrape_config)
         # Home Sprites
         # NOTE: has_animation set to true (because it does, just not in bulba), if it were false and missing it would just download the still
         # As of writing (4-30-25) bulba doesn't have animated HOME sprites, but I do want to leave the option open if possible
-        scrape_imgs(poke_num, "home_filenames", home_sprite_translate, exclusions=None, has_animation=True, save_path=SAVE_PATHS["HOME_SAVE_PATH"], config_dict=bulba_scrape_config)
+        scrape_imgs(poke_num, "home_filenames", home_sprite_translate, exclusions=None, has_animation=True, save_path=SAVE_PATHS["HOME"], config_dict=bulba_scrape_config)
         # Home Menu
-        scrape_imgs(poke_num, "home_menu_filenames", home_menu_translate, exclusions=None, has_animation=False, save_path=SAVE_PATHS["HOME_MENU_SAVE_PATH"], config_dict=bulba_scrape_config)
+        scrape_imgs(poke_num, "home_menu_filenames", home_menu_translate, exclusions=None, has_animation=False, save_path=SAVE_PATHS["HOME_MENU"], config_dict=bulba_scrape_config)
     
     # Resetting console line after updates from above
     print('\r' + ' '*55 + '\r', end='')
@@ -68,8 +68,11 @@ def get_bulba_translated_species_form(poke_info, my_filename, map_type):
 #|================================================================================================|
 
 def get_bulba_img(url, save_path, allow_download, has_animation=False):
+    my_filename = save_path.split("\\")[-1]
+
     img_exists, img_page_soup = img_exists_at_url(url, nonexistant_string_denoter=r"No file by this name exists.")
     if not img_exists:
+        print_couldnt_dl_msg
         return ()
     else:
         if allow_download:

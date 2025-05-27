@@ -3,6 +3,8 @@ import os
 import requests
 from bs4 import BeautifulSoup
 import re
+import random
+import time
 
 from db_utils import get_missing_poke_imgs_by_table, get_missing_pokeball_imgs
 from image_utils import save_first_frame, is_animated
@@ -16,13 +18,12 @@ from app_globals import *
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     DOWNLOADING UTILITIES     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
-# TODO: Add scraping countermeasures: 1-3 sec wait between downloads, rotate IPs w proxy pools, session spoofing?
-# TODO: Keep track of files that didn't exist and make sure it doesn't try to get run again (animateds, back sprites in Wikidex, etc)
-
 # NOTE: ALL DOWNLOADS MUST BE DONE IN THE FASHION BELOW -- Otherwise bulba has a check on if the site is being web scraped and it will block the download
 opener = urllib.request.URLopener()
 opener.addheader('User-Agent', 'Mozilla/5.0')
 
+
+# TODO: After conversion process figured out, this will need to convert animateds to webp
 def download_img(url, save_path):
     img_type = get_file_ext(url)
 
@@ -63,9 +64,10 @@ def img_exists_at_url(url, nonexistant_string_denoter):
 
 
 def determine_save_path_from_file_type(file_ext):
-    if file_ext == ".png": return GAME_SPRITE_SAVE_PATH
-    if file_ext == ".gif": return GIF_SAVE_PATH
-    if file_ext == ".webm": return WEBM_SAVE_PATH
+    if file_ext == ".png": return SAVE_PATHS["GAME_SPRITE"]
+    elif file_ext == ".gif": return SAVE_PATHS["GIF"]
+    elif file_ext == ".webm": return SAVE_PATHS["WEBM"]
+    else: raise RuntimeError(f"Unkown file type: {file_ext}")
 
 
 
@@ -84,12 +86,20 @@ def scrape_imgs(poke_num, filename_table, translate_func, exclusions, has_animat
             # poke_info == (poke_num, form_id) or (pokeball_id, img_type_id) if pokeball img
             # file == (my_file_naming_convention, translated_url)
             
-            url_file_ext = get_file_ext(file[1])
-            my_filename = f"{file[0]}{url_file_ext}"
+            my_filename = file[0]
+            if "-Animated" not in my_filename: my_filename += ".png"
+            else:
+                # TODO: When finished figuring out conversion, this will not be accurate -- should be webp for both
+                url_file_ext = get_file_ext(file[1])
+                my_filename += url_file_ext
 
             print(f"{file[1]} \t<-->\t {my_filename}")
             file_save_path = os.path.join(save_path, my_filename)
             if config_dict["Allow Download"]:  # Putting this here in addition to the actual download func, so func doesnt try to open pages to check for existence
+                # To prevent my program downloading stuff too quickly
+                sleep_time = random.uniform(1, 4)
+                time.sleep(sleep_time)
+
                 config_dict["Site DL Logic Function"](file[1], file_save_path, config_dict["Allow Download"], has_animation)
 
 

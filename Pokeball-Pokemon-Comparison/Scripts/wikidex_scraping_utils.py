@@ -18,8 +18,8 @@ def wikidex_scrape_pokemon(start_poke_num, stop_poke_num, allow_download=False):
     for poke_num in range(start_poke_num, stop_poke_num + 1):
         print(f"\rScraping pokemon #{poke_num} wikidex images...", end='', flush=True)
 
-        scrape_imgs(poke_num, "obtainable_game_filenames", wikidex_translate, exclusions=wikidex_doesnt_have_images_for, has_animation=True, save_path=GAME_SPRITE_SAVE_PATH, config_dict=wikidex_scrape_config)
-        scrape_imgs(poke_num, "home_filenames", wikidex_translate, exclusions=None, has_animation=True, save_path=HOME_SAVE_PATH, config_dict=wikidex_scrape_config)
+        scrape_imgs(poke_num, "obtainable_game_filenames", wikidex_translate, exclusions=wikidex_doesnt_have_images_for, has_animation=True, save_path=SAVE_PATHS["GAME_SPRITE"], config_dict=wikidex_scrape_config)
+        scrape_imgs(poke_num, "home_filenames", wikidex_translate, exclusions=None, has_animation=True, save_path=SAVE_PATHS["HOME"], config_dict=wikidex_scrape_config)
         # NOTE: Technically Wikidex does have drawn images and home menu images, but bulba has every one so there's no need to scrape
         # If this changes in the future, it may be useful to browse their archives via url thru https://www.wikidex.net/index.php?title=Categor%C3%ADa:Pokemon_name
     
@@ -38,6 +38,7 @@ def wikidex_get_img(url, save_path, allow_download, has_animation=False):
     img_exists, img_page_soup = search_image_under_all_file_extensions(url, my_filename)
 
     if not img_exists:
+        print_couldnt_dl_msg(my_filename)
         return
     
     if allow_download:
@@ -54,18 +55,20 @@ def wikidex_get_img(url, save_path, allow_download, has_animation=False):
 
 
 def search_image_under_all_file_extensions(url, my_filename):
-    file_exts_wikidex_uses = [".png", ".gif", ".webm"]
+    file_exts_wikidex_uses = [".png", ".gif", ".webm"]  # Ordered in terms of preference (png for stills, gif for transparency, webm bc its there)
 
+    # Rotating through file extensions to find an existing image
     for file_ext in file_exts_wikidex_uses:
         if "-Animated" in my_filename and file_ext == ".png": continue  # pngs for stills only
         if " HOME" in my_filename and file_ext != ".webm": continue     # HOME sprites always webm (w/o transparency)
+        # Replacing file extension
         if file_ext not in url: url.replace(get_file_ext(url), file_ext)
-
+        # Seeing if the URL exists
         img_exists, img_page_soup = img_exists_at_url(url, nonexistant_string_denoter=r"No existe ningún archivo con este nombre.")
-
+        # If so, return relevant data, otherwise try next file extension
         if img_exists: return img_exists, img_page_soup
 
-    # No file extensions exist for sprite
+    # No file extensions exist for img
     return False, None
     
 
