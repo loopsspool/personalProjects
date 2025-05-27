@@ -85,12 +85,8 @@ def get_bulba_img(url, save_path, allow_download, has_animation=False):
 
 
 def bulba_doesnt_have_images_for(my_filename):
-    for exclusion in BULBA_DOESNT_HAVE_GAME_IMGS_FOR:
-        if exclusion in my_filename:
-            if exclusion == "-Animated":
-                # Allowing Gen2-5 Animated Sprites and Pokeballs (Gen6+ and HOME will be excluded from scrape)
-                if any(gen in my_filename for gen in ("Gen2", "Gen3", "Gen4", "Gen5")):
-                    return False
+    for exclusion in BULBA_DOESNT_HAVE_GAME_IMGS_FOR.values():
+        if exclusion(my_filename):
             return True
     return False
 

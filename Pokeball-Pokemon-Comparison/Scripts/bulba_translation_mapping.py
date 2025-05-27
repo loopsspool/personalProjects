@@ -4,10 +4,13 @@ from translation_utils import EXCLUDE_TRANSLATIONS_MAP
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     GAME IMAGE TRANSLATIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
-# These will be excluded if tried to run through the game sprite image downloader
-# Animated gets processed further in bulba_scraping_utils to only filter animated > Gen5/HOME
-# -Gen5_Battle_Static is for the still frames of an animated gen5 pokeball, which bulba doesn't have -- I process them
-BULBA_DOESNT_HAVE_GAME_IMGS_FOR = ["Gen9 SV", "Gen9_SV", "Gen8 BDSP", "Gen8_BDSP", "-Animated", "-Gen5_Battle-Static_"]
+# TODO: Make lambda dict like for wikidex -- Add LGPE backs, HOME Animated See if any others, running scraping may help find -- also pages like this: https://archives.bulbagarden.net/wiki/Category:Generation_VII_models
+# These will be excluded if true
+BULBA_DOESNT_HAVE_GAME_IMGS_FOR = {
+    "no images for these games": lambda my_filename: any(game in my_filename for game in ("Gen9 SV", "Gen9_SV", "Gen8 BDSP", "Gen8_BDSP", "Gen8_LA", "Gen7_LGPE")),
+    "no animated sprites above gen5": lambda my_filename: "-Animated" in my_filename and not any(gen in my_filename for gen in ("Gen2", "Gen3", "Gen4", "Gen5")),
+    "no stills of pokeball animations": lambda my_filename: "-Gen5_Battle-Static_" in my_filename
+}
 
 # Only allows male denoter on bulba translated file if these strings not in my filename
 # MUST KEEP SPACE AND UNDERSCORE -- No easy way to get gen when calling this, and dont want gen1 to filter gen10
@@ -37,6 +40,7 @@ BULBA_GAME_MAP = {
     "Gen8 SwSh": "8s",
     # Doesn't look like bulba has any BDSP sprites... Can confirm by checking pokes unavailable in SwSh & LA
     "Gen8 LA": "8a"
+    # No SV Sprites either...
 }
 
 BULBA_ALT_GAME_MAP = {
@@ -64,7 +68,6 @@ BULBA_GAMES_UNIVERSAL_FORM_MAP = {
 }
 
 
-# TODO: Can I just set this to be the same and replace _ with a space? See
 # NOTE: Unlike game sprites, drawn Urshifu has Giganta before forms, so gigantamax can be included here
 DRAWN_IMAGES_UNIVERSAL_FORMS_MAP = {
     "-Mega_X": "-Mega X",
