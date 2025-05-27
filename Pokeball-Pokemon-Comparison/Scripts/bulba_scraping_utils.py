@@ -25,7 +25,7 @@ def bulba_scrape_pokemon(start_poke_num, stop_poke_num, allow_download=False):
         # Home Sprites
         # NOTE: has_animation set to true (because it does, just not in bulba), if it were false and missing it would just download the still
         # As of writing (4-30-25) bulba doesn't have animated HOME sprites, but I do want to leave the option open if possible
-        scrape_imgs(poke_num, "home_filenames", home_sprite_translate, exclusions=None, has_animation=True, save_path=SAVE_PATHS["HOME"], config_dict=bulba_scrape_config)
+        scrape_imgs(poke_num, "home_filenames", home_sprite_translate, exclusions=bulba_doesnt_have_images_for, has_animation=True, save_path=SAVE_PATHS["HOME"], config_dict=bulba_scrape_config)
         # Home Menu
         scrape_imgs(poke_num, "home_menu_filenames", home_menu_translate, exclusions=None, has_animation=False, save_path=SAVE_PATHS["HOME_MENU"], config_dict=bulba_scrape_config)
     
@@ -277,7 +277,7 @@ def bulba_scrape_pokeballs(allow_download=False):
     bulba_scrape_config = generate_config_dict(BULBA_FILE_STARTER_URL, get_bulba_img, allow_download)
 
     # Setting animated to True for gen5_Battle-Animated, -1 for poke_num which just gets ignored for this table name anyways
-    scrape_imgs(-1, "pokeball_filenames", pokeball_translate, exclusions=None, has_animation=True, save_path=SAVE_PATHS["POKEBALL"], config_dict=bulba_scrape_config)
+    scrape_imgs(-1, "pokeball_filenames", pokeball_translate, exclusions=bulba_doesnt_have_images_for, has_animation=True, save_path=SAVE_PATHS["POKEBALL"], config_dict=bulba_scrape_config)
 
 
 def pokeball_translate(my_filename, pokeball_info):
