@@ -77,3 +77,17 @@ def replace_filename_in_all_dirs(replace, replace_with, just_print=False):
 
 def delete_all_files_with_str(path, str, just_print=False):
     file_matches = get_all_files_in_dir_w_str(path, str)
+
+    for file in file_matches:
+        if just_print:
+            print(file)
+            continue
+        else:
+            full_path = os.path.join(path, file)
+            print(f"Deleted {file}")
+            os.remove(full_path)
+
+
+def delete_all_files_from_all_dirs_with_str(str, just_print=False):
+    for path in SAVE_PATHS.values():
+        delete_all_files_with_str(path, str, just_print)
