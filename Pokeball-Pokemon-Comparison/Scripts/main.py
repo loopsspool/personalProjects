@@ -27,15 +27,17 @@ from wikidex_scraping_utils import wikidex_scrape_pokemon
 # TODO: Check if any filenames are the same but file ext is different
 # TODO: Both still and animated to webp format
 # TODO: Look at imgs that have waaay smaller stills than animated (mostly wikidex gen 8-9, see charizard gen 9 static/animated)
-    # TODO: But dont be fooled by whitespace -- see shiny charmander gen 8 swsh 
+    # TODO: But dont be fooled by whitespace -- see shiny charmander gen 8 swsh
 
 
 def main():
-    ALLOW_DOWNLOAD = True
+    # NOTE: Can make this false and set poke start/stop nums to print to console missing imgs -- my filenames and translated URLs
+    ALLOW_DOWNLOAD = False
     # NOTE: If program crashes a lot like last one, write this to a txt file. Each new pokemon would rewrite the line of the file where it picked up
-    poke_num_start_scraping_from = 6
-    poke_to_go_after_start_num = 0
-    valid_start_poke_num, valid_stop_poke_num = validate_context(poke_num_start_scraping_from, poke_to_go_after_start_num, force_update=False)   # This will check downloads with missing imgs in database and update
+    # TODO: Change from poke to go after start to end poke num
+    poke_num_start_from = 69
+    poke_num_stop_at = 200
+    valid_start_poke_num, valid_stop_poke_num = validate_context(poke_num_start_from, poke_num_stop_at, force_update=False)   # This will check downloads with missing imgs in database and update
     
     for poke_num in range(valid_start_poke_num, valid_stop_poke_num + 1):
         bulba_scrape_pokemon(poke_num, allow_download=ALLOW_DOWNLOAD)     # NOTE: Always check Bulba first, they have higher quality images
@@ -59,7 +61,7 @@ def validate_context(start_num, num_after_start, force_update=False):
     else:
         update_file_existence()     # Checks to see if any images were downloaded
 
-    return verify_start_stop_scraping_poke_nums(start_num, num_after_start)
+    return verify_start_stop_poke_nums(start_num, num_after_start)
 
 
 def db_isnt_current():
@@ -80,14 +82,14 @@ def info_sheet_has_more_pokes_than_db():
     return False
     
 
-def verify_start_stop_scraping_poke_nums(start, num_after):
+def verify_start_stop_poke_nums(start, stop):
     last_db_poke_num = get_last_poke_num()
 
     if start < 1: start=1
+    if stop < 1: stop=1
     if start > last_db_poke_num: start = last_db_poke_num
-    if num_after < 1: num_after=0
-    if start + num_after > last_db_poke_num: num_after = last_db_poke_num - start
-    stop = start + num_after
+    if stop > last_db_poke_num: stop = last_db_poke_num
+    if start > stop: stop = start
 
     return start, stop
 
