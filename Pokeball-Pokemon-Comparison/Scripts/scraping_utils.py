@@ -64,9 +64,9 @@ def img_exists_at_url(url, nonexistant_string_denoter):
 
 
 def determine_save_path_from_file_type(file_ext):
-    if file_ext == ".png": return SAVE_PATHS["GAME_SPRITE"]
-    elif file_ext == ".gif": return SAVE_PATHS["GIF"]
-    elif file_ext == ".webm": return SAVE_PATHS["WEBM"]
+    if file_ext == ".png": return save_directories["Game Sprites"]["path"]
+    elif file_ext == ".gif": return save_directories["gif"]["path"]
+    elif file_ext == ".webm": return save_directories["webm"]["path"]
     else: raise RuntimeError(f"Unkown file type: {file_ext}")
 
 

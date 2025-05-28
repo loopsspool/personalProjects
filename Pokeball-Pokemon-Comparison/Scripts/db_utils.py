@@ -221,23 +221,20 @@ def populate_db(force=False):
         connection.close()
 
 
-def update_file_existence():
+def update_file_existence(cursor=None):
     print("Updating database if there were any downloads...")
 
-    connection = sqlite3.connect(DB_PATH)
-    connection.row_factory = sqlite3.Row
-    cursor = connection.cursor()
+    update_save_dir_existing_files()
 
-    update_game_files_existence(cursor)
-    update_non_game_files_existence("home_filenames", ALL_SAVED_HOME_SPRITES, cursor)
-    update_non_game_files_existence("home_menu_filenames", ALL_SAVED_HOME_MENU_IMAGES, cursor)
-    update_non_game_files_existence("drawn_filenames", ALL_SAVED_DRAWN_IMAGES, cursor)
-    update_non_game_files_existence("pokeball_filenames", ALL_SAVED_POKEBALL_IMAGES, cursor)
+    # Updating database
+    with get_cursor(cursor) as cur:
+        update_game_files_existence(cur)
+        update_non_game_files_existence("home_filenames", save_directories["HOME"]["files"], cur)
+        update_non_game_files_existence("home_menu_filenames", save_directories["HOME Menu"]["files"], cur)
+        update_non_game_files_existence("drawn_filenames", save_directories["Drawn"]["files"], cur)
+        update_non_game_files_existence("pokeball_filenames", save_directories["Pokeball"]["files"], cur)
 
-    connection.commit()
-    connection.close()
     
-
 
 
 #|================================================================================================|
@@ -248,15 +245,15 @@ def update_file_existence():
 def get_cursor(passed_cur=None):
     if passed_cur is not None:
         yield passed_cur
+        passed_cur.connection.commit()
     else:
         connection = sqlite3.connect(DB_PATH)
         connection.row_factory = sqlite3.Row
         cur = connection.cursor()
         try:
             yield cur
-        finally:
             connection.commit()
-            cur.close()
+        finally:            
             connection.close()
 
 
@@ -277,41 +274,41 @@ def insert_into_both_form_tables(cursor, form_name, poke_num):
 
 
 # TODO: Change all execute statements to parameter substition instead of inserting into f string (this converts None <-> Null properly)
-def update_game_files_existence(cursor=None):
-    with get_cursor(cursor) as cur:
-        cur.execute("SELECT * FROM obtainable_game_filenames")
-        obtainable_game_filename_data = cur.fetchall()
-        for record in obtainable_game_filename_data:
-            does_exist, substitution = check_for_usable_game_file(record["filename"], True)     # True parameter bc obtainable game sprites will always be obtainable (duh)
-            sub_id = get_game_filename_id(cur, substitution) if substitution!=None else None
-            has_alt = file_exists(substitution + "-Alt", ALL_SAVED_GAME_SPRITES) if sub_id!=None else file_exists(record["filename"] + "-Alt", ALL_SAVED_GAME_SPRITES)
-            if does_exist != record["does_exist"] or sub_id != record["substitution_id"] or has_alt != record["has_alt"]:
-                # Updating obtainable game filenames table
-                cur.execute("""
-                                UPDATE obtainable_game_filenames 
-                                SET does_exist = ?, substitution_id = ?, has_alt = ?
-                                WHERE id = ?
-                """, (does_exist, sub_id, has_alt, record["id"]))
-                # Updating all game filenames table
-                cur.execute("""
-                                UPDATE all_game_filenames 
-                                SET does_exist = ?, substitution_id = ?, has_alt = ?
-                                WHERE id = ?
-                """, (does_exist, sub_id, has_alt, record["id"]))
+def update_game_files_existence(cursor):
+    cursor.execute("SELECT * FROM obtainable_game_filenames")
+    obtainable_game_filename_data = cursor.fetchall()
+    for record in obtainable_game_filename_data:
+        does_exist, substitution = check_for_usable_game_file(record["filename"], True)     # True parameter bc obtainable game sprites will always be obtainable (duh)
+        sub_id = get_game_filename_id(cursor, substitution) if substitution!=None else None
+        has_alt = file_exists(substitution + "-Alt", save_directories["Game Sprites"]["files"]) if sub_id!=None else file_exists(record["filename"] + "-Alt", save_directories["Game Sprites"]["files"])
+        if does_exist != record["does_exist"] or sub_id != record["substitution_id"] or has_alt != record["has_alt"]:
+            print(f"File updated: {record["filename"]}")
+            # Updating obtainable game filenames table
+            cursor.execute("""
+                            UPDATE obtainable_game_filenames 
+                            SET does_exist = ?, substitution_id = ?, has_alt = ?
+                            WHERE id = ?
+            """, (does_exist, sub_id, has_alt, record["id"]))
+            # Updating all game filenames table
+            cursor.execute("""
+                            UPDATE all_game_filenames 
+                            SET does_exist = ?, substitution_id = ?, has_alt = ?
+                            WHERE id = ?
+            """, (does_exist, sub_id, has_alt, record["id"]))
 
 
-def update_non_game_files_existence(table, set_of_saved_imgs, cursor=None):
-    with get_cursor(cursor) as cur:
-        cur.execute(f"SELECT * FROM {table}")
-        table_data = cur.fetchall()
-        for record in table_data:
-            does_exist = file_exists(record["filename"], set_of_saved_imgs)
-            if does_exist != record["does_exist"]:
-                cur.execute(f"""
-                                UPDATE {table} 
-                                SET does_exist = ?
-                                WHERE id = ?
-                """, (does_exist, record["id"]))
+def update_non_game_files_existence(table, set_of_saved_imgs, cursor):
+    cursor.execute(f"SELECT * FROM {table}")
+    table_data = cursor.fetchall()
+    for record in table_data:
+        does_exist = file_exists(record["filename"], set_of_saved_imgs)
+        if does_exist != record["does_exist"]:
+            print(f"File updated: {record["filename"]}")
+            cursor.execute(f"""
+                            UPDATE {table} 
+                            SET does_exist = ?
+                            WHERE id = ?
+            """, (does_exist, record["id"]))
 
 
 
@@ -644,6 +641,7 @@ def record_exists(cursor, table, cols):
     return cursor.fetchone() is not None
 
 
+# TODO: When applicable, should only be webp
 def file_exists(filename, dir_file_list):
     # Keep .png first since it's most common img type for this
     file_ext = [".png", ".gif", ".webm"]
@@ -875,7 +873,7 @@ def populate_game_filenames(cursor, force=False):
         filename = generate_game_filename(sprite_info)
         does_exist, substitution = check_for_usable_game_file(filename, sprite_info["obtainable"])
         has_sub = 1 if substitution!=None else None     # Temp marking to set in substitution field until I can get subs file id
-        has_alt = file_exists(substitution + "-Alt", ALL_SAVED_GAME_SPRITES) if has_sub else file_exists(filename + "-Alt", ALL_SAVED_GAME_SPRITES)
+        has_alt = file_exists(substitution + "-Alt", save_directories["Game Sprites"]["files"]) if has_sub else file_exists(filename + "-Alt", save_directories["Game Sprites"]["files"])
 
         file_ids = {"filename": filename, "poke_num": sprite_id[0], "form_id": sprite_id[1], "game_id": sprite_id[2], "sprite_id": sprite_id[3], "obtainable": sprite_info["obtainable"], "does_exist": does_exist, "substitution_id": has_sub, "has_alt": has_alt}
         # Inserting into all filenames table
@@ -913,7 +911,7 @@ def edit_substitution_field(cursor, record):
 def check_for_usable_game_file(filename, obtainable):
     if not obtainable:
         return None, None
-    if file_exists(filename, ALL_SAVED_GAME_SPRITES):
+    if file_exists(filename, save_directories["Game Sprites"]["files"]):
         return True, None
     else:
         exists, substitution = check_for_game_file_substitution(filename)
@@ -928,7 +926,7 @@ def check_for_game_file_substitution(filename):
             for repl in GAME_FALLBACKS[game]:
                 repl = game_adjustment_for_back(filename, repl)
                 replacement_filename = filename.replace(game_adj, repl)
-                if file_exists(replacement_filename, ALL_SAVED_GAME_SPRITES):
+                if file_exists(replacement_filename, save_directories["Game Sprites"]["files"]):
                     return True, replacement_filename
     return False, None
 
@@ -983,7 +981,7 @@ def populate_home_filenames(cursor):
                 if not is_stamped_poke_form(poke_info):
                     continue
             filename = generate_home_filename(poke_info, sprite_type)
-            exists = file_exists(filename, ALL_SAVED_HOME_SPRITES)
+            exists = file_exists(filename, save_directories["HOME"]["files"])
             file_ids = {"filename": filename, "poke_num": poke_info["poke num"], "form_id": poke_form[1], "sprite_id": sprite_id, "does_exist":exists}
             insert_into_table(cursor, "home_filenames", **file_ids)
 
@@ -1011,7 +1009,7 @@ def populate_home_menu_filenames(cursor):
     for poke_form, poke_info in poke_forms.items():
         if should_exclude_menu_poke_form(poke_info): continue
         filename = generate_home_menu_filename(poke_info)
-        exists = file_exists(filename, ALL_SAVED_HOME_MENU_IMAGES)
+        exists = file_exists(filename, save_directories["HOME Menu"]["files"])
         file_ids = {"filename": filename, "poke_num": poke_form[0], "form_id": poke_form[1], "does_exist": exists}
         insert_into_table(cursor, "home_menu_filenames", **file_ids)
 
@@ -1054,7 +1052,7 @@ def populate_drawn_filenames(cursor):
     for poke_form, poke_info in poke_forms.items():
         filenames = generate_drawn_filenames(poke_info, cursor)    # generate_drawn_filenames actually returns a list, usually len==1, but if its a female it has to generate a male filename too
         for filename in filenames:
-            exists = file_exists(filename, ALL_SAVED_DRAWN_IMAGES)
+            exists = file_exists(filename, save_directories["Drawn"]["files"])
             file_ids = {"filename": filename, "poke_num": poke_form[0], "form_id": poke_form[1], "does_exist": exists}
             insert_into_table(cursor, "drawn_filenames", **file_ids)
 
@@ -1115,7 +1113,7 @@ def populate_pokeball_filenames(cursor):
             filenames = generate_pokeball_filename(ball_info, img_type_info)
             # Iterating bc generate pokeball filename returns a list, because if gen3 Ultra Ball theres inter-gen differences (ie multiple filenames)
             for filename in filenames:
-                exists = file_exists(filename, ALL_SAVED_POKEBALL_IMAGES)
+                exists = file_exists(filename, save_directories["Pokeball"]["files"])
                 file_ids = {"filename": filename, "pokeball_id": ball_id, "img_type_id": img_type_id, "does_exist": exists}
                 insert_into_table(cursor, "pokeball_filenames", **file_ids)
 
