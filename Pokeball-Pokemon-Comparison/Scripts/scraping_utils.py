@@ -84,7 +84,9 @@ def scrape_imgs(poke_num, filename_table, translate_func, exclusions, has_animat
     missing_imgs_dict = get_missing_poke_imgs_by_table(poke_num, filename_table) if filename_table != "pokeball_filenames" else get_missing_pokeball_imgs()
     translated_missing_imgs = translate_all_my_filenames_to_url(missing_imgs_dict, translate_func, exclusions, config_dict["Site URL"])
 
+    missing_count = 0
     for poke_info, poke_files in translated_missing_imgs.items():
+        missing_count += len(poke_files)
         for file in poke_files:
             # poke_info == (poke_num, form_id) or (pokeball_id, img_type_id) if pokeball img
             # file == (my_file_naming_convention, translated_url)
@@ -105,7 +107,8 @@ def scrape_imgs(poke_num, filename_table, translate_func, exclusions, has_animat
 
                 config_dict["Site DL Logic Function"](file[1], file_save_path, config_dict["Allow Download"], has_animation)
 
-    update_file_existence()
+    if missing_count > 0:
+        update_file_existence()
 
 
 def translate_all_my_filenames_to_url(filename_dict, translate_func, exclude, starter_url):
