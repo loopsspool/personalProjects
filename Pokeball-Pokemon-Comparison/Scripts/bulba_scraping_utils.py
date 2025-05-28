@@ -43,12 +43,13 @@ def get_bulba_translated_species_form(poke_info, my_filename, map_type):
         return("")
 
     if poke_num in BULBA_POKE_FORM_TRANSLATION_MAP:
-        for form, translation in BULBA_POKE_FORM_TRANSLATION_MAP[poke_num][map_type].items():
-            if form in form_name:
-                # If Unown, adjust bulba translation as needed
-                if poke_num == 201 and map_type == "Game":
-                    translation = adjust_translation_for_unown(my_filename, translation)
-                return(translation)
+        if map_type in BULBA_POKE_FORM_TRANSLATION_MAP[poke_num]:
+            for form, translation in BULBA_POKE_FORM_TRANSLATION_MAP[poke_num][map_type].items():
+                if form in form_name:
+                    # If Unown, adjust bulba translation as needed
+                    if poke_num == 201 and map_type == "Game":
+                        translation = adjust_translation_for_unown(my_filename, translation)
+                    return(translation)
     
     if map_type not in ("Drawn", "Menu"):   # Drawn/HOME Menu forms will frequently omit forms to just run my filename
         print(f"Couldn't search for image to download... No respective form in map set for \t{my_filename}")
