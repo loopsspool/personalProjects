@@ -1,6 +1,6 @@
 import os
 
-from app_globals import DB_PATH
+from app_globals import DB_PATH, init_save_dir_files
 from db_utils import populate_db, update_file_existence, get_last_poke_num
 from spreadsheet_utils import create_file_checklist_spreadsheet, cell_value, POKEMON_INFO_SHEET, POKE_INFO_LAST_ROW, POKE_INFO_NUM_COL
 from bulba_scraping_utils import bulba_scrape_pokemon, bulba_scrape_pokeballs
@@ -24,6 +24,8 @@ from wikidex_scraping_utils import wikidex_scrape_pokemon
 # TODO: Delete all alts and remove them from db processing. Favor with still frames of animated images
 # TODO: Fix downloaded animated pokeballs if animation out of order (static I touched Fast Ball, Friend Ball, "Great Ball", "Heavy Ball", "Level Ball", "Love Ball", "Lure Ball", "Master Ball", "Moon Ball", "Nest Ball", "Poke Ball", "Premier Ball", "Repeat Ball", "Safari Ball", "Sport Ball", "Timer Ball", "Ultra Ball")
 # TODO: Look at certain missing pokeballs for gen3 (like fast ball)s
+# TODO: Check if any filenames are the same but file ext is different
+# TODO: Both still and animated to webp format
 
 
 def main():
@@ -33,12 +35,10 @@ def main():
     poke_to_go_after_start_num = 0
     valid_start_poke_num, valid_stop_poke_num = validate_context(poke_num_start_scraping_from, poke_to_go_after_start_num, force_update=False)   # This will check downloads with missing imgs in database and update
     
-    #bulba_scrape_pokemon(valid_start_poke_num, valid_stop_poke_num, allow_download=ALLOW_DOWNLOAD)     # NOTE: Always check Bulba first, they have higher quality images
+    bulba_scrape_pokemon(valid_start_poke_num, valid_stop_poke_num, allow_download=ALLOW_DOWNLOAD)     # NOTE: Always check Bulba first, they have higher quality images
     #bulba_scrape_pokeballs(allow_download=ALLOW_DOWNLOAD)
-    update_file_existence() # Updating before wikidex scrape so it doesn't duplicate imgs just downloaded from bulba
 
     wikidex_scrape_pokemon(valid_start_poke_num, valid_stop_poke_num, allow_download=ALLOW_DOWNLOAD)
-    #update_file_existence()
     # create_file_checklist_spreadsheet()
 
 
@@ -49,6 +49,8 @@ def main():
 #|================================================================================================|
 
 def validate_context(start_num, num_after_start, force_update=False):
+    init_save_dir_files()   # Initializes sets of existing files, db uses to check file existence
+
     if not os.path.exists(DB_PATH) or force_update or db_isnt_current():
         populate_db(force_update)   # Will always rewrite filename tables, so also checks if any files were downloaded. Only skips existing form game obtainabailitty records bc its slow, new records will still be added (even on old pokes)
     else:
