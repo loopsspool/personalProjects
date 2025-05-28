@@ -12,19 +12,13 @@ WIKIDEX_STARTER_URL = "https://www.wikidex.net/wiki/Archivo:"
 
 
 # NOTE: If ever decide to use Wikidex for menu sprites, drawn, etc. this will have to be nested like bulbas
-def wikidex_scrape_pokemon(start_poke_num, stop_poke_num, allow_download=False):
+def wikidex_scrape_pokemon(poke_num, allow_download=False):
     wikidex_scrape_config = generate_config_dict(WIKIDEX_STARTER_URL, wikidex_get_img, allow_download)
 
-    for poke_num in range(start_poke_num, stop_poke_num + 1):
-        print(f"\rScraping pokemon #{poke_num} wikidex images...", end='', flush=True)
-
-        scrape_imgs(poke_num, "obtainable_game_filenames", wikidex_translate, exclusions=wikidex_doesnt_have_images_for, has_animation=True, save_path=save_directories["Game Sprites"]["path"], config_dict=wikidex_scrape_config)
-        scrape_imgs(poke_num, "home_filenames", wikidex_translate, exclusions=None, has_animation=True, save_path=save_directories["HOME"]["path"], config_dict=wikidex_scrape_config)
-        # NOTE: Technically Wikidex does have drawn images and home menu images, but bulba has every one so there's no need to scrape
-        # If this changes in the future, it may be useful to browse their archives via url thru https://www.wikidex.net/index.php?title=Categor%C3%ADa:Pokemon_name
-    
-    # Resetting console line after updates from above
-    print('\r' + ' '*55 + '\r', end='')
+    scrape_imgs(poke_num, "obtainable_game_filenames", wikidex_translate, exclusions=wikidex_doesnt_have_images_for, has_animation=True, save_path=save_directories["Game Sprites"]["path"], config_dict=wikidex_scrape_config)
+    scrape_imgs(poke_num, "home_filenames", wikidex_translate, exclusions=None, has_animation=True, save_path=save_directories["HOME"]["path"], config_dict=wikidex_scrape_config)
+    # NOTE: Technically Wikidex does have drawn images and home menu images, but bulba has every one so there's no need to scrape
+    # If this changes in the future, it may be useful to browse their archives via url thru https://www.wikidex.net/index.php?title=Categor%C3%ADa:Pokemon_name
 
 
 
