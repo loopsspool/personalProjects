@@ -3,7 +3,7 @@ import os
 from openpyxl import load_workbook
 
 from app_globals import PARENT_DIR
-from db_utils import GAMES, SPRITE_TYPES, SPRITE_EXCLUSIONS, POKEBALL_IMG_TYPES
+from db_utils import GAMES, SPRITE_TYPES, HOME_SPRITE_EXCLUDE, POKEBALL_IMG_TYPES
 
 # TODO: Run file checklist at end of each scrape? update when image found?
 # TODO: Make sure run new file checklist if new pokes added to poke_info sheet
@@ -109,12 +109,11 @@ def create_file_checklist_spreadsheet():
     new_poke_top_border_color = '#D9D9D9'
     formats = {
         "header": workbook.add_format({'bold': True, 'align': 'center', 'bg_color': 'gray', 'bottom': 5, 'top': 1, 'left': 1, 'right': 1}),
-        # TODO: Change from new poke to just new
-        # New pokes have strong top border
-        "new poke info": workbook.add_format({'top_color': new_poke_top_border_color, 'top': 5}),
-        "new poke green": workbook.add_format({'top_color': new_poke_top_border_color, 'top': 5, 'left': 1, 'right': 1, 'bottom': 1, 'align': 'center', 'bg_color': green, 'font_color': green}),
-        "new poke red": workbook.add_format({'top_color': new_poke_top_border_color, 'top': 5, 'left': 1, 'right': 1, 'bottom': 1, 'align': 'center', 'bg_color': red, 'font_color': red}),
-        "new poke grey": workbook.add_format({'top_color': new_poke_top_border_color, 'top': 5, 'left': 1, 'right': 1, 'bottom': 1, 'align': 'center', 'bg_color': grey, 'font_color': grey}),
+        # New items have strong top border
+        "new info": workbook.add_format({'top_color': new_poke_top_border_color, 'top': 5}),
+        "new green": workbook.add_format({'top_color': new_poke_top_border_color, 'top': 5, 'left': 1, 'right': 1, 'bottom': 1, 'align': 'center', 'bg_color': green, 'font_color': green}),
+        "new red": workbook.add_format({'top_color': new_poke_top_border_color, 'top': 5, 'left': 1, 'right': 1, 'bottom': 1, 'align': 'center', 'bg_color': red, 'font_color': red}),
+        "new grey": workbook.add_format({'top_color': new_poke_top_border_color, 'top': 5, 'left': 1, 'right': 1, 'bottom': 1, 'align': 'center', 'bg_color': grey, 'font_color': grey}),
         "green": workbook.add_format({'border': 1, 'align': 'center', 'bg_color': green, 'font_color': green}),
         "red": workbook.add_format({'border': 1, 'align': 'center', 'bg_color': red, 'font_color': red}),
         "grey": workbook.add_format({'border': 1, 'align': 'center', 'bg_color': grey, 'font_color': grey})
@@ -129,6 +128,7 @@ def create_file_checklist_spreadsheet():
     # Home Menu Imgs availability
     write_pokemon_availability(workbook, home_menu_sprite_availability_sheet, formats, table="home_menu_filenames")
     # Pokeball availability
+    # TODO: Combine static frames from pokeball gen 5 battle into one col? True if all 9 there, false otherwise
     write_pokeball_availability(workbook, pokeball_availability_sheet, formats, table="pokeball_filenames")
 
     print("Spreadsheet finished!")
@@ -174,7 +174,7 @@ def write_pokeball_availability(workbook, worksheet, formats):
         longest_filename = max(longest_filename, len(filename))
         if prev_ball_id != curr_ball_id: 
             new_ball = True
-            filename_format = formats["new poke info"]
+            filename_format = formats["new info"]
         else: 
             new_ball = False
             filename_format = None
@@ -197,10 +197,9 @@ def write_pokemon_availability(workbook, worksheet, formats, table):
     prev_poke_num = 0
     is_new_poke = True
 
-    # TODO: Change i to row
     # TODO: Split into readable functions
     # Starting at 1 because row 0 is the header row
-    for i, (poke_info, files) in enumerate(all_file_info.items(), start=1):
+    for row, (poke_info, files) in enumerate(all_file_info.items(), start=1):
         poke_num = poke_info[0]
         poke_name = get_poke_name(poke_num)
         # Tags could work pulling poke_sprite_form_id[1] (form) + poke_sprite_form_id[2] (sprite type), but I do seperate shiny from sprite_type sometimes so it wouldn't match the true filename
@@ -215,23 +214,23 @@ def write_pokemon_availability(workbook, worksheet, formats, table):
         if prev_poke_num != poke_num:
             is_new_poke = True
             print(f"\rWriting pokemon #{poke_num} file availability...", end='', flush=True)
-            sprite_info_format = formats["new poke info"] if table in ("Games", "home_filenames") else None
+            sprite_info_format = formats["new info"] if table in ("Games", "home_filenames") else None
         else:
             is_new_poke = False
             sprite_info_format = None
             
-        worksheet.write(i, 0, poke_num, sprite_info_format)
-        worksheet.write(i, 1, poke_name, sprite_info_format)
-        worksheet.write(i, 2, tags, sprite_info_format)
+        worksheet.write(row, 0, poke_num, sprite_info_format)
+        worksheet.write(row, 1, poke_name, sprite_info_format)
+        worksheet.write(row, 2, tags, sprite_info_format)
 
         if table == "Games":
             for game_name, sprite_data in files.items():
-                write_sprite_status_for_game(workbook, worksheet, formats, is_new_poke, i, game_cols, game_name, sprite_data["obtainable"], sprite_data["exists"], sprite_data["has_sub"])
+                write_sprite_status_for_game(workbook, worksheet, formats, is_new_poke, row, col_map, game_name, sprite_data["obtainable"], sprite_data["exists"], sprite_data["has_sub"])
         else:
             # Only allowing is_new_poke formatting (top border line) for home sprites for all the non-game tables
             # It's the only one with enough imgs for each poke to be useful, looks cluttered for the other img types 
             format = determine_format_by_boolean(files["exists"]) if table != "home_filenames" else determine_format_by_boolean(files["exists"], is_new_poke)
-            worksheet.write(i, 3, "X" if files["exists"] else "M", formats[format])
+            worksheet.write(row, 3, "X" if files["exists"] else "M", formats[format])
         
         prev_poke_num = poke_num
 
@@ -248,7 +247,7 @@ def write_pokemon_availability(workbook, worksheet, formats, table):
 # TODO: Put the below into a global dict?
 def determine_header_cols(worksheet, table, formats):
     if table == "Games": return generate_header_row(worksheet, formats, mult_col_names=GAMES)
-    elif table == "home_filenames": return generate_header_row(worksheet, formats, mult_col_names=[sprite_type for sprite_type in SPRITE_TYPES if sprite_type not in SPRITE_EXCLUSIONS])
+    elif table == "home_filenames": return generate_header_row(worksheet, formats, mult_col_names=[sprite_type for sprite_type in SPRITE_TYPES if sprite_type not in HOME_SPRITE_EXCLUDE])
     elif table == "drawn_filesnames": return generate_header_row(worksheet, formats)
     elif table == "home_menu_filenames": return generate_header_row(worksheet, formats)
     elif table == "pokeball_filenames": return generate_header_row(worksheet, formats, mult_col_names=POKEBALL_IMG_TYPES)
@@ -283,16 +282,16 @@ def write_sprite_status_for_game(workbook, worksheet, formats, is_new_poke, row,
 
 
 def determine_game_sprite_format(text, is_new_poke):
-    format = "new poke " if is_new_poke else ""
+    format = "new " if is_new_poke else ""
     if text == "U": format += "grey"
     elif text in ("S", "X"): format += "green"
     elif text == "M": format += "red"
     return format
 
 
-# is_new_poke = False allows omission of it to not draw the top border for a new poke
+# is_new_poke = False allows omission of it to not draw the top border for a new item
 def determine_format_by_boolean(is_avail, is_new_poke=False):
-    format = "new poke " if is_new_poke else ""
+    format = "new " if is_new_poke else ""
     if is_avail: format += "green"
     if not is_avail: format += "red"
     return format
