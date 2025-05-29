@@ -388,7 +388,7 @@ def get_game_filename_id(cursor, filename):
 
 def get_sprite_type_id(sprite_type_name, cursor=None):
     with get_cursor(cursor) as cur:
-        cur.execute(f"SELECT id FROM sprite_types WHERE name={sprite_type_name}")
+        cur.execute("SELECT id FROM sprite_types WHERE name=?", (sprite_type_name,))
         sprite_type_id=cur.fetchone()
     if sprite_type_id: return sprite_type_id["id"]
     else: return None
@@ -593,9 +593,9 @@ def get_all_home_filenames_info():
 
     for row in rows:
         main_key = (row["poke_num"], row["form_id"])
-        data[main_key][row["sprite_id"]]["filename"] = row["filename"]  # Necessary to get tags
-        data[main_key][row["sprite_id"]]["sprite type name"] = get_sprite_type_name(row["sprite_id"], cursor)    # Necessary to remove from filename so hyphen split only gets tags
-        data[main_key][row["sprite_id"]]["exists"] = True if row["does_exist"] else False
+        sprite_type_name = get_sprite_type_name(row["sprite_id"], cursor)
+        data[main_key][sprite_type_name]["filename"] = row["filename"]  # Necessary to get tags
+        data[main_key][sprite_type_name]["exists"] = True if row["does_exist"] else False
 
     connection.close()
     return data
