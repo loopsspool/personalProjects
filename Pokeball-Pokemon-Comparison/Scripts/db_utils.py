@@ -94,7 +94,7 @@ def create_db():
         game_id INTEGER NOT NULL,
         sprite_id INTEGER NOT NULL,
         obtainable BOOLEAN NOT NULL,
-        does_exist BOOLEAN,
+        does_exist BOOLEAN NOT NULL,
         substitution_id INTEGER,
         has_alt BOOLEAN,
         FOREIGN KEY (poke_num, form_id, game_id, sprite_id) REFERENCES sprite_obtainability
@@ -121,13 +121,27 @@ def create_db():
     """)
 
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS home_filenames (
+    CREATE TABLE IF NOT EXISTS all_home_filenames (
         id INTEGER PRIMARY KEY,
         filename TEXT NOT NULL UNIQUE,
         poke_num INTEGER NOT NULL,
         form_id INTEGER NOT NULL,
         sprite_id INTEGER NOT NULL,
+        obtainable BOOLEAN NOT NULL,
         does_exist BOOLEAN,
+        FOREIGN KEY (poke_num, form_id) REFERENCES poke_forms,
+        FOREIGN KEY (sprite_id) REFERENCES sprite_types(id)
+    );
+    """)
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS obtainable_home_filenames (
+        id INTEGER PRIMARY KEY,
+        filename TEXT NOT NULL UNIQUE,
+        poke_num INTEGER NOT NULL,
+        form_id INTEGER NOT NULL,
+        sprite_id INTEGER NOT NULL,
+        does_exist BOOLEAN NOT NULL,
         FOREIGN KEY (poke_num, form_id) REFERENCES poke_forms,
         FOREIGN KEY (sprite_id) REFERENCES sprite_types(id)
     );
@@ -209,6 +223,7 @@ def populate_db(force=False):
         connection.commit() # Committing because database was locked when populate_drawn_filenames trying to access with has_f_form
         populate_home_filenames(cursor)
         populate_home_menu_filenames(cursor)
+        connection.commit() # Db locked again
         populate_drawn_filenames(cursor)
         populate_pokeballs(cursor)
         populate_pokeball_img_types(cursor)
@@ -230,7 +245,8 @@ def update_file_existence(cursor=None):
     # Updating database
     with get_cursor(cursor) as cur:
         update_game_files_existence(cur)
-        update_non_game_files_existence("home_filenames", save_directories["HOME"]["files"], cur)
+        update_non_game_files_existence("all_home_filenames", save_directories["HOME"]["files"], cur)
+        update_non_game_files_existence("obtainable_home_filenames", save_directories["HOME"]["files"], cur)
         update_non_game_files_existence("home_menu_filenames", save_directories["HOME Menu"]["files"], cur)
         update_non_game_files_existence("drawn_filenames", save_directories["Drawn"]["files"], cur)
         update_non_game_files_existence("pokeball_filenames", save_directories["Pokeball"]["files"], cur)
@@ -587,7 +603,7 @@ def get_all_home_filenames_info():
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
 
-    cursor.execute("SELECT * FROM home_filenames")
+    cursor.execute("SELECT * FROM all_home_filenames")
     rows = cursor.fetchall()
     data = defaultdict(lambda: defaultdict(dict))
 
@@ -1001,17 +1017,25 @@ def populate_home_filenames(cursor):
 
     for poke_form, poke_info in poke_forms.items():
         for sprite_id, sprite_type in sprite_types.items():
+            filename = generate_home_filename(poke_info, sprite_type)
+            file_ids = {"filename": filename, "poke_num": poke_info["poke num"], "form_id": poke_form[1], "sprite_id": sprite_id, "does_exist": None}
+
             if should_skip_nonexistant_sprite(poke_info["poke num"], poke_info["form name"], sprite_type):
+                file_ids["obtainable"] = False
+                insert_into_table(cursor, "all_home_filenames", **file_ids)
                 continue
             # No home back sprites
             if "-Back" in sprite_type:
                 # Except for stamped pokemon formed "back" sprites (showing the stamp)
                 if not is_stamped_poke_form(poke_info):
+                    file_ids["obtainable"] = False
+                    insert_into_table(cursor, "all_home_filenames", **file_ids)
                     continue
-            filename = generate_home_filename(poke_info, sprite_type)
-            exists = file_exists(filename, save_directories["HOME"]["files"])
-            file_ids = {"filename": filename, "poke_num": poke_info["poke num"], "form_id": poke_form[1], "sprite_id": sprite_id, "does_exist":exists}
-            insert_into_table(cursor, "home_filenames", **file_ids)
+            
+            file_ids["does_exist"] = file_exists(filename, save_directories["HOME"]["files"])
+            insert_into_table(cursor, "obtainable_home_filenames", **file_ids)
+            file_ids["obtainable"] = True
+            insert_into_table(cursor, "all_home_filenames", **file_ids)
 
 
 def generate_home_filename(poke_info, sprite_type):
