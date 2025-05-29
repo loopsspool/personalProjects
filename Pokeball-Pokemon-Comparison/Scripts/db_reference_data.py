@@ -271,21 +271,15 @@ POKEBALL_IMG_EXCLUSIONS = {
 # TODO: Add gen2 images?
 # Gen refers to when img_sprite was introduced, balls should be less than or equal to this in order to have that sprite
 # Gen -1 means it applies to all balls regardless of generation
+# NOTE: Ordered like this for spreasheet tracking readability
 POKEBALL_IMG_TYPES = [
-    {"name": "Bag", "gen": -1},
-    {"name": "Bag_Gen4", "gen": 4},   # This is for some gen4 exlusive differences (lure ball, park ball)
-    {"name": "Bag_HOME", "gen": 8}, # So far this only applies to exclusively gen 8 balls (I assume the rest were recycled into home via game bag sprites)
-    {"name": "Bag_BDSP", "gen": -1},
-    {"name": "Bag_LA", "gen": 8},
-    {"name": "Bag_SV", "gen": -1},
-
     {"name": "PGL", "gen": -1}, # Pokemon global link (Dream)
     {"name": "Drawn", "gen": -1}, # Drawn (Sugimori)
 
     {"name": "Gen3", "gen": 3},
     {"name": "Gen4_Battle", "gen": 4},
     {"name": "Gen4_Summary", "gen": 4},
-    {"name": "Gen5_Summary", "gen": 5},    # Only for pokeballs that had differences in gen 4
+    {"name": "Bag_Gen4", "gen": 4},   # This is for some gen4 exlusive differences (lure ball, park ball)
     # Frames of Gen5_Battle-Animated
     {"name": "Gen5_Battle-Static_0", "gen": 5},
     {"name": "Gen5_Battle-Static_1", "gen": 5},
@@ -297,10 +291,16 @@ POKEBALL_IMG_TYPES = [
     {"name": "Gen5_Battle-Static_7", "gen": 5},
     {"name": "Gen5_Battle-Static_8", "gen": 5},
     {"name": "Gen5_Battle-Animated", "gen": 5},
+    {"name": "Gen5_Summary", "gen": 5},    # Only for pokeballs that had differences in gen 4
     {"name": "Gen6", "gen": 6},
     {"name": "Gen7", "gen": 7},  # Only for beast ball since introduced in gen7
     {"name": "Gen8", "gen": 8},
+    {"name": "Bag_BDSP", "gen": -1},
     {"name": "LA_Summary", "gen": 8},
+    {"name": "Bag_LA", "gen": 8},
+    {"name": "Bag_SV", "gen": -1},
     {"name": "HOME", "gen": -1}, # Setting home to gen1 so it will apply to all pokeballs
+    {"name": "Bag_HOME", "gen": 8}, # So far this only applies to exclusively gen 8 balls (I assume the rest were recycled into home via game bag sprites)
+    {"name": "Bag", "gen": -1},
 
 ]
