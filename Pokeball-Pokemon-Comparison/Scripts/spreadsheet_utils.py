@@ -5,8 +5,7 @@ from openpyxl import load_workbook
 from app_globals import PARENT_DIR
 from db_utils import GAMES, SPRITE_TYPES, HOME_SPRITE_EXCLUDE, POKEBALL_IMG_TYPES
 
-# TODO: Run file checklist at end of each scrape? update when image found?
-# TODO: Make sure run new file checklist if new pokes added to poke_info sheet
+
 
 
 #|================================================================================================|
@@ -214,13 +213,7 @@ def write_pokemon_availability(workbook, worksheet, formats, table):
         worksheet.write(row, 0, poke_num, sprite_info_format)
         worksheet.write(row, 1, poke_name, sprite_info_format)
         worksheet.write(row, 2, tags, sprite_info_format)
-
-        if table == "Games":
-            # Game sprites are their own beast because they can be substituted
-            write_game_sprite_image_status_for_games(worksheet, formats, is_new_poke, row, col_map, file_info)
-        else:
-            format = determine_format_by_boolean_existence(file_info["exists"]) 
-            worksheet.write(row, 3, "X" if file_info["exists"] else "M", formats[format])
+        write_file_existence(worksheet, formats, table, row, col_map, file_info, is_new_poke)
         
         prev_poke_num = poke_num
 
@@ -232,6 +225,19 @@ def write_pokemon_availability(workbook, worksheet, formats, table):
 
     # Resetting console line
     print('\r' + ' '*45 + '\r', end='')
+
+
+def write_file_existence(worksheet, formats, table, row, col_map, file_info, is_new_poke):
+    if col_map: # If has multiple columns
+        for col_name, file_status in file_info.items():
+            col_num = col_map[col_name]
+            # Game sprites are their own beast because they can be substituted
+            if table == "Games": write_game_sprite_image_status_for_games(worksheet, formats, is_new_poke, row, col_num, file_status)
+            # Everything else is binary, it either exists or it doesn't
+            else: worksheet.write(row, col_num, "X" if file_status["exists"] else "M", formats[format])
+    else:   # 1 Dimensional
+        format = determine_format_by_boolean_existence(file_info["exists"]) 
+        worksheet.write(row, 3, "X" if file_info["exists"] else "M", formats[format])
 
 
 def determine_if_new_poke(prev_poke_num, poke_num, table, formats):
@@ -246,7 +252,6 @@ def determine_if_new_poke(prev_poke_num, poke_num, table, formats):
     return is_new_poke, sprite_info_format
 
 
-# TODO: Put the below into a global dict?
 def determine_header_cols(worksheet, table, formats):
     if table == "Games": return generate_header_row(worksheet, formats, mult_col_names=GAMES)
     elif table == "home_filenames": return generate_header_row(worksheet, formats, mult_col_names=[sprite_type for sprite_type in SPRITE_TYPES if sprite_type not in HOME_SPRITE_EXCLUDE])
@@ -275,13 +280,11 @@ def determine_if_longest_length_value_yet(longest_values_dict, name, tags):
     return longest_values_dict
         
 
-def write_game_sprite_image_status_for_games(worksheet, formats, is_new_poke, row, game_cols, file_info):
-    for game_name, file_status in file_info.items():
-        game_col = game_cols[game_name]
-        text = denote_file_status(file_status["obtainable"], file_status["exists"], file_status["has_sub"])
-        format = determine_game_sprite_format(text, is_new_poke)
+def write_game_sprite_image_status_for_games(worksheet, formats, is_new_poke, row, col_num, file_status):
+    text = denote_file_status(file_status["obtainable"], file_status["exists"], file_status["has_sub"])
+    format = determine_game_sprite_format(text, is_new_poke)
 
-        worksheet.write(row, game_col, text, formats[format])
+    worksheet.write(row, col_num, text, formats[format])
 
 
 def determine_game_sprite_format(text, is_new_poke):
