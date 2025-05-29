@@ -22,7 +22,7 @@ def bulba_scrape_pokemon(poke_num, allow_download=False):
     # Home Sprites
     # NOTE: has_animation set to true (because it does, just not in bulba), if it were false and missing it would just download the still
     # As of writing (4-30-25) bulba doesn't have animated HOME sprites, but I do want to leave the option open if possible
-    scrape_imgs(poke_num, "home_filenames", home_sprite_translate, exclusions=bulba_doesnt_have_images_for, has_animation=True, save_path=save_directories["HOME"]["path"], config_dict=bulba_scrape_config)
+    scrape_imgs(poke_num, "obtainable_home_filenames", home_sprite_translate, exclusions=bulba_doesnt_have_images_for, has_animation=True, save_path=save_directories["HOME"]["path"], config_dict=bulba_scrape_config)
     # Home Menu
     scrape_imgs(poke_num, "home_menu_filenames", home_menu_translate, exclusions=None, has_animation=False, save_path=save_directories["HOME Menu"]["path"], config_dict=bulba_scrape_config)
 
