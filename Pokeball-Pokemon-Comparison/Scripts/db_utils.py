@@ -386,6 +386,14 @@ def get_game_filename_id(cursor, filename):
     else: return None
 
 
+def get_sprite_type_id(sprite_type_name, cursor=None):
+    with get_cursor(cursor) as cur:
+        cur.execute(f"SELECT id FROM sprite_types WHERE name={sprite_type_name}")
+        sprite_type_id=cur.fetchone()
+    if sprite_type_id: return sprite_type_id["id"]
+    else: return None
+
+
 def get_sprite_type_name(sprite_type_id, cursor=None):
     with get_cursor(cursor) as cur:
         cur.execute(f"SELECT name FROM sprite_types WHERE id={sprite_type_id}")
@@ -587,7 +595,7 @@ def get_all_home_filenames_info():
         main_key = (row["poke_num"], row["form_id"])
         data[main_key][row["sprite_id"]]["filename"] = row["filename"]  # Necessary to get tags
         data[main_key][row["sprite_id"]]["sprite type name"] = get_sprite_type_name(row["sprite_id"], cursor)    # Necessary to remove from filename so hyphen split only gets tags
-        data[main_key][row["sprite_id"]]["exists"] = True if row["dows_exist"] else False
+        data[main_key][row["sprite_id"]]["exists"] = True if row["does_exist"] else False
 
     connection.close()
     return data
@@ -598,9 +606,17 @@ def get_all_pokeball_filename_info():
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
 
-    cursor.execute("SELECT pokeball_id, filename, does_exist FROM pokeball_filenames")
+    cursor.execute("SELECT pokeball_id, img_type_id, does_exist FROM pokeball_filenames")
     rows = cursor.fetchall()
-    data = defaultdict()
+    data = defaultdict(lambda: defaultdict(dict))
+
+    for row in rows:
+        pokeball = get_pokeball_name(row["pokeball_id"], cursor)
+        img_type = get_pokeball_img_type_name(row["img_type_id"], cursor)
+        # TODO: Turn Battle-Static_0 - 8 to just Battle Static
+        data[pokeball][img_type] = {
+            "exists": row["does_exist"]
+        }
 
     connection.close()
     return data
