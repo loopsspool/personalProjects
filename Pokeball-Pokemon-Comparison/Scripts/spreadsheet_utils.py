@@ -118,17 +118,19 @@ def create_file_checklist_spreadsheet():
         "grey": workbook.add_format({'border': 1, 'align': 'center', 'bg_color': grey, 'font_color': grey})
     }
 
+    # NOTE: Tablenames matching my database only matter if they're going to be a 1 Dimensional spreadsheet and pull from get_all_1D_non_game_filename_info
+    # Thats why Game Sprites, HOME, and Pokeballs have more readable table names, they have custom functions in db_utils to pull dimensional data
     # Game sprite availability
-    write_pokemon_availability(workbook, game_sprite_availability_sheet, formats, table="Games")
+    write_pokemon_availability(game_sprite_availability_sheet, formats, table="Games")
     # Home sprite availability
-    write_pokemon_availability(workbook, home_sprite_availability_sheet, formats, table="home_filenames")
+    write_pokemon_availability(home_sprite_availability_sheet, formats, table="HOME")
     # Drawn availability
-    write_pokemon_availability(workbook, drawn_availability_sheet, formats, table="drawn_filenames")
+    write_pokemon_availability(drawn_availability_sheet, formats, table="drawn_filenames")
     # Home Menu Imgs availability
-    write_pokemon_availability(workbook, home_menu_sprite_availability_sheet, formats, table="home_menu_filenames")
+    write_pokemon_availability(home_menu_sprite_availability_sheet, formats, table="home_menu_filenames")
     # Pokeball availability
     # TODO: Combine static frames from pokeball gen 5 battle into one col? True if all 9 there, false otherwise
-    write_pokeball_availability(workbook, pokeball_availability_sheet, formats, table="pokeball_filenames")
+    write_pokeball_availability(pokeball_availability_sheet, formats, table="Pokeballs")
 
     print("Spreadsheet finished!")
     print("Finalizing spreadsheet close...")
@@ -147,7 +149,7 @@ def generate_header_row(worksheet, formats, is_pokemon=True, mult_col_names=None
     if mult_col_names:
         col_num = 3
         col_map = {}
-        mult_col_names = [col_name[0] for col_name in reversed(mult_col_names)]  # Putting names in reverse chronological order so spreadsheet fills with most recent data first
+        mult_col_names = [col_name for col_name in reversed(mult_col_names)]  # Putting names in reverse chronological order so spreadsheet fills with most recent data first
         for col_name in mult_col_names:
             worksheet.write(0, col_num, col_name)
             col_map[col_name] = col_num
@@ -159,34 +161,26 @@ def generate_header_row(worksheet, formats, is_pokemon=True, mult_col_names=None
         return None
 
 
-def write_pokeball_availability(workbook, worksheet, formats):
+def write_pokeball_availability(worksheet, formats):
     from db_utils import get_pokeball_filename_info
+    from db_reference_data import POKEBALLS
 
-    longest_filename = 0
-    prev_ball_id = 0
+    col_map = determine_header_cols(worksheet, "Pokeballs", formats)
     pokeball_info = get_pokeball_filename_info()
+    longest_pokeball_name = max(POKEBALLS, key=lambda ball: len(ball["name"]))["name"]
+
     # Starting at 1 to account for header row
-    for row, file in enumerate(pokeball_info, start=1):
-        curr_ball_id = file["pokeball_id"]
-        filename = file["filename"]
-        exists = file["does_exist"]
-        longest_filename = max(longest_filename, len(filename))
-        if prev_ball_id != curr_ball_id: 
-            new_ball = True
-            filename_format = formats["new info"]
-        else: 
-            new_ball = False
-            filename_format = None
+    for row, pokeball in enumerate(pokeball_info, start=1):
+        worksheet.write(row, 0, pokeball)
 
-        worksheet.write(row, 0, filename, filename_format)
-        exists_format = determine_format_by_boolean_existence(exists, new_ball)
-        worksheet.write(row, 1, "X" if exists else "M", formats[exists_format])
+        for img_type, exists in pokeball.items():
+            exists_format = determine_format_by_boolean_existence(exists)
+            worksheet.write(row, col_map[img_type], "X" if exists else "M", formats[exists_format])
+
+    worksheet.set_column(0, 0, longest_pokeball_name + 2)   # +2 for padding
 
 
-
-
-
-def write_pokemon_availability(workbook, worksheet, formats, table):
+def write_pokemon_availability(worksheet, formats, table):
     from db_utils import get_poke_name
 
     col_map = determine_header_cols(worksheet, table, formats)  # Returns col name: col num for multi column sheets, else None
@@ -227,14 +221,21 @@ def write_pokemon_availability(workbook, worksheet, formats, table):
 def write_file_existence(worksheet, formats, table, row, col_map, file_info, is_new_poke):
     if col_map: # If has multiple columns
         for col_name, file_status in file_info.items():
+            print(col_name, file_status)
             col_num = col_map[col_name]
             # Game sprites are their own beast because they can be substituted
             if table == "Games": write_game_sprite_image_status_for_games(worksheet, formats, is_new_poke, row, col_num, file_status)
             # Everything else is binary, it either exists or it doesn't
-            else: worksheet.write(row, col_num, "X" if file_status["exists"] else "M", formats[format])
+            else: 
+                file_exists = file_status["exists"]
+                print(file_exists)
+                format = determine_format_by_boolean_existence(file_exists) 
+                worksheet.write(row, col_num, "X" if file_exists else "M", formats[format])
+                print(file_exists)
     else:   # 1 Dimensional
-        format = determine_format_by_boolean_existence(file_info["exists"]) 
-        worksheet.write(row, 3, "X" if file_info["exists"] else "M", formats[format])
+        file_exists = file_status["exists"]
+        format = determine_format_by_boolean_existence(file_exists) 
+        worksheet.write(row, 3, "X" if file_exists else "M", formats[format])
 
 
 def determine_if_new_poke(prev_poke_num, poke_num, table, formats):
@@ -250,23 +251,22 @@ def determine_if_new_poke(prev_poke_num, poke_num, table, formats):
 
 
 def determine_header_cols(worksheet, table, formats):
-    if table == "Games": return generate_header_row(worksheet, formats, mult_col_names=GAMES)
-    elif table == "home_filenames": return generate_header_row(worksheet, formats, mult_col_names=[sprite_type for sprite_type in SPRITE_TYPES if sprite_type not in HOME_SPRITE_EXCLUDE])
+    if table == "Games": return generate_header_row(worksheet, formats, mult_col_names=[game[0] for game in GAMES])
+    elif table == "HOME": return generate_header_row(worksheet, formats, mult_col_names=[sprite_type for sprite_type in SPRITE_TYPES if sprite_type not in HOME_SPRITE_EXCLUDE])
     elif table == "drawn_filesnames": return generate_header_row(worksheet, formats)
     elif table == "home_menu_filenames": return generate_header_row(worksheet, formats)
-    elif table == "pokeball_filenames": return generate_header_row(worksheet, formats, mult_col_names=POKEBALL_IMG_TYPES)
+    elif table == "Pokeballs": return generate_header_row(worksheet, formats, is_pokemon=False, mult_col_names=POKEBALL_IMG_TYPES)
     else: raise ValueError(f"Table name ({table}) not recognized")
 
 
-# TODO: Alter funcs for home & pokeball in db_utils to reflect multiple columns in spreadsheet
 def get_file_info(table):
-    from db_utils import get_all_game_filenames_info, get_all_home_filenames_info, get_all_1D_non_game_filename_info
+    from db_utils import get_all_game_filenames_info, get_all_home_filenames_info, get_all_1D_non_game_filename_info, get_all_pokeball_filename_info
 
     if table == "Games": return get_all_game_filenames_info()
-    elif table == "home_filenames": return get_all_home_filenames_info()
+    elif table == "HOME": return get_all_home_filenames_info()
     elif table == "drawn_filesnames": return get_all_1D_non_game_filename_info(table)
     elif table == "home_menu_filenames": return get_all_1D_non_game_filename_info(table)
-    elif table == "pokeball_filenames": pass
+    elif table == "Pokeballs": return get_all_pokeball_filename_info()
 
 
 def determine_if_longest_length_value_yet(longest_values_dict, name, tags):
@@ -319,15 +319,10 @@ def denote_file_status(obtainable, exists, sub):
 
 # NOTE: Tags *could* be pulled via form/sprite type but I do reorder them differently (eg changing -Shiny tag placement in filename)
 def get_poke_tags(poke_name, file_info, table):
-    if table == "HOME":
-        filename = file_info["filename"]
-        # Removing sprite type tags from filename -- requires split because of moving shiny tag placement in filename
-        for sprite_type_tag in file_info["sprite type name"].split("-"):
-            filename = filename.replace(f"-{sprite_type_tag}", "")
-    elif table == "Games":
-        filename = file_info["SV"]["filename"]   # Any game would work here for tags, just pulling it out of the next loop so it isn't rewritten for each game
-    else:
-        filename = file_info["filename"]
+    # TODO: Error here....
+    if table == "HOME": filename = file_info["Default"]["filename"]     # Getting default filename will leave me with tags only (no "-Shiny", "-Animated", etc)
+    elif table == "Games": filename = file_info["SV"]["filename"]   # Any game would work here for tags, just pulling it out of the next loop so it isn't rewritten for each game
+    else: filename = file_info["filename"]  # 1 Dimensional tables
     
     # Getting tags from filename split based off first hyphen
     max_split = 1
