@@ -32,8 +32,8 @@ def print_files_with(path, s):
 
 
 def print_files_with_from_all_dirs(s):
-    for path in SAVE_PATHS.values():
-        print_files_with(path, s)
+    for dir in save_directories.values():
+        print_files_with(dir["path"], s)
 
 
 
@@ -65,8 +65,8 @@ def replace_in_filename(path, replace, replace_with, just_print=False):
 
 
 def replace_filename_in_all_dirs(replace, replace_with, just_print=False):
-    for path in SAVE_PATHS.values():
-        replace_in_filename(path, replace, replace_with, just_print)
+    for dir in save_directories.values():
+        replace_in_filename(dir["path"], replace, replace_with, just_print)
 
 
 
@@ -89,5 +89,5 @@ def delete_all_files_with_str(path, str, just_print=False):
 
 
 def delete_all_files_from_all_dirs_with_str(str, just_print=False):
-    for path in SAVE_PATHS.values():
-        delete_all_files_with_str(path, str, just_print)
+    for dir in save_directories.values():
+        delete_all_files_with_str(dir["path"], str, just_print)
