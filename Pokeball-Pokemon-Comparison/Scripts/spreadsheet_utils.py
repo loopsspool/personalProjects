@@ -189,8 +189,8 @@ def write_pokeball_availability(workbook, worksheet, formats):
 def write_pokemon_availability(workbook, worksheet, formats, table):
     from db_utils import get_poke_name
 
-    col_map = determine_header_cols(worksheet, table, formats)
-    all_file_info = get_file_info(table)
+    col_map = determine_header_cols(worksheet, table, formats)  # Returns col name: col num for multi column sheets, else None
+    all_file_info = get_file_info(table)    # Gets existence status
 
     longest_values = {"num": 4, "name": 0, "tags": 0}   # For setting col width later
     prev_poke_num = 0
@@ -199,10 +199,7 @@ def write_pokemon_availability(workbook, worksheet, formats, table):
     for row, (poke_info, file_info) in enumerate(all_file_info.items(), start=1):
         poke_num = poke_info[0]
         poke_name = get_poke_name(poke_num)
-
-        # Getting Tags
-        if table == "Games": tags = get_poke_tags(poke_name, file_info["SV"]["filename"])   # Any game would work here for tags, just pulling it out of the next loop so it isn't rewritten for each game
-        else: tags = get_poke_tags(poke_name, file_info["filename"])
+        tags = get_poke_tags(poke_name, file_info, table)
 
         # Finding longest text to set column width to
         longest_values = determine_if_longest_length_value_yet(longest_values, poke_name, tags)
@@ -320,14 +317,27 @@ def denote_file_status(obtainable, exists, sub):
     return text
 
 
-def get_poke_tags(poke_name, filename):
+# NOTE: Tags *could* be pulled via form/sprite type but I do reorder them differently (eg changing -Shiny tag placement in filename)
+def get_poke_tags(poke_name, file_info, table):
+    if table == "HOME":
+        filename = file_info["filename"]
+        # Removing sprite type tags from filename -- requires split because of moving shiny tag placement in filename
+        for sprite_type_tag in file_info["sprite type name"].split("-"):
+            filename = filename.replace(f"-{sprite_type_tag}", "")
+    elif table == "Games":
+        filename = file_info["SV"]["filename"]   # Any game would work here for tags, just pulling it out of the next loop so it isn't rewritten for each game
+    else:
+        filename = file_info["filename"]
+    
+    # Getting tags from filename split based off first hyphen
     max_split = 1
-    max_split += poke_name.count("-")
+    max_split += poke_name.count("-")   # Increasing hyphen split limit if pokemon has hyphen in their name
     split_filename = filename.split("-", max_split)
-    # If theres no tags in the filename, return an empty string
+
+    # If tags in filename, return those
     if len(split_filename) > max_split:
         tags = "-" + split_filename[len(split_filename)-1]
-    else:
+    else:   # If theres no tags in the filename (Default), return an empty string
         tags = ""
     return tags
 
