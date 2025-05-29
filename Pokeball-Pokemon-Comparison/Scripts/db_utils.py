@@ -172,6 +172,7 @@ def create_db():
     );
     """)
 
+    # TODO: Need unobtainable & obtainable tables
     cursor.execute("""
     CREATE TABLE IF NOT EXISTS pokeball_filenames (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -385,6 +386,14 @@ def get_game_filename_id(cursor, filename):
     else: return None
 
 
+def get_sprite_type_name(sprite_type_id, cursor=None):
+    with get_cursor(cursor) as cur:
+        cur.execute(f"SELECT name FROM sprite_types WHERE id={sprite_type_id}")
+        sprite_type_name=cur.fetchone()
+    if sprite_type_name: return sprite_type_name["name"]
+    else: return None
+
+
 def get_pokeball_name(pokeball_id, cursor=None):
     with get_cursor(cursor) as cur:
         cur.execute(f"SELECT name FROM pokeballs WHERE id={pokeball_id}")
@@ -519,7 +528,7 @@ def get_sprites_obtainability_records(cursor):
 
 
 
-
+# TODO: Note (in func name?) that these filenames_info funcs are for spreadsheet checklist
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     FILENAME GETTERS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 
 def get_all_game_filenames_info():
@@ -576,19 +585,22 @@ def get_all_home_filenames_info():
 
     for row in rows:
         main_key = (row["poke_num"], row["form_id"])
+        data[main_key][row["sprite_id"]]["filename"] = row["filename"]  # Necessary to get tags
+        data[main_key][row["sprite_id"]]["sprite type name"] = get_sprite_type_name(row["sprite_id"], cursor)    # Necessary to remove from filename so hyphen split only gets tags
         data[main_key][row["sprite_id"]]["exists"] = True if row["dows_exist"] else False
 
     connection.close()
     return data
 
 
-def get_pokeball_filename_info():
+def get_all_pokeball_filename_info():
     connection = sqlite3.connect(DB_PATH)
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
 
     cursor.execute("SELECT pokeball_id, filename, does_exist FROM pokeball_filenames")
-    data = cursor.fetchall()
+    rows = cursor.fetchall()
+    data = defaultdict()
 
     connection.close()
     return data
