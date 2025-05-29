@@ -320,7 +320,8 @@ def denote_file_status(obtainable, exists, sub):
 # NOTE: Tags *could* be pulled via form/sprite type but I do reorder them differently (eg changing -Shiny tag placement in filename)
 def get_poke_tags(poke_name, file_info, table):
     # TODO: Error here....
-    if table == "HOME": filename = file_info["Default"]["filename"]     # Getting default filename will leave me with tags only (no "-Shiny", "-Animated", etc)
+    if table == "HOME": 
+        filename = file_info["Default"]["filename"]     # Getting default filename will leave me with tags only (no "-Shiny", "-Animated", etc)
     elif table == "Games": filename = file_info["SV"]["filename"]   # Any game would work here for tags, just pulling it out of the next loop so it isn't rewritten for each game
     else: filename = file_info["filename"]  # 1 Dimensional tables
     

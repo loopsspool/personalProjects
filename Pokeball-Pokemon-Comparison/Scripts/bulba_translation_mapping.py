@@ -4,11 +4,10 @@ from translation_utils import EXCLUDE_TRANSLATIONS_MAP
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     GAME IMAGE TRANSLATIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
-# TODO: Make lambda dict like for wikidex -- Add LGPE backs, HOME Animated See if any others, running scraping may help find -- also pages like this: https://archives.bulbagarden.net/wiki/Category:Generation_VII_models
 # These will be excluded if true
 BULBA_DOESNT_HAVE_GAME_IMGS_FOR = {
     "no images for these games": lambda my_filename: any(game in my_filename for game in ("Gen9 SV", "Gen9_SV", "Gen8 BDSP", "Gen8_BDSP", "Gen8_LA", "Gen7_LGPE")),
-    "no animated sprites above gen5": lambda my_filename: "-Animated" in my_filename and not any(gen in my_filename for gen in ("Gen2", "Gen3", "Gen4", "Gen5")),
+    "no animated sprites above gen5 or in HOME": lambda my_filename: "-Animated" in my_filename and not any(gen in my_filename for gen in ("Gen2", "Gen3", "Gen4", "Gen5")),
     "no stills of pokeball animations": lambda my_filename: "-Gen5_Battle-Static_" in my_filename
 }
 

@@ -4,18 +4,20 @@ from translation_utils import EXCLUDE_TRANSLATIONS_MAP, extract_gen_num_from_my_
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     EXCLUSIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
+# NOTE: Just because you don't see the sprites on the respective game list DOES NOT MEAN THEY DON'T EXIST -- check URL generated, they may just not be linked properly
+    # Helpful as well: https://www.wikidex.net/wiki/WikiDex:Proyecto_Pok%C3%A9dex#P%C3%A1ginas_del_proyecto
 # Technically no static Crystal or emerald front sprites & they're gifs so might not color convert to apng nicely programatically, but Bulba has all stills for these gens, so all good as long as bulba scraped first
 # Tehcnically no gen8 static shiny back sprites but the animateds exist, so we can pull first frame
-# Animated only applies to below gen5, excluding Crystal and Emerald
 # Take careful look at backs since wikidex lumps them by gen, not game
-# TODO: Test these
 WIKIDEX_DOESNT_HAVE_IMGS_FOR = {
     "no animated images below gen5 except emerald & crystal": lambda my_filename: "-Animated" in my_filename and extract_gen_num_from_my_filename(my_filename)<5 and "Gen3 Emerald" not in my_filename and "Gen2 Crystal" not in my_filename,
     "no LGPE back sprites except meltan and melmetal": lambda my_filename: "Gen7_LGPE" in my_filename and not any(poke_num in my_filename for poke_num in ("0808", "0809")),
     "no animated BDSP sprites": lambda my_filename: "Gen8 BDSP" in my_filename and "-Animated" in my_filename,
     "no back sprites for these games": lambda my_filename: "-Back" in my_filename and any(game in my_filename for game in ("Gen8_BDSP", "Gen8_LA", "Gen9_SV")),
     "no gen7 sprites except gen7 pokes, forms, and glameow": lambda my_filename: "Gen7" in my_filename and not ((722 <= int(my_filename[:5]) <=809) or "0431" in my_filename or any(form in my_filename for form in ("-Region_Alola", "-Form_Cap_", "-Form_Ash", "-Form_Complete", "-Form_10%"))),
-    "no gen8 back sprites except gen8 pokes and forms": lambda my_filename: "Gen8_" in my_filename and "-Back" in my_filename and not ((810 <= int(my_filename[:5]) <=905) or any(exception in my_filename for exception in ("0109", "0133", "0808", "0809", "-Region_Galar", "-Gigantamax")))
+    "no gen8 back sprites except gen8 pokes and forms": lambda my_filename: "Gen8_" in my_filename and "-Back" in my_filename and not ((810 <= int(my_filename[:5]) <=905) or any(exception in my_filename for exception in ("0109", "0133", "0808", "0809", "-Region_Galar", "-Gigantamax"))),
+    "no animated LA sprites except hisuian forms": lambda my_filename: "Gen8 LA" in my_filename and "-Animated" in my_filename and "-Shiny" not in my_filename and not "-Region_Hisui" in my_filename,
+    "no animated shiny LA sprites except hisuian forms, white basculin, and new species": lambda my_filename: "Gen8 LA" in my_filename and "-Animated" in my_filename and "-Shiny" in my_filename and not (899 <= int(my_filename[:5]) <=905 or any(form in my_filename for form in ("-Region_Hisui", "-Form_White_Striped")))
 }
 
 

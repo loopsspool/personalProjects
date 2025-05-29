@@ -32,19 +32,18 @@ from wikidex_scraping_utils import wikidex_scrape_pokemon
 
 def main():
     # NOTE: Can make this false and set poke start/stop nums to print to console missing imgs -- my filenames and translated URLs
-    ALLOW_DOWNLOAD = False
-    # NOTE: If program crashes a lot like last one, write this to a txt file. Each new pokemon would rewrite the line of the file where it picked up
-    # TODO: Change from poke to go after start to end poke num
-    poke_num_start_from = 69
-    poke_num_stop_at = 200
+    ALLOW_DOWNLOAD = True
+    poke_num_start_from = 184
+    poke_num_stop_at = 450
+
     valid_start_poke_num, valid_stop_poke_num = validate_context(poke_num_start_from, poke_num_stop_at, force_update=False)   # This will check downloads with missing imgs in database and update
     
-    for poke_num in range(valid_start_poke_num, valid_stop_poke_num + 1):
-        bulba_scrape_pokemon(poke_num, allow_download=ALLOW_DOWNLOAD)     # NOTE: Always check Bulba first, they have higher quality images
-        wikidex_scrape_pokemon(poke_num, allow_download=ALLOW_DOWNLOAD)
+    # for poke_num in range(valid_start_poke_num, valid_stop_poke_num + 1):
+    #     bulba_scrape_pokemon(poke_num, allow_download=ALLOW_DOWNLOAD)     # NOTE: Always check Bulba first, they have higher quality images
+    #     wikidex_scrape_pokemon(poke_num, allow_download=ALLOW_DOWNLOAD)
     
     #bulba_scrape_pokeballs(allow_download=ALLOW_DOWNLOAD)
-    # create_file_checklist_spreadsheet()
+    #create_file_checklist_spreadsheet()
 
 
 
