@@ -237,6 +237,7 @@ def populate_db(force=False):
         connection.close()
 
 
+# TODO: After adding all/obtainable HOME filenames this updated a bunch of files?
 def update_file_existence(cursor=None):
     print("Updating database if there were any downloads...")
 
@@ -319,8 +320,9 @@ def update_non_game_files_existence(table, set_of_saved_imgs, cursor):
     table_data = cursor.fetchall()
     for record in table_data:
         does_exist = file_exists(record["filename"], set_of_saved_imgs)
-        if does_exist != record["does_exist"]:
-            print(f"File updated: {record["filename"]}")
+        db_existence_value = False if record["does_exist"]==None else record["does_exist"]    # This protects tables with unobtainable filenames, so the None existence value for unobtainable files wont get changed to False
+        if does_exist != db_existence_value:
+            print(f"In table {table}, file updated: {record["filename"]} from {record["does_exist"]} to {does_exist}")
             cursor.execute(f"""
                             UPDATE {table} 
                             SET does_exist = ?
