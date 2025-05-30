@@ -245,7 +245,7 @@ def determine_if_new_poke(prev_poke_num, poke_num, table, formats):
 
 def determine_header_cols(worksheet, table, formats):
     if table == "Games": return generate_header_row(worksheet, formats, mult_col_names=[game[0] for game in GAMES])
-    elif table == "HOME": return generate_header_row(worksheet, formats, mult_col_names=reversed([sprite_type for sprite_type in SPRITE_TYPES if sprite_type not in HOME_SPRITE_EXCLUDE]))  # Reversing bc I like the normal order it's in, so when it gets reversed again in generate headers it will be ordered proper
+    elif table == "HOME": return generate_header_row(worksheet, formats, mult_col_names=[sprite_type for sprite_type in reversed(list(SPRITE_TYPES)) if sprite_type not in HOME_SPRITE_EXCLUDE])  # Reversing bc I like the normal order it's in, so when it gets reversed again in generate headers it will be ordered proper
     elif table == "drawn_filenames": return generate_header_row(worksheet, formats)
     elif table == "home_menu_filenames": return generate_header_row(worksheet, formats)
     elif table == "Pokeballs": return generate_header_row(worksheet, formats, is_pokemon=False, mult_col_names=[pokeball["name"] for pokeball in POKEBALL_IMG_TYPES])
