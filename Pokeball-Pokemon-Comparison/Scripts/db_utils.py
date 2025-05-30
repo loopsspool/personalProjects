@@ -94,7 +94,7 @@ def create_db():
         game_id INTEGER NOT NULL,
         sprite_id INTEGER NOT NULL,
         obtainable BOOLEAN NOT NULL,
-        does_exist BOOLEAN NOT NULL,
+        does_exist BOOLEAN,
         substitution_id INTEGER,
         has_alt BOOLEAN,
         FOREIGN KEY (poke_num, form_id, game_id, sprite_id) REFERENCES sprite_obtainability
@@ -111,7 +111,7 @@ def create_db():
         game_id INTEGER NOT NULL,
         sprite_id INTEGER NOT NULL,
         obtainable BOOLEAN NOT NULL,
-        does_exist BOOLEAN,
+        does_exist BOOLEAN NOT NULL,
         substitution_id INTEGER,
         has_alt BOOLEAN,
         FOREIGN KEY (substitution_id) REFERENCES all_game_filenames(id),
@@ -186,9 +186,22 @@ def create_db():
     );
     """)
 
-    # TODO: Need unobtainable & obtainable tables
+
     cursor.execute("""
-    CREATE TABLE IF NOT EXISTS pokeball_filenames (
+    CREATE TABLE IF NOT EXISTS all_pokeball_filenames (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        pokeball_id INTEGER NOT NULL,
+        img_type_id INTEGER NOT NULL,
+        filename TEXT NOT NULL UNIQUE,
+        obtainable BOOLEAN NOT NULL,
+        does_exist BOOLEAN,
+        FOREIGN KEY (pokeball_id) REFERENCES pokeballs(id),
+        FOREIGN KEY (img_type_id) REFERENCES pokeball_img_types(id)
+    );
+    """)
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS obtainable_pokeball_filenames (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         pokeball_id INTEGER NOT NULL,
         img_type_id INTEGER NOT NULL,
@@ -250,7 +263,8 @@ def update_file_existence(cursor=None):
         update_non_game_files_existence("obtainable_home_filenames", save_directories["HOME"]["files"], cur)
         update_non_game_files_existence("home_menu_filenames", save_directories["HOME Menu"]["files"], cur)
         update_non_game_files_existence("drawn_filenames", save_directories["Drawn"]["files"], cur)
-        update_non_game_files_existence("pokeball_filenames", save_directories["Pokeball"]["files"], cur)
+        update_non_game_files_existence("all_pokeball_filenames", save_directories["Pokeball"]["files"], cur)
+        update_non_game_files_existence("obtainable_pokeball_filenames", save_directories["Pokeball"]["files"], cur)
 
     
 
@@ -283,6 +297,11 @@ def insert_into_table(cursor, table, **data):
     query = f"INSERT OR IGNORE INTO {table} ({cols}) VALUES ({val_placeholders})"
     cursor.execute(query, vals)
     return cursor.lastrowid
+
+
+def insert_into_table_w_unobtainables(cursor, obtainable, table, **data):
+    data_w_obtainable = {**data, "obtainable": obtainable}
+    insert_into_table(cursor, table, **data_w_obtainable)
 
 
 def insert_into_both_form_tables(cursor, form_name, poke_num):
@@ -322,7 +341,7 @@ def update_non_game_files_existence(table, set_of_saved_imgs, cursor):
         does_exist = file_exists(record["filename"], set_of_saved_imgs)
         db_existence_value = False if record["does_exist"]==None else record["does_exist"]    # This protects tables with unobtainable filenames, so the None existence value for unobtainable files wont get changed to False
         if does_exist != db_existence_value:
-            print(f"In table {table}, file updated: {record["filename"]} from {record["does_exist"]} to {does_exist}")
+            print(f"In table {table}, file updated: {record["filename"]}")
             cursor.execute(f"""
                             UPDATE {table} 
                             SET does_exist = ?
@@ -624,7 +643,7 @@ def get_all_pokeball_filename_info():
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
 
-    cursor.execute("SELECT pokeball_id, img_type_id, does_exist FROM pokeball_filenames")
+    cursor.execute("SELECT pokeball_id, img_type_id, does_exist FROM all_pokeball_filenames")
     rows = cursor.fetchall()
     data = defaultdict(lambda: defaultdict(dict))
 
@@ -658,7 +677,7 @@ def get_missing_pokeball_imgs(cursor=None):
     print("Getting all missing pokeball images...")
 
     with get_cursor(cursor) as cur:
-        cur.execute("SELECT pokeball_id, img_type_id, filename FROM pokeball_filenames WHERE does_exist=0")
+        cur.execute("SELECT pokeball_id, img_type_id, filename FROM obtainable_pokeball_filenames WHERE does_exist=0")
         result = cur.fetchall()
         for row in result:
             # { (pokeball_id, img_type_id) : [missing imgs list] }
@@ -1023,21 +1042,18 @@ def populate_home_filenames(cursor):
             file_ids = {"filename": filename, "poke_num": poke_info["poke num"], "form_id": poke_form[1], "sprite_id": sprite_id, "does_exist": None}
 
             if should_skip_nonexistant_sprite(poke_info["poke num"], poke_info["form name"], sprite_type):
-                file_ids["obtainable"] = False
-                insert_into_table(cursor, "all_home_filenames", **file_ids)
+                insert_into_table_w_unobtainables(cursor, obtainable=False, table="all_home_filenames", **file_ids)
                 continue
             # No home back sprites
             if "-Back" in sprite_type:
                 # Except for stamped pokemon formed "back" sprites (showing the stamp)
                 if not is_stamped_poke_form(poke_info):
-                    file_ids["obtainable"] = False
-                    insert_into_table(cursor, "all_home_filenames", **file_ids)
+                    insert_into_table_w_unobtainables(cursor, obtainable=False, table="all_home_filenames", **file_ids)
                     continue
             
             file_ids["does_exist"] = file_exists(filename, save_directories["HOME"]["files"])
             insert_into_table(cursor, "obtainable_home_filenames", **file_ids)
-            file_ids["obtainable"] = True
-            insert_into_table(cursor, "all_home_filenames", **file_ids)
+            insert_into_table_w_unobtainables(cursor, obtainable=True, table="all_home_filenames", **file_ids)
 
 
 def generate_home_filename(poke_info, sprite_type):
@@ -1167,14 +1183,18 @@ def populate_pokeball_filenames(cursor):
             filenames = generate_pokeball_filename(ball_info, img_type_info)
             # Iterating bc generate pokeball filename returns a list, because if gen3 Ultra Ball theres inter-gen differences (ie multiple filenames)
             for filename in filenames:
-                exists = file_exists(filename, save_directories["Pokeball"]["files"])
-                file_ids = {"filename": filename, "pokeball_id": ball_id, "img_type_id": img_type_id, "does_exist": exists}
-                insert_into_table(cursor, "pokeball_filenames", **file_ids)
+                file_ids = {"filename": filename, "pokeball_id": ball_id, "img_type_id": img_type_id, "does_exist": None}
+
+                if should_exclude_pokeball_img(ball_info, img_type_info):
+                    insert_into_table_w_unobtainables(cursor, obtainable=False, table="all_pokeball_filenames", **file_ids)
+                    continue
+
+                file_ids["does_exist"] = file_exists(filename, save_directories["Pokeball"]["files"])
+                insert_into_table(cursor, "obtainable_pokeball_filenames", **file_ids)
+                insert_into_table_w_unobtainables(cursor, obtainable=True, table="all_pokeball_filenames", **file_ids)
 
 
 def generate_pokeball_filename(ball_info, img_type_info):
-    if should_exclude_pokeball_img(ball_info, img_type_info): return []
-
     ball_name = ball_info["name"]
     img_type_name = img_type_info["name"]
     bulba_filename = f"{ball_name}-{img_type_name}"
