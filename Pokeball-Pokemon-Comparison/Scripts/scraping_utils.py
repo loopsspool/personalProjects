@@ -54,14 +54,15 @@ def determine_animation_status_before_downloading(img_url, save_path):
             save_first_frame(img_url, save_path)
 
 
-def img_exists_at_url(url, nonexistant_string_denoter):
+# TODO: Rename function to be more accurate?
+def img_exists_at_url(url):
     img_page = fetch_url_with_retry(url)
 
-    if img_page == None: return False, None     # This means a redirect was caught, and saying the page doesn't exist
+    if img_page == None: return False     # This means a redirect or 404 was caught, and saying the page doesn't exist
     
     img_page_soup = BeautifulSoup(img_page.content, 'html.parser')
-    img_exists = not img_page_soup.find("p", string=re.compile(nonexistant_string_denoter))    # Negating a found non-existant statement on page
-    return (img_exists, img_page_soup)
+    
+    return (img_page_soup)
 
 
 def fetch_url_with_retry(url, stream_flag=False):
@@ -73,12 +74,16 @@ def fetch_url_with_retry(url, stream_flag=False):
         try:
             response = requests.get(url, stream=stream_flag, allow_redirects=False)
 
-            if response.status_code == 200: # Success
+            # Success, return soup of page
+            if response.status_code == 200: 
                 return response
             
             # The below catches a redirect... Can happen for instance trying to get gen6 pokemon back sprites for gen 7, which just downloads the same image twice when I already have the games as fallbacks in my db
             # Generally, I want my URLs to go to that exact image, and if it links to another, my db should also link to another... But TODO: Check after scrape, if oddballs missing this may be why
             elif 300 <= response.status_code < 400:
+                return None
+            
+            elif response.status_code == 404:
                 return None
 
             # Most frequent error is 503, I assume rate limiting

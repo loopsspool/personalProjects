@@ -65,8 +65,8 @@ def get_bulba_translated_species_form(poke_info, my_filename, map_type):
 def get_bulba_img(url, save_path, allow_download, has_animation=False):
     my_filename = save_path.split("\\")[-1]
 
-    img_exists, img_page_soup = img_exists_at_url(url, nonexistant_string_denoter=r"No file by this name exists.")
-    if not img_exists:
+    img_page_soup = img_exists_at_url(url)
+    if not img_page_soup:
         print_couldnt_dl_msg(my_filename)
         return ()
     else:
