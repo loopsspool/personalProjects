@@ -7,6 +7,7 @@ import random
 import time
 from email.utils import parsedate_to_datetime
 from datetime import datetime, timezone
+from zoneinfo import ZoneInfo
 
 from db_utils import get_missing_poke_imgs_by_table, get_missing_pokeball_imgs, update_file_existence
 from translation_utils import EXCLUDE_TRANSLATIONS_MAP
@@ -95,10 +96,12 @@ def fetch_url_with_retry(url, stream_flag=False):
                     # Fallback to exponential backoff
                     wait_time = BASE_DELAY * (2 ** attempt)
 
+                current_central_time = datetime.now(ZoneInfo("America/Chicago"))
+                pp_current_central_time = current_central_time.strftime("%I:%M:%S %p")
                 print(f"""\n\n\n
-                      ****************************************************************
-                      Retrying after {wait_time} seconds due to {response.status_code}
-                      ****************************************************************
+                      *********************************************************************************************
+                      Retrying after {wait_time} seconds due to {response.status_code} at {pp_current_central_time}
+                      *********************************************************************************************
                       \n\n\n""")
                 time.sleep(wait_time)
                 attempt += 1
