@@ -147,13 +147,13 @@ def generate_header_row(worksheet, formats, is_pokemon=True, mult_col_names=None
         worksheet.write(0, 0, "Name")
 
     if mult_col_names:
-        col_num = 3
+        col_num = 3 if is_pokemon else 1
         col_map = {}
         mult_col_names = [col_name for col_name in reversed(mult_col_names)]  # Putting names in reverse chronological order so spreadsheet fills with most recent data first
         for col_name in mult_col_names:
             worksheet.write(0, col_num, col_name)
             col_map[col_name] = col_num
-            worksheet.set_column(col_num, col_num, len(str(col_name)) + 1)    # Setting column width, 1 is for padding
+            worksheet.set_column(col_num, col_num, len(str(col_name)) + 2)    # Setting column width, 2 is for padding
             col_num += 1
         return col_map
     else:   # 1 Dimensional sheets
