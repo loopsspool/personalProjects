@@ -9,12 +9,13 @@ import cv2  # To convert webm background to transparent
 import numpy as np  # To parse webm
 import tempfile     # To temporarily read webm
 
+from scraping_utils import fetch_url_with_retry
 
 def is_animated(url):
     file_type = f".{url.split(".")[-1]}"
 
     if file_type in (".png", ".gif"):
-        img = Image.open(requests.get(url, stream = True).raw)
+        img = Image.open(fetch_url_with_retry(url, stream_flag=True).raw)
         return(img.is_animated)
     elif file_type in (".webm"):
         return(True)
@@ -33,7 +34,7 @@ def save_first_frame(url, save_path):
 
 
 def save_first_frame_of_png_or_gif(url, save_path):
-    img = Image.open(requests.get(url, stream = True).raw)
+    img = Image.open(fetch_url_with_retry(url, stream_flag=True).raw)
     first_frame = img.copy()    # Returns just first frame
     first_frame.save(save_path)
 
@@ -43,7 +44,7 @@ def save_first_frame_of_webm(url, save_path):
     from app_globals import NEED_TRANSPARENCY_SAVE_PATH
 
     # Download the video
-    response = requests.get(url)
+    response = fetch_url_with_retry(url)
     response.raise_for_status()
 
     # Write to a temp video file
@@ -125,9 +126,6 @@ def preprocess_for_u2net(input_filepath, output_path):
 #     preprocess_for_u2net(og_path, new_path)
 
 
-
-
-
 # TODO: Incorporate the below to save each frame of an animated png
 # img = Image.open(os.path.join(POKEBALL_SAVE_PATH, file))
 #         frame=0
@@ -144,6 +142,8 @@ def preprocess_for_u2net(input_filepath, output_path):
 def bulba_get_largest_png(img_page_soup):
     # Find the biggest image location
     biggest_url = img_page_soup.find("div", "fullImageLink")
+    if biggest_url is None:
+        print(img_page_soup)
     # Return its url
     return (biggest_url.a.get("href"))
 
@@ -154,4 +154,6 @@ def wikidex_get_largest_img(img_page_soup):
         return (has_larger_img.get("href"))
     else: 
         img_div = img_page_soup.find("div", "fullMedia")
+        if img_div is None:
+            print(img_page_soup)
         return (img_div.a.get("href"))
