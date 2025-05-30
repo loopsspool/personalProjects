@@ -29,11 +29,14 @@ def wikidex_scrape_pokemon(poke_num, allow_download=False):
 
 def wikidex_get_img(url, save_path, allow_download, has_animation=False):
     my_filename = save_path.split("\\")[-1]
-    img_exists, img_page_soup = search_image_under_all_file_extensions(url, my_filename)
+    img_page_soup, my_filename_w_wikidex_file_ext = search_image_under_all_file_extensions(url, my_filename)    # TODO: Have this alter my filename if different extensions
 
-    if not img_exists:
+    if not img_page_soup:
         print_couldnt_dl_msg(my_filename)
         return
+    else:
+        # TODO: Once everything is webp this wont be necessary as my filename will always be a webp
+        save_path = save_path.replace(my_filename, my_filename_w_wikidex_file_ext)
     
     if allow_download:
         img_url = wikidex_get_largest_img(img_page_soup)
@@ -48,6 +51,7 @@ def wikidex_get_img(url, save_path, allow_download, has_animation=False):
             download_img(img_url, save_path)
 
 
+# TODO: This isnt working properly... see 471 SV webm
 def search_image_under_all_file_extensions(url, my_filename):
     file_exts_wikidex_uses = [".png", ".gif", ".webm"]  # Ordered in terms of preference (png for stills, gif for transparency, webm bc its there)
 
@@ -56,14 +60,16 @@ def search_image_under_all_file_extensions(url, my_filename):
         if "-Animated" in my_filename and file_ext == ".png": continue  # pngs for stills only
         if " HOME" in my_filename and file_ext != ".webm": continue     # HOME sprites always webm (w/o transparency)
         # Replacing file extension
-        if file_ext not in url: url.replace(get_file_ext(url), file_ext)
+        if file_ext not in url: url = url.replace(get_file_ext(url), file_ext)
         # Seeing if the URL exists
-        img_exists, img_page_soup = img_exists_at_url(url, nonexistant_string_denoter=r"No existe ningún archivo con este nombre.")
+        img_page_soup = img_exists_at_url(url)
         # If so, return relevant data, otherwise try next file extension
-        if img_exists: return img_exists, img_page_soup
+        if img_page_soup: 
+            my_filename_proper_ext = my_filename.replace(get_file_ext(my_filename), file_ext)
+            return img_page_soup, my_filename_proper_ext
 
-    # No file extensions exist for img
-    return False, None
+    # Img doesnt exist under any file extensions
+    return None, None
     
 
 def wikidex_doesnt_have_images_for(my_filename):
