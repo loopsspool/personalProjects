@@ -632,6 +632,7 @@ def get_all_home_filenames_info():
         main_key = (row["poke_num"], row["form_id"])
         sprite_type_name = get_sprite_type_name(row["sprite_id"], cursor)
         data[main_key][sprite_type_name]["filename"] = row["filename"]  # Necessary to get tags
+        data[main_key][sprite_type_name]["obtainable"] = True if row["obtainable"] else False
         data[main_key][sprite_type_name]["exists"] = True if row["does_exist"] else False
 
     connection.close()
@@ -643,7 +644,7 @@ def get_all_pokeball_filename_info():
     connection.row_factory = sqlite3.Row
     cursor = connection.cursor()
 
-    cursor.execute("SELECT pokeball_id, img_type_id, does_exist FROM all_pokeball_filenames")
+    cursor.execute("SELECT pokeball_id, img_type_id, obtainable, does_exist FROM all_pokeball_filenames")
     rows = cursor.fetchall()
     data = defaultdict(lambda: defaultdict(dict))
 
@@ -652,6 +653,7 @@ def get_all_pokeball_filename_info():
         img_type = get_pokeball_img_type_name(row["img_type_id"], cursor)
         # TODO: Turn Battle-Static_0 - 8 to just Battle Static
         data[pokeball][img_type] = {
+            "obtainable": row["obtainable"],
             "exists": row["does_exist"]
         }
 
@@ -1038,18 +1040,18 @@ def populate_home_filenames(cursor):
 
     for poke_form, poke_info in poke_forms.items():
         for sprite_id, sprite_type in sprite_types.items():
+            if "-Back-Animated" in sprite_type: continue    # Animated back sprites are unobtainable for all HOME pokes, so excluding even them from all_home_filenames
+
             filename = generate_home_filename(poke_info, sprite_type)
             file_ids = {"filename": filename, "poke_num": poke_info["poke num"], "form_id": poke_form[1], "sprite_id": sprite_id, "does_exist": None}
 
             if should_skip_nonexistant_sprite(poke_info["poke num"], poke_info["form name"], sprite_type):
                 insert_into_table_w_unobtainables(cursor, obtainable=False, table="all_home_filenames", **file_ids)
                 continue
-            # No home back sprites
-            if "-Back" in sprite_type:
-                # Except for stamped pokemon formed "back" sprites (showing the stamp)
-                if not is_stamped_poke_form(poke_info):
-                    insert_into_table_w_unobtainables(cursor, obtainable=False, table="all_home_filenames", **file_ids)
-                    continue
+            # No home back sprites, except for stamped pokemon to show stamp
+            if "-Back" in sprite_type and not is_stamped_poke_form(poke_info):
+                insert_into_table_w_unobtainables(cursor, obtainable=False, table="all_home_filenames", **file_ids)
+                continue
             
             file_ids["does_exist"] = file_exists(filename, save_directories["HOME"]["files"])
             insert_into_table(cursor, "obtainable_home_filenames", **file_ids)
