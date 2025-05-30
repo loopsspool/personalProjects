@@ -5,9 +5,10 @@ from bs4 import BeautifulSoup
 import re
 import random
 import time
+from email.utils import parsedate_to_datetime
+from datetime import datetime, timezone
 
 from db_utils import get_missing_poke_imgs_by_table, get_missing_pokeball_imgs, update_file_existence
-from image_utils import save_first_frame, is_animated
 from translation_utils import EXCLUDE_TRANSLATIONS_MAP
 from app_globals import *
 
@@ -30,7 +31,7 @@ def download_img(url, save_path):
     if img_type in (".png", ".gif"):
         filename, headers = opener.retrieve(url, save_path)
     elif img_type == ".webm":
-        ani_img = requests.get(url).content
+        ani_img = fetch_url_with_retry(url).content
         with open(save_path, 'wb') as my_file:
             my_file.write(ani_img)
 
@@ -38,6 +39,8 @@ def download_img(url, save_path):
 # NOTE: Only reason this works is because bulba uses same file extension for static/animated sprites
 # Wikidex has some logic for same filename, different extensions, may be worth expanding on if ever scraping more sites
 def determine_animation_status_before_downloading(img_url, save_path):
+    from image_utils import is_animated, save_first_frame
+
     img_is_animated = is_animated(img_url)
     if "-Animated" in save_path:
         if img_is_animated:
@@ -52,15 +55,70 @@ def determine_animation_status_before_downloading(img_url, save_path):
 
 
 def img_exists_at_url(url, nonexistant_string_denoter):
-    img_page = requests.get(url, allow_redirects=False)
-    # The below catches a redirect... Can happen for instance trying to get gen6 pokemon back sprites for gen 7, which just downloads the same image twice when I already have the games as fallbacks in my db
-    # Generally, I want my URLs to go to that exact image, and if it links to another, my db should also link to another... But TODO: Check after scrape, if oddballs missing this may be why
-    if 300 <= img_page.status_code < 400:
-        return False, None
+    img_page = fetch_url_with_retry(url)
+
+    if img_page == None: return False, None     # This means a redirect was caught, and saying the page doesn't exist
     
     img_page_soup = BeautifulSoup(img_page.content, 'html.parser')
     img_exists = not img_page_soup.find("p", string=re.compile(nonexistant_string_denoter))    # Negating a found non-existant statement on page
     return (img_exists, img_page_soup)
+
+
+def fetch_url_with_retry(url, stream_flag=False):
+    MAX_RETRIES = 5
+    BASE_DELAY = 5
+    attempt = 0
+
+    while attempt < MAX_RETRIES:
+        try:
+            response = requests.get(url, stream=stream_flag, allow_redirects=False)
+
+            if response.status_code == 200: # Success
+                return response
+            
+            # The below catches a redirect... Can happen for instance trying to get gen6 pokemon back sprites for gen 7, which just downloads the same image twice when I already have the games as fallbacks in my db
+            # Generally, I want my URLs to go to that exact image, and if it links to another, my db should also link to another... But TODO: Check after scrape, if oddballs missing this may be why
+            elif 300 <= response.status_code < 400:
+                return None
+
+            # Most frequent error is 503, I assume rate limiting
+            elif response.status_code in (429, 503):
+                retry_after = response.headers.get("Retry-After")
+                wait_time = parse_retry_after(retry_after) if retry_after else None
+
+                if wait_time is None:
+                    # Fallback to exponential backoff
+                    wait_time = BASE_DELAY * (2 ** attempt)
+
+                print(f"""\n\n\n
+                      ****************************************************************
+                      Retrying after {wait_time} seconds due to {response.status_code}
+                      ****************************************************************
+                      \n\n\n""")
+                time.sleep(wait_time)
+                attempt += 1
+            else:
+                response.raise_for_status()  # Raise other HTTP errors
+
+        except requests.RequestException as e:
+            # For connection timeouts, DNS errors, etc.
+            print(f"Request failed: {e}. Retrying...")
+            time.sleep(BASE_DELAY * (2 ** attempt))
+            attempt += 1
+
+    raise Exception(f"Failed to fetch {url} after {MAX_RETRIES} attempts.")
+
+
+def parse_retry_after(retry_after):
+    try:
+        return int(retry_after)
+    except ValueError:
+        try:
+            dt = parsedate_to_datetime(retry_after)
+            now = datetime.now(timezone.utc)
+            return max(0, int((dt - now).total_seconds()))
+        except Exception:
+            return None
 
 
 def determine_save_path_from_file_type(file_ext):
