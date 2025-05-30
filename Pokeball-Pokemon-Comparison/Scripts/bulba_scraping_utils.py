@@ -272,7 +272,7 @@ def bulba_scrape_pokeballs(allow_download=False):
     bulba_scrape_config = generate_config_dict(BULBA_FILE_STARTER_URL, get_bulba_img, allow_download)
 
     # Setting animated to True for gen5_Battle-Animated, -1 for poke_num which just gets ignored for this table name anyways
-    scrape_imgs(-1, "pokeball_filenames", pokeball_translate, exclusions=bulba_doesnt_have_images_for, has_animation=True, save_path=save_directories["Pokeball"]["path"], config_dict=bulba_scrape_config)
+    scrape_imgs(-1, "obtainable_pokeball_filenames", pokeball_translate, exclusions=bulba_doesnt_have_images_for, has_animation=True, save_path=save_directories["Pokeball"]["path"], config_dict=bulba_scrape_config)
 
 
 def pokeball_translate(my_filename, pokeball_info):
