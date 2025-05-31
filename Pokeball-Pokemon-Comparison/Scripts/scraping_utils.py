@@ -66,6 +66,9 @@ def img_exists_at_url(url):
     return (img_page_soup)
 
 
+# TODO: Check stuff like images on this: https://www.wikidex.net/wiki/WikiDex:Proyecto_Pok%C3%A9dex/Sprites_animados_de_Leyendas_Pok%C3%A9mon:_Arceus
+    # That have that page linked to the img page, but there isn't actually an img, still return a 404
+    # Like this https://www.wikidex.net/wiki/Archivo:Machamp_LPA.gif
 def fetch_url_with_retry(url, stream_flag=False):
     MAX_RETRIES = 5
     BASE_DELAY = 5
@@ -147,7 +150,7 @@ def print_couldnt_dl_msg(file):
 #|================================================================================================|
 
 def scrape_imgs(poke_num, filename_table, translate_func, exclusions, has_animation, save_path, config_dict):
-    missing_imgs_dict = get_missing_poke_imgs_by_table(poke_num, filename_table) if filename_table != "pokeball_filenames" else get_missing_pokeball_imgs()
+    missing_imgs_dict = get_missing_poke_imgs_by_table(poke_num, filename_table) if filename_table != "obtainable_pokeball_filenames" else get_missing_pokeball_imgs()
     translated_missing_imgs = translate_all_my_filenames_to_url(missing_imgs_dict, translate_func, exclusions, config_dict["Site URL"])
 
     missing_count = 0
