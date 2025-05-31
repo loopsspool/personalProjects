@@ -41,7 +41,7 @@ def save_first_frame_of_png_or_gif(url, save_path):
 
 # TODO: No webm videos have transparency, will need to set a different save file for these to remove later
 def save_first_frame_of_webm(url, save_path):
-    from app_globals import NEED_TRANSPARENCY_SAVE_PATH
+    from app_globals import save_directories
 
     # Download the video
     response = fetch_url_with_retry(url)
@@ -55,7 +55,7 @@ def save_first_frame_of_webm(url, save_path):
 
     # TODO: Once transparency issue is resolved, these can instead be saved to passed save_path (game sprites/home sprites)
     filename = save_path.split("\\")[-1]
-    still_save_path = os.path.join(NEED_TRANSPARENCY_SAVE_PATH, filename)
+    still_save_path = os.path.join(save_directories["Need Transparency"]["path"], filename)
 
     # Extract first frame using ffmpeg
     try:
