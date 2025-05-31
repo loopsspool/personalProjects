@@ -248,7 +248,13 @@ def determine_header_cols(worksheet, table, formats):
     elif table == "HOME": return generate_header_row(worksheet, formats, mult_col_names=[sprite_type for sprite_type in reversed(list(SPRITE_TYPES)) if sprite_type not in HOME_SPRITE_EXCLUDE])  # Reversing bc I like the normal order it's in, so when it gets reversed again in generate headers it will be ordered proper
     elif table == "drawn_filenames": return generate_header_row(worksheet, formats)
     elif table == "home_menu_filenames": return generate_header_row(worksheet, formats)
-    elif table == "Pokeballs": return generate_header_row(worksheet, formats, is_pokemon=False, mult_col_names=[pokeball["name"] for pokeball in POKEBALL_IMG_TYPES])
+    elif table == "Pokeballs":
+        pokeball_cols = [pokeball["name"] for pokeball in POKEBALL_IMG_TYPES]
+        # Combining statics 0-8 into one column, logic for if they all exist or not is in get_all_pokeball_filename_info in db_utils
+        gen5_static_0_index = pokeball_cols.index("Gen5_Battle-Static_0")
+        pokeball_cols[gen5_static_0_index] = "Gen5_Battle-Statics"
+        pokeball_cols = [ball for ball in pokeball_cols if not ball.startswith("Gen5_Battle-Static_")]  # Excludes my combined element because of the underscore
+        return generate_header_row(worksheet, formats, is_pokemon=False, mult_col_names=pokeball_cols)
     else: raise ValueError(f"Table name ({table}) not recognized")
 
 

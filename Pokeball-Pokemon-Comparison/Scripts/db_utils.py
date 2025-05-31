@@ -651,11 +651,42 @@ def get_all_pokeball_filename_info():
     for row in rows:
         pokeball = get_pokeball_name(row["pokeball_id"], cursor)
         img_type = get_pokeball_img_type_name(row["img_type_id"], cursor)
-        # TODO: Turn Battle-Static_0 - 8 to just Battle Static
+        
         data[pokeball][img_type] = {
             "obtainable": row["obtainable"],
             "exists": row["does_exist"]
         }
+
+    # Converting Gen5 battle statics into one element
+    battle_statics_obtainable = True
+    battle_statics_all_exist = True
+    # Below necessary bc I can't change dict size while iterating
+    add_dict = {}
+    del_key_list = []
+    # Grabbing data for condensing
+    for pokeball, img_type in data.items():
+        for i in range(9):
+            img_key = f"Gen5_Battle-Static_{i}"
+            if img_key not in del_key_list: del_key_list.append(img_key)
+
+            if not img_type[img_key]["obtainable"]:
+                battle_statics_obtainable = False
+                battle_statics_all_exist = False
+                break
+            if not img_type[img_key]["exists"]:
+                battle_statics_all_exist = False
+                break
+
+        add_dict[pokeball] = {"Gen5_Battle-Statics": {"obtainable": battle_statics_obtainable, "exists": battle_statics_all_exist}}
+
+    # Updating data dict
+    for pokeball in list(data.keys()):  # Creating list of keys so I can iterate over dict while deleting/adding
+        # Deleting 0-9 labeled static file info
+        for img_type_key in del_key_list:
+            del data[pokeball][img_type_key]
+        # Adding singular condensed element that will say if ALL do or dont exist/obtainable
+        data[pokeball]["Gen5_Battle-Statics"] = add_dict[pokeball]["Gen5_Battle-Statics"]
+
 
     connection.close()
     return data
