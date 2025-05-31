@@ -46,14 +46,20 @@ def get_bulba_translated_species_form(poke_info, my_filename, map_type):
         if map_type in BULBA_POKE_FORM_TRANSLATION_MAP[poke_num]:
             for form, translation in BULBA_POKE_FORM_TRANSLATION_MAP[poke_num][map_type].items():
                 if form in form_name:
-                    # If Unown, adjust bulba translation as needed
-                    if poke_num == 201 and map_type == "Game":
-                        translation = adjust_translation_for_unown(my_filename, translation)
+                    # TODO: Test this for unown
+                    translation = poke_form_translation_potential_addl_processing(poke_num, map_type, my_filename, translation)
                     return(translation)
     
     if map_type not in ("Drawn", "Menu"):   # Drawn/HOME Menu forms will frequently omit forms to just run my filename
         print(f"Couldn't search for image to download... No respective form in map set for \t{my_filename}")
     return(EXCLUDE_TRANSLATIONS_MAP["NIM"])
+
+
+def poke_form_translation_potential_addl_processing(poke_num, map_type, my_filename, translation):
+    for poke_form_map, addl_processing in BULBA_POKE_FORMS_NEEDING_ADDL_PROCESSING.items():
+        if (poke_num, map_type) == poke_form_map:
+            return addl_processing(my_filename, translation)
+    return translation
 
 
 
@@ -110,22 +116,6 @@ def bulba_game_sprite_translate(my_filename, poke_info):
 
     bulba_filename = f"{bulba_filename_starter}{back_tag}{bulba_game}{poke_num_leading_zeros}{universal_form_tag}{species_form_tag}{gigantamax_tag}{gender_tag}{shiny_tag}{file_ext}"
     return(bulba_filename)
-
-
-# NOTE: I hate to hardcode it this way, but attempting 2-3 page opens just to find the right name (via verify_bulba_inconsistency func)
-# AND THEN ANOTHER to download FOR EACH game AND sprite type was way too taxing for bulba resources and my time
-# This may break in the future if someone (ie me) ever fixes their naming convention on bulba
-# But in the meantime this is like 1000x faster than doing it programatically 
-def adjust_translation_for_unown(my_filename, translation):
-    # Gen4 has hyphens, A is always blank
-    if "Gen4" in my_filename and "-Form_A" not in my_filename:
-        # Regular color back doesn't have the hyphen, but the shiny backs do (ARRRAAAAGHHH)
-        if "-Back" in my_filename and "-Shiny" not in my_filename:
-            return translation
-        adj_translation = "-" + translation
-        return adj_translation
-    # If condition isnt met, just return the letter
-    return translation
 
 
 # is_game_sprite necessary since both game sprites and home sprites are run through this, game sprites have m denoter where applicable, home sprites never do

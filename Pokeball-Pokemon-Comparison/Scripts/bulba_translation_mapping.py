@@ -118,6 +118,30 @@ def drawn_dream_translation(form):
 BULBA_DRAWN_DREAM_TYPE_MAP = {k: drawn_dream_translation(v.replace("-","")) for k,v in BULBA_TYPE_FORM_MAP.items()}
 
 
+# These are cases where there are differences between game and HOME form translations, differences for game translations between generations/forms, etc
+BULBA_POKE_FORMS_NEEDING_ADDL_PROCESSING = {
+    (201, "Game"): lambda my_filename, translation: adjust_translation_for_unown(my_filename, translation), # lambda for this guy so lazy_import doesn't try running this on dict definition, only when called
+    (493, "Game"): lambda my_filename, translation: translation.replace("-", "") if " HOME" in my_filename else translation,     # Called with Game map_type since HOME recycles game denoters
+    (773, "Game"): lambda my_filename, translation: translation.replace("-", "") if " HOME" in my_filename else translation     # Called with Game map_type since HOME recycles game denoters
+}
+
+
+# NOTE: I hate to hardcode it this way, but attempting 2-3 page opens just to find the right name (via verify_bulba_inconsistency func)
+# AND THEN ANOTHER to download FOR EACH game AND sprite type was way too taxing for bulba resources and my time
+# This may break in the future if someone (ie me) ever fixes their naming convention on bulba
+# But in the meantime this is like 1000x faster than doing it programatically 
+def adjust_translation_for_unown(my_filename, translation):
+    # Gen4 has hyphens, A is always blank
+    if "Gen4" in my_filename and "-Form_A" not in my_filename:
+        # Regular color back doesn't have the hyphen, but the shiny backs do (ARRRAAAAGHHH)
+        if "-Back" in my_filename and "-Shiny" not in my_filename:
+            return translation
+        adj_translation = "-" + translation
+        return adj_translation
+    # If condition isnt met, just return the letter
+    return translation
+
+
 # Drawn translations only used where bulba naming convention is different from my form naming convention, so if omitted, can assume it is using the form name
 # HOME Menu images will try to use drawn translations first, so if omitted assume it is using drawn translation or just form name
 # NOTE: Bulba naming convention whitespace will be converted to underscores when turned into a URL, allowing my multi-word forms seperated by underscores to match
