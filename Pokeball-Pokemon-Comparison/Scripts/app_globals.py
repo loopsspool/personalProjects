@@ -1,4 +1,23 @@
 import os
+import importlib
+
+
+
+
+#|================================================================================================|
+#|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     IMPORT WORKAROUND     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+#|================================================================================================|
+
+# To cache dynamically imported funcs so it only imports once
+# Necessary to avoid circular import
+_module_cache = {}
+def lazy_import(module_name):
+    if module_name not in _module_cache:
+        _module_cache[module_name] = importlib.import_module(module_name)
+    return _module_cache[module_name]
+
+
+
 
 #|================================================================================================|
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     GENERAL UTILITY     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
