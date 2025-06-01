@@ -1,4 +1,4 @@
-from translation_utils import EXCLUDE_TRANSLATIONS_MAP
+from translation_utils import EXCLUDE_TRANSLATIONS_MAP, extract_gen_num_from_my_filename
 
 #|================================================================================================|
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     GAME IMAGE TRANSLATIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
@@ -17,6 +17,15 @@ MALE_DENOTER_EXCLUSION_GENS = ["Gen1 ", "Gen1_", "Gen2 ", "Gen2_", "Gen3 ", "Gen
 
 # Allows universal forms (regions, mega, etc) to be paired w female forms (See Hisuian Sneasel)
 FEMALE_DENOTER_UNIVERSAL_FORM_EXCEPTION_POKEMON = ["0215"]
+
+# Pokemon exceptions that usually have m/f denoters
+# These are already factored out of being obtainable by my database since -f is its own form, so by default no other form can be -f
+# However, Bulba naming convention is to have m/f denoters, so if there isnt a f tag in my filename, normally it adds a m tag to the bulba filename
+# This evaluating to True excludes a m denoter
+GENDER_DENOTER_EXCEPTIONS = {
+    "no male pikachu cap/cosplay": lambda my_filename: "0025" in my_filename and any(form in my_filename for form in ("-Form_Cap", "-Form_Cosplay")),
+    "no male eevees below gen8": lambda my_filename: "0133" in my_filename and extract_gen_num_from_my_filename(my_filename) < 8
+}
 
 BULBA_GAME_MAP = {
     # Gen included so Gold doesn't trigger Golduck, Yellow trigger Yellow Core Minior, etc
@@ -1020,13 +1029,13 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Rainbow_Swirl_Ribbon_Sweet": "RaSR",
             "-Form_Rainbow_Swirl_Star_Sweet": "RaSS",
             "-Form_Rainbow_Swirl_Strawberry_Sweet": "RaS",
-            "-Form_Ruby_Cream_Berry_Sweet": "RaCB",
-            "-Form_Ruby_Cream_Clover_Sweet": "RaCC",
-            "-Form_Ruby_Cream_Flower_Sweet": "RaCF",
-            "-Form_Ruby_Cream_Love_Sweet": "RaCL",
-            "-Form_Ruby_Cream_Ribbon_Sweet": "RaCR",
-            "-Form_Ruby_Cream_Star_Sweet": "RaCS",
-            "-Form_Ruby_Cream_Strawberry_Sweet": "RaC",
+            "-Form_Ruby_Cream_Berry_Sweet": "RuCB",
+            "-Form_Ruby_Cream_Clover_Sweet": "RuCC",
+            "-Form_Ruby_Cream_Flower_Sweet": "RuCF",
+            "-Form_Ruby_Cream_Love_Sweet": "RuCL",
+            "-Form_Ruby_Cream_Ribbon_Sweet": "RuCR",
+            "-Form_Ruby_Cream_Star_Sweet": "RuCS",
+            "-Form_Ruby_Cream_Strawberry_Sweet": "RuC",
             "-Form_Ruby_Swirl_Berry_Sweet": "RuSB",
             "-Form_Ruby_Swirl_Clover_Sweet": "RuSC",
             "-Form_Ruby_Swirl_Flower_Sweet": "RuSF",
@@ -1349,7 +1358,6 @@ BULBA_POKEBALL_TRANSLATION_MAP = {
     "Gen4_Battle": "battle IV",
     "Gen4_Summary": "summary IV",
     "Gen5_Summary": "summary V",
-    # TODO: Account for each frame (0-7)
     "Gen5_Battle": "battle V",
     "Gen5_Battle-Animated": "battle V",
     "Gen6": "battle 3DS",
