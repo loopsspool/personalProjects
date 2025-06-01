@@ -89,7 +89,7 @@ FORM_EXCLUSIONS = {
     "no f form visual differences before gen 4": lambda poke_form, game: poke_form["form name"] == "-f" and game["gen"] < 4,
     "no fairy forms before gen 6": lambda poke_form, game: poke_form["form name"] == "-Form_Fairy" and game["gen"] < 6,
     "no megas outside XY ORAS SM USUM LGPE": lambda poke_form, game: "-Mega" in poke_form["form name"] and game["name"] not in ("XY_ORAS", "SM_USUM", "LGPE"),
-    "no gigantamax outside SwSh": lambda poke_form, game: poke_form["form name"] == "-Gigantamax" and game["name"] != "SwSh",
+    "no gigantamax outside SwSh": lambda poke_form, game: "-Gigantamax" in poke_form["form name"] and game["name"] != "SwSh",
     "no regional forms before gen 7": lambda poke_form, game: "-Region" in poke_form["form name"] and game["gen"] < 7,
     "no alolan forms before SM USUM": lambda poke_form, game: "-Region_Alola" in poke_form["form name"] and lazy_import("db_utils").get_game_id(game["name"]) < lazy_import("db_utils").get_game_id("SM_USUM"),
     "no galarian forms before SwSh": lambda poke_form, game: "-Region_Galar" in poke_form["form name"] and lazy_import("db_utils").get_game_id(game["name"]) < lazy_import("db_utils").get_game_id("SwSh"),
@@ -121,8 +121,10 @@ FORM_EXCLUSIONS = {
     "no ash greninja outside of SM USUM": lambda poke_form, game: poke_form["poke num"] == 658 and poke_form["form name"] == "-Form_Ash" and game["name"] != "SM_USUM",
     "no zygarde forms until gen 7": lambda poke_form, game: poke_form["poke num"] == 718 and poke_form["form name"] != "-Form_50%" and game["gen"] < 7,
     "no solgaleo lunala forms outside SM USUM": lambda poke_form, game: poke_form["poke num"] in (791, 792) and poke_form["form name"] != "Default" and game["name"] != "SM_USUM",
+    "no ultra necrozma outside SM USUM": lambda poke_form, game: poke_form["poke num"] == 800 and poke_form["form name"] == "-Form_Ultra" and game["name"] != "SM_USUM",
     "no meltan or melmetal until LGPE": lambda poke_form, game: poke_form["poke num"] in (808, 809) and lazy_import("db_utils").get_game_id(game["name"]) < lazy_import("db_utils").get_game_id("LGPE"),    # Technically these are gen 7 pokemon, they just werent introduced until LGPE
-    "no stamped poke sprites in games": lambda poke_form, game: poke_form["poke num"] in (854, 855, 1012, 1013) and poke_form["form name"] != "Default"     # Both forms look the same except for the stamp, which is really only visible in HOME anyways. This is where the stamp img will be downloaded
+    "no stamped poke sprites in games": lambda poke_form, game: poke_form["poke num"] in (854, 855, 1012, 1013) and poke_form["form name"] != "Default",     # Both forms look the same except for the stamp, which is really only visible in HOME anyways. This is where the stamp img will be downloaded
+    "no bloodmoon ursaluna form until SV": lambda poke_form, game: poke_form["poke num"] == 901 and poke_form["form name"] == "-Form_Bloodmoon"  and lazy_import("db_utils").get_game_id(game["name"]) < lazy_import("db_utils").get_game_id("SV")
 }
 
 
