@@ -688,6 +688,13 @@ def get_all_pokeball_filename_info():
         data[pokeball]["Gen5_Battle-Statics"] = add_dict[pokeball]["Gen5_Battle-Statics"]
 
 
+    # Updating Gen3 Ultra Ball differences
+    # Doing this way since I split it off when generating filenames, not in dict I generate img_types from. These are both Gen3 Img type
+    # Initially in row in rows loop it gets overwritten, this ensures if both exist it will appear that way, otherwise they will appear missing
+    if "Ultra Ball-Gen3-FRLGE.png" in save_directories["Pokeball"]["files"] and "Ultra Ball-Gen3-RS.png" in save_directories["Pokeball"]["files"]:
+        data["Ultra Ball"]["Gen3"]["exists"] = True
+    else: data["Ultra Ball"]["Gen3"]["exists"] = False
+
     connection.close()
     return data
 
@@ -1233,7 +1240,7 @@ def generate_pokeball_filename(ball_info, img_type_info):
     bulba_filename = f"{ball_name}-{img_type_name}"
     # Ultra ball difference between Ruby_Sapphire and FRLG/Emerald
     if ball_name == "Ultra Ball" and img_type_name == "Gen3":
-        return [bulba_filename+"-FRLGE", bulba_filename+"-RS"]
+        return [bulba_filename+"_FRLGE", bulba_filename+"_RS"]
     
     return [bulba_filename]
 
