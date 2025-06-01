@@ -160,7 +160,7 @@ WIKIDEX_POKE_FORM_TRANSLATION_MAP = {
         "-Form_N": "N",
         "-Form_O": "O",
         "-Form_P": "P",
-        "-Form_Qmark": "?",
+        "-Form_Qmark": "%3F",
         "-Form_Q": "Q",
         "-Form_R": "R",
         "-Form_S": "S",
@@ -588,12 +588,12 @@ WIKIDEX_POKE_FORM_TRANSLATION_MAP = {
         "-Form_Vanilla_Cream_Ribbon_Sweet": "crema de vainilla lazo",
         "-Form_Vanilla_Cream_Star_Sweet": "crema de vainilla estrella",
         "-Form_Vanilla_Cream_Strawberry_Sweet": "",     # NOTE: Sometimes also just "crema de vainilla"... TODO: See whats missing after scrape
-        "-Form_Berry_Sweet": " fruto",
-        "-Form_Clover_Sweet": " trébol",
-        "-Form_Flower_Sweet": " flor",
-        "-Form_Love_Sweet": " corazón",
-        "-Form_Ribbon_Sweet": " lazo",
-        "-Form_Star_Sweet": " estrella",
+        "-Form_Berry_Sweet": "fruto",
+        "-Form_Clover_Sweet": "trébol",
+        "-Form_Flower_Sweet": "flor",
+        "-Form_Love_Sweet": "corazón",
+        "-Form_Ribbon_Sweet": "lazo",
+        "-Form_Star_Sweet": "estrella",
         "-Form_Strawberry_Sweet": ""
     },
 
