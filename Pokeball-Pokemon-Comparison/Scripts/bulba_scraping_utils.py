@@ -135,12 +135,19 @@ def include_male_denoter(my_filename):
         if gen_exclusion in my_filename:
             return False
     # No universal forms w gender differences, except excpetions (Hisuian Sneasel f)
-    if universal_form_in_filename(my_filename) and not f_exception_poke_in_filename(my_filename):
+    if universal_form_in_filename(my_filename) and not f_universal_form_exception_poke_in_filename(my_filename):
         return False
     # No f version cosplay/cap pikachu
-    if "0025" in my_filename and any(form in my_filename for form in ("-Form_Cap", "-Form_Cosplay")):
+    if exclude_m_denoter(my_filename):
         return False
     return True
+
+
+def exclude_m_denoter(my_filename):
+    for exclusion in GENDER_DENOTER_EXCEPTIONS.values():
+        if exclusion(my_filename):
+            return True
+    return False
 
 
 def universal_form_in_filename(my_filename):
@@ -154,7 +161,7 @@ def universal_form_in_filename(my_filename):
     return False
 
 
-def f_exception_poke_in_filename(my_filename):
+def f_universal_form_exception_poke_in_filename(my_filename):
     for poke_num in FEMALE_DENOTER_UNIVERSAL_FORM_EXCEPTION_POKEMON:
         if poke_num in my_filename:
             return True
@@ -288,7 +295,7 @@ def pokeball_translate(my_filename, pokeball_info):
     else:
         translation = get_bulba_translated_pokeball_info(img_type_name)
         # Gen3 ultra ball different between games, adding on FRLGE or RS depending on which I'm looking for 
-        if pokeball_name == "Ultra Ball" and img_type_name == "Gen3": translation += f"-{my_filename.split("-")[-1]}"
+        if pokeball_name == "Ultra Ball" and img_type_name == "Gen3": translation += f"_{my_filename.split("-")[-1]}"
         bulba_filename = f"{pokeball_name} {translation}.png"
     
     return bulba_filename
