@@ -66,9 +66,6 @@ def img_exists_at_url(url):
     return (img_page_soup)
 
 
-# TODO: Check stuff like images on this: https://www.wikidex.net/wiki/WikiDex:Proyecto_Pok%C3%A9dex/Sprites_animados_de_Leyendas_Pok%C3%A9mon:_Arceus
-    # That have that page linked to the img page, but there isn't actually an img, still return a 404
-    # Like this https://www.wikidex.net/wiki/Archivo:Machamp_LPA.gif
 def fetch_url_with_retry(url, stream_flag=False):
     MAX_RETRIES = 5
     BASE_DELAY = 5
