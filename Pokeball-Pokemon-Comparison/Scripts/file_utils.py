@@ -1,5 +1,6 @@
 import os
 import re
+import shutil
 from app_globals import *
 
 
@@ -10,7 +11,7 @@ from app_globals import *
 #|================================================================================================|
 
 def get_all_files_in_dir_w_str(path, str):
-    files = set(os.listdir(path))
+    files = os.listdir(path)
     matching_files = []
 
     for file in files:
@@ -22,7 +23,7 @@ def get_all_files_in_dir_w_str(path, str):
 
 
 def get_all_files_in_dir_w_regex(path, pattern):
-    files = set(os.listdir(path))
+    files = os.listdir(path)
     matching_files = []
 
     for file in files:
@@ -102,6 +103,15 @@ def replace_filename_in_all_dirs(replace, replace_with, just_print=False):
 def move_files_with_str(cur_path, dest_path, str, just_print=False):
     files_to_move = get_all_files_in_dir_w_str(cur_path, str)
     
+    for file in files_to_move:
+        if not os.path.isfile(os.path.join(cur_path, file)): continue   # If "file" is a directory, continue
+        old_path = os.path.join(cur_path, file)
+        old_path_base = os.path.basename(cur_path)
+        dest_path_base = os.path.basename(dest_path)
+
+        print(f"{file}\t moved from \t{old_path_base} to \t{dest_path_base}")
+        if not just_print:
+            shutil.move(old_path, dest_path)
 
 
 
