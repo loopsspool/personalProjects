@@ -1,4 +1,5 @@
 import os
+import re
 from app_globals import *
 
 
@@ -14,6 +15,19 @@ def get_all_files_in_dir_w_str(path, str):
 
     for file in files:
         if not os.path.isfile(os.path.join(path, file)): continue   # If "file" is a directory, continue
+        if str in file:
+            matching_files.append(file)
+
+    return matching_files
+
+
+def get_all_files_in_dir_w_regex(path, pattern):
+    files = set(os.listdir(path))
+    matching_files = []
+
+    for file in files:
+        if not os.path.isfile(os.path.join(path, file)): continue   # If "file" is a directory, continue
+        # TODO: Implement regex here
         if str in file:
             matching_files.append(file)
 
@@ -42,14 +56,24 @@ def print_files_with_from_all_dirs(s):
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     TEXT FUNCS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
-def add_leading_zero(path):
-    files = set(os.listdir(path))
-    for f in files:
-        full_path = os.path.join(path, f)
-        if os.path.isfile(full_path):
-            new_full_path = os.path.join(path, "0"+f)
-            print(new_full_path)
-            os.rename(full_path, new_full_path)
+def make_poke_num_have_leading_zeros_for_all_files_in_path(path, just_print=False):
+    files = os.listdir(path)
+
+    for file in files:
+        if not os.path.isfile(os.path.join(path, file)): continue   # If "file" is a directory, continue
+
+        old_full_path = os.path.join(path, file)
+        match = re.match(r"(\d+)", file)
+        if match:
+            poke_num = match.group(1)
+            
+            padded_poke_num = poke_num.zfill(4)
+            new_filename = file.replace(poke_num, padded_poke_num)
+            new_full_path = os.path.join(path, new_filename)
+
+            print(f"{file}\t changed to \t{new_filename}")
+            if not just_print:
+                os.rename(old_full_path, new_full_path)
 
 
 def replace_in_filename(path, replace, replace_with, just_print=False):
@@ -67,6 +91,17 @@ def replace_in_filename(path, replace, replace_with, just_print=False):
 def replace_filename_in_all_dirs(replace, replace_with, just_print=False):
     for dir in save_directories.values():
         replace_in_filename(dir["path"], replace, replace_with, just_print)
+
+
+
+
+#|================================================================================================|
+#|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     MOVE FUNCS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+#|================================================================================================|
+
+def move_files_with_str(cur_path, dest_path, str, just_print=False):
+    files_to_move = get_all_files_in_dir_w_str(cur_path, str)
+    
 
 
 
