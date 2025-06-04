@@ -1,0 +1,1 @@
+# For translating downloaded archives into my filenaming convention
