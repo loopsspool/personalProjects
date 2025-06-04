@@ -124,6 +124,7 @@ FORM_EXCLUSIONS = {
     "no ultra necrozma outside SM USUM": lambda poke_form, game: poke_form["poke num"] == 800 and poke_form["form name"] == "-Form_Ultra" and game["name"] != "SM_USUM",
     "no meltan or melmetal until LGPE": lambda poke_form, game: poke_form["poke num"] in (808, 809) and lazy_import("db_utils").get_game_id(game["name"]) < lazy_import("db_utils").get_game_id("LGPE"),    # Technically these are gen 7 pokemon, they just werent introduced until LGPE
     "no stamped poke sprites in games": lambda poke_form, game: poke_form["poke num"] in (854, 855, 1012, 1013) and poke_form["form name"] != "Default",     # Both forms look the same except for the stamp, which is really only visible in HOME anyways. This is where the stamp img will be downloaded
+    "no eternamax eternatus outside SwSh": lambda poke_form, game: poke_form["poke num"] == 890 and poke_form["form name"] == "-Form_Eternamax" and game["name"] != "SwSh",
     "no bloodmoon ursaluna form until SV": lambda poke_form, game: poke_form["poke num"] == 901 and poke_form["form name"] == "-Form_Bloodmoon"  and lazy_import("db_utils").get_game_id(game["name"]) < lazy_import("db_utils").get_game_id("SV")
 }
 
