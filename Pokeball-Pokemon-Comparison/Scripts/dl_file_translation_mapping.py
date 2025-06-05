@@ -133,16 +133,6 @@ CREATOR_FORM_TRANSLATION_MAP = {
             "-Form_Cap_Unova": "-unovacap",
             "-Form_Cap_World": "-worldcap"
             # No cosplays even in my XY folder of theirs
-        },
-        "Menu": {
-            "-Form_Cap_Alola": "-Alola",
-            "-Form_Cap_Hoenn": "-Hoenn",
-            "-Form_Cap_Kalos": "-Kalos",
-            "-Form_Cap_Original": "-Original",
-            "-Form_Cap_Partner": "-Partner",
-            "-Form_Cap_Sinnoh": "-Sinnoh",
-            "-Form_Cap_Unova": "-Unova",
-            "-Form_Cap_World": "-World"
         }
     },
 
@@ -228,36 +218,6 @@ CREATOR_FORM_TRANSLATION_MAP = {
             "-Form_Y": "-yankee",
             "-Form_Z": "-zulu",
             "-Form_!": "-exclamation"
-        },
-        "Menu": {
-            "-Form_A": "",
-            "-Form_B": "-B",
-            "-Form_C": "-C",
-            "-Form_D": "-D",
-            "-Form_E": "-E",
-            "-Form_F": "-F",
-            "-Form_G": "-G",
-            "-Form_H": "-H",
-            "-Form_I": "-I",
-            "-Form_J": "-J",
-            "-Form_K": "-K",
-            "-Form_L": "-L",
-            "-Form_M": "-M",
-            "-Form_N": "-N",
-            "-Form_O": "-O",
-            "-Form_P": "-P",
-            "-Form_Qmark": "-Question",
-            "-Form_Q": "-Q",
-            "-Form_R": "-R",
-            "-Form_S": "-S",
-            "-Form_T": "-T",
-            "-Form_U": "-U",
-            "-Form_V": "-V",
-            "-Form_W": "-W",
-            "-Form_X": "-X",
-            "-Form_Y": "-Y",
-            "-Form_Z": "-Z",
-            "-Form_!": "-Exclamation"
         }
     },
 
@@ -434,11 +394,6 @@ CREATOR_FORM_TRANSLATION_MAP = {
             "-Form_Blue_Striped": "-blue",
             "-Form_White_Striped": "-white",
             "-Form_Red_Striped": ""
-        },
-        "Menu": {
-            "-Form_Blue_Striped": "-Blue",
-            "-Form_Red_Striped": "",
-            "-Form_White_Striped": "-White"
         }
     },
 
@@ -451,12 +406,6 @@ CREATOR_FORM_TRANSLATION_MAP = {
         "pkparaiso": {
             "-Form_Zen": "-zen",
             "-Form_Standard": ""
-        },
-        "Menu": {
-            "-Form_Standard": "",
-            "-Region_Galar-Form_Standard": "-Galar",
-            "-Form_Zen": "-Zen",
-            "-Region_Galar-Form_Zen": "-Zen Galar"
         }
     },
 
@@ -575,12 +524,6 @@ CREATOR_FORM_TRANSLATION_MAP = {
             "-Form_Burn_Drive": "-burn",
             "-Form_Chill_Drive": "-chill",
             "-Form_Shock_Drive": "-shock"
-        },
-        "Menu": {
-            "-Form_Douse_Drive": "Douse",
-            "-Form_Burn_Drive": "Burn",
-            "-Form_Chill_Drive": "Chill",
-            "-Form_Shock_Drive": "Shock"
         }
     },
 
@@ -653,13 +596,6 @@ CREATOR_FORM_TRANSLATION_MAP = {
             "-Form_White_Flower": "-white",
             "-Form_Yellow_Flower": "-yellow",
             "-Form_Red_Flower": ""
-        },
-        "Menu": {
-            "-Form_Blue_Flower": "-Blue",
-            "-Form_Orange_Flower": "-Orange",
-            "-Form_Red_Flower": "",
-            "-Form_White_Flower": "-White",
-            "-Form_Yellow_Flower": "-Yellow"
         }
     },
     670: {
@@ -678,14 +614,6 @@ CREATOR_FORM_TRANSLATION_MAP = {
             "-Form_White_Flower": "-white",
             "-Form_Yellow_Flower": "-yellow",
             "-Form_Red_Flower": ""
-        },
-        "Menu": {
-            "-Form_Eternal_Flower": "-Eternal",
-            "-Form_Blue_Flower": "-Blue",
-            "-Form_Orange_Flower": "-Orange",
-            "-Form_Red_Flower": "",
-            "-Form_White_Flower": "-White",
-            "-Form_Yellow_Flower": "-Yellow"
         }
     },
     671: {
@@ -728,17 +656,6 @@ CREATOR_FORM_TRANSLATION_MAP = {
             "-Form_Matron_Trim": "-matron",
             "-Form_Pharaoh_Trim": "-pharaoh",
             "-Form_Star_Trim": "-star"
-        },
-        "Menu": {
-            "-Form_Dandy_Trim": "-Dandy",
-            "-Form_Debutante_Trim": "-Debutante",
-            "-Form_Diamond_Trim": "-Diamond",
-            "-Form_Heart_Trim": "-Heart",
-            "-Form_Kabuki_Trim": "-Kabuki",
-            "-Form_La_Reine_Trim": "-La Reine",
-            "-Form_Matron_Trim": "-Matron",
-            "-Form_Pharaoh_Trim": "-Pharaoh",
-            "-Form_Star_Trim": "-Star"
         }
     },
 
@@ -755,7 +672,6 @@ CREATOR_FORM_TRANSLATION_MAP = {
     },
 
     # Pumpkaboo & Gourgeist
-    # Drawn & menu only use Average Size
     710: {
         "root": {
             # TODO: Make the 1 average? Convert my webms?
@@ -812,9 +728,6 @@ CREATOR_FORM_TRANSLATION_MAP = {
             "-Form_Complete": "-complete",
             "-Form_10%": "-10percent",
             "-Form_50%": ""
-        },
-        "Menu":{
-            "-Form_10%": "-10 Percent"
         }
     },
 
@@ -901,17 +814,7 @@ CREATOR_FORM_TRANSLATION_MAP = {
             "-Form_Yellow_Core": "-yellow",
             "-Form_Core": "-shiny",
             "-Form_Meteor": ""
-        },
-        "Menu": {
-            "-Form_Meteor": "",
-            "-Form_Blue_Core": "-Blue",
-            "-Form_Green_Core": "-Green",
-            "-Form_Indigo_Core": "-Indigo",
-            "-Form_Orange_Core": "-Orange",
-            "-Form_Red_Core": "-Red",
-            "-Form_Violet_Core": "-Violet",
-            "-Form_Yellow_Core": "-Yellow",
-        },
+        }
     },
 
     # Mimikyu
@@ -923,9 +826,6 @@ CREATOR_FORM_TRANSLATION_MAP = {
         "pkparaiso": {
             "-Form_Busted": "-busted",
             "-Form_Disguised": ""
-        },
-        "Menu": {
-            "-Form_Busted": EXCLUDE_TRANSLATIONS_MAP["DNE"]
         }
     },
 
@@ -934,7 +834,6 @@ CREATOR_FORM_TRANSLATION_MAP = {
     791: {
         "root": {"-Form_Radiant_Sun": EXCLUDE_TRANSLATIONS_MAP["DNE"]},
         "pkparaiso": {"-Form_Radiant_Sun": "-radiantsun"},
-        "Menu": {"-Form_Radiant_Sun": EXCLUDE_TRANSLATIONS_MAP["DNE"]}
     },
 
     # Lunala
@@ -942,7 +841,6 @@ CREATOR_FORM_TRANSLATION_MAP = {
     792: {
         "root": {"-Form_Full_Moon": EXCLUDE_TRANSLATIONS_MAP["DNE"]},
         "pkparaiso": {"-Form_Full_Moon": "-fullmoonphase"},
-        "Menu": {"-Form_Full_Moon": EXCLUDE_TRANSLATIONS_MAP["DNE"]}
     },
 
     # Necrozma
@@ -963,7 +861,6 @@ CREATOR_FORM_TRANSLATION_MAP = {
     801: {
         "root": {"-Form_Original_Color": "Original Color"},
         "pkparaiso": {"-Form_Original_Color": "-originalcolor"},
-        "Menu": {"-Form_Original_Color": "-Original Color"}
     },
 
     # Cramorant
@@ -1139,18 +1036,6 @@ CREATOR_FORM_TRANSLATION_MAP = {
             "-Form_Ribbon_Sweet": "vanilla-cream-ribbon",
             "-Form_Star_Sweet": "vanilla-cream-star",
             "-Form_Strawberry_Sweet": "vanilla-cream-strawberry"
-        },
-        "Menu": {
-            # Basically all different creams, with strawberry sweet
-            "-Form_Caramel_Swirl_Strawberry_Sweet": "-Caramel",
-            "-Form_Lemon_Cream_Strawberry_Sweet": "-Lemon",
-            "-Form_Matcha_Cream_Strawberry_Sweet": "-Matcha",
-            "-Form_Mint_Cream_Strawberry_Sweet": "-Mint",
-            "-Form_Rainbow_Swirl_Strawberry_Sweet": "-Rainbow",
-            "-Form_Ruby_Swirl_Strawberry_Sweet": "-Ruby Swirl",
-            "-Form_Ruby_Cream_Strawberry_Sweet": "-Ruby",
-            "-Form_Salted_Cream_Strawberry_Sweet": "-Salted",
-            "-Form_Vanilla_Cream_Strawberry_Sweet": ""
         }
     },
 
@@ -1175,9 +1060,6 @@ CREATOR_FORM_TRANSLATION_MAP = {
         "pkparaiso": {
             "-Form_Hangry": "-hangry",
             "-Form_Full_Belly": ""
-        },
-        "Menu": {
-            "-Form_Full_Belly": ""
         }
     },
 
@@ -1190,10 +1072,6 @@ CREATOR_FORM_TRANSLATION_MAP = {
         "pkparaiso": {
             "-Form_Crowned_Sword": "-crowned",
             "-Form_Hero_of_Many_Battles": ""
-        },
-        "Menu": {
-            "-Form_Hero_of_Many_Battles": "",
-            "-Form_Crowned_Sword": "-Crowned"
         }
     },
     889: {
@@ -1204,10 +1082,6 @@ CREATOR_FORM_TRANSLATION_MAP = {
         "pkparaiso": {
             "-Form_Crowned_Sword": "-crowned",
             "-Form_Hero_of_Many_Battles": ""
-        },
-        "Menu": {
-            "-Form_Hero_of_Many_Battles": "",
-            "-Form_Crowned_Sword": "-Crowned"
         }
     },
 
@@ -1230,11 +1104,6 @@ CREATOR_FORM_TRANSLATION_MAP = {
         "pkparaiso": {
             "-Form_Single_Strike": "-singlestrike",
             "-Form_Rapid_Strike": "-rapidstrike"
-        },
-        "Menu": {
-            # Doesn't have either form???
-            "-Form_Single_Strike": EXCLUDE_TRANSLATIONS_MAP["DNE"],
-            "-Form_Rapid_Strike": EXCLUDE_TRANSLATIONS_MAP["DNE"]
         }
     },
 
@@ -1268,9 +1137,6 @@ CREATOR_FORM_TRANSLATION_MAP = {
         "root": {
             "-Form_Incarnate": "Incarnate",
             "-Form_Therian": "Therian"
-        },
-        "Drawn": {
-            "-Form_Incarnate": ""
         }
     },
 
@@ -1283,10 +1149,6 @@ CREATOR_FORM_TRANSLATION_MAP = {
         "adamsb": {
             "-Form_Family_of_Three": "f3",
             "-Form_Family_of_Four": "f4"
-        },
-        "Menu": {
-            "-Form_Family_of_Three": "-Three",
-            "-Form_Family_of_Four": ""
         }
     },
 
@@ -1303,12 +1165,6 @@ CREATOR_FORM_TRANSLATION_MAP = {
             "-Form_Green_Plumage": "-green",
             "-Form_White_Plumage": "-white", 
             "-Form_Yellow_Plumage": "-yellow"
-        },
-        "Menu": {
-            "-Form_Blue_Plumage": "-Blue", 
-            "-Form_Green_Plumage": "",
-            "-Form_White_Plumage": "-White", 
-            "-Form_Yellow_Plumage": "-Yellow"
         }
     },
 
@@ -1375,9 +1231,6 @@ CREATOR_FORM_TRANSLATION_MAP = {
             "-Form_Hearthflame_Mask": "Hearthflame",
             "-Form_Teal_Mask": "Teal",
             "-Form_Wellspring_Mask": "Wellspring"
-        },
-        "Drawn": {
-            "-Form_Teal_Mask": ""
         }
     },
 
@@ -1387,9 +1240,6 @@ CREATOR_FORM_TRANSLATION_MAP = {
             "-Form_Normal": "Normal",
             "-Form_Terastal": "Terastal",
             "-Form_Stellar": "Stellar"  # TODO: Check Gen9, not in HOME
-        },
-        "Drawn": {
-            "-Form_Normal": ""
         }
     }
 }
