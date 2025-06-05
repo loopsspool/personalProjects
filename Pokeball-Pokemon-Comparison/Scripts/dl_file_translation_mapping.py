@@ -1,19 +1,46 @@
 from translation_utils import EXCLUDE_TRANSLATIONS_MAP
 
+#|================================================================================================|
+#|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     DIRECTORY TRANSLATIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+#|================================================================================================|
+
+DIRECTORY_TO_FILENAME_MAP = {
+    # Game Sprites
+    "Gen 6 XY w Battle Animations": "Gen6 XY_ORAS-Animated",
+    "Gen 8 LGPE Front Stills - HIGHER QUALITY": "Gen8 LGPE",
+    "Gen 8 LGPE Shiny Front Stills - HIGHER QUALITY": "Gen8 LGPE-Shiny",
+    "Gen 8 SwSh Animated - SAME QUALITY CHECK MISSING": "Gen8 SwSh-Animated",
+    "Gen 8 SwSh Shiny Animated - SAME QUALITY CHECK MISSING": "Gen8 SwSh-Shiny-Animated",
+    "Gen 9 Poke Front Stills - HIGHER QUALITY": "Gen9 SV",
+    "Gen 9 Poke Front Shiny Stills - HIGHER QUALITY": "Gen9 SV-Shiny",
+    "Gen 9 SV Animated - SAME QUALITY CHECK MISSING": "Gen9 SV-Animated",
+    "Gen 9 SV ShinyAnimated - SAME QUALITY CHECK MISSING": "Gen9 SV-Shiny-Animated",
+    "Gen 9 SV Shiny Animated - SOME HIGHER QUALITY": "Gen9 SV-Shiny-Animated",
+
+    # HOME
+    "HOME": "HOME",
+    "HOME Shiny": "HOME-Shiny"
+}
+
+
+
 
 #|================================================================================================|
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~[     UNIVERSAL FORM TRANSLATIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
-# NOTE: Gigantamax pulled out due to Urshifu bulba names, where forms are put before gigantamax
-BULBA_GAMES_UNIVERSAL_FORM_MAP = {
-    "-Mega_X": "MX",
-    "-Mega_Y": "MY",
-    "-Mega": "M",   # This after X&Y so when looping through Mega wont trigger a form meant to be X or Y
-    "-Region_Alola": "A",
-    "-Region_Galar": "G",
-    "-Region_Hisui": "H",
-    "-Region_Paldea": "P"
+DL_UNIVERSAL_FORM_MAP = {
+    "root": {
+        "-f": "(Female)",
+        # NOTE: I did have to modify these since root split them as Mega <poke name> X
+        "-Mega_X": "Mega X",
+        "-Mega_Y": "Mega Y",
+        "-Mega": "Mega ",   # This after X&Y so when looping through Mega wont trigger a form meant to be X or Y
+        "-Region_Alola": "(Alola)",
+        "-Region_Galar": "(Galar)",
+        "-Region_Hisui": "(Hisuian)",
+        "-Region_Paldea": "Paldea"  # Covers both Tauros and Wooper, which are formatted differently
+    }
 }
 
 
@@ -23,48 +50,43 @@ BULBA_GAMES_UNIVERSAL_FORM_MAP = {
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~[     SPECIES FORM TRANSLATIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
-BULBA_TYPE_FORM_MAP = {
-    "-Form_Normal": "",  # Normal form considered default: so does not have a letter denoter
-    "-Form_Fighting": "-Fighting", 
-    "-Form_Flying": "-Flying", 
-    "-Form_Poison": "-Poison", 
-    "-Form_Ground": "-Ground", 
-    "-Form_Rock": "-Rock", 
-    "-Form_Bug": "-Bug", 
-    "-Form_Ghost": "-Ghost", 
-    "-Form_Steel": "-Steel", 
-    "-Form_Fire": "-Fire", 
-    "-Form_Water": "-Water", 
-    "-Form_Grass": "-Grass", 
-    "-Form_Electric": "-Electric", 
-    "-Form_Psychic": "-Psychic", 
-    "-Form_Ice": "-Ice", 
-    "-Form_Dragon": "-Dragon", 
-    "-Form_Dark": "-Dark", 
-    "-Form_Fairy": "-Fairy", 
-    "-Form_Qmark": "-Unknown"
+TYPE_FORM_MAP = {
+    "root": {
+        "-Form_Normal": "Normal",
+        "-Form_Fighting": "Fighting", 
+        "-Form_Flying": "Flying", 
+        "-Form_Poison": "Poison", 
+        "-Form_Ground": "Ground", 
+        "-Form_Rock": "Rock", 
+        "-Form_Bug": "Bug", 
+        "-Form_Ghost": "Ghost", 
+        "-Form_Steel": "Steel", 
+        "-Form_Fire": "Fire", 
+        "-Form_Water": "Water", 
+        "-Form_Grass": "Grass", 
+        "-Form_Electric": "Electric", 
+        "-Form_Psychic": "Psychic", 
+        "-Form_Ice": "Ice", 
+        "-Form_Dragon": "Dragon", 
+        "-Form_Dark": "Dark", 
+        "-Form_Fairy": "Fairy", 
+    }
 }
 
 
-# TODO: Replace Game, Drawn, HOME, etc with authors of files downloaded
 BULBA_POKE_FORM_TRANSLATION_MAP = {
     # Pikachu
     25: {
-        "Game": {
-            "-Form_Cap_Alola": "A",
-            "-Form_Cap_Hoenn": "H",
-            "-Form_Cap_Kalos": "K",
-            "-Form_Cap_Original": "O",
-            "-Form_Cap_Sinnoh": "S",
-            "-Form_Cap_Unova": "U",
-            "-Form_Cap_Partner": "P",
-            "-Form_Cap_World": "W",
-            "-Form_Cosplay": EXCLUDE_TRANSLATIONS_MAP["DBH"],     # 6o, not 6x   
-            "-Form_Cosplay_Belle": EXCLUDE_TRANSLATIONS_MAP["DNE"],
-            "-Form_Cosplay_Libre": EXCLUDE_TRANSLATIONS_MAP["DNE"],
-            "-Form_Cosplay_PhD": EXCLUDE_TRANSLATIONS_MAP["DNE"],
-            "-Form_Cosplay_Pop_Star": EXCLUDE_TRANSLATIONS_MAP["DNE"],
-            "-Form_Cosplay_Rock_Star": EXCLUDE_TRANSLATIONS_MAP["DNE"]
+        "root": {
+            "-Form_Cap_Alola": "(Alola Cap)",
+            "-Form_Cap_Hoenn": "(Hoenn Cap)",
+            "-Form_Cap_Kalos": "(Kalos Cap)",
+            "-Form_Cap_Original": "(Original Cap)",
+            "-Form_Cap_Sinnoh": "(Sinnoh Cap)",
+            "-Form_Cap_Unova": "(Unova Cap)",
+            "-Form_Cap_Partner": "(Partner Cap)",
+            "-Form_Cap_World": "(World Cap)"
+            # No cosplays past gen 6
         },
         "Drawn": {
             "-Form_Cap_Alola": "-Alola Cap",
@@ -93,12 +115,12 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
         }
     },
 
-    # Tauros
+    # Tauros (Region Paldea added from universal check)
     128: {
-        "Game": {
-            "-Form_Combat": "C",
-            "-Form_Blaze": "B",
-            "-Form_Aqua": "A"
+        "root": {
+            "-Form_Combat": "Fighting",
+            "-Form_Blaze": "Fire",
+            "-Form_Aqua": "Water"
         },
         "Drawn": {
             "-Form_Combat": " Combat",
@@ -107,72 +129,69 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
         }
     },
 
-    # Pichu
-    # Spiky Eared excluded from drawn & menu
-    172: {"Game": {"-Form_Spiky_Eared": "N"}},
+    # No Spiky Eared Pichu past gen 4/HOME
 
     # Unown
     201: {
-        "Game": {
-            # Hyphens and one-off differences handled in bulba_scraping_utils where needed
-            "-Form_A": "",
-            "-Form_B": "B",
-            "-Form_C": "C",
-            "-Form_D": "D",
-            "-Form_E": "E",
-            "-Form_F": "F",
-            "-Form_G": "G",
-            "-Form_H": "H",
-            "-Form_I": "I",
-            "-Form_J": "J",
-            "-Form_K": "K",
-            "-Form_L": "L",
-            "-Form_M": "M",
-            "-Form_N": "N",
-            "-Form_O": "O",
-            "-Form_P": "P",
-            "-Form_Qmark": "QU",    # QU before Q because Q form would trigger first and misname file
-            "-Form_Q": "Q",
-            "-Form_R": "R",
-            "-Form_S": "S",
-            "-Form_T": "T",
-            "-Form_U": "U",
-            "-Form_V": "V",
-            "-Form_W": "W",
-            "-Form_X": "X",
-            "-Form_Y": "Y",
-            "-Form_Z": "Z",
-            "-Form_!": "EX"
+        "root": {
+            "-Form_A": " A",
+            "-Form_B": " B",
+            "-Form_C": " C",
+            "-Form_D": " D",
+            "-Form_E": " E",
+            "-Form_F": " F",
+            "-Form_G": " G",
+            "-Form_H": " H",
+            "-Form_I": " I",
+            "-Form_J": " J",
+            "-Form_K": " K",
+            "-Form_L": " L",
+            "-Form_M": " M",
+            "-Form_N": " N",
+            "-Form_O": " O",
+            "-Form_P": " P",
+            "-Form_Qmark": "(Question)",    # QU before Q because Q form would trigger first and misname file
+            "-Form_Q": " Q",
+            "-Form_R": " R",
+            "-Form_S": " S",
+            "-Form_T": " T",
+            "-Form_U": " U",
+            "-Form_V": " V",
+            "-Form_W": " W",
+            "-Form_X": " X",
+            "-Form_Y": " Y",
+            "-Form_Z": " Z",
+            "-Form_!": "(Exclamation)"
         },
         "Drawn": {
-            "-Form_A": drawn_dream_translation("A"),
-            "-Form_B": drawn_dream_translation("B"),
-            "-Form_C": drawn_dream_translation("C"),
-            "-Form_D": drawn_dream_translation("D"),
-            "-Form_E": drawn_dream_translation("E"),
-            "-Form_F": drawn_dream_translation("F"),
-            "-Form_G": drawn_dream_translation("G"),
-            "-Form_H": drawn_dream_translation("H"),
-            "-Form_I": drawn_dream_translation("I"),
-            "-Form_J": drawn_dream_translation("J"),
-            "-Form_K": drawn_dream_translation("K"),
-            "-Form_L": drawn_dream_translation("L"),
-            "-Form_M": drawn_dream_translation("M"),
-            "-Form_N": drawn_dream_translation("N"),
-            "-Form_O": drawn_dream_translation("O"),
-            "-Form_P": drawn_dream_translation("P"),
-            "-Form_Qmark": drawn_dream_translation("Question"),    # QU before Q because Q form would trigger first and misname file
-            "-Form_Q": drawn_dream_translation("Q"),
-            "-Form_R": drawn_dream_translation("R"),
-            "-Form_S": drawn_dream_translation("S"),
-            "-Form_T": drawn_dream_translation("T"),
-            "-Form_U": drawn_dream_translation("U"),
-            "-Form_V": drawn_dream_translation("V"),
-            "-Form_W": drawn_dream_translation("W"),
-            "-Form_X": drawn_dream_translation("X"),
-            "-Form_Y": drawn_dream_translation("Y"),
-            "-Form_Z": drawn_dream_translation("Z"),
-            "-Form_!": drawn_dream_translation("Exclamation")
+            "-Form_A": "",
+            "-Form_B": "-B",
+            "-Form_C": "-C",
+            "-Form_D": "-D",
+            "-Form_E": "-E",
+            "-Form_F": "-F",
+            "-Form_G": "-G",
+            "-Form_H": "-H",
+            "-Form_I": "-I",
+            "-Form_J": "-J",
+            "-Form_K": "-K",
+            "-Form_L": "-L",
+            "-Form_M": "-M",
+            "-Form_N": "-N",
+            "-Form_O": "-O",
+            "-Form_P": "-P",
+            "-Form_Qmark": "-Question",
+            "-Form_Q": "-Q",
+            "-Form_R": "-R",
+            "-Form_S": "-S",
+            "-Form_T": "-T",
+            "-Form_U": "-U",
+            "-Form_V": "-V",
+            "-Form_W": "-W",
+            "-Form_X": "-X",
+            "-Form_Y": "-Y",
+            "-Form_Z": "-Z",
+            "-Form_!": "-Exclamation"
         },
         "Menu": {
             "-Form_A": "",
@@ -206,40 +225,43 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
         }
     },
 
-    # Sneasel
-    # Needs to be included here because its not a universal form (it has its own form id in whole (-Region_Hisui-f))
-    # So translator will come into this dict and if a value isn't found, will change it to "FORM_NOT_IN_MAP_SET"
-    # Consequently not downloading it
-    215: {"Game": {"-Region_Hisui-f": ""}},
+    # Sneasel (f added from universal check)
+    215: {
+        "root": {"-Region_Hisui": "Hisui"}
+    },
 
     # Castform
     351: {
-        "Game": {
-            "-Form_Rainy": "R",
-            "-Form_Snowy": "H",
-            "-Form_Sunny": "S"
+        "root": {
+            "-Form_Rainy": "Rainy",
+            "-Form_Snowy": "Snowy",
+            "-Form_Sunny": "Sunny"
         }
     },
 
     # Kyogre & Groudon
-    382: {"Game": {"-Form_Primal": "P"}},
-    383: {"Game": {"-Form_Primal": "P"}},
+    382: {
+        "root": {"-Form_Primal": "Primal"}
+    },
+    383: {
+        "root": {"-Form_Primal": "Primal"}
+    },
 
     #Deoxys
     386: {
-        "Game": {
-            "-Form_Attack": "A",
-            "-Form_Defense": "D",
-            "-Form_Speed": "S"
+        "root": {
+            "-Form_Attack": "Attack",
+            "-Form_Defense": "Defense",
+            "-Form_Speed": "Speed"
         }
     },
 
     # Burmy & Wormadam
     412: {
-        "Game": {
-            "-Form_Plant_Cloak": "",
-            "-Form_Sandy_Cloak": "G",
-            "-Form_Trash_Cloak": "S"
+        "root": {
+            "-Form_Plant_Cloak": "Plant",
+            "-Form_Sandy_Cloak": "Sandy",
+            "-Form_Trash_Cloak": "Trash"
         },
         "Drawn": {
             "-Form_Plant_Cloak": "-Plant",
@@ -248,10 +270,10 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
         }
     },
     413: {
-        "Game": {
-            "-Form_Plant_Cloak": "",
-            "-Form_Sandy_Cloak": "G",
-            "-Form_Trash_Cloak": "S"
+        "root": {
+            "-Form_Plant_Cloak": "Plant",
+            "-Form_Sandy_Cloak": "Sandy",
+            "-Form_Trash_Cloak": "Trash"
         },
         "Drawn": {
             "-Form_Plant_Cloak": "-Plant",
@@ -262,9 +284,9 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
 
     #Cherrim
     421: {
-        "Game": {
-            "-Form_Overcast": "",
-            "-Form_Sunshine": "S"
+        "root": {
+            "-Form_Overcast": "Overcast",
+            "-Form_Sunshine": "Sunshine"
         },
         "Drawn": {
             "-Form_Overcast": ""
@@ -273,9 +295,9 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
     
     # Shellos & Gastrodon
     422: {
-        "Game": {
-            "-Form_West": "",
-            "-Form_East": "E"
+        "root": {
+            "-Form_West": "West",
+            "-Form_East": "East"
         },
         "Menu": {
             "-Form_East": "-East",
@@ -283,9 +305,9 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
         }
     },
     423: {
-        "Game": {
-            "-Form_West": "",
-            "-Form_East": "E"
+        "root": {
+            "-Form_West": "West",
+            "-Form_East": "East"
         },
         "Menu": {
             "-Form_East": "-East",
@@ -295,24 +317,28 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
     
     # Rotom
     479: {
-        "Game": {
-            "-Form_Fan": "F",
-            "-Form_Frost": "R",
-            "-Form_Heat": "O",
-            "-Form_Mow": "L",
-            "-Form_Wash": "W"
+        "root": {
+            "-Form_Fan": "Fan",
+            "-Form_Frost": "Frost",
+            "-Form_Heat": "Heat",
+            "-Form_Mow": "Mow",
+            "-Form_Wash": "Wash"
         }
     },
     
     # Dialga & Palkia
-    483: {"Game": {"-Form_Origin": "O"}},
-    484: {"Game": {"-Form_Origin": "O"}},
+    483: {
+        "root": {"-Form_Origin": "Origin"}
+    },
+    484: {
+        "root": {"-Form_Origin": "Origin"}
+    },
     
     # Giratina
     487: {
-        "Game": {
-            "-Form_Altered": "",
-            "-Form_Origin": "O"
+        "root": {
+            "-Form_Altered": "Altered",
+            "-Form_Origin": "Origin"
         },
         "Drawn": {
             "-Form_Altered": ""
@@ -321,9 +347,9 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
     
     # Shaymin
     492: {
-        "Game": {
-            "-Form_Land": "",
-            "-Form_Sky": "S"
+        "root": {
+            "-Form_Land": "Land",
+            "-Form_Sky": "Sky"
         },
         "Drawn": {
             "-Form_Land": "" 
@@ -333,17 +359,15 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
     # Arceus
     # ??? form excluded from drawn & menu
     493: {
-        "Game": BULBA_TYPE_FORM_MAP,
-        "Drawn": BULBA_DRAWN_DREAM_TYPE_MAP,
-        "Menu": BULBA_TYPE_FORM_MAP
+        "root": TYPE_FORM_MAP["root"],
     },
 
     # Basculin
     550: {
-        "Game": {
-            "-Form_Red_Striped": "",
-            "-Form_Blue_Striped": "B",
-            "-Form_White_Striped": "W"
+        "root": {
+            "-Form_Red_Striped": "Red",
+            "-Form_Blue_Striped": "Blue",
+            "-Form_White_Striped": "White"
         },
         "Drawn": {
             "-Form_Red_Striped": "-Red",
@@ -359,9 +383,9 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
 
     # Darmanitan
     555: {
-        "Game": {
-            "-Form_Standard": "",
-            "-Form_Zen": "Z"
+        "root": {
+            "-Form_Zen": "Zen",     # Standard not always marked, so if not Zen its standard
+            "-Form_Standard": ""
         },
         "Drawn": {
             "-Form_Standard": "",
@@ -379,22 +403,22 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
 
     # Deerling & Sawsbuck
     585: {
-        "Game": {
-            "-Form_Spring": "",
-            "-Form_Autumn": "A",
-            "-Form_Summer": "S",
-            "-Form_Winter": "W"
+        "root": {
+            "-Form_Spring": "Spring",
+            "-Form_Autumn": "Autumn",
+            "-Form_Summer": "Summer",
+            "-Form_Winter": "Winter"
         },
         "Drawn": {
             "-Form_Spring": ""
         }
     },
     586: {
-        "Game": {
-            "-Form_Spring": "",
-            "-Form_Autumn": "A",
-            "-Form_Summer": "S",
-            "-Form_Winter": "W"
+        "root": {
+            "-Form_Spring": "Spring",
+            "-Form_Autumn": "Autumn",
+            "-Form_Summer": "Summer",
+            "-Form_Winter": "Winter"
         },
         "Drawn": {
             "-Form_Spring": ""
@@ -403,27 +427,27 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
 
     # Forces of Nature
     641: {
-        "Game": {
-            "-Form_Incarnate": "",
-            "-Form_Therian": "T"
+        "root": {
+            "-Form_Incarnate": "Incarnate",
+            "-Form_Therian": "Therian"
         },
         "Drawn": {
             "-Form_Incarnate": ""
         }
     },
     642: {
-        "Game": {
-            "-Form_Incarnate": "",
-            "-Form_Therian": "T"
+        "root": {
+            "-Form_Incarnate": "Incarnate",
+            "-Form_Therian": "Therian"
         },
         "Drawn": {
             "-Form_Incarnate": ""
         }
     },
     645: {
-        "Game": {
-            "-Form_Incarnate": "",
-            "-Form_Therian": "T"
+        "root": {
+            "-Form_Incarnate": "Incarnate",
+            "-Form_Therian": "Therian"
         },
         "Drawn": {
             "-Form_Incarnate": ""
@@ -433,12 +457,12 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
     # Kyurem
     # Overdrive forms excluded from menu
     646: {
-        "Game": {
+        "root": {
             # These are all over the place by game/denoters, easier to just do by hand
-            "-Form_Black": EXCLUDE_TRANSLATIONS_MAP["DBH"],
-            "-Form_Black_Overdrive": EXCLUDE_TRANSLATIONS_MAP["DBH"],
-            "-Form_White": EXCLUDE_TRANSLATIONS_MAP["DBH"],
-            "-Form_White_Overdrive": EXCLUDE_TRANSLATIONS_MAP["DBH"]
+            "-Form_Black": "Black",
+            "-Form_Black_Overdrive": EXCLUDE_TRANSLATIONS_MAP["DBH"],   #TODO
+            "-Form_White": "White",
+            "-Form_White_Overdrive": EXCLUDE_TRANSLATIONS_MAP["DBH"]    #TODO
         },
         "Drawn": {
             "-Form_Black_Overdrive": "-Black2",
@@ -448,9 +472,9 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
 
     # Keldeo
     647: {
-        "Game": {
-            "-Form_Ordinary": "",
-            "-Form_Resolute": "R"
+        "root": {
+            "-Form_Ordinary": "Ordinary",
+            "-Form_Resolute": "Resolute"
         },
         "Drawn": {
             "-Form_Ordinary": ""
@@ -459,9 +483,9 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
 
     # Meloetta
     648: {
-        "Game": {
-            "-Form_Aria": "",
-            "-Form_Pirouette": "P"
+        "root": {
+            "-Form_Aria": "Aria",
+            "-Form_Pirouette": "Pirouette"
         },
         "Drawn": {
             "-Form_Aria": ""
@@ -470,11 +494,11 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
 
     # Genesect
     649: {
-        "Game": {
-            "-Form_Douse_Drive": "B",
-            "-Form_Burn_Drive": "R",
-            "-Form_Chill_Drive": "W",
-            "-Form_Shock_Drive": "Y"
+        "root": {
+            "-Form_Douse_Drive": "Douse",
+            "-Form_Burn_Drive": "Burn",
+            "-Form_Chill_Drive": "Chill",
+            "-Form_Shock_Drive": "Shock"
         },
         "Drawn": {
             "-Form_Douse_Drive": " Douse Dream",
@@ -483,43 +507,43 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Shock_Drive": " Shock Dream"
         },
         "Menu": {
-            "-Form_Burn_Drive": drawn_dream_translation("Burn"),
-            "-Form_Chill_Drive": drawn_dream_translation("Chill"),
-            "-Form_Douse_Drive": drawn_dream_translation("Douse"),
-            "-Form_Shock_Drive": drawn_dream_translation("Shock")
+            "-Form_Douse_Drive": "Douse",
+            "-Form_Burn_Drive": "Burn",
+            "-Form_Chill_Drive": "Chill",
+            "-Form_Shock_Drive": "Shock"
         }
     },
 
     # Greninja
     658: {
-        "Game": {
-            "-Form_Ash": "A"
+        "root": {
+            "-Form_Ash": "Ash"
         }
     },
 
     # Vivillon
     666: {
-        "Game": {
-            "-Form_Meadow": "",
-            "-Form_Archipelago": "Arc",
-            "-Form_Continental": "Con",
-            "-Form_Elegant": "Ele",
-            "-Form_Garden": "Gar",
-            "-Form_High_Plains": "Hig",
-            "-Form_Icy_Snow": "Icy",
-            "-Form_Jungle": "Jun",
-            "-Form_Marine": "Mar",
-            "-Form_Modern": "Mod",
-            "-Form_Monsoon": "Mon",
-            "-Form_Ocean": "Oce",
-            "-Form_Polar": "Pol",
-            "-Form_River": "Riv",
-            "-Form_Sandstorm": "San",
-            "-Form_Savanna": "Sav",
+        "root": {
+            "-Form_Archipelago": "Archipelago",
+            "-Form_Continental": "Continental",
+            "-Form_Elegant": "Elegant",
+            "-Form_Fancy": "Fancy",
+            "-Form_Garden": "Garden",
+            "-Form_High_Plains": "High Plains",
+            "-Form_Icy_Snow": "Icy Snow",
+            "-Form_Jungle": "Jungle",
+            "-Form_Marine": "Marine",
+            "-Form_Meadow": "Meadow",
+            "-Form_Modern": "Modern",
+            "-Form_Monsoon": "Monsoon",
+            "-Form_Ocean": "Ocean",
+            "-Form_Poke_Ball": "Pokeball",
+            "-Form_Polar": "Polar",
+            "-Form_River": "River",
+            "-Form_Sandstorm": "Sandstorm",
+            "-Form_Savanna": "Savanna",
             "-Form_Sun": "Sun",
-            "-Form_Tundra": "Tun",
-            "-Form_Poke_Ball": "Pok",
-            "-Form_Fancy": "Fan"
+            "-Form_Tundra": "Tundra"
         },
         "Drawn": {
             "-Form_Poke_Ball": "-Pok\u00e9 Ball"
@@ -528,12 +552,12 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
 
     # Flabebe, Floette, and Florges
     669: {
-        "Game": {
-            "-Form_Red_Flower": "",
-            "-Form_Blue_Flower": "B",
-            "-Form_Orange_Flower": "O",
-            "-Form_White_Flower": "W",
-            "-Form_Yellow_Flower": "Y"
+        "root": {
+            "-Form_Red_Flower": "Red",
+            "-Form_Blue_Flower": "Blue",
+            "-Form_Orange_Flower": "Orange",
+            "-Form_White_Flower": "White",
+            "-Form_Yellow_Flower": "Yellow"
         },
         "Drawn": {
             "-Form_Red_Flower": " Red Flower XY anime",
@@ -551,13 +575,13 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
         }
     },
     670: {
-        "Game": {
-            "-Form_Red_Flower": "",
-            "-Form_Blue_Flower": "B",
-            "-Form_Orange_Flower": "O",
-            "-Form_White_Flower": "W",
-            "-Form_Yellow_Flower": "Y",
-            "-Form_Eternal_Flower": "E"
+        "root": {
+            "-Form_Red_Flower": "Red",
+            "-Form_Blue_Flower": "Blue",
+            "-Form_Orange_Flower": "Orange",
+            "-Form_White_Flower": "White",
+            "-Form_Yellow_Flower": "Yellow",
+            "-Form_Eternal_Flower": "Eternal"
         },
         "Drawn": {
             "-Form_Red_Flower": "-Red XY anime",
@@ -577,12 +601,12 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
         }
     },
     671: {
-        "Game": {
-            "-Form_Red_Flower": "",
-            "-Form_Blue_Flower": "B",
-            "-Form_Orange_Flower": "O",
-            "-Form_White_Flower": "W",
-            "-Form_Yellow_Flower": "Y"
+        "root": {
+            "-Form_Red_Flower": "Red",
+            "-Form_Blue_Flower": "Blue",
+            "-Form_Orange_Flower": "Orange",
+            "-Form_White_Flower": "White",
+            "-Form_Yellow_Flower": "Yellow"
         },
         "Drawn": {
             "-Form_Red_Flower": " Red Flower XY anime",
@@ -595,27 +619,27 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
 
     # Furfrou
     676: {
-        "Game": {
-            "-Form_Dandy_Trim": "Da",
-            "-Form_Debutante_Trim": "De",
-            "-Form_Diamond_Trim": "Di",
-            "-Form_Heart_Trim": "He",
-            "-Form_Kabuki_Trim": "Ka",
-            "-Form_La_Reine_Trim": "La",
-            "-Form_Matron_Trim": "Ma",
-            "-Form_Pharaoh_Trim": "Ph",
-            "-Form_Star_Trim": "St"
+        "root": {
+            "-Form_Dandy_Trim": "Dandy",
+            "-Form_Debutante_Trim": "Debutanta",
+            "-Form_Diamond_Trim": "Diamond",
+            "-Form_Heart_Trim": "Heart",
+            "-Form_Kabuki_Trim": "Kabuki",
+            "-Form_La_Reine_Trim": "La Reine",
+            "-Form_Matron_Trim": "Matron",
+            "-Form_Pharaoh_Trim": "Pharaoh",
+            "-Form_Star_Trim": "Star"
         },
         "Drawn": {
-            "-Form_Dandy_Trim": drawn_dream_translation("Dandy"),
-            "-Form_Debutante_Trim": drawn_dream_translation("Debutante"),
-            "-Form_Diamond_Trim": drawn_dream_translation("Diamond"),
-            "-Form_Heart_Trim": drawn_dream_translation("Heart"),
-            "-Form_Kabuki_Trim": drawn_dream_translation("Kabuki"),
-            "-Form_La_Reine_Trim": drawn_dream_translation("La Reine"),
-            "-Form_Matron_Trim": drawn_dream_translation("Matron"),
-            "-Form_Pharaoh_Trim": drawn_dream_translation("Pharaoh"),
-            "-Form_Star_Trim": drawn_dream_translation("Star")
+            "-Form_Dandy_Trim": "-Dandy",
+            "-Form_Debutante_Trim": "-Debutante",
+            "-Form_Diamond_Trim": "-Diamond",
+            "-Form_Heart_Trim": "-Heart",
+            "-Form_Kabuki_Trim": "-Kabuki",
+            "-Form_La_Reine_Trim": "-La Reine",
+            "-Form_Matron_Trim": "-Matron",
+            "-Form_Pharaoh_Trim": "-Pharaoh",
+            "-Form_Star_Trim": "-Star"
         },
         "Menu": {
             "-Form_Dandy_Trim": "-Dandy",
@@ -632,9 +656,9 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
 
     # Aegislash
     681: {
-        "Game": {
-            "-Form_Shield": "",
-            "-Form_Blade": "B"
+        "root": {
+            "-Form_Shield": "Shield",
+            "-Form_Blade": "Blade"
         },
         "Menu": {
             "-Form_Shield": "",
@@ -645,22 +669,26 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
     # Pumpkaboo & Gourgeist
     # Drawn & menu only use Average Size
     710: {
-        "Game": {
-            "-Form_Average_Size": "",
-            "-Form_Small_Size": "Sm",
-            "-Form_Large_Size": "La",
-            "-Form_Super_Size": "Su"
+        "root": {
+            # TODO: Make the 1 average? Convert my webms?
+            # Doesn't have these... I do in webm
+            "-Form_Average_Size": EXCLUDE_TRANSLATIONS_MAP["DNE"],
+            "-Form_Small_Size": EXCLUDE_TRANSLATIONS_MAP["DNE"],
+            "-Form_Large_Size": EXCLUDE_TRANSLATIONS_MAP["DNE"],
+            "-Form_Super_Size": EXCLUDE_TRANSLATIONS_MAP["DNE"]
         },
         "Drawn": {
             "-Form_Average_Size": ""
         }
     },
     711: {
-        "Game": {
-            "-Form_Average_Size": "",
-            "-Form_Small_Size": "Sm",
-            "-Form_Large_Size": "La",
-            "-Form_Super_Size": "Su"
+        "root": {
+            # TODO: Make the 1 average? Convert my webms?
+            # Doesn't have these... I do in webm
+            "-Form_Average_Size": EXCLUDE_TRANSLATIONS_MAP["DNE"],
+            "-Form_Small_Size": EXCLUDE_TRANSLATIONS_MAP["DNE"],
+            "-Form_Large_Size": EXCLUDE_TRANSLATIONS_MAP["DNE"],
+            "-Form_Super_Size": EXCLUDE_TRANSLATIONS_MAP["DNE"]
         },
         "Drawn": {
             "-Form_Average_Size": ""
@@ -669,9 +697,9 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
 
     # Xerneas
     716: {
-        "Game": {
-            "-Form_Active": "",
-            "-Form_Neutral": "N"
+        "root": {
+            "-Form_Active": "Active",
+            "-Form_Neutral": EXCLUDE_TRANSLATIONS_MAP["DNE"]    # TODO: See if it exists in Gen9 SV, if not do I have webm
         },
         "Drawn": {
             "-Form_Active": ""
@@ -680,10 +708,10 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
 
     # Zygarde
     718: {
-        "Game": {
-            "-Form_50%": "",
-            "-Form_Complete": "C",
-            "-Form_10%": "T"
+        "root": {
+            "-Form_50%": "50",
+            "-Form_Complete": "Complete",
+            "-Form_10%": "10"
         },
         "Drawn": {
             "-Form_50%": "",
@@ -697,9 +725,9 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
 
     # Hoopa
     720: {
-        "Game": {
-            "-Form_Confined": "",
-            "-Form_Unbound": "U"
+        "root": {
+            "-Form_Confined": "Confined",
+            "-Form_Unbound": "Unbound"
         },
         "Drawn": {
             "-Form_Confined": ""
@@ -708,11 +736,11 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
 
     # Oricorio
     741: {
-        "Game": {
-            "-Form_Baile": "",
-            "-Form_Pa'u": "Pa",
-            "-Form_Pom_Pom": "Po",
-            "-Form_Sensu": "Se"
+        "root": {
+            "-Form_Baile": "Baile",
+            "-Form_Pa'u": "Pa_u",
+            "-Form_Pom_Pom": "Pom-Pom",
+            "-Form_Sensu": "Sensu"
         },
         "Drawn": {
             "-Form_Baile": "",
@@ -722,10 +750,10 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
 
     # Lycanroc
     745: {
-        "Game": {
-            "-Form_Midday": "",
-            "-Form_Dusk": "D",
-            "-Form_Midnight": "Mn"
+        "root": {
+            "-Form_Midday": "Midday",
+            "-Form_Dusk": "Dusk",
+            "-Form_Midnight": "Midnight"
         },
         "Drawn": {
             "-Form_Midday": ""
@@ -734,9 +762,9 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
 
     # Wishiwashi
     746: {
-        "Game": {
-            "-Form_Solo": "",
-            "-Form_School": "Sc"
+        "root": {
+            "-Form_Solo": "Solo",
+            "-Form_School": "School"
         },
         "Drawn": {
             "-Form_Solo": ""
@@ -745,34 +773,31 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
 
     # Silvally
     773: {
-        "Game": BULBA_TYPE_FORM_MAP,
-        "Drawn": BULBA_DRAWN_DREAM_TYPE_MAP,
-        "Menu": BULBA_TYPE_FORM_MAP
+        "root": TYPE_FORM_MAP["root"],
     },
 
     # Minior
-    # Shiny forms excluded from drawn & menu
     774: {
-        "Game": {
-            "-Form_Meteor": "",
-            "-Form_Blue_Core": "B",
-            "-Form_Green_Core": "G",
-            "-Form_Indigo_Core": "I",
-            "-Form_Orange_Core": "O",
-            "-Form_Red_Core": "R",
-            "-Form_Violet_Core": "V",
-            "-Form_Yellow_Core": "Y",
-            "-Form_Core": "R"   # This is the shiny sprite, which bulba has labeled for Red
+        "root": {
+            "-Form_Meteor": "Meteor",
+            "-Form_Blue_Core": "Blue",
+            "-Form_Green_Core": "Green",
+            "-Form_Indigo_Core": "Indigo",
+            "-Form_Orange_Core": "Orange",
+            "-Form_Red_Core": "Red",
+            "-Form_Violet_Core": "Violet",
+            "-Form_Yellow_Core": "Yellow",
+            "-Form_Core": ""   # This is the shiny sprite TODO
         },
         "Drawn": {
-            "-Form_Meteor": drawn_dream_translation(""), # Meteor form considered default: so does not have a letter denoter
-            "-Form_Blue_Core": drawn_dream_translation("Blue"),
-            "-Form_Green_Core": drawn_dream_translation("Green"),
-            "-Form_Indigo_Core": drawn_dream_translation("Indigo"),
-            "-Form_Orange_Core": drawn_dream_translation("Orange"),
-            "-Form_Red_Core": drawn_dream_translation("Red"),
-            "-Form_Violet_Core": drawn_dream_translation("Violet"),
-            "-Form_Yellow_Core": drawn_dream_translation("Yellow")
+            "-Form_Meteor": "",
+            "-Form_Blue_Core": "-Blue",
+            "-Form_Green_Core": "-Green",
+            "-Form_Indigo_Core": "-Indigo",
+            "-Form_Orange_Core": "-Orange",
+            "-Form_Red_Core": "-Red",
+            "-Form_Violet_Core": "-Violet",
+            "-Form_Yellow_Core": "-Yellow",
         },
         "Menu": {
             "-Form_Meteor": "",
@@ -788,13 +813,13 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
 
     # Mimikyu
     778: {
-        "Game": {
-            "-Form_Disguised": "",
-            "-Form_Busted": "B"
+        "root": {
+            "-Form_Disguised": "Disguised",
+            "-Form_Busted": "Busted"
         },
         "Drawn": {
             "-Form_Disguised": "",
-            "-Form_Busted": drawn_dream_translation("Busted")
+            "-Form_Busted": ""
         },
         "Menu": {
             "-Form_Busted": EXCLUDE_TRANSLATIONS_MAP["DNE"]
@@ -802,9 +827,10 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
     },
 
     # Solgaleo
+    # TODO: Dont exist in HOME, Gen9 tho?
     791: {
-        "Game": {
-            "-Form_Radiant_Sun": "R"
+        "root": {
+            "-Form_Radiant_Sun": EXCLUDE_TRANSLATIONS_MAP["DNE"]
         },
         "Drawn": {
             "-Form_Radiant_Sun": "-RadiantSunPhase"
@@ -815,9 +841,10 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
     },
 
     # Lunala
+    #  TODO: Dont exist in HOME, Gen9 tho?
     792: {
-        "Game": {
-            "-Form_Full_Moon": "F"
+        "root": {
+            "-Form_Full_Moon": EXCLUDE_TRANSLATIONS_MAP["DNE"]
         },
         "Drawn": {
             "-Form_Full_Moon": "-FullMoonPhase"
@@ -829,17 +856,17 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
 
     # Necrozma
     800: {
-        "Game": {
-            "-Form_Dawn_Wings": "DW",
-            "-Form_Dusk_Mane": "DM",
-            "-Form_Ultra": "U"
+        "root": {
+            "-Form_Dawn_Wings": "Dawn Wings",
+            "-Form_Dusk_Mane": "Dusk Mane",
+            "-Form_Ultra": "Ultra"
         }
     },
 
     # Magearna
     801: {
-        "Game": {
-            "-Form_Original_Color": "O"
+        "root": {
+            "-Form_Original_Color": "Original Color"
         },
         "Drawn": {
             "-Form_Original_Color": EXCLUDE_TRANSLATIONS_MAP["DNE"]
@@ -851,113 +878,99 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
 
     # Cramorant
     845: {
-        "Game": {
-            "-Form_Gorging": "Go",
-            "-Form_Gulping": "Gu"
+        "root": {
+            "-Form_Gorging": "Gorging",
+            "-Form_Gulping": "Gulping"
         }
     },
 
     # Toxtricity
     849: {
-        "Game": {
-            "-Form_Amped": "",
-            "-Form_Low_Key": "L"
+        "root": {
+            "-Form_Amped": "Amped",
+            "-Form_Low_Key": "Low Key"
         },
         "Menu": {
             "-Form_Amped": ""
         }
     },
 
-    # Sinistea & Polteageist
-    # Only used by HOME for the show stamp sprites. All other images (since identical) are default form
-    854: {
-        "Game": {
-            "-Form_Phony": " b",
-            "-Form_Antique": "A b"
-        }
-    },
-    855: {
-        "Game": {
-            "-Form_Phony": " b",
-            "-Form_Antique": "A b"
-        }
-    },
+    # Sinistea & Polteageist not applicable since their forms only matter to show stamps, which are static only
 
     # Alcremie
-    # Shiny forms excluded from drawn and menu
     869: {
-        "Game": {
-            "-Form_Caramel_Swirl_Berry_Sweet": "CaSB",
-            "-Form_Caramel_Swirl_Clover_Sweet": "CaSC",
-            "-Form_Caramel_Swirl_Flower_Sweet": "CaSF",
-            "-Form_Caramel_Swirl_Love_Sweet": "CaSL",
-            "-Form_Caramel_Swirl_Ribbon_Sweet": "CaSR",
-            "-Form_Caramel_Swirl_Star_Sweet": "CaSS",
-            "-Form_Caramel_Swirl_Strawberry_Sweet": "CaS",
-            "-Form_Lemon_Cream_Berry_Sweet": "LeCB",
-            "-Form_Lemon_Cream_Clover_Sweet": "LeCC",
-            "-Form_Lemon_Cream_Flower_Sweet": "LeCF",
-            "-Form_Lemon_Cream_Love_Sweet": "LeCL",
-            "-Form_Lemon_Cream_Ribbon_Sweet": "LeCR",
-            "-Form_Lemon_Cream_Star_Sweet": "LeCS",
-            "-Form_Lemon_Cream_Strawberry_Sweet": "LeC",
-            "-Form_Matcha_Cream_Berry_Sweet": "MaCB",
-            "-Form_Matcha_Cream_Clover_Sweet": "MaCC",
-            "-Form_Matcha_Cream_Flower_Sweet": "MaCF",
-            "-Form_Matcha_Cream_Love_Sweet": "MaCL",
-            "-Form_Matcha_Cream_Ribbon_Sweet": "MaCR",
-            "-Form_Matcha_Cream_Star_Sweet": "MaCS",
-            "-Form_Matcha_Cream_Strawberry_Sweet": "MaC",
-            "-Form_Mint_Cream_Berry_Sweet": "MiCB",
-            "-Form_Mint_Cream_Clover_Sweet": "MiCC",
-            "-Form_Mint_Cream_Flower_Sweet": "MiCF",
-            "-Form_Mint_Cream_Love_Sweet": "MiCL",
-            "-Form_Mint_Cream_Ribbon_Sweet": "MiCR",
-            "-Form_Mint_Cream_Star_Sweet": "MiCS",
-            "-Form_Mint_Cream_Strawberry_Sweet": "MiC",
-            "-Form_Rainbow_Swirl_Berry_Sweet": "RaSB",
-            "-Form_Rainbow_Swirl_Clover_Sweet": "RaSC",
-            "-Form_Rainbow_Swirl_Flower_Sweet": "RaSF",
-            "-Form_Rainbow_Swirl_Love_Sweet": "RaSL",
-            "-Form_Rainbow_Swirl_Ribbon_Sweet": "RaSR",
-            "-Form_Rainbow_Swirl_Star_Sweet": "RaSS",
-            "-Form_Rainbow_Swirl_Strawberry_Sweet": "RaS",
-            "-Form_Ruby_Cream_Berry_Sweet": "RuCB",
-            "-Form_Ruby_Cream_Clover_Sweet": "RuCC",
-            "-Form_Ruby_Cream_Flower_Sweet": "RuCF",
-            "-Form_Ruby_Cream_Love_Sweet": "RuCL",
-            "-Form_Ruby_Cream_Ribbon_Sweet": "RuCR",
-            "-Form_Ruby_Cream_Star_Sweet": "RuCS",
-            "-Form_Ruby_Cream_Strawberry_Sweet": "RuC",
-            "-Form_Ruby_Swirl_Berry_Sweet": "RuSB",
-            "-Form_Ruby_Swirl_Clover_Sweet": "RuSC",
-            "-Form_Ruby_Swirl_Flower_Sweet": "RuSF",
-            "-Form_Ruby_Swirl_Love_Sweet": "RuSL",
-            "-Form_Ruby_Swirl_Ribbon_Sweet": "RuSR",
-            "-Form_Ruby_Swirl_Star_Sweet": "RuSS",
-            "-Form_Ruby_Swirl_Strawberry_Sweet": "RuS",
-            "-Form_Salted_Cream_Berry_Sweet": "SaCB",
-            "-Form_Salted_Cream_Clover_Sweet": "SaCC",
-            "-Form_Salted_Cream_Flower_Sweet": "SaCF",
-            "-Form_Salted_Cream_Love_Sweet": "SaCL",
-            "-Form_Salted_Cream_Ribbon_Sweet": "SaCR",
-            "-Form_Salted_Cream_Star_Sweet": "SaCS",
-            "-Form_Salted_Cream_Strawberry_Sweet": "SaC",
-            "-Form_Vanilla_Cream_Berry_Sweet": "B",
-            "-Form_Vanilla_Cream_Clover_Sweet": "C",
-            "-Form_Vanilla_Cream_Flower_Sweet": "F",
-            "-Form_Vanilla_Cream_Love_Sweet": "L",
-            "-Form_Vanilla_Cream_Ribbon_Sweet": "R",
-            "-Form_Vanilla_Cream_Star_Sweet": "S",
-            "-Form_Vanilla_Cream_Strawberry_Sweet": "",
+        "root": {
+            "-Form_Caramel_Swirl_Berry_Sweet": "(Caramel Swirl) (Berry Sweet)",
+            "-Form_Caramel_Swirl_Clover_Sweet": "(Caramel Swirl) (Clover Sweet)",
+            "-Form_Caramel_Swirl_Flower_Sweet": "(Caramel Swirl) (Flower Sweet)",
+            "-Form_Caramel_Swirl_Love_Sweet": "(Caramel Swirl) (Love Sweet)",
+            "-Form_Caramel_Swirl_Ribbon_Sweet": "(Caramel Swirl) (Ribbon Sweet)",
+            "-Form_Caramel_Swirl_Star_Sweet": "(Caramel Swirl) (Star Sweet)",
+            "-Form_Caramel_Swirl_Strawberry_Sweet": "(Caramel Swirl) (Strawberry Sweet)",
+            "-Form_Lemon_Cream_Berry_Sweet": "(Lemon Cream) (Berry Sweet)",
+            "-Form_Lemon_Cream_Clover_Sweet": "(Lemon Cream) (Clover Sweet)",
+            "-Form_Lemon_Cream_Flower_Sweet": "(Lemon Cream) (Flower Sweet)",
+            "-Form_Lemon_Cream_Love_Sweet": "(Lemon Cream) (Love Sweet)",
+            "-Form_Lemon_Cream_Ribbon_Sweet": "(Lemon Cream) (Ribbon Sweet)",
+            "-Form_Lemon_Cream_Star_Sweet": "(Lemon Cream) (Star Sweet)",
+            "-Form_Lemon_Cream_Strawberry_Sweet": "(Lemon Cream) (Strawberry Sweet)",
+            "-Form_Matcha_Cream_Berry_Sweet": "(Matcha Cream) (Berry Sweet)",
+            "-Form_Matcha_Cream_Clover_Sweet": "(Matcha Cream) (Clover Sweet)",
+            "-Form_Matcha_Cream_Flower_Sweet": "(Matcha Cream) (Flower Sweet)",
+            "-Form_Matcha_Cream_Love_Sweet": "(Matcha Cream) (Love Sweet)",
+            "-Form_Matcha_Cream_Ribbon_Sweet": "(Matcha Cream) (Ribbon Sweet)",
+            "-Form_Matcha_Cream_Star_Sweet": "(Matcha Cream) (Star Sweet)",
+            "-Form_Matcha_Cream_Strawberry_Sweet": "(Matcha Cream) (Strawberry Sweet)",
+            "-Form_Mint_Cream_Berry_Sweet": "(Mint Cream) (Berry Sweet)",
+            "-Form_Mint_Cream_Clover_Sweet": "(Mint Cream) (Clover Sweet)",
+            "-Form_Mint_Cream_Flower_Sweet": "(Mint Cream) (Flower Sweet)",
+            "-Form_Mint_Cream_Love_Sweet": "(Mint Cream) (Love Sweet)",
+            "-Form_Mint_Cream_Ribbon_Sweet": "(Mint Cream) (Ribbon Sweet)",
+            "-Form_Mint_Cream_Star_Sweet": "(Mint Cream) (Star Sweet)",
+            "-Form_Mint_Cream_Strawberry_Sweet": "(Mint Cream) (Strawberry Sweet)",
+            "-Form_Rainbow_Swirl_Berry_Sweet": "(Rainbow Swirl) (Berry Sweet)",
+            "-Form_Rainbow_Swirl_Clover_Sweet": "(Rainbow Swirl) (Clover Sweet)",
+            "-Form_Rainbow_Swirl_Flower_Sweet": "(Rainbow Swirl) (Flower Sweet)",
+            "-Form_Rainbow_Swirl_Love_Sweet": "(Rainbow Swirl) (Love Sweet)",
+            "-Form_Rainbow_Swirl_Ribbon_Sweet": "(Rainbow Swirl) (Ribbon Sweet)",
+            "-Form_Rainbow_Swirl_Star_Sweet": "(Rainbow Swirl) (Star Sweet)",
+            "-Form_Rainbow_Swirl_Strawberry_Sweet": "(Rainbow Swirl) (Strawberry Sweet)",
+            "-Form_Ruby_Cream_Berry_Sweet": "(Ruby Cream) (Berry Sweet)",
+            "-Form_Ruby_Cream_Clover_Sweet": "(Ruby Cream) (Clover Sweet)",
+            "-Form_Ruby_Cream_Flower_Sweet": "(Ruby Cream) (Flower Sweet)",
+            "-Form_Ruby_Cream_Love_Sweet": "(Ruby Cream) (Love Sweet)",
+            "-Form_Ruby_Cream_Ribbon_Sweet": "(Ruby Cream) (Ribbon Sweet)",
+            "-Form_Ruby_Cream_Star_Sweet": "(Ruby Cream) (Star Sweet)",
+            "-Form_Ruby_Cream_Strawberry_Sweet": "(Ruby Cream) (Strawberry Sweet)",
+            "-Form_Ruby_Swirl_Berry_Sweet": "(Ruby Swirl) (Berry Sweet)",
+            "-Form_Ruby_Swirl_Clover_Sweet": "(Ruby Swirl) (Clover Sweet)",
+            "-Form_Ruby_Swirl_Flower_Sweet": "(Ruby Swirl) (Flower Sweet)",
+            "-Form_Ruby_Swirl_Love_Sweet": "(Ruby Swirl) (Love Sweet)",
+            "-Form_Ruby_Swirl_Ribbon_Sweet": "(Ruby Swirl) (Ribbon Sweet)",
+            "-Form_Ruby_Swirl_Star_Sweet": "(Ruby Swirl) (Star Sweet)",
+            "-Form_Ruby_Swirl_Strawberry_Sweet": "(Ruby Swirl) (Strawberry Sweet)",
+            "-Form_Salted_Cream_Berry_Sweet": "(Salted Cream) (Berry Sweet)",
+            "-Form_Salted_Cream_Clover_Sweet": "(Salted Cream) (Clover Sweet)",
+            "-Form_Salted_Cream_Flower_Sweet": "(Salted Cream) (Flower Sweet)",
+            "-Form_Salted_Cream_Love_Sweet": "(Salted Cream) (Love Sweet)",
+            "-Form_Salted_Cream_Ribbon_Sweet": "(Salted Cream) (Ribbon Sweet)",
+            "-Form_Salted_Cream_Star_Sweet": "(Salted Cream) (Star Sweet)",
+            "-Form_Salted_Cream_Strawberry_Sweet": "(Salted Cream) (Strawberry Sweet)",
+            "-Form_Vanilla_Cream_Berry_Sweet": "(Vanilla Cream) (Berry Sweet)",
+            "-Form_Vanilla_Cream_Clover_Sweet": "(Vanilla Cream) (Clover Sweet)",
+            "-Form_Vanilla_Cream_Flower_Sweet": "(Vanilla Cream) (Flower Sweet)",
+            "-Form_Vanilla_Cream_Love_Sweet": "(Vanilla Cream) (Love Sweet)",
+            "-Form_Vanilla_Cream_Ribbon_Sweet": "(Vanilla Cream) (Ribbon Sweet)",
+            "-Form_Vanilla_Cream_Star_Sweet": "(Vanilla Cream) (Star Sweet)",
+            "-Form_Vanilla_Cream_Strawberry_Sweet": "(Vanilla Cream) (Strawberry Sweet)",
             # Shinies (which have only berry differences)
-            "-Form_Berry_Sweet": "B",
-            "-Form_Clover_Sweet": "C",
-            "-Form_Flower_Sweet": "F",
-            "-Form_Love_Sweet": "L",
-            "-Form_Ribbon_Sweet": "R",
-            "-Form_Star_Sweet": "S",
-            "-Form_Strawberry_Sweet": ""
+            "-Form_Berry_Sweet": "(Vanilla Cream) (Berry Sweet)",
+            "-Form_Clover_Sweet": "(Vanilla Cream) (Clover Sweet)",
+            "-Form_Flower_Sweet": "(Vanilla Cream) (Flower Sweet)",
+            "-Form_Love_Sweet": "(Vanilla Cream) (Love Sweet)",
+            "-Form_Ribbon_Sweet": "(Vanilla Cream) (Ribbon Sweet)",
+            "-Form_Star_Sweet": "(Vanilla Cream) (Star Sweet)",
+            "-Form_Strawberry_Sweet": "(Vanilla Cream) (Strawberry Sweet)"
         },
         "Drawn": {
             # Kinda random selection, I guess?
@@ -988,9 +1001,9 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
 
     # Eiscue
     875: {
-        "Game": {
-            "-Form_Ice_Face": "",
-            "-Form_Noice_Face": "N"
+        "root": {
+            "-Form_Ice_Face": "Ice",
+            "-Form_Noice_Face": "Noice"
         },
         "Drawn": {
             "-Form_Ice_Face": "",
@@ -1000,9 +1013,9 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
 
     # Morpeko
     877: {
-        "Game": {
-            "-Form_Full_Belly": "",
-            "-Form_Hangry": "H"
+        "root": {
+            "-Form_Full_Belly": "Full Belly",
+            "-Form_Hangry": "Hangry"
         },
         "Drawn": {
             "-Form_Full_Belly": "-Full"
@@ -1014,9 +1027,9 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
 
     # Zacian & Zamazenta
     888: {
-        "Game": {
-            "-Form_Hero_of_Many_Battles": "",
-            "-Form_Crowned_Sword": "C"
+        "root": {
+            "-Form_Hero_of_Many_Battles": "Hero of Many Battles",
+            "-Form_Crowned_Sword": "Crowned"
         },
         "Drawn": {
             "-Form_Hero_of_Many_Battles": "-Hero",
@@ -1028,9 +1041,9 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
         }
     },
     889: {
-        "Game": {
-            "-Form_Hero_of_Many_Battles": "",
-            "-Form_Crowned_Shield": "C"
+        "root": {
+            "-Form_Hero_of_Many_Battles": "Hero of Many Battles",
+            "-Form_Crowned_Shield": "Crowned"
         },
         "Drawn": {
             "-Form_Hero_of_Many_Battles": "-Hero",
@@ -1044,8 +1057,8 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
 
     # Eternatus
     890: {
-        "Game": {
-            "-Form_Eternamax": "E"
+        "root": {
+            "-Form_Eternamax": EXCLUDE_TRANSLATIONS_MAP["DNE"]
         },
         "Drawn": {
             "-Form_Eternamax": EXCLUDE_TRANSLATIONS_MAP["DNE"]
@@ -1054,9 +1067,9 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
     
     # Urshifu
     892: {
-        "Game": {
-            "-Form_Single_Strike": "",
-            "-Form_Rapid_Strike": "R"
+        "root": {
+            "-Form_Single_Strike": "Single Strike",
+            "-Form_Rapid_Strike": "Rapid Strike"
         },
         "Drawn": {
             "-Form_Single_Strike": " Single Strike",
@@ -1071,31 +1084,31 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
 
     # Zarude
     893: {
-        "Game": {
-            "-Form_Dada": "D"
+        "root": {
+            "-Form_Dada": "Dada"
         }
     },
 
     # Calyrex
     898: {
-        "Game": {
-            "-Form_Ice_Rider": "I",
-            "-Form_Shadow_Rider": "R"
+        "root": {
+            "-Form_Ice_Rider": "Ice",
+            "-Form_Shadow_Rider": "Shadow"
         }
     },
 
     # Ursaluna
     901: {
-        "Game": {
-            "-Form_Bloodmoon": "B"
+        "root": {
+            "-Form_Bloodmoon": "Blood Moon"
         }
     },
 
     # Enamorus
     905: {
-        "Game": {
-            "-Form_Incarnate": "",
-            "-Form_Therian": "T"
+        "root": {
+            "-Form_Incarnate": "Incarnate",
+            "-Form_Therian": "Therian"
         },
         "Drawn": {
             "-Form_Incarnate": ""
@@ -1104,12 +1117,12 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
 
     # Maushold
     925: {
-        "Game": {
-            "-Form_Family_of_Three": "T",
-            "-Form_Family_of_Four": ""
+        "root": {
+            "-Form_Family_of_Three": "Three",
+            "-Form_Family_of_Four": "Four"
         },
         "Drawn": {
-            "-Form_Family_of_Three": drawn_dream_translation(""),
+            "-Form_Family_of_Three": "",
             "-Form_Family_of_Four": " Dream - Four"
         },
         "Menu": {
@@ -1120,17 +1133,17 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
 
     # Squawkabilly
     931: {
-        "Game": {
-            "-Form_Blue_Plumage": "B",
-            "-Form_Green_Plumage": "",
-            "-Form_White_Plumage": "W",
-            "-Form_Yellow_Plumage": "Y"
+        "root": {
+            "-Form_Blue_Plumage": "Blue",
+            "-Form_Green_Plumage": "Green",
+            "-Form_White_Plumage": "White",
+            "-Form_Yellow_Plumage": "Yellow"
         },
         "Drawn": {
-            "-Form_Blue_Plumage": drawn_dream_translation("Blue"), 
-            "-Form_Green_Plumage": drawn_dream_translation("Green"),
-            "-Form_White_Plumage": drawn_dream_translation("White"), 
-            "-Form_Yellow_Plumage": drawn_dream_translation("Yellow")
+            "-Form_Blue_Plumage": "-Blue", 
+            "-Form_Green_Plumage": "",
+            "-Form_White_Plumage": "-White", 
+            "-Form_Yellow_Plumage": "-Yellow"
         },
         "Menu": {
             "-Form_Blue_Plumage": "-Blue", 
@@ -1142,9 +1155,9 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
 
     # Palafin
     964: {
-        "Game": {
-            "-Form_Zero": "",
-            "-Form_Hero": "H"
+        "root": {
+            "-Form_Zero": "Zero",
+            "-Form_Hero": "Hero"
         },
         "Drawn": {
             "-Form_Zero": ""
@@ -1153,10 +1166,10 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
     
     # Tatsugiri
     978: {
-        "Game": {
-            "-Form_Curly": "",
-            "-Form_Droopy": "D",
-            "-Form_Stretchy": "S"
+        "root": {
+            "-Form_Curly": "Curly",
+            "-Form_Droopy": "Droopy",
+            "-Form_Stretchy": "Stretchy"
         },
         "Drawn": {
             "-Form_Curly": ""
@@ -1165,13 +1178,13 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
 
     # Dudunsparce
     982: {
-        "Game": {
-            "-Form_Two_Segment": "",
-            "-Form_Three_Segment": "Th"
+        "root": {
+            "-Form_Two_Segment": "Two",
+            "-Form_Three_Segment": "Three"
         },
         "Drawn": {
-            "-Form_Two_Segment": drawn_dream_translation("2"),
-            "-Form_Three_Segment": drawn_dream_translation("3")
+            "-Form_Two_Segment": "",
+            "-Form_Three_Segment": ""
         },
         "Game": {
             "-Form_Two_Segment": "",
@@ -1181,37 +1194,24 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
 
     # Gimmighoul
     999: {
-        "Game": {
-            "-Form_Chest": "",
-            "-Form_Roaming": "R"
+        "root": {
+            # Chest form not denoted
+            "-Form_Roaming": "Roaming"
         },
         "Drawn": {
             "-Form_Chest": ""
         }
     },
 
-    # Poltchageist & Sinistcha
-    # Only used by HOME for the show stamp sprites. All other images (since identical) are default form
-    1012: {
-        "Game": {
-            "-Form_Artisan": "A b",
-            "-Form_Counterfeit": " b",
-        }
-    },
-    1013: {
-        "Game": {
-            "-Form_Masterpiece": "M b",
-            "-Form_Unremarkable": " b",
-        }
-    },
+    # Poltchageist & Sinistcha not applicable since only forms used for stamps, which aren't animated
 
     # Ogerpon
     1017: {
-        "Game": {
-            "-Form_Cornerstone_Mask": "C",
-            "-Form_Hearthflame_Mask": "H",
-            "-Form_Teal_Mask": "",
-            "-Form_Wellspring_Mask": "W"
+        "root": {
+            "-Form_Cornerstone_Mask": "Cobblestone",
+            "-Form_Hearthflame_Mask": "Hearthflame",
+            "-Form_Teal_Mask": "Teal",
+            "-Form_Wellspring_Mask": "Wellspring"
         },
         "Drawn": {
             "-Form_Teal_Mask": ""
@@ -1220,10 +1220,10 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
 
     # Terapagos
     1024: {
-        "Game": {
-            "-Form_Normal": "",
-            "-Form_Terastal": "T",
-            "-Form_Stellar": "S"
+        "root": {
+            "-Form_Normal": "Normal",
+            "-Form_Terastal": "Terastal",
+            "-Form_Stellar": "Stellar"  # TODO: Check Gen9, not in HOME
         },
         "Drawn": {
             "-Form_Normal": ""
