@@ -42,7 +42,6 @@ DL_UNIVERSAL_FORM_MAP = {
         "-Region_Hisui": "(Hisuian)",
         "-Region_Paldea": "Paldea"  # Covers both Tauros and Wooper, which are formatted differently
     },
-
     "pkparaiso": {
         "-f": "-f",
         "-Mega_X": "-megax",
@@ -50,9 +49,12 @@ DL_UNIVERSAL_FORM_MAP = {
         "-Mega": "-mega",   # This after X&Y so when looping through Mega wont trigger a form meant to be X or Y
         "-Region_Alola": "-alola",
         "-Region_Galar": "-galar",
-        # NOTE: I did guess on these since I've only got gen6 & 8 up to SwSh for pkparaiso
         "-Region_Hisui": "-hisuian",
         "-Region_Paldea": "-paldea"
+    },
+    "adamsb": {
+        "-f": "f",
+        "-Region_Paldea": "p"
     }
 }
 
@@ -155,6 +157,11 @@ CREATOR_FORM_TRANSLATION_MAP = {
             "-Form_Combat": "-combat",
             "-Form_Blaze": "-blaze",
             "-Form_Aqua": "-aqua"
+        },
+        "adamsb": {
+            "-Form_Blaze": "bb",
+            "-Form_Aqua": "ab",
+            "-Form_Combat": ""
         }
     },
 
@@ -1273,9 +1280,9 @@ CREATOR_FORM_TRANSLATION_MAP = {
             "-Form_Family_of_Three": "Three",
             "-Form_Family_of_Four": "Four"
         },
-        "Drawn": {
-            "-Form_Family_of_Three": "",
-            "-Form_Family_of_Four": " Dream - Four"
+        "adamsb": {
+            "-Form_Family_of_Three": "f3",
+            "-Form_Family_of_Four": "f4"
         },
         "Menu": {
             "-Form_Family_of_Three": "-Three",
@@ -1291,11 +1298,11 @@ CREATOR_FORM_TRANSLATION_MAP = {
             "-Form_White_Plumage": "White",
             "-Form_Yellow_Plumage": "Yellow"
         },
-        "Drawn": {
-            "-Form_Blue_Plumage": "-Blue", 
-            "-Form_Green_Plumage": "",
-            "-Form_White_Plumage": "-White", 
-            "-Form_Yellow_Plumage": "-Yellow"
+        "adamsb": {
+            "-Form_Blue_Plumage": "-blue", 
+            "-Form_Green_Plumage": "-green",
+            "-Form_White_Plumage": "-white", 
+            "-Form_Yellow_Plumage": "-yellow"
         },
         "Menu": {
             "-Form_Blue_Plumage": "-Blue", 
@@ -1311,7 +1318,8 @@ CREATOR_FORM_TRANSLATION_MAP = {
             "-Form_Zero": "Zero",
             "-Form_Hero": "Hero"
         },
-        "Drawn": {
+        "adamsb": {
+            "-Form_Hero": "-h",
             "-Form_Zero": ""
         }
     },
@@ -1323,8 +1331,10 @@ CREATOR_FORM_TRANSLATION_MAP = {
             "-Form_Droopy": "Droopy",
             "-Form_Stretchy": "Stretchy"
         },
-        "Drawn": {
-            "-Form_Curly": ""
+        "adamsb": {
+            "-Form_Curly": "-cf",
+            "-Form_Droopy": "-df",
+            "-Form_Stretchy": "-sf"
         }
     },
 
@@ -1334,9 +1344,9 @@ CREATOR_FORM_TRANSLATION_MAP = {
             "-Form_Two_Segment": "Two",
             "-Form_Three_Segment": "Three"
         },
-        "Drawn": {
-            "-Form_Two_Segment": "",
-            "-Form_Three_Segment": ""
+        "adamsb": {
+            "-Form_Two_Segment": "-2f",
+            "-Form_Three_Segment": "-3f"
         },
         "Game": {
             "-Form_Two_Segment": "",
@@ -1347,11 +1357,12 @@ CREATOR_FORM_TRANSLATION_MAP = {
     # Gimmighoul
     999: {
         "root": {
-            # Chest form not denoted
-            "-Form_Roaming": "Roaming"
-        },
-        "Drawn": {
+            "-Form_Roaming": "Roaming",
             "-Form_Chest": ""
+        },
+        "adamsb": {
+            "-Form_Chest": "-cf",
+            "-Form_Roaming": ""
         }
     },
 
