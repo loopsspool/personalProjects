@@ -23,7 +23,8 @@ DIRECTORY_TO_FILENAME_MAP = {
 }
 
 
-
+# TODO: root based off home (so check Gen9 ani)
+# - pkparaiso done off Gen6 (for pokes below gen6) so check against shield
 
 #|================================================================================================|
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~[     UNIVERSAL FORM TRANSLATIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
@@ -40,6 +41,18 @@ DL_UNIVERSAL_FORM_MAP = {
         "-Region_Galar": "(Galar)",
         "-Region_Hisui": "(Hisuian)",
         "-Region_Paldea": "Paldea"  # Covers both Tauros and Wooper, which are formatted differently
+    },
+
+    "pkparaiso": {
+        "-f": "-f",
+        "-Mega_X": "-megax",
+        "-Mega_Y": "-megay",
+        "-Mega": "-mega",   # This after X&Y so when looping through Mega wont trigger a form meant to be X or Y
+        "-Region_Alola": "-alola",
+        "-Region_Galar": "-galar",
+        # NOTE: I did guess on these since I've only got gen6 & 8 up to SwSh for pkparaiso
+        "-Region_Hisui": "-hisuian",
+        "-Region_Paldea": "-paldea"
     }
 }
 
@@ -50,7 +63,7 @@ DL_UNIVERSAL_FORM_MAP = {
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~[     SPECIES FORM TRANSLATIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
-TYPE_FORM_MAP = {
+CREATOR_TYPE_FORM_MAP = {
     "root": {
         "-Form_Normal": "Normal",
         "-Form_Fighting": "Fighting", 
@@ -70,11 +83,31 @@ TYPE_FORM_MAP = {
         "-Form_Dragon": "Dragon", 
         "-Form_Dark": "Dark", 
         "-Form_Fairy": "Fairy", 
+    },
+    "pkparaiso": {
+        "-Form_Normal": "-normal",
+        "-Form_Fighting": "-fighting", 
+        "-Form_Flying": "-flying", 
+        "-Form_Poison": "-poison", 
+        "-Form_Ground": "-ground", 
+        "-Form_Rock": "-rock", 
+        "-Form_Bug": "-bug", 
+        "-Form_Ghost": "-ghost", 
+        "-Form_Steel": "-steel", 
+        "-Form_Fire": "-fire", 
+        "-Form_Water": "-water", 
+        "-Form_Grass": "-grass", 
+        "-Form_Electric": "-electric", 
+        "-Form_Psychic": "-psychic", 
+        "-Form_Ice": "-ice", 
+        "-Form_Dragon": "-dragon", 
+        "-Form_Dark": "-dark", 
+        "-Form_Fairy": "-fairy", 
     }
 }
 
 
-BULBA_POKE_FORM_TRANSLATION_MAP = {
+CREATOR_FORM_TRANSLATION_MAP = {
     # Pikachu
     25: {
         "root": {
@@ -88,20 +121,16 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Cap_World": "(World Cap)"
             # No cosplays past gen 6
         },
-        "Drawn": {
-            "-Form_Cap_Alola": "-Alola Cap",
-            "-Form_Cap_Hoenn": "-Hoenn Cap",
-            "-Form_Cap_Kalos": "-Kalos Cap",
-            "-Form_Cap_Original": "-Original Cap",
-            "-Form_Cap_Partner": "-Partner Cap",
-            "-Form_Cap_Sinnoh": "-Sinnoh Cap",
-            "-Form_Cap_Unova": "-Unova Cap",
-            "-Form_Cap_World": "-World Cap",
-            "-Form_Cosplay_Belle": "Belle",
-            "-Form_Cosplay_Libre": "-Libre",
-            "-Form_Cosplay_PhD": "-PhD",
-            "-Form_Cosplay_Pop_Star": "-Pop Star",
-            "-Form_Cosplay_Rock_Star": "-Rock Star"
+        "pkparaiso": {
+            "-Form_Cap_Alola": "-alolacap",
+            "-Form_Cap_Hoenn": "-hoenncap",
+            "-Form_Cap_Kalos": "-kaloscap",
+            "-Form_Cap_Original": "-originalcap",
+            "-Form_Cap_Partner": "-partnercap",
+            "-Form_Cap_Sinnoh": "-sinnohcap",
+            "-Form_Cap_Unova": "-unovacap",
+            "-Form_Cap_World": "-worldcap"
+            # No cosplays even in my XY folder of theirs
         },
         "Menu": {
             "-Form_Cap_Alola": "-Alola",
@@ -122,10 +151,10 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Blaze": "Fire",
             "-Form_Aqua": "Water"
         },
-        "Drawn": {
-            "-Form_Combat": " Combat",
-            "-Form_Blaze": " Blaze",
-            "-Form_Aqua": " Aqua"
+        "pkparaiso": {
+            "-Form_Combat": "-combat",
+            "-Form_Blaze": "-blaze",
+            "-Form_Aqua": "-aqua"
         }
     },
 
@@ -163,35 +192,35 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Z": " Z",
             "-Form_!": "(Exclamation)"
         },
-        "Drawn": {
-            "-Form_A": "",
-            "-Form_B": "-B",
-            "-Form_C": "-C",
-            "-Form_D": "-D",
-            "-Form_E": "-E",
-            "-Form_F": "-F",
-            "-Form_G": "-G",
-            "-Form_H": "-H",
-            "-Form_I": "-I",
-            "-Form_J": "-J",
-            "-Form_K": "-K",
-            "-Form_L": "-L",
-            "-Form_M": "-M",
-            "-Form_N": "-N",
-            "-Form_O": "-O",
-            "-Form_P": "-P",
-            "-Form_Qmark": "-Question",
-            "-Form_Q": "-Q",
-            "-Form_R": "-R",
-            "-Form_S": "-S",
-            "-Form_T": "-T",
-            "-Form_U": "-U",
-            "-Form_V": "-V",
-            "-Form_W": "-W",
-            "-Form_X": "-X",
-            "-Form_Y": "-Y",
-            "-Form_Z": "-Z",
-            "-Form_!": "-Exclamation"
+        "pkparaiso": {
+            "-Form_A": "-alpha",  # I did have to write this in myself
+            "-Form_B": "-bravo",
+            "-Form_C": "-charlie",
+            "-Form_D": "-delta",
+            "-Form_E": "-echo",
+            "-Form_F": "-foxtrot",
+            "-Form_G": "-golf",
+            "-Form_H": "-hotel",
+            "-Form_I": "-india",
+            "-Form_J": "-juliet",
+            "-Form_K": "-kilo",
+            "-Form_L": "-lima",
+            "-Form_M": "-mike",
+            "-Form_N": "-november",
+            "-Form_O": "-oscar",
+            "-Form_P": "-papa",
+            "-Form_Qmark": "-interrogation",
+            "-Form_Q": "-quebec",
+            "-Form_R": "-romeo",
+            "-Form_S": "-sierra",
+            "-Form_T": "-tango",
+            "-Form_U": "-uniform",
+            "-Form_V": "-victor",
+            "-Form_W": "-whiskey",
+            "-Form_X": "-xray",
+            "-Form_Y": "-yankee",
+            "-Form_Z": "-zulu",
+            "-Form_!": "-exclamation"
         },
         "Menu": {
             "-Form_A": "",
@@ -227,7 +256,8 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
 
     # Sneasel (f added from universal check)
     215: {
-        "root": {"-Region_Hisui": "Hisui"}
+        "root": {"-Region_Hisui": "Hisui"},
+        "pkparaiso": {"-Region_Hisui": "-hisui"}
     },
 
     # Castform
@@ -236,15 +266,22 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Rainy": "Rainy",
             "-Form_Snowy": "Snowy",
             "-Form_Sunny": "Sunny"
+        },
+        "pkparaiso": {
+            "-Form_Rainy": "-rainy",
+            "-Form_Snowy": "-snowy",
+            "-Form_Sunny": "-sunny"
         }
     },
 
     # Kyogre & Groudon
     382: {
-        "root": {"-Form_Primal": "Primal"}
+        "root": {"-Form_Primal": "Primal"},
+        "pkparaiso": {"-Form_Primal": "-primal"}
     },
     383: {
-        "root": {"-Form_Primal": "Primal"}
+        "root": {"-Form_Primal": "Primal"},
+        "pkparaiso": {"-Form_Primal": "-primal"}
     },
 
     #Deoxys
@@ -253,6 +290,11 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Attack": "Attack",
             "-Form_Defense": "Defense",
             "-Form_Speed": "Speed"
+        },
+        "pkparaiso": {
+            "-Form_Attack": "-attack",
+            "-Form_Defense": "-defense",
+            "-Form_Speed": "-speed"
         }
     },
 
@@ -263,10 +305,10 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Sandy_Cloak": "Sandy",
             "-Form_Trash_Cloak": "Trash"
         },
-        "Drawn": {
-            "-Form_Plant_Cloak": "-Plant",
-            "-Form_Sandy_Cloak": "-Sandy",
-            "-Form_Trash_Cloak": "-Trash"
+        "pkparaiso": {
+            "-Form_Sandy_Cloak": "-sandy",
+            "-Form_Trash_Cloak": "-trash",
+            "-Form_Plant_Cloak": ""
         }
     },
     413: {
@@ -275,10 +317,10 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Sandy_Cloak": "Sandy",
             "-Form_Trash_Cloak": "Trash"
         },
-        "Drawn": {
-            "-Form_Plant_Cloak": "-Plant",
-            "-Form_Sandy_Cloak": "-Sandy",
-            "-Form_Trash_Cloak": "-Trash"
+        "pkparaiso": {
+            "-Form_Sandy_Cloak": "-sandy",
+            "-Form_Trash_Cloak": "-trash",
+            "-Form_Plant_Cloak": ""
         }
     },
 
@@ -288,7 +330,8 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Overcast": "Overcast",
             "-Form_Sunshine": "Sunshine"
         },
-        "Drawn": {
+        "pkparaiso": {
+            "-Form_Sunshine": "-sunshine",
             "-Form_Overcast": ""
         }
     },
@@ -299,8 +342,8 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_West": "West",
             "-Form_East": "East"
         },
-        "Menu": {
-            "-Form_East": "-East",
+        "pkparaiso": {
+            "-Form_East": "-east",
             "-Form_West": ""
         }
     },
@@ -309,8 +352,8 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_West": "West",
             "-Form_East": "East"
         },
-        "Menu": {
-            "-Form_East": "-East",
+        "pkparaiso": {
+            "-Form_East": "-east",
             "-Form_West": ""
         }
     },
@@ -323,15 +366,24 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Heat": "Heat",
             "-Form_Mow": "Mow",
             "-Form_Wash": "Wash"
+        },
+        "pkparaiso": {
+            "-Form_Fan": "-fan",
+            "-Form_Frost": "-frost",
+            "-Form_Heat": "-heat",
+            "-Form_Mow": "-mow",
+            "-Form_Wash": "-wash"
         }
     },
     
     # Dialga & Palkia
     483: {
-        "root": {"-Form_Origin": "Origin"}
+        "root": {"-Form_Origin": "Origin"},
+        "pkparaiso": {"-Form_Origin": "-origin"}
     },
     484: {
-        "root": {"-Form_Origin": "Origin"}
+        "root": {"-Form_Origin": "Origin"},
+        "pkparaiso": {"-Form_Origin": "-origin"}
     },
     
     # Giratina
@@ -340,7 +392,8 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Altered": "Altered",
             "-Form_Origin": "Origin"
         },
-        "Drawn": {
+        "pkparaiso": {
+            "-Form_Origin": "-origin",
             "-Form_Altered": ""
         }
     },
@@ -351,15 +404,16 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Land": "Land",
             "-Form_Sky": "Sky"
         },
-        "Drawn": {
+        "pkparaiso": {
+            "-Form_Sky": "-sky",
             "-Form_Land": "" 
         }
     },
 
     # Arceus
-    # ??? form excluded from drawn & menu
     493: {
-        "root": TYPE_FORM_MAP["root"],
+        "root": CREATOR_TYPE_FORM_MAP["root"],
+        "pkparaiso": CREATOR_TYPE_FORM_MAP["pkparaiso"],
     },
 
     # Basculin
@@ -369,10 +423,10 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Blue_Striped": "Blue",
             "-Form_White_Striped": "White"
         },
-        "Drawn": {
-            "-Form_Red_Striped": "-Red",
-            "-Form_Blue_Striped": "-Blue",
-            "-Form_White_Striped": "-White"
+        "pkparaiso": {
+            "-Form_Blue_Striped": "-blue",
+            "-Form_White_Striped": "-white",
+            "-Form_Red_Striped": ""
         },
         "Menu": {
             "-Form_Blue_Striped": "-Blue",
@@ -384,14 +438,12 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
     # Darmanitan
     555: {
         "root": {
-            "-Form_Zen": "Zen",     # Standard not always marked, so if not Zen its standard
+            "-Form_Zen": "Zen",
             "-Form_Standard": ""
         },
-        "Drawn": {
-            "-Form_Standard": "",
-            "-Form_Zen": "-Zen",
-            "-Region_Galar-Form_Standard": "-Galar",
-            "-Region_Galar-Form_Zen": "-Galar Zen"
+        "pkparaiso": {
+            "-Form_Zen": "-zen",
+            "-Form_Standard": ""
         },
         "Menu": {
             "-Form_Standard": "",
@@ -409,7 +461,10 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Summer": "Summer",
             "-Form_Winter": "Winter"
         },
-        "Drawn": {
+        "pkparaiso": {
+            "-Form_Autumn": "-autumn",
+            "-Form_Summer": "-summer",
+            "-Form_Winter": "-winter",
             "-Form_Spring": ""
         }
     },
@@ -420,7 +475,10 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Summer": "Summer",
             "-Form_Winter": "Winter"
         },
-        "Drawn": {
+        "pkparaiso": {
+            "-Form_Autumn": "-autumn",
+            "-Form_Summer": "-summer",
+            "-Form_Winter": "-winter",
             "-Form_Spring": ""
         }
     },
@@ -431,7 +489,8 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Incarnate": "Incarnate",
             "-Form_Therian": "Therian"
         },
-        "Drawn": {
+        "pkparaiso": {
+            "-Form_Therian": "-therian",
             "-Form_Incarnate": ""
         }
     },
@@ -440,7 +499,8 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Incarnate": "Incarnate",
             "-Form_Therian": "Therian"
         },
-        "Drawn": {
+        "pkparaiso": {
+            "-Form_Therian": "-therian",
             "-Form_Incarnate": ""
         }
     },
@@ -449,25 +509,26 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Incarnate": "Incarnate",
             "-Form_Therian": "Therian"
         },
-        "Drawn": {
+        "pkparaiso": {
+            "-Form_Therian": "-therian",
             "-Form_Incarnate": ""
         }
     },
 
     # Kyurem
-    # Overdrive forms excluded from menu
     646: {
         "root": {
-            # These are all over the place by game/denoters, easier to just do by hand
             "-Form_Black": "Black",
             "-Form_Black_Overdrive": EXCLUDE_TRANSLATIONS_MAP["DBH"],   #TODO
             "-Form_White": "White",
             "-Form_White_Overdrive": EXCLUDE_TRANSLATIONS_MAP["DBH"]    #TODO
         },
-        "Drawn": {
-            "-Form_Black_Overdrive": "-Black2",
-            "-Form_White_Overdrive": "-White2"
-        }
+        "pkparaiso": {
+            "-Form_Black": "-black",
+            "-Form_Black_Overdrive": EXCLUDE_TRANSLATIONS_MAP["DBH"],   #TODO
+            "-Form_White": "-white",
+            "-Form_White_Overdrive": EXCLUDE_TRANSLATIONS_MAP["DBH"]    #TODO
+        },
     },
 
     # Keldeo
@@ -476,7 +537,8 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Ordinary": "Ordinary",
             "-Form_Resolute": "Resolute"
         },
-        "Drawn": {
+        "pkparaiso": {
+            "-Form_Resolute": "-resolute",
             "-Form_Ordinary": ""
         }
     },
@@ -487,7 +549,8 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Aria": "Aria",
             "-Form_Pirouette": "Pirouette"
         },
-        "Drawn": {
+        "pkparaiso": {
+            "-Form_Pirouette": "-pirouette",
             "-Form_Aria": ""
         }
     },
@@ -500,11 +563,11 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Chill_Drive": "Chill",
             "-Form_Shock_Drive": "Shock"
         },
-        "Drawn": {
-            "-Form_Douse_Drive": " Douse Dream",
-            "-Form_Burn_Drive": " Burn Dream",
-            "-Form_Chill_Drive": " Chill Dream",
-            "-Form_Shock_Drive": " Shock Dream"
+        "pkparaiso": {
+            "-Form_Douse_Drive": "-douse",
+            "-Form_Burn_Drive": "-burn",
+            "-Form_Chill_Drive": "-chill",
+            "-Form_Shock_Drive": "-shock"
         },
         "Menu": {
             "-Form_Douse_Drive": "Douse",
@@ -516,9 +579,8 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
 
     # Greninja
     658: {
-        "root": {
-            "-Form_Ash": "Ash"
-        }
+        "root": {"-Form_Ash": "Ash"},
+        "pkparaiso": {"-Form_Ash": "-ash"}
     },
 
     # Vivillon
@@ -545,8 +607,27 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Sun": "Sun",
             "-Form_Tundra": "Tundra"
         },
-        "Drawn": {
-            "-Form_Poke_Ball": "-Pok\u00e9 Ball"
+        "pkparaiso": {
+            "-Form_Archipelago": "-archipelago",
+            "-Form_Continental": "-continental",
+            "-Form_Elegant": "-elegant",
+            "-Form_Fancy": "-fancy",
+            "-Form_Garden": "-garden",
+            "-Form_High_Plains": "-highplains",
+            "-Form_Icy_Snow": "-icysnow",
+            "-Form_Jungle": "-jungle",
+            "-Form_Marine": "-marine",
+            "-Form_Meadow": "-meadow",
+            "-Form_Modern": "-modern",
+            "-Form_Monsoon": "-monsoon",
+            "-Form_Ocean": "-ocean",
+            "-Form_Poke_Ball": "-pokeball",
+            "-Form_Polar": "-polar",
+            "-Form_River": "-river",
+            "-Form_Sandstorm": "-sandstorm",
+            "-Form_Savanna": "-savanna",
+            "-Form_Sun": "-sun",
+            "-Form_Tundra": "-tundra"
         }
     },
 
@@ -559,12 +640,12 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_White_Flower": "White",
             "-Form_Yellow_Flower": "Yellow"
         },
-        "Drawn": {
-            "-Form_Red_Flower": " Red Flower XY anime",
-            "-Form_Blue_Flower": " Blue Flower XY anime",
-            "-Form_Orange_Flower": " Orange Flower XY anime",
-            "-Form_White_Flower": " White Flower XY anime",
-            "-Form_Yellow_Flower": " Yellow Flower XY anime"
+        "pkparaiso": {
+            "-Form_Blue_Flower": "-blue",
+            "-Form_Orange_Flower": "-orange",
+            "-Form_White_Flower": "-white",
+            "-Form_Yellow_Flower": "-yellow",
+            "-Form_Red_Flower": ""
         },
         "Menu": {
             "-Form_Blue_Flower": "-Blue",
@@ -583,13 +664,13 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Yellow_Flower": "Yellow",
             "-Form_Eternal_Flower": "Eternal"
         },
-        "Drawn": {
-            "-Form_Red_Flower": "-Red XY anime",
-            "-Form_Blue_Flower": "-Blue XY anime",
-            "-Form_Orange_Flower": "-Orange XY anime",
-            "-Form_White_Flower": "-White XY anime",
-            "-Form_Yellow_Flower": "-Yellow XY anime",
-            "-Form_Eternal_Flower": "DO_BY_HAND"     # Doesn't Follow Naming Convention
+        "pkparaiso": {
+            "-Form_Eternal_Flower": "-eternal",
+            "-Form_Blue_Flower": "-blue",
+            "-Form_Orange_Flower": "-orange",
+            "-Form_White_Flower": "-white",
+            "-Form_Yellow_Flower": "-yellow",
+            "-Form_Red_Flower": ""
         },
         "Menu": {
             "-Form_Eternal_Flower": "-Eternal",
@@ -608,13 +689,13 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_White_Flower": "White",
             "-Form_Yellow_Flower": "Yellow"
         },
-        "Drawn": {
-            "-Form_Red_Flower": " Red Flower XY anime",
-            "-Form_Blue_Flower": " Blue Flower XY anime",
-            "-Form_Orange_Flower": " Orange Flower XY anime",
-            "-Form_White_Flower": " White Flower XY anime",
-            "-Form_Yellow_Flower": " Yellow Flower XY anime"
-        }
+        "pkparaiso": {
+            "-Form_Blue_Flower": "-blue",
+            "-Form_Orange_Flower": "-orange",
+            "-Form_White_Flower": "-white",
+            "-Form_Yellow_Flower": "-yellow",
+            "-Form_Red_Flower": ""
+        },
     },
 
     # Furfrou
@@ -630,16 +711,16 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Pharaoh_Trim": "Pharaoh",
             "-Form_Star_Trim": "Star"
         },
-        "Drawn": {
-            "-Form_Dandy_Trim": "-Dandy",
-            "-Form_Debutante_Trim": "-Debutante",
-            "-Form_Diamond_Trim": "-Diamond",
-            "-Form_Heart_Trim": "-Heart",
-            "-Form_Kabuki_Trim": "-Kabuki",
-            "-Form_La_Reine_Trim": "-La Reine",
-            "-Form_Matron_Trim": "-Matron",
-            "-Form_Pharaoh_Trim": "-Pharaoh",
-            "-Form_Star_Trim": "-Star"
+        "pkparaiso": {
+            "-Form_Dandy_Trim": "-dandy",
+            "-Form_Debutante_Trim": "-debutante",
+            "-Form_Diamond_Trim": "-diamond",
+            "-Form_Heart_Trim": "-heart",
+            "-Form_Kabuki_Trim": "-kabuki",
+            "-Form_La_Reine_Trim": "-lareine",
+            "-Form_Matron_Trim": "-matron",
+            "-Form_Pharaoh_Trim": "-pharaoh",
+            "-Form_Star_Trim": "-star"
         },
         "Menu": {
             "-Form_Dandy_Trim": "-Dandy",
@@ -660,9 +741,9 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Shield": "Shield",
             "-Form_Blade": "Blade"
         },
-        "Menu": {
-            "-Form_Shield": "",
-            "-Form_Blade": "-Blade"
+        "pkparaiso": {
+            "-Form_Blade": "-blade",
+            "-Form_Shield": ""
         }
     },
 
@@ -677,7 +758,10 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Large_Size": EXCLUDE_TRANSLATIONS_MAP["DNE"],
             "-Form_Super_Size": EXCLUDE_TRANSLATIONS_MAP["DNE"]
         },
-        "Drawn": {
+        "pkparaiso": {
+            "-Form_Small_Size": "-small",
+            "-Form_Large_Size": "-large",
+            "-Form_Super_Size": "-super",
             "-Form_Average_Size": ""
         }
     },
@@ -690,7 +774,10 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Large_Size": EXCLUDE_TRANSLATIONS_MAP["DNE"],
             "-Form_Super_Size": EXCLUDE_TRANSLATIONS_MAP["DNE"]
         },
-        "Drawn": {
+        "pkparaiso": {
+            "-Form_Small_Size": "-small",
+            "-Form_Large_Size": "-large",
+            "-Form_Super_Size": "-super",
             "-Form_Average_Size": ""
         }
     },
@@ -701,8 +788,9 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Active": "Active",
             "-Form_Neutral": EXCLUDE_TRANSLATIONS_MAP["DNE"]    # TODO: See if it exists in Gen9 SV, if not do I have webm
         },
-        "Drawn": {
-            "-Form_Active": ""
+        "pkparaiso": {
+            "-Form_Active": "-active",
+            "-Form_Neutral": ""
         }
     },
 
@@ -713,10 +801,10 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Complete": "Complete",
             "-Form_10%": "10"
         },
-        "Drawn": {
-            "-Form_50%": "",
-            "-Form_Complete": "-Complete",
-            "-Form_10%": "-10Percent"
+        "pkparaiso": {
+            "-Form_Complete": "-complete",
+            "-Form_10%": "-10percent",
+            "-Form_50%": ""
         },
         "Menu":{
             "-Form_10%": "-10 Percent"
@@ -729,8 +817,9 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Confined": "Confined",
             "-Form_Unbound": "Unbound"
         },
-        "Drawn": {
-            "-Form_Confined": ""
+        "pkparaiso": {
+            "-Form_Confined": "-confined",
+            "-Form_Unbound": "-unbound"
         }
     },
 
@@ -742,9 +831,11 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Pom_Pom": "Pom-Pom",
             "-Form_Sensu": "Sensu"
         },
-        "Drawn": {
-            "-Form_Baile": "",
-            "-Form_Pom_Pom": "-Pom-Pom"
+        "pkparaiso": {
+            "-Form_Baile": "-baile",
+            "-Form_Pa'u": "-pau",
+            "-Form_Pom_Pom": "-pompom",
+            "-Form_Sensu": "-sensu"
         }
     },
 
@@ -755,9 +846,11 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Dusk": "Dusk",
             "-Form_Midnight": "Midnight"
         },
-        "Drawn": {
-            "-Form_Midday": ""
-        }
+        "pkparaiso": {
+            "-Form_Midday": "-midday",
+            "-Form_Dusk": "-dusk",
+            "-Form_Midnight": "-midnight"
+        },
     },
 
     # Wishiwashi
@@ -766,14 +859,16 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Solo": "Solo",
             "-Form_School": "School"
         },
-        "Drawn": {
+        "pkparaiso": {
+            "-Form_School": "-school",
             "-Form_Solo": ""
         }
     },
 
     # Silvally
     773: {
-        "root": TYPE_FORM_MAP["root"],
+        "root": CREATOR_TYPE_FORM_MAP["root"],
+        "pkparaiso": CREATOR_TYPE_FORM_MAP["pkparaiso"]
     },
 
     # Minior
@@ -789,15 +884,16 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Yellow_Core": "Yellow",
             "-Form_Core": ""   # This is the shiny sprite TODO
         },
-        "Drawn": {
-            "-Form_Meteor": "",
-            "-Form_Blue_Core": "-Blue",
-            "-Form_Green_Core": "-Green",
-            "-Form_Indigo_Core": "-Indigo",
-            "-Form_Orange_Core": "-Orange",
-            "-Form_Red_Core": "-Red",
-            "-Form_Violet_Core": "-Violet",
-            "-Form_Yellow_Core": "-Yellow",
+        "pkparaiso": {
+            "-Form_Blue_Core": "-blue",
+            "-Form_Green_Core": "-green",
+            "-Form_Indigo_Core": "-indigo",
+            "-Form_Orange_Core": "-orange",
+            "-Form_Red_Core": "-red",
+            "-Form_Violet_Core": "-violet",
+            "-Form_Yellow_Core": "-yellow",
+            "-Form_Core": "-shiny",
+            "-Form_Meteor": ""
         },
         "Menu": {
             "-Form_Meteor": "",
@@ -817,9 +913,9 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Disguised": "Disguised",
             "-Form_Busted": "Busted"
         },
-        "Drawn": {
-            "-Form_Disguised": "",
-            "-Form_Busted": ""
+        "pkparaiso": {
+            "-Form_Busted": "-busted",
+            "-Form_Disguised": ""
         },
         "Menu": {
             "-Form_Busted": EXCLUDE_TRANSLATIONS_MAP["DNE"]
@@ -829,29 +925,17 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
     # Solgaleo
     # TODO: Dont exist in HOME, Gen9 tho?
     791: {
-        "root": {
-            "-Form_Radiant_Sun": EXCLUDE_TRANSLATIONS_MAP["DNE"]
-        },
-        "Drawn": {
-            "-Form_Radiant_Sun": "-RadiantSunPhase"
-        },
-        "Menu": {
-            "-Form_Radiant_Sun": EXCLUDE_TRANSLATIONS_MAP["DNE"]
-        }
+        "root": {"-Form_Radiant_Sun": EXCLUDE_TRANSLATIONS_MAP["DNE"]},
+        "pkparaiso": {"-Form_Radiant_Sun": "-radiantsun"},
+        "Menu": {"-Form_Radiant_Sun": EXCLUDE_TRANSLATIONS_MAP["DNE"]}
     },
 
     # Lunala
     #  TODO: Dont exist in HOME, Gen9 tho?
     792: {
-        "root": {
-            "-Form_Full_Moon": EXCLUDE_TRANSLATIONS_MAP["DNE"]
-        },
-        "Drawn": {
-            "-Form_Full_Moon": "-FullMoonPhase"
-        },
-        "Menu": {
-            "-Form_Full_Moon": EXCLUDE_TRANSLATIONS_MAP["DNE"]
-        }
+        "root": {"-Form_Full_Moon": EXCLUDE_TRANSLATIONS_MAP["DNE"]},
+        "pkparaiso": {"-Form_Full_Moon": "-fullmoonphase"},
+        "Menu": {"-Form_Full_Moon": EXCLUDE_TRANSLATIONS_MAP["DNE"]}
     },
 
     # Necrozma
@@ -860,20 +944,19 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Dawn_Wings": "Dawn Wings",
             "-Form_Dusk_Mane": "Dusk Mane",
             "-Form_Ultra": "Ultra"
+        },
+        "pkparaiso": {
+            "-Form_Dawn_Wings": "-dawnwings",
+            "-Form_Dusk_Mane": "-duskmane",
+            "-Form_Ultra": "-ultra"
         }
     },
 
     # Magearna
     801: {
-        "root": {
-            "-Form_Original_Color": "Original Color"
-        },
-        "Drawn": {
-            "-Form_Original_Color": EXCLUDE_TRANSLATIONS_MAP["DNE"]
-        },
-        "Menu": {
-            "-Form_Original_Color": "-Original Color"
-        }
+        "root": {"-Form_Original_Color": "Original Color"},
+        "pkparaiso": {"-Form_Original_Color": "-originalcolor"},
+        "Menu": {"-Form_Original_Color": "-Original Color"}
     },
 
     # Cramorant
@@ -881,6 +964,10 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
         "root": {
             "-Form_Gorging": "Gorging",
             "-Form_Gulping": "Gulping"
+        },
+        "pkparaiso": {
+            "-Form_Gorging": "-gorging",
+            "-Form_Gulping": "-gulping"
         }
     },
 
@@ -890,8 +977,9 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Amped": "Amped",
             "-Form_Low_Key": "Low Key"
         },
-        "Menu": {
-            "-Form_Amped": ""
+        "pkparaiso": {
+            "-Form_Low_Key": "-lowkey",
+            "-Form_Amped": "-amped"
         }
     },
 
@@ -972,18 +1060,78 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Star_Sweet": "(Vanilla Cream) (Star Sweet)",
             "-Form_Strawberry_Sweet": "(Vanilla Cream) (Strawberry Sweet)"
         },
-        "Drawn": {
-            # Kinda random selection, I guess?
-            "-Form_Caramel_Swirl_Flower_Sweet": " Dream - Caramel Swirl",
-            "-Form_Lemon_Cream_Ribbon_Sweet": " Dream - Lemon Cream",
-            "-Form_Matcha_Cream_Flower_Sweet": " Dream - Matcha Cream",
-            "-Form_Mint_Cream_Strawberry_Sweet": " Dream - Mint Cream",
-            "-Form_Rainbow_Swirl_Strawberry_Sweet": " Dream - Rainbow Swirl",
-            "-Form_Ruby_Cream_Clover_Sweet": " Dream - Ruby Cream",
-            "-Form_Ruby_Swirl_Star_Sweet": " Dream - Ruby Swirl",
-            "-Form_Salted_Cream_Love_Sweet": " Dream - Salted Cream",
-            "-Form_Vanilla_Cream_Berry_Sweet": " Dream - Vanilla Cream",
-            "-Form_Vanilla_Cream_Strawberry_Sweet": ""
+        "pkparaiso": {
+            "-Form_Caramel_Swirl_Berry_Sweet": "caramel-swirl-berry",
+            "-Form_Caramel_Swirl_Clover_Sweet": "caramel-swirl-clover",
+            "-Form_Caramel_Swirl_Flower_Sweet": "caramel-swirl-flower",
+            "-Form_Caramel_Swirl_Love_Sweet": "caramel-swirl-love",
+            "-Form_Caramel_Swirl_Ribbon_Sweet": "caramel-swirl-ribbon",
+            "-Form_Caramel_Swirl_Star_Sweet": "caramel-swirl-star",
+            "-Form_Caramel_Swirl_Strawberry_Sweet": "caramel-swirl-strawberry",
+            "-Form_Lemon_Cream_Berry_Sweet": "lemon-cream-berry",
+            "-Form_Lemon_Cream_Clover_Sweet": "lemon-cream-clover",
+            "-Form_Lemon_Cream_Flower_Sweet": "lemon-cream-flower",
+            "-Form_Lemon_Cream_Love_Sweet": "lemon-cream-love",
+            "-Form_Lemon_Cream_Ribbon_Sweet": "lemon-cream-ribbon",
+            "-Form_Lemon_Cream_Star_Sweet": "lemon-cream-star",
+            "-Form_Lemon_Cream_Strawberry_Sweet": "lemon-cream-strawberry",
+            "-Form_Matcha_Cream_Berry_Sweet": "matcha-cream-berry",
+            "-Form_Matcha_Cream_Clover_Sweet": "matcha-cream-clover",
+            "-Form_Matcha_Cream_Flower_Sweet": "matcha-cream-flower",
+            "-Form_Matcha_Cream_Love_Sweet": "matcha-cream-love",
+            "-Form_Matcha_Cream_Ribbon_Sweet": "matcha-cream-ribbon",
+            "-Form_Matcha_Cream_Star_Sweet": "matcha-cream-star",
+            "-Form_Matcha_Cream_Strawberry_Sweet": "matcha-cream-strawberry",
+            "-Form_Mint_Cream_Berry_Sweet": "mint-cream-berry",
+            "-Form_Mint_Cream_Clover_Sweet": "mint-cream-clover",
+            "-Form_Mint_Cream_Flower_Sweet": "mint-cream-flower",
+            "-Form_Mint_Cream_Love_Sweet": "mint-cream-love",
+            "-Form_Mint_Cream_Ribbon_Sweet": "mint-cream-ribbon",
+            "-Form_Mint_Cream_Star_Sweet": "mint-cream-star",
+            "-Form_Mint_Cream_Strawberry_Sweet": "mint-cream-strawberry",
+            "-Form_Rainbow_Swirl_Berry_Sweet": "rainbow-swirl-berry",
+            "-Form_Rainbow_Swirl_Clover_Sweet": "rainbow-swirl-clover",
+            "-Form_Rainbow_Swirl_Flower_Sweet": "rainbow-swirl-flower",
+            "-Form_Rainbow_Swirl_Love_Sweet": "rainbow-swirl-love",
+            "-Form_Rainbow_Swirl_Ribbon_Sweet": "rainbow-swirl-ribbon",
+            "-Form_Rainbow_Swirl_Star_Sweet": "rainbow-swirl-star",
+            "-Form_Rainbow_Swirl_Strawberry_Sweet": "rainbow-swirl-strawberry",
+            "-Form_Ruby_Cream_Berry_Sweet": "ruby-cream-berry",
+            "-Form_Ruby_Cream_Clover_Sweet": "ruby-cream-clover",
+            "-Form_Ruby_Cream_Flower_Sweet": "ruby-cream-flower",
+            "-Form_Ruby_Cream_Love_Sweet": "ruby-cream-love",
+            "-Form_Ruby_Cream_Ribbon_Sweet": "ruby-cream-ribbon",
+            "-Form_Ruby_Cream_Star_Sweet": "ruby-cream-star",
+            "-Form_Ruby_Cream_Strawberry_Sweet": "ruby-cream-strawberry",
+            "-Form_Ruby_Swirl_Berry_Sweet": "ruby-swirl-berry",
+            "-Form_Ruby_Swirl_Clover_Sweet": "ruby-swirl-clover",
+            "-Form_Ruby_Swirl_Flower_Sweet": "ruby-swirl-flower",
+            "-Form_Ruby_Swirl_Love_Sweet": "ruby-swirl-love",
+            "-Form_Ruby_Swirl_Ribbon_Sweet": "ruby-swirl-ribbon",
+            "-Form_Ruby_Swirl_Star_Sweet": "ruby-swirl-star",
+            "-Form_Ruby_Swirl_Strawberry_Sweet": "ruby-swirl-strawberry",
+            "-Form_Salted_Cream_Berry_Sweet": "salted-cream-berry",
+            "-Form_Salted_Cream_Clover_Sweet": "salted-cream-clover",
+            "-Form_Salted_Cream_Flower_Sweet": "salted-cream-flower",
+            "-Form_Salted_Cream_Love_Sweet": "salted-cream-love",
+            "-Form_Salted_Cream_Ribbon_Sweet": "salted-cream-ribbon",
+            "-Form_Salted_Cream_Star_Sweet": "salted-cream-star",
+            "-Form_Salted_Cream_Strawberry_Sweet": "salted-cream-strawberry",
+            "-Form_Vanilla_Cream_Berry_Sweet": "vanilla-cream-berry",
+            "-Form_Vanilla_Cream_Clover_Sweet": "vanilla-cream-clover",
+            "-Form_Vanilla_Cream_Flower_Sweet": "vanilla-cream-flower",
+            "-Form_Vanilla_Cream_Love_Sweet": "vanilla-cream-love",
+            "-Form_Vanilla_Cream_Ribbon_Sweet": "vanilla-cream-ribbon",
+            "-Form_Vanilla_Cream_Star_Sweet": "vanilla-cream-star",
+            "-Form_Vanilla_Cream_Strawberry_Sweet": "vanilla-cream-strawberry",
+            # They list all their shinies with all creams/swirls
+            "-Form_Berry_Sweet": "vanilla-cream-berry",
+            "-Form_Clover_Sweet": "vanilla-cream-clover",
+            "-Form_Flower_Sweet": "vanilla-cream-flower",
+            "-Form_Love_Sweet": "vanilla-cream-love",
+            "-Form_Ribbon_Sweet": "vanilla-cream-ribbon",
+            "-Form_Star_Sweet": "vanilla-cream-star",
+            "-Form_Strawberry_Sweet": "vanilla-cream-strawberry"
         },
         "Menu": {
             # Basically all different creams, with strawberry sweet
@@ -1005,9 +1153,9 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Ice_Face": "Ice",
             "-Form_Noice_Face": "Noice"
         },
-        "Drawn": {
-            "-Form_Ice_Face": "",
-            "-Form_Noice_Face": "-Noice"
+        "pkparaiso": {
+            "-Form_Noice_Face": "-noice",
+            "-Form_Ice_Face": ""
         }
     },
 
@@ -1017,8 +1165,9 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Full_Belly": "Full Belly",
             "-Form_Hangry": "Hangry"
         },
-        "Drawn": {
-            "-Form_Full_Belly": "-Full"
+        "pkparaiso": {
+            "-Form_Hangry": "-hangry",
+            "-Form_Full_Belly": ""
         },
         "Menu": {
             "-Form_Full_Belly": ""
@@ -1031,9 +1180,9 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Hero_of_Many_Battles": "Hero of Many Battles",
             "-Form_Crowned_Sword": "Crowned"
         },
-        "Drawn": {
-            "-Form_Hero_of_Many_Battles": "-Hero",
-            "-Form_Crowned_Sword": ""
+        "pkparaiso": {
+            "-Form_Crowned_Sword": "-crowned",
+            "-Form_Hero_of_Many_Battles": ""
         },
         "Menu": {
             "-Form_Hero_of_Many_Battles": "",
@@ -1045,9 +1194,9 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Hero_of_Many_Battles": "Hero of Many Battles",
             "-Form_Crowned_Shield": "Crowned"
         },
-        "Drawn": {
-            "-Form_Hero_of_Many_Battles": "-Hero",
-            "-Form_Crowned_Shield": ""
+        "pkparaiso": {
+            "-Form_Crowned_Sword": "-crowned",
+            "-Form_Hero_of_Many_Battles": ""
         },
         "Menu": {
             "-Form_Hero_of_Many_Battles": "",
@@ -1060,8 +1209,8 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
         "root": {
             "-Form_Eternamax": EXCLUDE_TRANSLATIONS_MAP["DNE"]
         },
-        "Drawn": {
-            "-Form_Eternamax": EXCLUDE_TRANSLATIONS_MAP["DNE"]
+        "pkparaiso": {
+            "-Form_Eternamax": "-eternamax"
         }
     },
     
@@ -1071,9 +1220,9 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
             "-Form_Single_Strike": "Single Strike",
             "-Form_Rapid_Strike": "Rapid Strike"
         },
-        "Drawn": {
-            "-Form_Single_Strike": " Single Strike",
-            "-Form_Rapid_Strike": " Rapid Strike"
+        "pkparaiso": {
+            "-Form_Single_Strike": "-singlestrike",
+            "-Form_Rapid_Strike": "-rapidstrike"
         },
         "Menu": {
             # Doesn't have either form???
@@ -1084,9 +1233,8 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
 
     # Zarude
     893: {
-        "root": {
-            "-Form_Dada": "Dada"
-        }
+        "root": {"-Form_Dada": "Dada"},
+        "pkpariaso": {"-Form_Dada": "-dada"},
     },
 
     # Calyrex
@@ -1094,6 +1242,10 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
         "root": {
             "-Form_Ice_Rider": "Ice",
             "-Form_Shadow_Rider": "Shadow"
+        },
+        "pkparaiso": {
+            "-Form_Ice_Rider": "-ice",
+            "-Form_Shadow_Rider": "-shadow"
         }
     },
 
