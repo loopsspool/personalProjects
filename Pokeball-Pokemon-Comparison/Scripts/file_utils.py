@@ -72,6 +72,7 @@ def make_poke_num_have_leading_zeros_for_all_files_in_path(path, just_print=Fals
             new_filename = file.replace(poke_num, padded_poke_num)
             new_full_path = os.path.join(path, new_filename)
 
+            if new_filename == file: continue   # If it already had leading zeros, no need to rename
             print(f"{file}\t changed to \t{new_filename}")
             if not just_print:
                 os.rename(old_full_path, new_full_path)
