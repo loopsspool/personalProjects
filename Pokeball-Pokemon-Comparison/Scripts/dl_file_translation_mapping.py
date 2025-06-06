@@ -11,8 +11,8 @@ DIRECTORY_TO_FILENAME_MAP = {
         "Gen 8 SwSh Shiny Animated - SAME QUALITY CHECK MISSING": "Gen8 SwSh-Shiny-Animated"
     },
     "root": {
-        "Gen 8 LGPE Front Stills - HIGHER QUALITY": "Gen8 LGPE",
-        "Gen 8 LGPE Shiny Front Stills - HIGHER QUALITY": "Gen8 LGPE-Shiny",
+        "Gen 8 LGPE Front Stills - HIGHER QUALITY": "Gen7 LGPE",
+        "Gen 8 LGPE Shiny Front Stills - HIGHER QUALITY": "Gen7 LGPE-Shiny",
         "Gen 9 Poke Front Stills - HIGHER QUALITY": "Gen9 SV",
         "Gen 9 Poke Front Shiny Stills - HIGHER QUALITY": "Gen9 SV-Shiny",
         "Gen 9 SV Shiny Animated - SOME HIGHER QUALITY": "Gen9 SV-Shiny-Animated",
