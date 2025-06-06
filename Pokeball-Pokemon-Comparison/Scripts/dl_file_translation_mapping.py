@@ -5,26 +5,28 @@ from translation_utils import EXCLUDE_TRANSLATIONS_MAP
 #|================================================================================================|
 
 DIRECTORY_TO_FILENAME_MAP = {
-    # Game Sprites
-    "Gen 6 XY w Battle Animations": "Gen6 XY_ORAS-Animated",
-    "Gen 8 LGPE Front Stills - HIGHER QUALITY": "Gen8 LGPE",
-    "Gen 8 LGPE Shiny Front Stills - HIGHER QUALITY": "Gen8 LGPE-Shiny",
-    "Gen 8 SwSh Animated - SAME QUALITY CHECK MISSING": "Gen8 SwSh-Animated",
-    "Gen 8 SwSh Shiny Animated - SAME QUALITY CHECK MISSING": "Gen8 SwSh-Shiny-Animated",
-    "Gen 9 Poke Front Stills - HIGHER QUALITY": "Gen9 SV",
-    "Gen 9 Poke Front Shiny Stills - HIGHER QUALITY": "Gen9 SV-Shiny",
-    "Gen 9 SV Animated - SAME QUALITY CHECK MISSING": "Gen9 SV-Animated",
-    "Gen 9 SV ShinyAnimated - SAME QUALITY CHECK MISSING": "Gen9 SV-Shiny-Animated",
-    "Gen 9 SV Shiny Animated - SOME HIGHER QUALITY": "Gen9 SV-Shiny-Animated",
-
-    # HOME
-    "HOME": "HOME",
-    "HOME Shiny": "HOME-Shiny"
+    "pkparaiso": {
+        "Gen 6 XY w Battle Animations": "Gen6 XY_ORAS-Animated",
+        "Gen 8 SwSh Animated - SAME QUALITY CHECK MISSING": "Gen8 SwSh-Animated",
+        "Gen 8 SwSh Shiny Animated - SAME QUALITY CHECK MISSING": "Gen8 SwSh-Shiny-Animated"
+    },
+    "root": {
+        "Gen 8 LGPE Front Stills - HIGHER QUALITY": "Gen8 LGPE",
+        "Gen 8 LGPE Shiny Front Stills - HIGHER QUALITY": "Gen8 LGPE-Shiny",
+        "Gen 9 Poke Front Stills - HIGHER QUALITY": "Gen9 SV",
+        "Gen 9 Poke Front Shiny Stills - HIGHER QUALITY": "Gen9 SV-Shiny",
+        "Gen 9 SV Shiny Animated - SOME HIGHER QUALITY": "Gen9 SV-Shiny-Animated",
+        "HOME": "HOME",
+        "HOME Shiny": "HOME-Shiny"
+    },
+    "adamsb": {
+        "Gen 9 SV Animated - SAME QUALITY CHECK MISSING": "Gen9 SV-Animated",
+        "Gen 9 SV Shiny Animated - SAME QUALITY CHECK MISSING": "Gen9 SV-Shiny-Animated"
+    }
 }
 
 
-# TODO: root based off home (so check Gen9 ani)
-# - pkparaiso done off Gen6 (for pokes below gen6) so check against shield
+
 
 #|================================================================================================|
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~[     UNIVERSAL FORM TRANSLATIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
@@ -44,6 +46,7 @@ DL_UNIVERSAL_FORM_MAP = {
     },
     "pkparaiso": {
         "-f": "-f",
+        "-Gigantamax": "-gigantamax",
         "-Mega_X": "-megax",
         "-Mega_Y": "-megay",
         "-Mega": "-mega",   # This after X&Y so when looping through Mega wont trigger a form meant to be X or Y
@@ -52,9 +55,9 @@ DL_UNIVERSAL_FORM_MAP = {
         "-Region_Hisui": "-hisuian",
         "-Region_Paldea": "-paldea"
     },
-    "adamsb": {
+    "adamsb": {     # Only gen9 stills
         "-f": "f",
-        "-Region_Paldea": "p"
+        "-Region_Paldea": "-p"
     }
 }
 
@@ -149,8 +152,8 @@ CREATOR_FORM_TRANSLATION_MAP = {
             "-Form_Aqua": "-aqua"
         },
         "adamsb": {
-            "-Form_Blaze": "bb",
-            "-Form_Aqua": "ab",
+            "-Form_Blaze": "-1",
+            "-Form_Aqua": "-2",
             "-Form_Combat": ""
         }
     },
@@ -481,9 +484,9 @@ CREATOR_FORM_TRANSLATION_MAP = {
         },
         "pkparaiso": {
             "-Form_Black": "-black",
-            "-Form_Black_Overdrive": EXCLUDE_TRANSLATIONS_MAP["DBH"],   #TODO
+            "-Form_Black_Overdrive": "-overdriveblack",
             "-Form_White": "-white",
-            "-Form_White_Overdrive": EXCLUDE_TRANSLATIONS_MAP["DBH"]    #TODO
+            "-Form_White_Overdrive": "-overdrivewhite"
         },
     },
 
@@ -1147,8 +1150,8 @@ CREATOR_FORM_TRANSLATION_MAP = {
             "-Form_Family_of_Four": "Four"
         },
         "adamsb": {
-            "-Form_Family_of_Three": "f3",
-            "-Form_Family_of_Four": "f4"
+            "-Form_Family_of_Three": "-1",
+            "-Form_Family_of_Four": ""
         }
     },
 
@@ -1161,10 +1164,10 @@ CREATOR_FORM_TRANSLATION_MAP = {
             "-Form_Yellow_Plumage": "Yellow"
         },
         "adamsb": {
-            "-Form_Blue_Plumage": "-blue", 
-            "-Form_Green_Plumage": "-green",
-            "-Form_White_Plumage": "-white", 
-            "-Form_Yellow_Plumage": "-yellow"
+            "-Form_Blue_Plumage": "-1", 
+            "-Form_White_Plumage": "-3", 
+            "-Form_Yellow_Plumage": "-2",
+            "-Form_Green_Plumage": "",
         }
     },
 
@@ -1175,7 +1178,7 @@ CREATOR_FORM_TRANSLATION_MAP = {
             "-Form_Hero": "Hero"
         },
         "adamsb": {
-            "-Form_Hero": "-h",
+            "-Form_Hero": "-1",
             "-Form_Zero": ""
         }
     },
@@ -1188,9 +1191,9 @@ CREATOR_FORM_TRANSLATION_MAP = {
             "-Form_Stretchy": "Stretchy"
         },
         "adamsb": {
-            "-Form_Curly": "-cf",
-            "-Form_Droopy": "-df",
-            "-Form_Stretchy": "-sf"
+            "-Form_Droopy": "-1",
+            "-Form_Stretchy": "-2",
+            "-Form_Curly": ""
         }
     },
 
@@ -1201,12 +1204,8 @@ CREATOR_FORM_TRANSLATION_MAP = {
             "-Form_Three_Segment": "Three"
         },
         "adamsb": {
-            "-Form_Two_Segment": "-2f",
-            "-Form_Three_Segment": "-3f"
-        },
-        "Game": {
-            "-Form_Two_Segment": "",
-            "-Form_Three_Segment": EXCLUDE_TRANSLATIONS_MAP["DNE"]
+            "-Form_Three_Segment": "-1",
+            "-Form_Two_Segment": ""
         },
     },
 
@@ -1217,8 +1216,8 @@ CREATOR_FORM_TRANSLATION_MAP = {
             "-Form_Chest": ""
         },
         "adamsb": {
-            "-Form_Chest": "-cf",
-            "-Form_Roaming": ""
+            "-Form_Roaming": "-1",
+            "-Form_Chest": ""
         }
     },
 
