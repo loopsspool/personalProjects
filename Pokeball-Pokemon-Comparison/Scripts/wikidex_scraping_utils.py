@@ -45,20 +45,20 @@ def wikidex_get_img(url, save_path, allow_download, has_animation=False):
         # Can't do now bc db wont recognize it as existing in these filepaths so will continuously try to download images    
         #save_path = os.path.join(determine_save_path_from_file_type(img_url_file_ext), my_filename)
 
+        # TODO: Put this into a func in scraping_utils and change it in bulba & wikidex scraping_utils
         if has_animation:
             determine_animation_status_before_downloading(img_url, save_path)
         else:
             download_img(img_url, save_path)
 
 
-# TODO: This isnt working properly... see 471 SV webm
 def search_image_under_all_file_extensions(url, my_filename):
-    file_exts_wikidex_uses = [".png", ".gif", ".webm"]  # Ordered in terms of preference (png for stills, gif for transparency, webm bc its there)
+    file_exts_wikidex_uses = [".png", ".gif"]  # Ordered in terms of preference (png for stills, gif for transparency, webm bc its there) -- NO LONGER SCRAPING WEBM
 
     # Rotating through file extensions to find an existing image
     for file_ext in file_exts_wikidex_uses:
         if "-Animated" in my_filename and file_ext == ".png": continue  # pngs for stills only
-        if " HOME" in my_filename and file_ext != ".webm": continue     # HOME sprites always webm (w/o transparency)
+        if " HOME" in my_filename and file_ext != ".webm": continue     # HOME sprites always webm (w/o transparency) -- No longer scraping
         # Replacing file extension
         if file_ext not in url: url = url.replace(get_file_ext(url), file_ext)
         # Seeing if the URL exists
@@ -124,6 +124,7 @@ def wikidex_translate(my_filename, poke_info):
     shiny_tag = " variocolor" if "-Shiny" in my_filename else ""
     female_tag = " hembra" if "-f" in form_name else ""
     file_ext = determine_file_extension(my_filename)
+    if file_ext == ".webm": return None     # No longer scraping webm
 
     wikidex_filename = f"{adj_poke_name}{form_tag}{gigantamax_tag}{back_tag}{platform}{shiny_tag}{female_tag}{file_ext}"
     return (wikidex_filename)
