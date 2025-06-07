@@ -56,6 +56,10 @@ save_directories = {
         "path": os.path.join(PARENT_DIR, "Images\\Pokemon\\HOME Sprites\\"),
         "files": set()
     },
+    "HOME Downloaded Repositories" : {
+        "path": os.path.join(PARENT_DIR, "Images\\Pokemon\\HOME Sprites\\downloaded_repositories\\"),
+        "files": set()
+    },
     "HOME Menu" : {
         "path": os.path.join(PARENT_DIR, "Images\\Pokemon\\Menu Sprites\\HOME\\"),
         "files": set()
@@ -70,6 +74,10 @@ save_directories = {
     },
 
     # Staging/testing paths
+    "Game Sprite Downloaded Repositories" : {
+        "path": os.path.join(PARENT_DIR, "Images\\Pokemon\\Game Sprites\\downloaded_repositories\\"),
+        "files": set()
+    },
     "gif" : {
         "path": os.path.join(PARENT_DIR, "Images\\Pokemon\\Game Sprites\\gif\\"),
         "files": set()
