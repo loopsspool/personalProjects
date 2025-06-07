@@ -4,6 +4,7 @@ from translation_utils import EXCLUDE_TRANSLATIONS_MAP
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     DIRECTORY TRANSLATIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
+# NOTE: Include HOME in dir name key if for HOME for proper path routing for translation
 DIRECTORY_TO_FILENAME_MAP = {
     "pkparaiso": {
         "Gen 6 XY w Battle Animations": "Gen6 XY_ORAS-Animated",
@@ -480,10 +481,10 @@ CREATOR_FORM_TRANSLATION_MAP = {
     # Kyurem
     646: {
         "root": {
+            "-Form_Black_Overdrive": "Black Overdrive",
             "-Form_Black": "Black",
-            "-Form_Black_Overdrive": EXCLUDE_TRANSLATIONS_MAP["DBH"],   #TODO
+            "-Form_White_Overdrive": "White Overdrive",
             "-Form_White": "White",
-            "-Form_White_Overdrive": EXCLUDE_TRANSLATIONS_MAP["DBH"]    #TODO
         },
         "pkparaiso": {
             "-Form_Black": "-black",
@@ -680,9 +681,8 @@ CREATOR_FORM_TRANSLATION_MAP = {
     # Pumpkaboo & Gourgeist
     710: {
         "root": {
-            # TODO: Make the 1 average? Convert my webms?
-            # Doesn't have these... I do in webm
-            "-Form_Average_Size": EXCLUDE_TRANSLATIONS_MAP["DNE"],
+            # TODO: root doesn't have these... I do in webm
+            "-Form_Average_Size": "",
             "-Form_Small_Size": EXCLUDE_TRANSLATIONS_MAP["DNE"],
             "-Form_Large_Size": EXCLUDE_TRANSLATIONS_MAP["DNE"],
             "-Form_Super_Size": EXCLUDE_TRANSLATIONS_MAP["DNE"]
@@ -696,9 +696,8 @@ CREATOR_FORM_TRANSLATION_MAP = {
     },
     711: {
         "root": {
-            # TODO: Make the 1 average? Convert my webms?
-            # Doesn't have these... I do in webm
-            "-Form_Average_Size": EXCLUDE_TRANSLATIONS_MAP["DNE"],
+            # TODO: root doesn't have these... I do in webm
+            "-Form_Average_Size": "",
             "-Form_Small_Size": EXCLUDE_TRANSLATIONS_MAP["DNE"],
             "-Form_Large_Size": EXCLUDE_TRANSLATIONS_MAP["DNE"],
             "-Form_Super_Size": EXCLUDE_TRANSLATIONS_MAP["DNE"]
@@ -715,7 +714,7 @@ CREATOR_FORM_TRANSLATION_MAP = {
     716: {
         "root": {
             "-Form_Active": "Active",
-            "-Form_Neutral": EXCLUDE_TRANSLATIONS_MAP["DNE"]    # TODO: See if it exists in Gen9 SV, if not do I have webm
+            "-Form_Neutral": EXCLUDE_TRANSLATIONS_MAP["DNE"]    # TODO: Not in root set but I do have webm... 
         },
         "pkparaiso": {
             "-Form_Active": "-active",
@@ -808,7 +807,7 @@ CREATOR_FORM_TRANSLATION_MAP = {
             "-Form_Red_Core": "Red",
             "-Form_Violet_Core": "Violet",
             "-Form_Yellow_Core": "Yellow",
-            "-Form_Core": ""   # This is the shiny sprite TODO
+            "-Form_Core": "Shiny Core"
         },
         "pkparaiso": {
             "-Form_Blue_Core": "-blue",
@@ -836,14 +835,12 @@ CREATOR_FORM_TRANSLATION_MAP = {
     },
 
     # Solgaleo
-    # TODO: Dont exist in HOME, Gen9 tho?
     791: {
         "root": {"-Form_Radiant_Sun": EXCLUDE_TRANSLATIONS_MAP["DNE"]},
         "pkparaiso": {"-Form_Radiant_Sun": "-radiantsun"},
     },
 
     # Lunala
-    #  TODO: Dont exist in HOME, Gen9 tho?
     792: {
         "root": {"-Form_Full_Moon": EXCLUDE_TRANSLATIONS_MAP["DNE"]},
         "pkparaiso": {"-Form_Full_Moon": "-fullmoonphase"},
@@ -1241,7 +1238,7 @@ CREATOR_FORM_TRANSLATION_MAP = {
         "root": {
             "-Form_Normal": "Normal",
             "-Form_Terastal": "Terastal",
-            "-Form_Stellar": "Stellar"  # TODO: Check Gen9, not in HOME
+            "-Form_Stellar": "Stellar"  # TODO: Download from root twitter
         }
     }
 }
