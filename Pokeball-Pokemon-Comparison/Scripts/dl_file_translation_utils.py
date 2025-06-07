@@ -26,7 +26,7 @@ from scraping_utils import get_file_ext
 
 
 
-def translate_all_directories(just_print=False):
+def translate_all_dl_directories(just_print=False):
     for creator, directories in DIRECTORY_TO_FILENAME_MAP.items():
         for dir in directories:
             if "HOME" in dir: dir_path = os.path.join(save_directories["HOME Downloaded Repositories"]["path"], dir)
@@ -72,9 +72,11 @@ def convert_filenames_in_dir_to_my_naming_convention(path, just_print=False):
 
 
 def filename_exists_in_db(file):
-    if external_get_game_filename_id(file): return True
+    file = file.replace(get_file_ext(file), "")     # filenames stored in my db without file extension
+    file = file.replace(get_battle_animation_num(file), "")     # Don't need battle animation to check to see if its been translated
+    if external_get_game_filename_id(file): 
+        return True
     if get_HOME_filename_id(file): return True
-
     return False
 
 
@@ -93,10 +95,11 @@ def get_poke_num_from_file(file):
     # Get poke num via poke name if not poke num w 4 leading zeros
     if not match or len(match.group(1)) != 4:
         file_wo_ext = file.split(get_file_ext(file))[0]
+        # TODO: This will break if hyphen in poke name
         poke_name = file_wo_ext.split("-")[0].title()   # Removes any tags, makes Title Case
-        return get_poke_num(poke_name)
+        return str(get_poke_num(poke_name)).zfill(4)
     else:
-        return match.group(1)
+        return str(match.group(1)).zfill(4)
     
 
 def get_battle_animation_num(file):
