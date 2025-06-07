@@ -2,6 +2,7 @@
 import os
 import re
 
+from app_globals import save_directories
 from dl_file_translation_mapping import *
 from db_utils import get_poke_num, get_poke_name, has_f_form
 from scraping_utils import get_file_ext
@@ -17,18 +18,33 @@ from scraping_utils import get_file_ext
     # - Directories should only contain sprites from one game and one sprite type
         # - ie Gen8 Swsh Shiny Back Animated
         # - Shinies need to be in a seperate directory from regular colors, fronts seperate from back, animateds seperate from statics
-        # - Moving files based off substrings can be accomplished via file_utils. TODO: Implement moving function from substring
+        # - Moving files based off substrings can be accomplished via file_utils.
     # - Directory name needs to be in db_file_translation_mapping.DIRECTORY_TO_FILENAME_MAP
     # - If downloading from same source, need to confirm translations in db_file_translation_mapping for that creator key still apply (value exists in filename)
         # - If not edit their filename to include VALUE (a bit backwards, I know)
-# TODO: Loop through DIRECTORY_TO_FILENAME map, calling this w creator_name
 # TODO: Add some testing parameter so you can print only empty forms, just print old->new filenames, etc. like how I test it here
-def convert_filename_to_my_naming_convention(path):
+
+
+
+
+def translate_all_directories(just_print=False):
+    game_sprite_dl_repository_root_path = os.path.join(save_directories["Game Sprites"]["path"], "downloaded_repositories")
+    home_dl_repository_root_path = os.path.join(save_directories["HOME"]["path"], "downloaded_repositories")
+
+    for creator, directories in DIRECTORY_TO_FILENAME_MAP.items():
+        for dir in directories:
+            if "HOME" in dir: dir_path = os.path.join(home_dl_repository_root_path, dir)
+            else: dir_path = os.path.join(game_sprite_dl_repository_root_path, dir)
+
+            convert_filenames_in_dir_to_my_naming_convention(dir_path, just_print)
+
+
+def convert_filenames_in_dir_to_my_naming_convention(path, just_print=False):
     files = os.listdir(path)
     creator_name = get_creator_name_from_path(path)
 
     for file in files:
-        if not os.path.isfile(os.path.join(path, file)): continue   # If "file" is a directory, continue
+        if not os.path.isfile(os.path.join(path, file)) or get_file_ext(file) not in (".png", ".gif"): continue   # If "file" is a directory or not an image file, continue
 
         poke_num = get_poke_num_from_file(file)
         poke_name = get_poke_name(poke_num)
@@ -44,11 +60,16 @@ def convert_filename_to_my_naming_convention(path):
         shiny = "-Shiny" if "Shiny" in tags else ""
         back = "-Back" if "Back" in tags else ""
         animated = "-Animated" if "Animated" in tags else ""
-        # TODO: get_battle_ani func, only apply to Gen6 XY & Gen8 SwSh animated (just regular, not shiny -- see slowpoke and quagsire)
+        battle_animation_num = get_battle_animation_num(file) if dir_name in DIRECTORIES_CONTAINING_BATTLE_ANIMATIONS else ""
         file_ext = get_file_ext(file)
 
-        my_filename = f"{poke_num} {poke_name} {platform}{shiny}{form}{back}{animated}{file_ext}"
-        #print(f"{file}\t ---> \t{my_filename}")
+        my_filename = f"{poke_num} {poke_name} {platform}{shiny}{form}{back}{animated}{battle_animation_num}{file_ext}"
+
+        if just_print: print(f"Form empty for:\t {file}")   # This is for debugging translations, lets me see if a translation is wrong for a form (mispelling in file or translation, different denoter, etc)
+        print(f"{file}\t ---> \t{my_filename}")
+
+        if not just_print:
+            pass    # TODO: Implement renaming
 
 
 def get_creator_name_from_path(path):
@@ -63,14 +84,20 @@ def get_creator_name_from_path(path):
 def get_poke_num_from_file(file):
     # Try to get poke num from filename
     match = re.match(r"(\d+)", file)
-
     # Get poke num via poke name if not poke num w 4 leading zeros
     if not match or len(match.group(1)) != 4:
-        file_wo_ext = file.strip(".")[0]
-        poke_name = file_wo_ext.strip("-")[0]   # Removes any tags
+        file_wo_ext = file.split(get_file_ext(file))[0]
+        poke_name = file_wo_ext.split("-")[0].title()   # Removes any tags, makes Title Case
         return get_poke_num(poke_name)
     else:
         return match.group(1)
+    
+
+def get_battle_animation_num(file):
+    file = file.replace(get_file_ext(file), "")
+    match = re.search(r'-(\d+)$', file) # Finds -<#> if it exists at end of file
+    battle_ani_num = f"-{match.group(1)}" if match else ""
+    return battle_ani_num
     
 
 def get_translated_form(poke_num, file, creator_key):
@@ -97,6 +124,4 @@ def get_translated_form(poke_num, file, creator_key):
     return form
 
 
-# TODO: Finish looking through HOME and HOME shiny empty forms to see if one didnt get translated
-convert_filename_to_my_naming_convention("C:\\Users\\ethan\\OneDrive\\Desktop\\Code\\Pokeball-Pokemon-Comparison\\Images\\Pokemon\\HOME Sprites\\gif\\HOME")
-
+translate_all_directories()
