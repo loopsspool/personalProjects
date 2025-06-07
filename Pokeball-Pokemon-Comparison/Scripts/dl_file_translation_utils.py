@@ -4,7 +4,7 @@ import re
 
 from app_globals import save_directories
 from dl_file_translation_mapping import *
-from db_utils import get_poke_num, get_poke_name, has_f_form
+from db_utils import get_poke_num, get_poke_name, has_f_form, external_get_game_filename_id, get_HOME_filename_id
 from scraping_utils import get_file_ext
 
 
@@ -45,6 +45,7 @@ def convert_filenames_in_dir_to_my_naming_convention(path, just_print=False):
 
     for file in files:
         if not os.path.isfile(os.path.join(path, file)) or get_file_ext(file) not in (".png", ".gif"): continue   # If "file" is a directory or not an image file, continue
+        if filename_exists_in_db(file): continue    # Checks if filename exists in my database, which means the file has already been translated. Not foolproof, but realistically theres no way my naming convention comes about without a translation from me
 
         poke_num = get_poke_num_from_file(file)
         poke_name = get_poke_name(poke_num)
@@ -70,6 +71,13 @@ def convert_filenames_in_dir_to_my_naming_convention(path, just_print=False):
 
         if not just_print:
             pass    # TODO: Implement renaming
+
+
+def filename_exists_in_db(file):
+    if external_get_game_filename_id(file): return True
+    if get_HOME_filename_id(file): return True
+
+    return False
 
 
 def get_creator_name_from_path(path):
