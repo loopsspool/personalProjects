@@ -1145,7 +1145,7 @@ BULBA_POKE_FORM_TRANSLATION_MAP = {
         },
         "Menu": {
             "-Form_Hero_of_Many_Battles": "",
-            "-Form_Crowned_Sword": "-Crowned"
+            "-Form_Crowned_Shield": "-Crowned"
         }
     },
 
