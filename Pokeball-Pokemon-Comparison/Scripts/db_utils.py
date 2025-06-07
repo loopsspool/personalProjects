@@ -426,7 +426,7 @@ def get_game_filename_id(cursor, filename):
 def external_get_game_filename_id(filename, cursor=None):
     with get_cursor(cursor) as cur:
         cur.execute("SELECT id FROM all_game_filenames WHERE filename=?", (filename,))
-        file_id = cursor.fetchone()
+        file_id = cur.fetchone()
     if file_id: return file_id["id"]
     else: return None
 
@@ -434,7 +434,7 @@ def external_get_game_filename_id(filename, cursor=None):
 def get_HOME_filename_id(filename, cursor=None):
     with get_cursor(cursor) as cur:
         cur.execute("SELECT id FROM all_home_filenames WHERE filename=?", (filename,))
-        file_id = cursor.fetchone()
+        file_id = cur.fetchone()
     if file_id: return file_id["id"]
     else: return None
 
