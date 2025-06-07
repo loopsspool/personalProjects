@@ -72,7 +72,7 @@ FORM_EXCEPTION_POKEMON = {
 
 # Minior and Alcremie have special "shared" forms for their shinies
 SHARED_SHINY_FORMS = {  774: ["-Form_Core"], 
-                        869: ["-Form_Berry_Sweet", "-Form_Clover_Sweet", "-Form_Flower_Sweet", "-Form_Love_Sweet", "-Form_Ribbon_Sweet", "-Form_Star_Sweet", "-Form_Strawberry_Sweet"]
+                        869: ["-Form_Berry_Sweet", "-Form_Clover_Sweet", "-Form_Flower_Sweet", "-Form_Love_Sweet", "-Form_Ribbon_Sweet", "-Form_Star_Sweet", "-Form_Strawberry_Sweet", "-Form_Gigantamax"]
 }
 
 
