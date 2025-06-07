@@ -14,7 +14,7 @@ DIRECTORY_TO_FILENAME_MAP = {
         "Gen 8 LGPE Front Stills - HIGHER QUALITY": "Gen7 LGPE",
         "Gen 8 LGPE Shiny Front Stills - HIGHER QUALITY": "Gen7 LGPE-Shiny",
         "Gen 9 Poke Front Stills - HIGHER QUALITY": "Gen9 SV",
-        "Gen 9 Poke Front Shiny Stills - HIGHER QUALITY": "Gen9 SV-Shiny",
+        "Gen 9 Poke Shiny Front Stills - HIGHER QUALITY": "Gen9 SV-Shiny",
         "Gen 9 SV Shiny Animated - SOME HIGHER QUALITY": "Gen9 SV-Shiny-Animated",
         "HOME": "HOME",
         "HOME Shiny": "HOME-Shiny"
@@ -24,6 +24,9 @@ DIRECTORY_TO_FILENAME_MAP = {
         "Gen 9 SV Shiny Animated - SAME QUALITY CHECK MISSING": "Gen9 SV-Shiny-Animated"
     }
 }
+
+
+DIRECTORIES_CONTAINING_BATTLE_ANIMATIONS = ["Gen 6 XY w Battle Animations", "Gen 8 SwSh Animated - SAME QUALITY CHECK MISSING"]
 
 
 
@@ -39,9 +42,9 @@ DL_UNIVERSAL_FORM_MAP = {
         "-Mega_X": "Mega X",
         "-Mega_Y": "Mega Y",
         "-Mega": "Mega ",   # This after X&Y so when looping through Mega wont trigger a form meant to be X or Y
-        "-Region_Alola": "(Alola)",
-        "-Region_Galar": "(Galar)",
-        "-Region_Hisui": "(Hisuian)",
+        "-Region_Alola": "(Alola",
+        "-Region_Galar": "(Galar",
+        "-Region_Hisui": "(Hisuian",
         "-Region_Paldea": "Paldea"  # Covers both Tauros and Wooper, which are formatted differently
     },
     "pkparaiso": {
@@ -640,7 +643,7 @@ CREATOR_FORM_TRANSLATION_MAP = {
     676: {
         "root": {
             "-Form_Dandy_Trim": "Dandy",
-            "-Form_Debutante_Trim": "Debutanta",
+            "-Form_Debutante_Trim": "Debutante",
             "-Form_Diamond_Trim": "Diamond",
             "-Form_Heart_Trim": "Heart",
             "-Form_Kabuki_Trim": "Kabuki",
