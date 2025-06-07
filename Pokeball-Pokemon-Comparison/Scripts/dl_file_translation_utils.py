@@ -22,19 +22,15 @@ from scraping_utils import get_file_ext
     # - Directory name needs to be in db_file_translation_mapping.DIRECTORY_TO_FILENAME_MAP
     # - If downloading from same source, need to confirm translations in db_file_translation_mapping for that creator key still apply (value exists in filename)
         # - If not edit their filename to include VALUE (a bit backwards, I know)
-# TODO: Add some testing parameter so you can print only empty forms, just print old->new filenames, etc. like how I test it here
 
 
 
 
 def translate_all_directories(just_print=False):
-    game_sprite_dl_repository_root_path = os.path.join(save_directories["Game Sprites"]["path"], "downloaded_repositories")
-    home_dl_repository_root_path = os.path.join(save_directories["HOME"]["path"], "downloaded_repositories")
-
     for creator, directories in DIRECTORY_TO_FILENAME_MAP.items():
         for dir in directories:
-            if "HOME" in dir: dir_path = os.path.join(home_dl_repository_root_path, dir)
-            else: dir_path = os.path.join(game_sprite_dl_repository_root_path, dir)
+            if "HOME" in dir: dir_path = os.path.join(save_directories["HOME Downloaded Repositories"]["path"], dir)
+            else: dir_path = os.path.join(save_directories["Game Sprite Downloaded Repositories"]["path"], dir)
 
             convert_filenames_in_dir_to_my_naming_convention(dir_path, just_print)
 
@@ -44,7 +40,8 @@ def convert_filenames_in_dir_to_my_naming_convention(path, just_print=False):
     creator_name = get_creator_name_from_path(path)
 
     for file in files:
-        if not os.path.isfile(os.path.join(path, file)) or get_file_ext(file) not in (".png", ".gif"): continue   # If "file" is a directory or not an image file, continue
+        curr_filepath = os.path.join(path, file)
+        if not os.path.isfile(curr_filepath) or get_file_ext(file) not in (".png", ".gif"): continue   # If "file" is a directory or not an image file, continue
         if filename_exists_in_db(file): continue    # Checks if filename exists in my database, which means the file has already been translated. Not foolproof, but realistically theres no way my naming convention comes about without a translation from me
 
         poke_num = get_poke_num_from_file(file)
@@ -65,12 +62,13 @@ def convert_filenames_in_dir_to_my_naming_convention(path, just_print=False):
         file_ext = get_file_ext(file)
 
         my_filename = f"{poke_num} {poke_name} {platform}{shiny}{form}{back}{animated}{battle_animation_num}{file_ext}"
+        new_filepath = os.path.join(path, my_filename)
 
-        if just_print: print(f"Form empty for:\t {file}")   # This is for debugging translations, lets me see if a translation is wrong for a form (mispelling in file or translation, different denoter, etc)
+        if just_print and form == "": print(f"Form empty for:\t {file}")   # This is for debugging translations, lets me see if a translation is wrong for a form (mispelling in file or translation, different denoter, etc)
         print(f"{file}\t ---> \t{my_filename}")
 
         if not just_print:
-            pass    # TODO: Implement renaming
+            os.rename(curr_filepath, new_filepath)
 
 
 def filename_exists_in_db(file):
@@ -86,7 +84,7 @@ def get_creator_name_from_path(path):
         for directory in DIRECTORY_TO_FILENAME_MAP[creator].keys():
             if directory == dir_name:
                 return creator
-    # TODO: Throw error directory not in dict
+    raise RuntimeError("Directory not in dl_file_translation_mapping.DIRECTORY_TO_FILENAME_MAP")
 
 
 def get_poke_num_from_file(file):
@@ -128,8 +126,4 @@ def get_translated_form(poke_num, file, creator_key):
                 form += my_denoter
                 break
     
-    if form == "": print(file)  # TODO: Just to make sure none of my keys arent translating, can delete after
     return form
-
-
-translate_all_directories()
