@@ -6,23 +6,24 @@ from translation_utils import EXCLUDE_TRANSLATIONS_MAP
 
 # NOTE: Include HOME in dir name key if for HOME for proper path routing for translation
 DIRECTORY_TO_FILENAME_MAP = {
+    # Commenting out when done because repeating can cause issues since original keywords have been translated
     "pkparaiso": {
-        "Gen 6 XY w Battle Animations": "Gen6 XY_ORAS-Animated",
-        "Gen 8 SwSh Animated - SAME QUALITY CHECK MISSING": "Gen8 SwSh-Animated",
-        "Gen 8 SwSh Shiny Animated - SAME QUALITY CHECK MISSING": "Gen8 SwSh-Shiny-Animated"
+        # "Gen 6 XY w Battle Animations": "Gen6 XY_ORAS-Animated",
+        # "Gen 8 SwSh Animated - SAME QUALITY CHECK MISSING": "Gen8 SwSh-Animated",
+        #"Gen 8 SwSh Shiny Animated - SAME QUALITY CHECK MISSING": "Gen8 SwSh-Shiny-Animated"
     },
     "root": {
-        "Gen 8 LGPE Front Stills - HIGHER QUALITY": "Gen7 LGPE",
-        "Gen 8 LGPE Shiny Front Stills - HIGHER QUALITY": "Gen7 LGPE-Shiny",
-        "Gen 9 Poke Front Stills - HIGHER QUALITY": "Gen9 SV",
-        "Gen 9 Poke Shiny Front Stills - HIGHER QUALITY": "Gen9 SV-Shiny",
-        "Gen 9 SV Shiny Animated - SOME HIGHER QUALITY": "Gen9 SV-Shiny-Animated",
-        "HOME": "HOME",
-        "HOME Shiny": "HOME-Shiny"
+        # "Gen 7 LGPE Front Stills - HIGHER QUALITY": "Gen7 LGPE",
+        # "Gen 7 LGPE Shiny Front Stills - HIGHER QUALITY": "Gen7 LGPE-Shiny",
+        # "Gen 9 Poke Front Stills - HIGHER QUALITY": "Gen9 SV",
+        # "Gen 9 Poke Shiny Front Stills - HIGHER QUALITY": "Gen9 SV-Shiny",
+        # "Gen 9 SV Shiny Animated - SOME HIGHER QUALITY": "Gen9 SV-Shiny-Animated",
+        # "HOME": "HOME-Animated",
+        # "HOME Shiny": "HOME-Shiny-Animated"
     },
     "adamsb": {
-        "Gen 9 SV Animated - SAME QUALITY CHECK MISSING": "Gen9 SV-Animated",
-        "Gen 9 SV Shiny Animated - SAME QUALITY CHECK MISSING": "Gen9 SV-Shiny-Animated"
+        # "Gen 9 SV Animated - SAME QUALITY CHECK MISSING": "Gen9 SV-Animated",
+        # "Gen 9 SV Shiny Animated - SAME QUALITY CHECK MISSING": "Gen9 SV-Shiny-Animated"
     }
 }
 
@@ -94,7 +95,6 @@ CREATOR_TYPE_FORM_MAP = {
         "-Form_Fairy": "Fairy", 
     },
     "pkparaiso": {
-        "-Form_Normal": "-normal",
         "-Form_Fighting": "-fighting", 
         "-Form_Flying": "-flying", 
         "-Form_Poison": "-poison", 
@@ -111,7 +111,8 @@ CREATOR_TYPE_FORM_MAP = {
         "-Form_Ice": "-ice", 
         "-Form_Dragon": "-dragon", 
         "-Form_Dark": "-dark", 
-        "-Form_Fairy": "-fairy", 
+        "-Form_Fairy": "-fairy",
+        "-Form_Normal": ""
     }
 }
 
@@ -120,7 +121,7 @@ CREATOR_FORM_TRANSLATION_MAP = {
     # Pikachu
     25: {
         "root": {
-            "-Form_Cap_Alola": "(Alola Cap)",
+            "-Form_Cap_Alola": "(Cap Alola)",   # Reversed order so Region_Alola doesn't trigger too
             "-Form_Cap_Hoenn": "(Hoenn Cap)",
             "-Form_Cap_Kalos": "(Kalos Cap)",
             "-Form_Cap_Original": "(Original Cap)",
@@ -131,7 +132,7 @@ CREATOR_FORM_TRANSLATION_MAP = {
             # No cosplays past gen 6
         },
         "pkparaiso": {
-            "-Form_Cap_Alola": "-alolacap",
+            "-Form_Cap_Alola": "-capalola",     # Reversed order so Region_Alola doesn't trigger too
             "-Form_Cap_Hoenn": "-hoenncap",
             "-Form_Cap_Kalos": "-kaloscap",
             "-Form_Cap_Original": "-originalcap",
@@ -188,13 +189,13 @@ CREATOR_FORM_TRANSLATION_MAP = {
             "-Form_R": " R",
             "-Form_S": " S",
             "-Form_T": " T",
-            "-Form_U": " U",
             "-Form_V": " V",
             "-Form_W": " W",
             "-Form_X": " X",
             "-Form_Y": " Y",
             "-Form_Z": " Z",
-            "-Form_!": "(Exclamation)"
+            "-Form_!": "(Exclamation)",
+            "-Form_U": " U",    # U would trigger the U in Unown
         },
         "pkparaiso": {
             "-Form_A": "-alpha",  # I did have to write this in myself
@@ -1083,7 +1084,7 @@ CREATOR_FORM_TRANSLATION_MAP = {
             "-Form_Crowned_Shield": "Crowned"
         },
         "pkparaiso": {
-            "-Form_Crowned_Sword": "-crowned",
+            "-Form_Crowned_Shield": "-crowned",
             "-Form_Hero_of_Many_Battles": ""
         }
     },
