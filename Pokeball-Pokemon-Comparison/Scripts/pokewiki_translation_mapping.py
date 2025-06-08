@@ -9,15 +9,11 @@ from translation_utils import EXCLUDE_TRANSLATIONS_MAP, extract_gen_num_from_my_
 # Technically no static Crystal or emerald front sprites & they're gifs so might not color convert to apng nicely programatically, but Bulba has all stills for these gens, so all good as long as bulba scraped first
 # Tehcnically no gen8 static shiny back sprites but the animateds exist, so we can pull first frame
 # Take careful look at backs since wikidex lumps them by gen, not game
-WIKIDEX_DOESNT_HAVE_IMGS_FOR = {
-    "no animated images below gen5 except emerald & crystal": lambda my_filename: "-Animated" in my_filename and extract_gen_num_from_my_filename(my_filename)<5 and "Gen3 Emerald" not in my_filename and "Gen2 Crystal" not in my_filename,
-    "no LGPE back sprites except meltan and melmetal": lambda my_filename: "Gen7_LGPE" in my_filename and not any(poke_num in my_filename for poke_num in ("0808", "0809")),
-    "no animated BDSP sprites": lambda my_filename: "Gen8 BDSP" in my_filename and "-Animated" in my_filename,
-    "no back sprites for these games": lambda my_filename: "-Back" in my_filename and any(game in my_filename for game in ("Gen8_BDSP", "Gen8_LA", "Gen9_SV")),
-    "no gen7 sprites except gen7 pokes, forms, and glameow": lambda my_filename: "Gen7" in my_filename and not ((722 <= int(my_filename[:5]) <=809) or "0431" in my_filename or any(form in my_filename for form in ("-Region_Alola", "-Form_Cap_", "-Form_Ash", "-Form_Complete", "-Form_10%"))),
-    "no gen8 back sprites except gen8 pokes and forms": lambda my_filename: "Gen8_" in my_filename and "-Back" in my_filename and not ((810 <= int(my_filename[:5]) <=905) or any(exception in my_filename for exception in ("0109", "0133", "0808", "0809", "-Region_Galar", "-Gigantamax"))),
-    "no animated LA sprites except hisuian forms": lambda my_filename: "Gen8 LA" in my_filename and "-Animated" in my_filename and "-Shiny" not in my_filename and not "-Region_Hisui" in my_filename,
-    "no animated shiny LA sprites except hisuian forms, white basculin, and new species": lambda my_filename: "Gen8 LA" in my_filename and "-Animated" in my_filename and "-Shiny" in my_filename and not (899 <= int(my_filename[:5]) <=905 or any(form in my_filename for form in ("-Region_Hisui", "-Form_White_Striped")))
+POKEWIKI_DOESNT_HAVE_IMGS_FOR = {
+    # TODO: Implement, basically only scraping LGPE and above. Any exclusions? No HOME animated I don't think, no SV backsprites it seems, check
+
+    # Example format:
+    #"no animated images below gen5 except emerald & crystal": lambda my_filename: "-Animated" in my_filename and extract_gen_num_from_my_filename(my_filename)<5 and "Gen3 Emerald" not in my_filename and "Gen2 Crystal" not in my_filename,
 }
 
 
@@ -27,7 +23,7 @@ WIKIDEX_DOESNT_HAVE_IMGS_FOR = {
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     GAME TRANSLATIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
-WIKIDEX_GAME_MAP = {
+POKEWIKI_GAME_MAP = {
     "Gen1 Red_Blue": "RA",
     "Gen1 Red_Green": "V",
     "Gen1 Yellow": "A",
@@ -51,19 +47,13 @@ WIKIDEX_GAME_MAP = {
 }
 
 
-WIKIDEX_ALT_GAME_MAP = {
-    "BW_B2W2": "N2B2",
-    "XY_ORAS": "ROZA",
-    "SM_USUM": "USUL"
-}
-
-
 
 
 #|================================================================================================|
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     NAME ADJUSTMENTS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
+# TODO: Shouldn't need since all filenames go off of poke num? See
 POKE_NAME_ADJ_NEEDED = [
     # (condition, return name)
 
@@ -88,7 +78,7 @@ POKE_NAME_ADJ_NEEDED = [
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~[     SPECIES FORM TRANSLATIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
-WIKIDEX_TYPE_FORM_MAP = {
+POKEWIKI_TYPE_FORM_MAP = {
     "-Form_Normal": "",  # Normal form considered default: so does not have a letter denoter
     "-Form_Fighting": "lucha", 
     "-Form_Flying": "volador", 
@@ -111,7 +101,7 @@ WIKIDEX_TYPE_FORM_MAP = {
 }
 
 
-WIKIDEX_POKE_FORM_TRANSLATION_MAP = {
+POKEWIKI_POKE_FORM_TRANSLATION_MAP = {
     # Pikachu
     25: {
         "-Form_Cap_Alola": "Alola",
@@ -259,7 +249,7 @@ WIKIDEX_POKE_FORM_TRANSLATION_MAP = {
     },
 
     # Arceus
-    493: WIKIDEX_TYPE_FORM_MAP,
+    493: POKEWIKI_TYPE_FORM_MAP,
 
     #  Basculin
     550: {
@@ -457,7 +447,7 @@ WIKIDEX_POKE_FORM_TRANSLATION_MAP = {
     },
 
     # Silvally
-    773: WIKIDEX_TYPE_FORM_MAP,
+    773: POKEWIKI_TYPE_FORM_MAP,
 
     # Minior
     774: {
