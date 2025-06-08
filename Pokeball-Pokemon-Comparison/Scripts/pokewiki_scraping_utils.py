@@ -1,26 +1,21 @@
-# TODO: HOME, Games -- In db already
-
-from wikidex_translation_mapping import *
+from pokewiki_translation_mapping import *
 from db_utils import get_poke_name, get_form_name, get_pokeball_name, get_pokeball_img_type_name
 from app_globals import *
 from scraping_utils import *
-from image_utils import wikidex_get_largest_img
+from image_utils import pokewiki_get_largest_img
 from translation_utils import *
 
 
 # WEB DATA
-sprite_page = requests.get("https://www.wikidex.net/wiki/Categor%C3%ADa:Sprites_de_Pok%C3%A9mon")
-WIKIDEX_STARTER_URL = "https://www.wikidex.net/wiki/Archivo:"
+#sprite_page = requests.get("https://www.pokewiki.de/Kategorie:Pok%C3%A9monsprite")
+POKEWIKI_STARTER_URL = "https://www.pokewiki.de/Datei:"
 
 
-# NOTE: If ever decide to use Wikidex for menu sprites, drawn, etc. this will have to be nested like bulbas
-def wikidex_scrape_pokemon(poke_num, allow_download=False):
-    wikidex_scrape_config = generate_config_dict(WIKIDEX_STARTER_URL, wikidex_get_img, allow_download)
+def pokewiki_scrape_pokemon(poke_num, allow_download=False):
+    pokewiki_scrape_config = generate_config_dict(POKEWIKI_STARTER_URL, pokewiki_get_img, allow_download)
 
-    scrape_imgs(poke_num, "obtainable_game_filenames", wikidex_translate, exclusions=wikidex_doesnt_have_images_for, has_animation=True, save_path=save_directories["Game Sprites"]["path"], config_dict=wikidex_scrape_config)
-    scrape_imgs(poke_num, "obtainable_home_filenames", wikidex_translate, exclusions=None, has_animation=True, save_path=save_directories["HOME"]["path"], config_dict=wikidex_scrape_config)
-    # NOTE: Technically Wikidex does have drawn images and home menu images, but bulba has every one so there's no need to scrape
-    # If this changes in the future, it may be useful to browse their archives via url thru https://www.wikidex.net/index.php?title=Categor%C3%ADa:Pokemon_name
+    scrape_imgs(poke_num, "obtainable_game_filenames", pokewiki_translate, exclusions=pokewiki_doesnt_have_images_for, has_animation=True, save_path=save_directories["Game Sprites"]["path"], config_dict=pokewiki_scrape_config)
+    scrape_imgs(poke_num, "obtainable_home_filenames", pokewiki_translate, exclusions=None, has_animation=True, save_path=save_directories["HOME"]["path"], config_dict=pokewiki_scrape_config)
 
 
 
@@ -29,53 +24,25 @@ def wikidex_scrape_pokemon(poke_num, allow_download=False):
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     DOWNLOADING FUNCTIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
-def wikidex_get_img(url, save_path, allow_download, has_animation=False):
+def pokewiki_get_img(url, save_path, allow_download, has_animation=False):
     my_filename = save_path.split("\\")[-1]
-    img_page_soup, my_filename_w_wikidex_file_ext = search_image_under_all_file_extensions(url, my_filename)    # TODO: Have this alter my filename if different extensions
-
-    if not img_page_soup:
-        print_couldnt_dl_msg(my_filename)
-        return
-    else:
-        # TODO: Once everything is webp this wont be necessary as my filename will always be a webp
-        save_path = save_path.replace(my_filename, my_filename_w_wikidex_file_ext)
+    img_page_soup = img_exists_at_url(url)
     
     if allow_download:
-        img_url = wikidex_get_largest_img(img_page_soup)
-
-        # TODO: After implementing webm -> webp conversion, can implement this if want to save gif/webm
-        # Can't do now bc db wont recognize it as existing in these filepaths so will continuously try to download images    
-        #save_path = os.path.join(determine_save_path_from_file_type(img_url_file_ext), my_filename)
+        # TODO: Implement pokewiki get largest
+        # file w only 1 size: https://www.pokewiki.de/Datei:Pok%C3%A9monsprite_1016_Schillernd_HOME.png
+        # file w different sizes: https://www.pokewiki.de/Datei:Pok%C3%A9monsprite_1016_Schillernd_KAPU.gif
+        img_url = pokewiki_get_largest_img(img_page_soup)
 
         # TODO: Put this into a func in scraping_utils and change it in bulba & wikidex scraping_utils
         if has_animation:
             determine_animation_status_before_downloading(img_url, save_path)
         else:
             download_img(img_url, save_path)
-
-
-def search_image_under_all_file_extensions(url, my_filename):
-    file_exts_wikidex_uses = [".png", ".gif"]  # Ordered in terms of preference (png for stills, gif for transparency, webm bc its there) -- NO LONGER SCRAPING WEBM
-
-    # Rotating through file extensions to find an existing image
-    for file_ext in file_exts_wikidex_uses:
-        if "-Animated" in my_filename and file_ext == ".png": continue  # pngs for stills only
-        if " HOME" in my_filename and file_ext != ".webm": continue     # HOME sprites always webm (w/o transparency) -- No longer scraping
-        # Replacing file extension
-        if file_ext not in url: url = url.replace(get_file_ext(url), file_ext)
-        # Seeing if the URL exists
-        img_page_soup = img_exists_at_url(url)
-        # If so, return relevant data, otherwise try next file extension
-        if img_page_soup: 
-            my_filename_proper_ext = my_filename.replace(get_file_ext(my_filename), file_ext)
-            return img_page_soup, my_filename_proper_ext
-
-    # Img doesnt exist under any file extensions
-    return None, None
     
 
-def wikidex_doesnt_have_images_for(my_filename):
-    for exclude in WIKIDEX_DOESNT_HAVE_IMGS_FOR.values():
+def pokewiki_doesnt_have_images_for(my_filename):
+    for exclude in POKEWIKI_DOESNT_HAVE_IMGS_FOR.values():
         if exclude(my_filename):
             return True
     return False
@@ -87,7 +54,8 @@ def wikidex_doesnt_have_images_for(my_filename):
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     UNIVERSAL TRANSLATIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
-def get_wikidex_translated_species_form(poke_info, my_filename):
+# NOTE: This can be made a universal func that all single dimension (Not different HOME, Game, Menu, etc keys in  translation dict) translation dict call from in translation_utils.py, just keeping it here so its easier to refer back to to understand whats happening
+def get_pokewiki_translated_species_form(poke_info, my_filename):
     poke_num = poke_info[0]
     form_id = poke_info[1]
     form_name = get_form_name(form_id)
@@ -96,8 +64,8 @@ def get_wikidex_translated_species_form(poke_info, my_filename):
     if form_name in UNIVERSAL_FORMS:
         return("")
 
-    if poke_num in WIKIDEX_POKE_FORM_TRANSLATION_MAP:
-        for form, translation in WIKIDEX_POKE_FORM_TRANSLATION_MAP[poke_num].items():
+    if poke_num in POKEWIKI_POKE_FORM_TRANSLATION_MAP:
+        for form, translation in POKEWIKI_POKE_FORM_TRANSLATION_MAP[poke_num].items():
             if form in form_name:
                 return(translation)
     
@@ -108,56 +76,35 @@ def get_wikidex_translated_species_form(poke_info, my_filename):
 
 
 #|================================================================================================|
-#|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     GAME IMAGES     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+#|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     GAME & HOME IMAGES     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
-def wikidex_translate(my_filename, poke_info):
+def pokewiki_translate(my_filename, poke_info):
     # poke_info == (poke_num, form_id)
-    poke_num = poke_info[0]
-    poke_name = get_poke_name(poke_num)
+    poke_num_int = poke_info[0]
+    poke_num_leading_zeros = f" {str(poke_num_int).zfill(3)}"   # Pokewiki only uses leading zeros up to 3
     form_name = get_form_name(poke_info[1])
     
-    adj_poke_name = adjust_poke_name(poke_name, form_name)
-    translated_form = get_wikidex_translated_species_form(poke_info, my_filename)
+    # TODO: Will need to rethink universal forms for pokewiki... Default always "", next form (say galarian) "a", next form (say alolan) "b", "c", etc. -- Dynamic denoters not static
+    translated_form = get_pokewiki_translated_species_form(poke_info, my_filename)
     form_tag = f" {translated_form}" if translated_form != "" else ""
-    gigantamax_tag = " Gigamax" if "-Gigantamax" in form_name else ""
-    back_tag = " espalda" if "-Back" in my_filename else ""
-    platform = determine_platform(my_filename, back_tag)    # Determines if wikidex translate should have HOME, Game denoter, or Gen# for back sprites
-    shiny_tag = " variocolor" if "-Shiny" in my_filename else ""
-    female_tag = " hembra" if "-f" in form_name else ""
-    file_ext = determine_file_extension(my_filename)
-    if file_ext == ".webm": return None     # No longer scraping webm
+    gigantamax_tag = determine_gigantamax_tag(poke_num_int, form_name)
+    female_tag = " Weiblich" if "-f" in form_name else ""
+    back_tag = " Rückseite" if "-Back" in my_filename else ""
+    shiny_tag = " Schillernd" if "-Shiny" in my_filename else ""
+    platform = get_translated_game(my_filename, POKEWIKI_GAME_MAP) if "HOME" not in my_filename else " HOME"
+    file_ext = ".png" if "-Animated" not in my_filename else ".gif"
 
-    wikidex_filename = f"{adj_poke_name}{form_tag}{gigantamax_tag}{back_tag}{platform}{shiny_tag}{female_tag}{file_ext}"
-    return (wikidex_filename)
-    
-
-def adjust_poke_name(poke_name, form_name):
-    for poke_form_needs_adj, adjust_name in POKE_NAME_ADJ_NEEDED:
-        if poke_form_needs_adj(poke_name, form_name):
-            adjusted_name = adjust_name(poke_name, form_name)
-            return adjusted_name
-        
-    # If no need to adjust the name, just return it
-    return poke_name
+    pokewiki_filename = f"Pokémonsprite {poke_num_leading_zeros}{form_tag}{gigantamax_tag}{female_tag}{back_tag}{shiny_tag}{platform}{file_ext}"
+    return (pokewiki_filename)
 
 
-def determine_platform(my_filename, back_tag):
-    if " HOME" in my_filename: platform = " HOME"
-    elif back_tag == "":    # Img is front game sprite, get game
-        platform = get_translated_game(my_filename, WIKIDEX_GAME_MAP, WIKIDEX_ALT_GAME_MAP)
-    else:   # Get back gen
-        # NOTE: Wikidex lumps backs together by gen, so gen8 is noted as gen8 but is only SwSh, no BDSP or LA back sprites in there
-        platform = f" G{extract_gen_num_from_my_filename(my_filename)}"
-        if "Gen2_Crystal" in my_filename: platform += " cristal"
+def determine_gigantamax_tag(poke_num, form_name):
+    gmax_denoter = ""
+    if "-Gigantamax" in form_name:
+        if poke_num == 892 and "-Form_Rapid_Strike" in form_name:   # Urshifu has different form gigantamaxes
+            gmax_denoter = "g2"
+        else:
+            gmax_denoter = "g1"
 
-    return platform
-
-
-def determine_file_extension(my_filename):
-    if "-Animated" not in my_filename: return ".png"
-    # Wikidex transitioned to .webm for animated HOME/Gen9. Gen8 below is .gif
-    # HOME always webm, Gen9 has a lot of gifs, so will try that first. If it doesn't exist it will search for a webm in wikidex_get_img
-    else:
-        if " HOME" in my_filename: return ".webm"
-        else: return ".gif"
+    return gmax_denoter
