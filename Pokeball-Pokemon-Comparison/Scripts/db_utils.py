@@ -512,6 +512,21 @@ def get_sprite_types(cursor):
     return sprite_types
 
 
+def get_all_form_names_for_poke(poke_num, cursor=None):
+    with get_cursor(cursor) as cur:
+        cur.execute("""
+            SELECT f.form_name
+            FROM poke_forms pf
+            JOIN forms f ON pf.form_id = f.id
+            WHERE pf.poke_num = ?
+        """, (poke_num,))
+        form_names = cur.fetchall()
+
+    if form_names: return [row["form_name"] for row in form_names]
+    else: return None
+
+print(get_all_form_names_for_poke(25))
+
 def get_poke_form_records(cursor):
     cursor.execute("""
         SELECT p.num, f.id, f.form_name, pf.poke_num, p.name, p.gen
