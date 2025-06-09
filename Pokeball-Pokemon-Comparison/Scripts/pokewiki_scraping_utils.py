@@ -2,7 +2,7 @@ from pokewiki_translation_mapping import *
 from db_utils import get_poke_name, get_form_name, get_pokeball_name, get_pokeball_img_type_name, get_all_form_names_for_poke
 from app_globals import *
 from scraping_utils import *
-from image_utils import pokewiki_get_largest_img
+#from image_utils import pokewiki_get_largest_img
 from translation_utils import *
 
 
@@ -74,23 +74,38 @@ def get_pokewiki_translated_form(poke_info, my_filename):
 
 
 def get_pokewiki_universal_form(poke_num, form_name):
-    # TODO: Edit so sneasel doesnt fall in here, which means making u_form == form_name
-    # TODO: Then gigantamax urshifu forms have to be put into translation dict
+    # Checking equality so any pokes that have a universal paired with another form (ie Hisuian Female Sneasel) will continue so can be denoted for the other form
     if any(universal_form == form_name for universal_form in UNIVERSAL_FORMS_EXCLUDING_REGIONALS):
         return True, ""
     
     # Regional forms in pokewiki are marked the same as species forms -- a, b, c, d, etc.
     # This checks if a form is ONLY a regional form (so Hisuian Female Sneasel doesnt go into this, nor galarian zen/standard darmanitan, etc)
-    # And if the only forms that pokemon has (with the exception of UNIVERSAL_FORMS_EXCLUDING_REGIONALS as those dont apply to regionals) are regional forms
+    # And if the only forms that pokemon has are regional forms and ones that have their own non-form denoter (females, megas, etc)
     # If so, return the appropriate chronological denoter for that regional form (whichever region released first, will be sooner in alphabet)
     # This saves me from writing every regional form for every applicable poke in the translation dict
-    elif form_name in REGIONAL_FORMS and get_all_form_names_for_poke(poke_num) == 1:    # TODO: Make equal so Galarian Darm forms or Paldean Tauros forms dont trigger
-        # TODO: Can do even if all forms are regions -- earliest region will be a, next b, etc. necessarily chronological due to archiving. When first region introduced, necessarily had to label a, next b, etc 
-
+    elif form_name in REGIONAL_FORMS:
+        all_forms_for_poke = get_all_form_names_for_poke(poke_num)
+        regional_forms_for_poke = [form for form in all_forms_for_poke if "-Region" in form]
+        # Checking against UNIVERSAL_FORMS to make sure only forms are Default, Regionals, and ones that have their own non-form denoter and dont affect regionals (mega, female, etc)
+        # For example, if burmy had regional forms for his cloaks, we couldn't do this as we wouldn't know which cloak for which region would be labelled a,b,c and we'd have to include it in our species form dict instead 
+        if all(form in UNIVERSAL_FORMS for form in all_forms_for_poke):
+            if len(regional_forms_for_poke) == 1: 
+                return True, POKEWIKI_FORM_DENOTER["1st Variant"]
+            else:
+                # For pokes with only regional forms, the pokewiki form denoters (a, b, c, d) necessarily must be chronological
+                # This, because say SM released an alolan form, at the release of the game, they would label the sprite with a, since at that time its its only form
+                # But if SwSh releases a galarian form for that same poke, it now must be labelled as b since it is the second form
+                # The below basically maps chronological order of regional variants applicable to the pokemon to order of pokewiki label denotions (a, b, c, etc)
+                mapping_all_regional_introductions_for_poke = [{region: UNIVERSAL_FORMS.index(region)} for region in regional_forms_for_poke]   # The number for this mapping is arbitrary (index of region in UNIVERSAL FORMS), but they are listed in chronological order, so relative to other regions it gains value
+                chronological_order_of_regional_introduction_for_poke = sorted(mapping_all_regional_introductions_for_poke, key=lambda d: next(iter(d.values())))   # Sorts by whichever region comes first in UNIVERSAL FORMS (chronological). Using next, iter on valuess because the keys are dynamic for each poke/region combo
+                chronological_introduction_position_of_region = [next(iter(region)) for region in chronological_order_of_regional_introduction_for_poke].index(form_name)      # Gets region introduction index relative to other regions (1st regional for this poke, or 2nd regional, etc). Using next, iter to get just the keys of the dicts so I can index by region name
+                chronological_regional_form_denoter = list(POKEWIKI_FORM_DENOTER.values())[chronological_introduction_position_of_region + 1]   # Relates region introduction order to form denoter, which are necessarily chronological for pokes with regional only forms. +1 to account for "Default" form ("")
+                return True, chronological_regional_form_denoter
     else:
         return False, None
 
-
+# TODO: Test full func
+print(get_pokewiki_universal_form(52, "-Region_Galar"))
 
 
 #|================================================================================================|
