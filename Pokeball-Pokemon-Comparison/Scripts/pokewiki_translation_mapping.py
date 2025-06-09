@@ -1,5 +1,23 @@
 from translation_utils import UNIVERSAL_FORMS, EXCLUDE_TRANSLATIONS_MAP, extract_gen_num_from_my_filename
 
+
+#|================================================================================================|
+#|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     FORM DENOTERS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+#|================================================================================================|
+
+# Pokewiki uses the same denoter on all forms
+# NOTE: Can go up to arbitrary amount, but will throw error if less used than shared regional forms for a poke (Meowth has Alola, Galar, so this must go to at least "b")
+POKEWIKI_FORM_DENOTER = {
+    "Default": "",
+    "1st Variant": "a",
+    "2nd Variant": "b",
+    "3rd Variant": "c",
+    "4th Variant": "d"
+}
+
+
+
+
 #|================================================================================================|
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     EXCLUSIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
@@ -23,7 +41,8 @@ POKEWIKI_DOESNT_HAVE_IMGS_FOR = {
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     UNIVERSAL FORMS DATA     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
-UNIVERSAL_FORMS_EXCLUDING_REGIONALS = [form for form in UNIVERSAL_FORMS if "-Region" not in form]   # TODO: Add Urshifu Gigantamax forms so universal forms check returns "" for them (handled in determine gigantamax tag)
+UNIVERSAL_FORMS_EXCLUDING_REGIONALS = [form for form in UNIVERSAL_FORMS if "-Region" not in form]
+UNIVERSAL_FORMS_EXCLUDING_REGIONALS.extend(["-Gigantamax-Form_Single_Strike", "-Gigantamax-Form_Rapid_Strike"])   # Since I check for equality, "-Gigantamax" wont filter these
 REGIONAL_FORMS = [form for form in UNIVERSAL_FORMS if "-Region" in form]    # Chronological earliest -> latest
 
 
