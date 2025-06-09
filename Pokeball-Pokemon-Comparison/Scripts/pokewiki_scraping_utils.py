@@ -1,5 +1,5 @@
 from pokewiki_translation_mapping import *
-from db_utils import get_poke_name, get_form_name, get_pokeball_name, get_pokeball_img_type_name
+from db_utils import get_poke_name, get_form_name, get_pokeball_name, get_pokeball_img_type_name, get_all_form_names_for_poke
 from app_globals import *
 from scraping_utils import *
 from image_utils import pokewiki_get_largest_img
@@ -54,16 +54,16 @@ def pokewiki_doesnt_have_images_for(my_filename):
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     UNIVERSAL TRANSLATIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
-# NOTE: This can be made a universal func that all single dimension (Not different HOME, Game, Menu, etc keys in  translation dict) translation dict call from in translation_utils.py, just keeping it here so its easier to refer back to to understand whats happening
-def get_pokewiki_translated_species_form(poke_info, my_filename):
+def get_pokewiki_translated_form(poke_info, my_filename):
     poke_num = poke_info[0]
     form_id = poke_info[1]
     form_name = get_form_name(form_id)
-
+    
+    has_universal_form, universal_form_translation = get_pokewiki_universal_form(poke_num, form_name)
     # No widespread universal forms combined with species forms, the few exceptions have their own form id/name associated with it
-    if form_name in UNIVERSAL_FORMS:
-        return("")
+    if has_universal_form: return universal_form_translation
 
+    # --------  SPECIES FORMS  --------
     if poke_num in POKEWIKI_POKE_FORM_TRANSLATION_MAP:
         for form, translation in POKEWIKI_POKE_FORM_TRANSLATION_MAP[poke_num].items():
             if form in form_name:
@@ -71,6 +71,24 @@ def get_pokewiki_translated_species_form(poke_info, my_filename):
     
     print(f"Couldn't search for image to download... No respective form in map set for \t{my_filename}")
     return(EXCLUDE_TRANSLATIONS_MAP["NIM"])
+
+
+def get_pokewiki_universal_form(poke_num, form_name):
+    # TODO: Edit so sneasel doesnt fall in here, which means making u_form == form_name
+    # TODO: Then gigantamax urshifu forms have to be put into translation dict
+    if any(universal_form == form_name for universal_form in UNIVERSAL_FORMS_EXCLUDING_REGIONALS):
+        return True, ""
+    
+    # Regional forms in pokewiki are marked the same as species forms -- a, b, c, d, etc.
+    # This checks if a form is ONLY a regional form (so Hisuian Female Sneasel doesnt go into this, nor galarian zen/standard darmanitan, etc)
+    # And if the only forms that pokemon has (with the exception of UNIVERSAL_FORMS_EXCLUDING_REGIONALS as those dont apply to regionals) are regional forms
+    # If so, return the appropriate chronological denoter for that regional form (whichever region released first, will be sooner in alphabet)
+    # This saves me from writing every regional form for every applicable poke in the translation dict
+    elif form_name in REGIONAL_FORMS and get_all_form_names_for_poke(poke_num) == 1:    # TODO: Make equal so Galarian Darm forms or Paldean Tauros forms dont trigger
+        # TODO: Can do even if all forms are regions -- earliest region will be a, next b, etc. necessarily chronological due to archiving. When first region introduced, necessarily had to label a, next b, etc 
+
+    else:
+        return False, None
 
 
 
@@ -86,7 +104,7 @@ def pokewiki_translate(my_filename, poke_info):
     form_name = get_form_name(poke_info[1])
     
     # TODO: Will need to rethink universal forms for pokewiki... Default always "", next form (say galarian) "a", next form (say alolan) "b", "c", etc. -- Dynamic denoters not static
-    translated_form = get_pokewiki_translated_species_form(poke_info, my_filename)
+    translated_form = get_pokewiki_translated_form(poke_info, my_filename)
     form_tag = f" {translated_form}" if translated_form != "" else ""
     gigantamax_tag = determine_gigantamax_tag(poke_num_int, form_name)
     female_tag = " Weiblich" if "-f" in form_name else ""
