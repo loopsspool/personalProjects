@@ -1,4 +1,4 @@
-from translation_utils import EXCLUDE_TRANSLATIONS_MAP, extract_gen_num_from_my_filename
+from translation_utils import UNIVERSAL_FORMS, EXCLUDE_TRANSLATIONS_MAP, extract_gen_num_from_my_filename
 
 #|================================================================================================|
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     EXCLUSIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
@@ -15,6 +15,16 @@ POKEWIKI_DOESNT_HAVE_IMGS_FOR = {
     # Example format:
     #"no animated images below gen5 except emerald & crystal": lambda my_filename: "-Animated" in my_filename and extract_gen_num_from_my_filename(my_filename)<5 and "Gen3 Emerald" not in my_filename and "Gen2 Crystal" not in my_filename,
 }
+
+
+
+
+#|================================================================================================|
+#|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     UNIVERSAL FORMS DATA     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+#|================================================================================================|
+
+UNIVERSAL_FORMS_EXCLUDING_REGIONALS = [form for form in UNIVERSAL_FORMS if "-Region" not in form]   # TODO: Add Urshifu Gigantamax forms so universal forms check returns "" for them (handled in determine gigantamax tag)
+REGIONAL_FORMS = [form for form in UNIVERSAL_FORMS if "-Region" in form]    # Chronological earliest -> latest
 
 
 
