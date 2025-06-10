@@ -1,12 +1,11 @@
 from translation_utils import UNIVERSAL_FORMS, EXCLUDE_TRANSLATIONS_MAP, extract_gen_num_from_my_filename
 
-
 #|================================================================================================|
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     FORM DENOTERS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
 # Pokewiki uses the same denoter on all forms
-# NOTE: Can go up to arbitrary amount, but will throw error if less used than shared regional forms for a poke (Meowth has Alola, Galar, so this must go to at least "b")
+# NOTE: Can go up to arbitrary amount, but will throw error if less used than shared regional forms for a poke (Meowth has Alola, Galar, so this dict must go to at least "b")
 POKEWIKI_FORM_DENOTER = {
     "Default": "",
     "1st Variant": "a",
@@ -23,15 +22,16 @@ POKEWIKI_FORM_DENOTER = {
 #|================================================================================================|
 
 # NOTE: Just because you don't see the sprites on the respective game list DOES NOT MEAN THEY DON'T EXIST -- check URL generated, they may just not be linked properly
-    # Helpful as well: https://www.wikidex.net/wiki/WikiDex:Proyecto_Pok%C3%A9dex#P%C3%A1ginas_del_proyecto
-# Technically no static Crystal or emerald front sprites & they're gifs so might not color convert to apng nicely programatically, but Bulba has all stills for these gens, so all good as long as bulba scraped first
-# Tehcnically no gen8 static shiny back sprites but the animateds exist, so we can pull first frame
-# Take careful look at backs since wikidex lumps them by gen, not game
+    # Helpful as well: https://www.pokewiki.de/Kategorie:Pok%C3%A9monsprite
 POKEWIKI_DOESNT_HAVE_IMGS_FOR = {
-    # TODO: Implement, basically only scraping LGPE and above. Any exclusions? No HOME animated I don't think, no SV backsprites it seems, check
+    "only scraping LGPE and above": lambda my_filename: extract_gen_num_from_my_filename(my_filename) < 7,   # I scraped bulba and wikidex previously, which filled in everything below LGPE. This can be commented out to scrape everything
 
-    # Example format:
-    #"no animated images below gen5 except emerald & crystal": lambda my_filename: "-Animated" in my_filename and extract_gen_num_from_my_filename(my_filename)<5 and "Gen3 Emerald" not in my_filename and "Gen2 Crystal" not in my_filename,
+    "no LGPE animated": lambda my_filename: " LGPE" in my_filename and "-Animated" in my_filename,
+    "no LA animated or back sprites": lambda my_filename: " LA" in my_filename and any(sprite_type in my_filename for sprite_type in ("-Animated", "-Back")),
+    "no BDSP animated or back sprites": lambda my_filename: " BDSP" in my_filename and any(sprite_type in my_filename for sprite_type in ("-Animated", "-Back")),
+    "no gen8 back sprites": lambda my_filename: " Gen8" in my_filename and "-Back" in my_filename,  # Technically it does have SwSh back sprites for new galar forms, gigantamax, and gen8 pokes, but these were already scraped for
+    "no gen9 back sprites": lambda my_filename: " Gen9" in my_filename and "-Back" in my_filename,
+    "no home animated": lambda my_filename: " HOME" in my_filename and "-Animated" in my_filename
 }
 
 
@@ -52,53 +52,36 @@ REGIONAL_FORMS = [form for form in UNIVERSAL_FORMS if "-Region" in form]    # Ch
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     GAME TRANSLATIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
+# NOTE: If older gen back sprites are ever needed, pokewiki does combine games so a seperate translation mapping dict will be needed
 POKEWIKI_GAME_MAP = {
-    "Gen1 Red_Blue": "RA",
-    "Gen1 Red_Green": "V",
-    "Gen1 Yellow": "A",
-    "Gen2 Crystal": "cristal",
-    "Gen2 Gold": "oro",
-    "Gen2 Silver": "plata",
-    "Gen3 Emerald": "E",
-    "Gen3 FRLG": "RFVH",
-    "Gen3 Ruby_Sapphire": "RZ",
+    "Gen1 Red_Blue": "RB",
+    "Gen1 Red_Green": "RG",
+    "Gen1 Yellow": "Gelb",
+    "Gen2 Crystal": "Kristall",
+    "Gen2 Gold": "Gold",
+    "Gen2 Silver": "Silber",
+    "Gen3 Emerald": "Smaragd",
+    "Gen3 FRLG": "FRBG",
+    "Gen3 Ruby_Sapphire": "RS",
     "Gen4 Diamond_Pearl": "DP",
     "Gen4 HGSS": "HGSS",
-    "Gen4 Platinum": "Pt",
-    "Gen5 BW_B2W2": "NB",
+    "Gen4 Platinum": "Platin",
+    "Gen5 BW_B2W2": "SW",
     "Gen6 XY_ORAS": "XY",
-    "Gen7 SM_USUM": "SL",
+    "Gen7 SM_USUM": "SoMo",
     "Gen7 LGPE": "LGPE",
-    "Gen8 SwSh": "EpEc",
-    "Gen8 LA": "LPA",
-    "Gen8 BDSP": "DBPR",
-    "Gen9 SV": "EP"
+    "Gen8 SwSh": "SWSH",
+    "Gen8 LA": "PLA",
+    "Gen8 BDSP": "SDLP",
+    "Gen9 SV": "KAPU"
 }
 
 
-
-
-#|================================================================================================|
-#|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     NAME ADJUSTMENTS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
-#|================================================================================================|
-
-# TODO: Shouldn't need since all filenames go off of poke num? See
-POKE_NAME_ADJ_NEEDED = [
-    # (condition, return name)
-
-    ##### Species
-    (lambda poke_name, form_name: poke_name == "Nidoran f", lambda poke_name, form_name: "Nidoran hembra"),
-    (lambda poke_name, form_name: poke_name == "Nidoran m", lambda poke_name, form_name: "Nidoran macho"),
-    (lambda poke_name, form_name: poke_name == "Flabebe", lambda poke_name, form_name: "Flabébé"),
-    (lambda poke_name, form_name: poke_name == "Type Null", lambda poke_name, form_name: "Código Cero"),
-    (lambda poke_name, form_name: poke_name == "Necrozma" and form_name == "-Form_Ultra", lambda poke_name, form_name: "Ultra-Necrozma"),
-
-    ##### Universal Forms (Needed here bc they add a denoter before the actual pokemon name)
-    (lambda poke_name, form_name: "-Mega_X" in form_name, lambda poke_name, form_name: f"Mega-{poke_name} X"),
-    (lambda poke_name, form_name: "-Mega_Y" in form_name, lambda poke_name, form_name: f"Mega-{poke_name} Y"),
-    (lambda poke_name, form_name: "-Mega" in form_name, lambda poke_name, form_name: f"Mega-{poke_name}"),
-    (lambda poke_name, form_name: "-Region_" in form_name, lambda poke_name, form_name: f"{poke_name} de {form_name.split("-")[1].replace("Region_", "")}")     # Split seperates -f from Female Hisuian Sneasel, replacing Region_ allows me to just get the region name to add that to the pokemon name
-]
+POKEWIKI_ALT_GAME_MAP = {
+    "BW_B2W2": "S2W2",
+    "XY_ORAS": "ORAS",
+    "SM_USUM": "USUM"
+}
 
 
 
