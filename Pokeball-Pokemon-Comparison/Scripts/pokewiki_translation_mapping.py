@@ -11,7 +11,19 @@ POKEWIKI_FORM_DENOTER = {
     "1st Variant": "a",
     "2nd Variant": "b",
     "3rd Variant": "c",
-    "4th Variant": "d"
+    "4th Variant": "d",
+    "5th Variant": "e",
+    "6th Variant": "f",
+    "7th Variant": "g",
+    "8th Variant": "h",
+    "9th Variant": "i",
+    "10th Variant": "j",
+    "11th Variant": "k",
+    "12th Variant": "l",
+    "13th Variant": "m",
+    "14th Variant": "n",
+    "15th Variant": "o",
+    "16th Variant": "p"
 }
 
 
@@ -116,148 +128,141 @@ POKEWIKI_TYPE_FORM_MAP = {
 POKEWIKI_POKE_FORM_TRANSLATION_MAP = {
     # Pikachu
     25: {
-        "-Form_Cap_Alola": "Alola",
-        "-Form_Cap_Hoenn": "Hoenn",
-        "-Form_Cap_Kalos": "Kalos",
-        "-Form_Cap_Original": "original",
-        "-Form_Cap_Sinnoh": "Sinnoh",
-        "-Form_Cap_Unova": "Teselia",
-        "-Form_Cap_Partner": "compañero",
-        "-Form_Cap_World": "trotamundos",
+        "-Form_Cap_Alola": POKEWIKI_FORM_DENOTER["12th Variant"],
+        "-Form_Cap_Hoenn": POKEWIKI_FORM_DENOTER["8th Variant"],
+        "-Form_Cap_Kalos": POKEWIKI_FORM_DENOTER["11th Variant"],
+        "-Form_Cap_Original": POKEWIKI_FORM_DENOTER["7th Variant"],
+        "-Form_Cap_Sinnoh": POKEWIKI_FORM_DENOTER["9th Variant"],
+        "-Form_Cap_Unova": POKEWIKI_FORM_DENOTER["10th Variant"],
+        "-Form_Cap_Partner": POKEWIKI_FORM_DENOTER["13th Variant"],
+        # Partner Pikachu in LGPE is 14th
+        "-Form_Cap_World": POKEWIKI_FORM_DENOTER["15th Variant"],
 
-        "-Form_Cosplay": "coqueta",
-        "-Form_Cosplay_Belle": "aristócrata",
-        "-Form_Cosplay_Libre": "enmascarada",
-        "-Form_Cosplay_PhD": "erudita",
-        "-Form_Cosplay_Pop_Star": "superstar",
-        "-Form_Cosplay_Rock_Star": "roquera"
+        "-Form_Cosplay": POKEWIKI_FORM_DENOTER["6th Variant"],
+        "-Form_Cosplay_Belle": POKEWIKI_FORM_DENOTER["2nd Variant"],
+        "-Form_Cosplay_Libre": POKEWIKI_FORM_DENOTER["5th Variant"],
+        "-Form_Cosplay_PhD": POKEWIKI_FORM_DENOTER["4th Variant"],
+        "-Form_Cosplay_Pop_Star": POKEWIKI_FORM_DENOTER["3rd Variant"],
+        "-Form_Cosplay_Rock_Star": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
 
     # Tauros
     128: {
-        "-Form_Combat": "combatiente",
-        "-Form_Blaze": "ardiente",
-        "-Form_Aqua": "acuática"
+        "-Form_Combat": POKEWIKI_FORM_DENOTER["1st Variant"],
+        "-Form_Blaze": POKEWIKI_FORM_DENOTER["2nd Variant"],
+        "-Form_Aqua": POKEWIKI_FORM_DENOTER["3rd Variant"]
     },
 
     # Pichu
     172: {
-        "-Form_Spiky_Eared": "picoreja"
+        "-Form_Spiky_Eared": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
 
     201: {
-        "-Form_A": "A",
-        "-Form_B": "B",
-        "-Form_C": "C",
-        "-Form_D": "D",
-        "-Form_E": "E",
-        "-Form_F": "F",
-        "-Form_G": "G",
-        "-Form_H": "H",
-        "-Form_I": "I",
-        "-Form_J": "J",
-        "-Form_K": "K",
-        "-Form_L": "L",
-        "-Form_M": "M",
-        "-Form_N": "N",
-        "-Form_O": "O",
-        "-Form_P": "P",
-        "-Form_Qmark": "%3F",
-        "-Form_Q": "Q",
-        "-Form_R": "R",
-        "-Form_S": "S",
-        "-Form_T": "T",
-        "-Form_U": "U",
-        "-Form_V": "V",
-        "-Form_W": "W",
-        "-Form_X": "X",
-        "-Form_Y": "Y",
-        "-Form_Z": "Z",
-        "-Form_!": "!"
+        "-Form_A": "",
+        "-Form_B": "b",
+        "-Form_C": "c",
+        "-Form_D": "d",
+        "-Form_E": "e",
+        "-Form_F": "f",
+        "-Form_G": "g",
+        "-Form_H": "h",
+        "-Form_I": "i",
+        "-Form_J": "j",
+        "-Form_K": "k",
+        "-Form_L": "l",
+        "-Form_M": "m",
+        "-Form_N": "n",
+        "-Form_O": "o",
+        "-Form_P": "p",
+        "-Form_Q": "q",
+        "-Form_R": "r",
+        "-Form_S": "s",
+        "-Form_T": "t",
+        "-Form_U": "u",
+        "-Form_V": "v",
+        "-Form_W": "w",
+        "-Form_X": "x",
+        "-Form_Y": "y",
+        "-Form_Z": "z",
+        "-Form_!": "aa",
+        "-Form_Qmark": "ab",
     },
 
     # Sneasel
     215: {
-        "-Region_Hisui-f": ""   # Handled w universal & female forms in wikidex scraping, blank so it doesn't get flagged as missing key
+        "-Region_Hisui-f": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
 
     # Castform
     351: {
-        "-Form_Rainy": "lluvia",
-        "-Form_Snowy": "nieve",
-        "-Form_Sunny": "sol"
+        "-Form_Rainy": POKEWIKI_FORM_DENOTER["2nd Variant"],
+        "-Form_Snowy": POKEWIKI_FORM_DENOTER["3rd Variant"],
+        "-Form_Sunny": 	POKEWIKI_FORM_DENOTER["1st Variant"]
     },
 
     # Kyogre & Groudon
-    382: {
-        "-Form_Primal": "primigenio"
-    },
-    383: {
-        "-Form_Primal": "primigenio"
-    },
+    382: { "-Form_Primal": POKEWIKI_FORM_DENOTER["1st Variant"] },
+    383: { "-Form_Primal": POKEWIKI_FORM_DENOTER["1st Variant"] },
 
     # Deoxys
     386: {
-        "-Form_Attack": "ataque",
-        "-Form_Defense": "defensa",
-        "-Form_Speed": "velocidad"
+        "-Form_Attack": POKEWIKI_FORM_DENOTER["1st Variant"],
+        "-Form_Defense": POKEWIKI_FORM_DENOTER["2nd Variant"],
+        "-Form_Speed": POKEWIKI_FORM_DENOTER["3rd Variant"]
     },
 
     # Burmy & Wormadam
     412: {
-        "-Form_Plant_Cloak": "planta",
-        "-Form_Sandy_Cloak": "arena",
-        "-Form_Trash_Cloak": "basura"
+        "-Form_Plant_Cloak": "",
+        "-Form_Sandy_Cloak": POKEWIKI_FORM_DENOTER["1st Variant"],
+        "-Form_Trash_Cloak": POKEWIKI_FORM_DENOTER["2nd Variant"]
     },
     413: {
-        "-Form_Plant_Cloak": "planta",
-        "-Form_Sandy_Cloak": "arena",
-        "-Form_Trash_Cloak": "basura"
+        "-Form_Plant_Cloak": "",
+        "-Form_Sandy_Cloak": POKEWIKI_FORM_DENOTER["1st Variant"],
+        "-Form_Trash_Cloak": POKEWIKI_FORM_DENOTER["2nd Variant"]
     },
 
     # Cherrim
     421: {
-        "-Form_Overcast": "encapotado",
-        "-Form_Sunshine": "soleado"
+        "-Form_Overcast": "",
+        "-Form_Sunshine": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
 
     # Shellos & Gastrodon
     422: {
-        "-Form_West": "oeste",
-        "-Form_East": "este"
+        "-Form_West": "",
+        "-Form_East": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
     423: {
-        "-Form_West": "oeste",
-        "-Form_East": "este"
+        "-Form_West": "",
+        "-Form_East": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
 
     # Rotom
     479: {
-        "-Form_Fan": "ventilador",
-        "-Form_Frost": "frío",
-        "-Form_Heat": "calor",
-        "-Form_Mow": "corte",
-        "-Form_Wash": "lavado"
+        "-Form_Fan": POKEWIKI_FORM_DENOTER["4th Variant"],
+        "-Form_Frost": POKEWIKI_FORM_DENOTER["3rd Variant"],
+        "-Form_Heat": POKEWIKI_FORM_DENOTER["1st Variant"],
+        "-Form_Mow": POKEWIKI_FORM_DENOTER["5th Variant"],
+        "-Form_Wash": POKEWIKI_FORM_DENOTER["2nd Variant"]
     },
 
     # Dialga & Palkia
-    483: {
-        "-Form_Origin": "origen"
-    },
-    484: {
-        "-Form_Origin": "origen"
-    },
+    483: { "-Form_Origin": POKEWIKI_FORM_DENOTER["1st Variant"] },
+    484: { "-Form_Origin": POKEWIKI_FORM_DENOTER["1st Variant"] },
 
     # Giratina
     487: {
-        "-Form_Altered": "modificada",
-        "-Form_Origin": "origen"
+        "-Form_Altered": "",
+        "-Form_Origin": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
 
     # Shaymin
     492: {
-        "-Form_Land": "tierra",
-        "-Form_Sky": "cielo"
+        "-Form_Land": "",
+        "-Form_Sky": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
 
     # Arceus
