@@ -606,45 +606,45 @@ POKEWIKI_POKE_FORM_TRANSLATION_MAP = {
     # Eiscue
     875: {
         "-Form_Ice_Face": POKEWIKI_FORM_DENOTER["Default"],
-        "-Form_Noice_Face": POKEWIKI_FORM_DENOTER["1st Variation"]
+        "-Form_Noice_Face": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
 
     # Morpeko
     877: {
         "-Form_Full_Belly": POKEWIKI_FORM_DENOTER["Default"],
-        "-Form_Hangry": POKEWIKI_FORM_DENOTER["1st Variation"]
+        "-Form_Hangry": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
 
     # Zacian & Zamazenta
     888: {
         "-Form_Hero_of_Many_Battles": POKEWIKI_FORM_DENOTER["Default"],
-        "-Form_Crowned_Sword": POKEWIKI_FORM_DENOTER["1st Variation"]
+        "-Form_Crowned_Sword": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
     889: {
         "-Form_Hero_of_Many_Battles": POKEWIKI_FORM_DENOTER["Default"],
-        "-Form_Crowned_Shield": POKEWIKI_FORM_DENOTER["1st Variation"]
+        "-Form_Crowned_Shield": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
 
     # Eternatus
-    890: { "-Form_Eternamax": POKEWIKI_FORM_DENOTER["1st Variation"] },
+    890: { "-Form_Eternamax": POKEWIKI_FORM_DENOTER["1st Variant"] },
 
     # Urshifu
     892: {
         "-Form_Single_Strike": POKEWIKI_FORM_DENOTER["Default"],
-        "-Form_Rapid_Strike": POKEWIKI_FORM_DENOTER["1st Variation"]
+        "-Form_Rapid_Strike": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
 
     # Zarude
-    893: { "-Form_Dada": POKEWIKI_FORM_DENOTER["1st Variation"] },
+    893: { "-Form_Dada": POKEWIKI_FORM_DENOTER["1st Variant"] },
 
     # Calyrex
     898: {
-        "-Form_Ice_Rider": POKEWIKI_FORM_DENOTER["1st Variation"],
-        "-Form_Shadow_Rider": POKEWIKI_FORM_DENOTER["2nd Variation"]
+        "-Form_Ice_Rider": POKEWIKI_FORM_DENOTER["1st Variant"],
+        "-Form_Shadow_Rider": POKEWIKI_FORM_DENOTER["2nd Variant"]
     },
 
     # Ursaluna
-    901: { "-Form_Bloodmoon": POKEWIKI_FORM_DENOTER["1st Variation"] },
+    901: { "-Form_Bloodmoon": POKEWIKI_FORM_DENOTER["1st Variant"] },
 
     # Enamorus
     905: {
