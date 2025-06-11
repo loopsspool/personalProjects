@@ -23,7 +23,9 @@ POKEWIKI_FORM_DENOTER = {
     "13th Variant": "m",
     "14th Variant": "n",
     "15th Variant": "o",
-    "16th Variant": "p"
+    "16th Variant": "p",
+    "17th Variant": "q",
+    "18th Variant": "r"
 }
 
 
@@ -103,25 +105,25 @@ POKEWIKI_ALT_GAME_MAP = {
 #|================================================================================================|
 
 POKEWIKI_TYPE_FORM_MAP = {
-    "-Form_Normal": "",  # Normal form considered default: so does not have a letter denoter
-    "-Form_Fighting": "lucha", 
-    "-Form_Flying": "volador", 
-    "-Form_Poison": "veneno", 
-    "-Form_Ground": "tierra", 
-    "-Form_Rock": "roca", 
-    "-Form_Bug": "bicho", 
-    "-Form_Ghost": "fantasma", 
-    "-Form_Steel": "acero", 
-    "-Form_Fire": "fuego", 
-    "-Form_Water": "agua", 
-    "-Form_Grass": "planta", 
-    "-Form_Electric": "eléctrico", 
-    "-Form_Psychic": "psíquico", 
-    "-Form_Ice": "hielo", 
-    "-Form_Dragon": "dragón", 
-    "-Form_Dark": "siniestro", 
-    "-Form_Fairy": "hada", 
-    "-Form_Qmark": "?"
+    "-Form_Normal": POKEWIKI_FORM_DENOTER["Default"],  # Normal form considered default: so does not have a letter denoter
+    "-Form_Fighting": POKEWIKI_FORM_DENOTER["1st Variant"], 
+    "-Form_Flying": POKEWIKI_FORM_DENOTER["2nd Variant"], 
+    "-Form_Poison": POKEWIKI_FORM_DENOTER["3rd Variant"], 
+    "-Form_Ground": POKEWIKI_FORM_DENOTER["4th Variant"], 
+    "-Form_Rock": POKEWIKI_FORM_DENOTER["5th Variant"], 
+    "-Form_Bug": POKEWIKI_FORM_DENOTER["6th Variant"], 
+    "-Form_Ghost": POKEWIKI_FORM_DENOTER["7th Variant"], 
+    "-Form_Steel": POKEWIKI_FORM_DENOTER["8th Variant"], 
+    "-Form_Fire": POKEWIKI_FORM_DENOTER["9th Variant"], 
+    "-Form_Water": POKEWIKI_FORM_DENOTER["10th Variant"], 
+    "-Form_Grass": POKEWIKI_FORM_DENOTER["11th Variant"], 
+    "-Form_Electric": POKEWIKI_FORM_DENOTER["12th Variant"], 
+    "-Form_Psychic": POKEWIKI_FORM_DENOTER["13th Variant"], 
+    "-Form_Ice": POKEWIKI_FORM_DENOTER["14th Variant"], 
+    "-Form_Dragon": POKEWIKI_FORM_DENOTER["15th Variant"], 
+    "-Form_Dark": POKEWIKI_FORM_DENOTER["16th Variant"], 
+    "-Form_Fairy": POKEWIKI_FORM_DENOTER["17th Variant"], 
+    "-Form_Qmark": POKEWIKI_FORM_DENOTER["18th Variant"]
 }
 
 
@@ -214,29 +216,29 @@ POKEWIKI_POKE_FORM_TRANSLATION_MAP = {
 
     # Burmy & Wormadam
     412: {
-        "-Form_Plant_Cloak": "",
+        "-Form_Plant_Cloak": POKEWIKI_FORM_DENOTER["Default"],
         "-Form_Sandy_Cloak": POKEWIKI_FORM_DENOTER["1st Variant"],
         "-Form_Trash_Cloak": POKEWIKI_FORM_DENOTER["2nd Variant"]
     },
     413: {
-        "-Form_Plant_Cloak": "",
+        "-Form_Plant_Cloak": POKEWIKI_FORM_DENOTER["Default"],
         "-Form_Sandy_Cloak": POKEWIKI_FORM_DENOTER["1st Variant"],
         "-Form_Trash_Cloak": POKEWIKI_FORM_DENOTER["2nd Variant"]
     },
 
     # Cherrim
     421: {
-        "-Form_Overcast": "",
+        "-Form_Overcast": POKEWIKI_FORM_DENOTER["Default"],
         "-Form_Sunshine": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
 
     # Shellos & Gastrodon
     422: {
-        "-Form_West": "",
+        "-Form_West": POKEWIKI_FORM_DENOTER["Default"],
         "-Form_East": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
     423: {
-        "-Form_West": "",
+        "-Form_West": POKEWIKI_FORM_DENOTER["Default"],
         "-Form_East": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
 
@@ -255,13 +257,13 @@ POKEWIKI_POKE_FORM_TRANSLATION_MAP = {
 
     # Giratina
     487: {
-        "-Form_Altered": "",
+        "-Form_Altered": POKEWIKI_FORM_DENOTER["Default"],
         "-Form_Origin": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
 
     # Shaymin
     492: {
-        "-Form_Land": "",
+        "-Form_Land": POKEWIKI_FORM_DENOTER["Default"],
         "-Form_Sky": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
 
@@ -270,29 +272,31 @@ POKEWIKI_POKE_FORM_TRANSLATION_MAP = {
 
     #  Basculin
     550: {
-        "-Form_Red_Striped": "roja",
-        "-Form_Blue_Striped": "azul",
-        "-Form_White_Striped": "blanca"
+        "-Form_Red_Striped": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_Blue_Striped": POKEWIKI_FORM_DENOTER["1st Variant"],
+        "-Form_White_Striped": POKEWIKI_FORM_DENOTER["2nd Variant"]
     },
 
     # Darmanitan
     555: {
-        "-Form_Standard": "",
-        "-Form_Zen": "daruma"
+        "-Form_Standard": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_Zen": POKEWIKI_FORM_DENOTER["1st Variant"],
+        "-Region_Galar-Form_Standard": POKEWIKI_FORM_DENOTER["2nd Variant"],
+        "-Region_Galar-Form_Zen": POKEWIKI_FORM_DENOTER["3rd Variant"]
     },
 
     # Deerling & Sawsbuck
     585: {
-        "-Form_Spring": "primavera",
-        "-Form_Autumn": "otoño",
-        "-Form_Summer": "verano",
-        "-Form_Winter": "invierno"
+        "-Form_Spring": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_Autumn": POKEWIKI_FORM_DENOTER["2nd Variant"],
+        "-Form_Summer": POKEWIKI_FORM_DENOTER["1st Variant"],
+        "-Form_Winter": POKEWIKI_FORM_DENOTER["3rd Variant"]
     },
     586: {
-        "-Form_Spring": "primavera",
-        "-Form_Autumn": "otoño",
-        "-Form_Summer": "verano",
-        "-Form_Winter": "invierno"
+        "-Form_Spring": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_Autumn": POKEWIKI_FORM_DENOTER["2nd Variant"],
+        "-Form_Summer": POKEWIKI_FORM_DENOTER["1st Variant"],
+        "-Form_Winter": POKEWIKI_FORM_DENOTER["3rd Variant"]
     },
 
     # Forces of nature
