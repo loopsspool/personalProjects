@@ -25,7 +25,8 @@ POKEWIKI_FORM_DENOTER = {
     "15th Variant": "o",
     "16th Variant": "p",
     "17th Variant": "q",
-    "18th Variant": "r"
+    "18th Variant": "r",
+    "19th Variant": "s"
 }
 
 
@@ -301,16 +302,16 @@ POKEWIKI_POKE_FORM_TRANSLATION_MAP = {
 
     # Forces of nature
     641: {
-        "-Form_Incarnate": "avatar",
-        "-Form_Therian": "tótem"
+        "-Form_Incarnate": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_Therian": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
     642: {
-        "-Form_Incarnate": "avatar",
-        "-Form_Therian": "tótem"
+        "-Form_Incarnate": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_Therian": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
     645: {
-        "-Form_Incarnate": "avatar",
-        "-Form_Therian": "tótem"
+        "-Form_Incarnate": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_Therian": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
 
     # Kyurem
@@ -323,148 +324,146 @@ POKEWIKI_POKE_FORM_TRANSLATION_MAP = {
 
     # Keldeo
     647: {
-        "-Form_Ordinary": "",
-        "-Form_Resolute": "brío"
+        "-Form_Ordinary": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_Resolute": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
 
     # Meloetta
     648: {
-        "-Form_Aria": "lírica",
-        "-Form_Pirouette": "danza"
+        "-Form_Aria": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_Pirouette": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
 
     # Genesect
     649: {
-        "-Form_Douse_Drive": "hidroROM",
-        "-Form_Burn_Drive": "piroROM",
-        "-Form_Chill_Drive": "crioROM",
-        "-Form_Shock_Drive": "fulgoROM"
+        "-Form_Douse_Drive": POKEWIKI_FORM_DENOTER["1st Variant"],
+        "-Form_Burn_Drive": POKEWIKI_FORM_DENOTER["3rd Variant"],
+        "-Form_Chill_Drive": POKEWIKI_FORM_DENOTER["4th Variant"],
+        "-Form_Shock_Drive": POKEWIKI_FORM_DENOTER["2nd Variant"]
     },
 
     # Greninja
-    658: {
-        "-Form_Ash": "Ash"
-    },
+    658: { "-Form_Ash": POKEWIKI_FORM_DENOTER["2nd Variant"] }, # Dunno why its not 1st variant here...
 
     # Vivillon
     666: {
-        "-Form_Meadow": "floral",
-        "-Form_Archipelago": "isleño",
-        "-Form_Continental": "continental",
-        "-Form_Elegant": "oriental",
-        "-Form_Garden": "vergel",
-        "-Form_High_Plains": "estepa",
-        "-Form_Icy_Snow": "polar",
-        "-Form_Jungle": "jungla",
-        "-Form_Marine": "marino",
-        "-Form_Modern": "moderno",
-        "-Form_Monsoon": "monzón",
-        "-Form_Ocean": "océano",
-        "-Form_Polar": "taiga",
-        "-Form_River": "oasis",
-        "-Form_Sandstorm": "desierto",
-        "-Form_Savanna": "pantano",
-        "-Form_Sun": "solar",
-        "-Form_Tundra": "tundra",
-        "-Form_Poke_Ball": "Poké Ball",
-        "-Form_Fancy": "fantasía"
+        "-Form_Meadow": POKEWIKI_FORM_DENOTER["6th Variant"],
+        "-Form_Archipelago": POKEWIKI_FORM_DENOTER["9th Variant"],
+        "-Form_Continental": POKEWIKI_FORM_DENOTER["3rd Variant"],
+        "-Form_Elegant": POKEWIKI_FORM_DENOTER["5th Variant"],
+        "-Form_Garden": POKEWIKI_FORM_DENOTER["4th Variant"],
+        "-Form_High_Plains": POKEWIKI_FORM_DENOTER["10th Variant"],
+        "-Form_Icy_Snow": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_Jungle": POKEWIKI_FORM_DENOTER["17th Variant"],
+        "-Form_Marine": POKEWIKI_FORM_DENOTER["8th Variant"],
+        "-Form_Modern": POKEWIKI_FORM_DENOTER["7th Variant"],
+        "-Form_Monsoon": POKEWIKI_FORM_DENOTER["13th Variant"],
+        "-Form_Ocean": POKEWIKI_FORM_DENOTER["16th Variant"],
+        "-Form_Polar": POKEWIKI_FORM_DENOTER["1st Variant"],
+        "-Form_River": POKEWIKI_FORM_DENOTER["12th Variant"],
+        "-Form_Sandstorm": POKEWIKI_FORM_DENOTER["11th Variant"],
+        "-Form_Savanna": POKEWIKI_FORM_DENOTER["14th Variant"],
+        "-Form_Sun": POKEWIKI_FORM_DENOTER["15th Variant"],
+        "-Form_Tundra": POKEWIKI_FORM_DENOTER["2nd Variant"],
+        "-Form_Poke_Ball": POKEWIKI_FORM_DENOTER["19th Variant"],
+        "-Form_Fancy": POKEWIKI_FORM_DENOTER["18th Variant"]
     },
 
     # Flabebe, Floette, and Florges
     669: {
-        "-Form_Red_Flower": "roja",
-        "-Form_Blue_Flower": "azul",
-        "-Form_Orange_Flower": "naranja",
-        "-Form_White_Flower": "blanca",
-        "-Form_Yellow_Flower": "amarilla"
+        "-Form_Red_Flower": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_Blue_Flower": POKEWIKI_FORM_DENOTER["3rd Variant"],
+        "-Form_Orange_Flower": POKEWIKI_FORM_DENOTER["2nd Variant"],
+        "-Form_White_Flower": POKEWIKI_FORM_DENOTER["4th Variant"],
+        "-Form_Yellow_Flower": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
     670: {
-        "-Form_Red_Flower": "roja",
-        "-Form_Blue_Flower": "azul",
-        "-Form_Orange_Flower": "naranja",
-        "-Form_White_Flower": "blanca",
-        "-Form_Yellow_Flower": "amarilla",
-        "-Form_Eternal_Flower": "eterna"
+        "-Form_Red_Flower": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_Blue_Flower": POKEWIKI_FORM_DENOTER["3rd Variant"],
+        "-Form_Orange_Flower": POKEWIKI_FORM_DENOTER["2nd Variant"],
+        "-Form_White_Flower": POKEWIKI_FORM_DENOTER["4th Variant"],
+        "-Form_Yellow_Flower": POKEWIKI_FORM_DENOTER["1st Variant"],
+        "-Form_Eternal_Flower": POKEWIKI_FORM_DENOTER["5th Variant"]
     },
     671: {
-        "-Form_Red_Flower": "roja",
-        "-Form_Blue_Flower": "azul",
-        "-Form_Orange_Flower": "naranja",
-        "-Form_White_Flower": "blanca",
-        "-Form_Yellow_Flower": "amarilla"
+        "-Form_Red_Flower": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_Blue_Flower": POKEWIKI_FORM_DENOTER["3rd Variant"],
+        "-Form_Orange_Flower": POKEWIKI_FORM_DENOTER["2nd Variant"],
+        "-Form_White_Flower": POKEWIKI_FORM_DENOTER["4th Variant"],
+        "-Form_Yellow_Flower": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
 
     # Furfrou
     676: {
-        "-Form_Dandy_Trim": "caballero",
-        "-Form_Debutante_Trim": "señorita",
-        "-Form_Diamond_Trim": "rombo",
-        "-Form_Heart_Trim": "corazón",
-        "-Form_Kabuki_Trim": "kabuki",
-        "-Form_La_Reine_Trim": "aristocrático",
-        "-Form_Matron_Trim": "dama",
-        "-Form_Pharaoh_Trim": "faraónico",
-        "-Form_Star_Trim": "estrella"
+        "-Form_Dandy_Trim": POKEWIKI_FORM_DENOTER["6th Variant"],
+        "-Form_Debutante_Trim": POKEWIKI_FORM_DENOTER["4th Variant"],
+        "-Form_Diamond_Trim": POKEWIKI_FORM_DENOTER["3rd Variant"],
+        "-Form_Heart_Trim": POKEWIKI_FORM_DENOTER["1st Variant"],
+        "-Form_Kabuki_Trim": POKEWIKI_FORM_DENOTER["8th Variant"],
+        "-Form_La_Reine_Trim": POKEWIKI_FORM_DENOTER["7th Variant"],
+        "-Form_Matron_Trim": POKEWIKI_FORM_DENOTER["5th Variant"],
+        "-Form_Pharaoh_Trim": POKEWIKI_FORM_DENOTER["9th Variant"],
+        "-Form_Star_Trim": POKEWIKI_FORM_DENOTER["2nd Variant"]
     },
 
     # Aegislash
     681: {
-        "-Form_Shield": "escudo",
-        "-Form_Blade": "filo"
+        "-Form_Shield": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_Blade": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
 
     # Pumpkaboo and Gourgeist
     710: {
-        "-Form_Average_Size": "",
-        "-Form_Small_Size": "pequeño",
-        "-Form_Large_Size": "grande",
-        "-Form_Super_Size": "extragrande"
+        "-Form_Average_Size": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_Small_Size": POKEWIKI_FORM_DENOTER["1st Variant"],
+        "-Form_Large_Size": POKEWIKI_FORM_DENOTER["2nd Variant"],
+        "-Form_Super_Size": POKEWIKI_FORM_DENOTER["3rd Variant"]
     },
     711: {
-        "-Form_Average_Size": "",
-        "-Form_Small_Size": "pequeño",
-        "-Form_Large_Size": "grande",
-        "-Form_Super_Size": "extragrande"
+        "-Form_Average_Size": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_Small_Size": POKEWIKI_FORM_DENOTER["1st Variant"],
+        "-Form_Large_Size": POKEWIKI_FORM_DENOTER["2nd Variant"],
+        "-Form_Super_Size": POKEWIKI_FORM_DENOTER["3rd Variant"]
     },
 
     # Xerneas
     716: {
-        "-Form_Active": "",
-        "-Form_Neutral": "relajada"
+        "-Form_Active": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_Neutral": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
 
     # Zygarde
     718: {
-        "-Form_50%": "",
-        "-Form_Complete": "completo",
-        "-Form_10%": "al 10%"
+        "-Form_50%": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_Complete": POKEWIKI_FORM_DENOTER["4th Variant"], # No idea why this is 4th and not 2nd
+        "-Form_10%": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
 
     # Hoopa
     720: {
-        "-Form_Confined": "",
-        "-Form_Unbound": "desatado"
+        "-Form_Confined": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_Unbound": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
 
     # Oricorio
     741: {
-        "-Form_Baile": "apasionado",
-        "-Form_Pa'u": "plácido",
-        "-Form_Pom_Pom": "animado",
-        "-Form_Sensu": "refinado"
+        "-Form_Baile": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_Pa'u": POKEWIKI_FORM_DENOTER["2nd Variant"],
+        "-Form_Pom_Pom": POKEWIKI_FORM_DENOTER["1st Variant"],
+        "-Form_Sensu": POKEWIKI_FORM_DENOTER["3rd Variant"]
     },
 
     # Lycanroc
     745: {
-        "-Form_Midday": "diurno",
-        "-Form_Dusk": "crepuscular",
-        "-Form_Midnight": "nocturno"
+        "-Form_Midday": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_Dusk": POKEWIKI_FORM_DENOTER["2nd Variant"],
+        "-Form_Midnight": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
 
     # Wishiwashi
     746: {
-        "-Form_Solo": "individual",
-        "-Form_School": "banco"
+        "-Form_Solo": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_School": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
 
     # Silvally
@@ -472,66 +471,61 @@ POKEWIKI_POKE_FORM_TRANSLATION_MAP = {
 
     # Minior
     774: {
-        "-Form_Meteor": "meteorito",
-        "-Form_Blue_Core": "azul",
-        "-Form_Green_Core": "verde",
-        "-Form_Indigo_Core": "añil",
-        "-Form_Orange_Core": "naranja",
-        "-Form_Red_Core": "rojo",
-        "-Form_Violet_Core": "violeta",
-        "-Form_Yellow_Core": "amarillo",
-        "-Form_Core": "núcleo"
+        "-Form_Meteor": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_Blue_Core": POKEWIKI_FORM_DENOTER["5th Variant"],
+        "-Form_Green_Core": POKEWIKI_FORM_DENOTER["4th Variant"],
+        "-Form_Indigo_Core": POKEWIKI_FORM_DENOTER["6th Variant"],
+        "-Form_Orange_Core": POKEWIKI_FORM_DENOTER["2nd Variant"],
+        "-Form_Red_Core": POKEWIKI_FORM_DENOTER["1st Variant"],
+        "-Form_Violet_Core": POKEWIKI_FORM_DENOTER["7th Variant"],
+        "-Form_Yellow_Core": POKEWIKI_FORM_DENOTER["3rd Variant"],
+        "-Form_Core": POKEWIKI_FORM_DENOTER["1st Variant"]  # Shiny form
     },
 
     # Mimikyu
     778: {
-        "-Form_Disguised": "",
-        "-Form_Busted": "descubierto"
+        "-Form_Disguised": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_Busted": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
 
     # Solgaleo
-    791: {
-        "-Form_Radiant_Sun": EXCLUDE_TRANSLATIONS_MAP["DNE"]
-    },
+    791: { "-Form_Radiant_Sun": EXCLUDE_TRANSLATIONS_MAP["DNE"] },
 
     # Lunala
-    792: {
-        "-Form_Full_Moon": EXCLUDE_TRANSLATIONS_MAP["DNE"]
-    },
+    792: { "-Form_Full_Moon": EXCLUDE_TRANSLATIONS_MAP["DNE"] },
 
     # Necrozma
     800: {
-        "-Form_Dawn_Wings": "alas del alba",
-        "-Form_Dusk_Mane": "melena crepuscular",
-        "-Form_Ultra": ""   # NOTE: Taken care of in adjust_poke_name and POKE_NAME_ADJ_NEEDED
+        "-Form_Dawn_Wings": POKEWIKI_FORM_DENOTER["2nd Variant"],
+        "-Form_Dusk_Mane": POKEWIKI_FORM_DENOTER["1st Variant"],
+        "-Form_Ultra": POKEWIKI_FORM_DENOTER["3rd Variant"]
     },
 
     # Magearna
-    801: {
-        "-Form_Original_Color": "vetusta"
-    },
+    801: { "-Form_Original_Color": POKEWIKI_FORM_DENOTER["1st Variant"] },
 
     # Cramorant
     845: {
-        "-Form_Gorging": "engulletodo",
-        "-Form_Gulping": "tragatodo"
+        "-Form_Gorging": POKEWIKI_FORM_DENOTER["2nd Variant"],
+        "-Form_Gulping": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
 
     # Toxtricity
     849: {
-        "-Form_Amped": "aguda",
-        "-Form_Low_Key": "grave"
+        "-Form_Amped": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_Low_Key": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
 
     # Sinistea & Polteageist
     # Only used by HOME for the show stamp sprites. All other images (since identical) are default form
+    # Pokewiki doesn't have show stamp sprites... Bulba does
     854: {
-        "-Form_Phony": "falsificada",
-        "-Form_Antique": "genuina"
+        "-Form_Phony": EXCLUDE_TRANSLATIONS_MAP["DNE"],
+        "-Form_Antique": EXCLUDE_TRANSLATIONS_MAP["DNE"]
     },
     855: {
-        "-Form_Phony": "falsificada",
-        "-Form_Antique": "genuina"
+        "-Form_Phony": EXCLUDE_TRANSLATIONS_MAP["DNE"],
+        "-Form_Antique": EXCLUDE_TRANSLATIONS_MAP["DNE"]
     },
 
     # Alcremie
@@ -610,120 +604,115 @@ POKEWIKI_POKE_FORM_TRANSLATION_MAP = {
 
     # Eiscue
     875: {
-        "-Form_Ice_Face": "",
-        "-Form_Noice_Face": "cara deshielo"
+        "-Form_Ice_Face": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_Noice_Face": POKEWIKI_FORM_DENOTER["1st Variation"]
     },
 
     # Morpeko
     877: {
-        "-Form_Full_Belly": "",
-        "-Form_Hangry": "voraz"
+        "-Form_Full_Belly": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_Hangry": POKEWIKI_FORM_DENOTER["1st Variation"]
     },
 
     # Zacian & Zamazenta
     888: {
-        "-Form_Hero_of_Many_Battles": "",
-        "-Form_Crowned_Sword": "espada suprema"
+        "-Form_Hero_of_Many_Battles": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_Crowned_Sword": POKEWIKI_FORM_DENOTER["1st Variation"]
     },
     889: {
-        "-Form_Hero_of_Many_Battles": "",
-        "-Form_Crowned_Shield": "escudo supremo"
+        "-Form_Hero_of_Many_Battles": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_Crowned_Shield": POKEWIKI_FORM_DENOTER["1st Variation"]
     },
 
     # Eternatus
-    890: {
-        "-Form_Eternamax": "Dinamax infinito"
-    },
+    890: { "-Form_Eternamax": POKEWIKI_FORM_DENOTER["1st Variation"] },
 
     # Urshifu
     892: {
-        "-Form_Single_Strike": "brusco",
-        "-Form_Rapid_Strike": "fluido"
+        "-Form_Single_Strike": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_Rapid_Strike": POKEWIKI_FORM_DENOTER["1st Variation"]
     },
 
     # Zarude
-    893: {
-        "-Form_Dada": "papá"
-    },
+    893: { "-Form_Dada": POKEWIKI_FORM_DENOTER["1st Variation"] },
 
     # Calyrex
     898: {
-        "-Form_Ice_Rider": "jinete glacial",
-        "-Form_Shadow_Rider": "jinete espectral"
+        "-Form_Ice_Rider": POKEWIKI_FORM_DENOTER["1st Variation"],
+        "-Form_Shadow_Rider": POKEWIKI_FORM_DENOTER["2nd Variation"]
     },
 
     # Ursaluna
-    901: {
-        "-Form_Bloodmoon": "luna carmesí"
-    },
+    901: { "-Form_Bloodmoon": POKEWIKI_FORM_DENOTER["1st Variation"] },
 
     # Enamorus
     905: {
-        "-Form_Incarnate": "avatar",
-        "-Form_Therian": "tótem"
+        "-Form_Incarnate": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_Therian": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
 
     # Maushold
     925: {
-        "-Form_Family_of_Three": "familia de tres",
-        "-Form_Family_of_Four": "familia de cuatro"
+        "-Form_Family_of_Three": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_Family_of_Four": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
 
     # Squawkabilly
     931: {
-        "-Form_Blue_Plumage": "azul",
-        "-Form_Green_Plumage": "verde",
-        "-Form_White_Plumage": "blanco",
-        "-Form_Yellow_Plumage": "amarillo"
+        "-Form_Blue_Plumage": POKEWIKI_FORM_DENOTER["1st Variant"],
+        "-Form_Green_Plumage": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_White_Plumage": POKEWIKI_FORM_DENOTER["3rd Variant"],
+        "-Form_Yellow_Plumage": POKEWIKI_FORM_DENOTER["2nd Variant"]
     },
 
     # Palafin
     964: {
-        "-Form_Zero": "Ingenua",
-        "-Form_Hero": "heroica"
+        "-Form_Zero": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_Hero": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
 
     # Tatsugiri
     978: {
-        "-Form_Curly": "curvada",
-        "-Form_Droopy": "lánguida",
-        "-Form_Stretchy": "recta"
+        "-Form_Curly": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_Droopy": POKEWIKI_FORM_DENOTER["1st Variant"],
+        "-Form_Stretchy": POKEWIKI_FORM_DENOTER["2nd Variant"]
     },
 
     # Dudunsparce
     982: {
-        "-Form_Two_Segment": "binodular",
-        "-Form_Three_Segment": "trinodular"
+        "-Form_Two_Segment": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_Three_Segment": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
 
     # Gimmighoul
     999: {
-        "-Form_Chest": "cofre",
-        "-Form_Roaming": "andante"
+        "-Form_Chest": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_Roaming": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
 
     # Poltchageist & Sinistcha
+    # Pokewiki doesn't have show stamp sprites... Bulba does
     1012: {
-        "-Form_Artisan": "opulenta",
-        "-Form_Counterfeit": "fraudulenta"
+        "-Form_Artisan": EXCLUDE_TRANSLATIONS_MAP["DNE"],
+        "-Form_Counterfeit": EXCLUDE_TRANSLATIONS_MAP["DNE"]
     },
     1013: {
-        "-Form_Masterpiece": "exquisita",
-        "-Form_Unremarkable": "mediocre"
+        "-Form_Masterpiece": EXCLUDE_TRANSLATIONS_MAP["DNE"],
+        "-Form_Unremarkable": EXCLUDE_TRANSLATIONS_MAP["DNE"]
     },
 
     # Ogerpon
     1017: {
-        "-Form_Cornerstone_Mask": "máscara cimiento",
-        "-Form_Hearthflame_Mask": "máscara horno",
-        "-Form_Teal_Mask": "máscara turquesa",
-        "-Form_Wellspring_Mask": "máscara fuente"
+        "-Form_Cornerstone_Mask": POKEWIKI_FORM_DENOTER["3rd Variant"],
+        "-Form_Hearthflame_Mask": POKEWIKI_FORM_DENOTER["2nd Variant"],
+        "-Form_Teal_Mask": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_Wellspring_Mask": POKEWIKI_FORM_DENOTER["1st Variant"]
     },
 
     # Terapagos
     1024: {
-        "-Form_Normal": "normal",
-        "-Form_Terastal": "Teracristal",
-        "-Form_Stellar": "astral"
+        "-Form_Normal": POKEWIKI_FORM_DENOTER["Default"],
+        "-Form_Terastal": POKEWIKI_FORM_DENOTER["1st Variant"],
+        "-Form_Stellar": POKEWIKI_FORM_DENOTER["2nd Variant"]
     }
 }
