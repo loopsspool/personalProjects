@@ -142,8 +142,6 @@ def preprocess_for_u2net(input_filepath, output_path):
 def bulba_get_largest_png(img_page_soup):
     # Find the biggest image location
     biggest_url = img_page_soup.find("div", "fullImageLink")
-    if biggest_url is None:
-        print(img_page_soup)
     # Return its url
     return (biggest_url.a.get("href"))
 
@@ -154,6 +152,16 @@ def wikidex_get_largest_img(img_page_soup):
         return (has_larger_img.get("href"))
     else: 
         img_div = img_page_soup.find("div", "fullMedia")
-        if img_div is None:
-            print(img_page_soup)
         return (img_div.a.get("href"))
+    
+
+def pokewiki_get_largest_img(img_page_soup):
+    # file w only 1 size: https://www.pokewiki.de/Datei:Pok%C3%A9monsprite_1016_Schillernd_HOME.png
+    # file w different sizes: https://www.pokewiki.de/Datei:Pok%C3%A9monsprite_1016_Schillernd_KAPU.gif
+    BASE_URL = "https://www.pokewiki.de"    # Pokewiki uses relative paths, so I manually have to make it absolute to get img
+    has_larger_img = img_page_soup.find("a", string=re.compile(r"Originaldatei"))   # Checks string for largest, original img
+    if has_larger_img: 
+        return (BASE_URL + has_larger_img.get("href"))
+    else: 
+        img_div = img_page_soup.find("div", "fullImageLink")
+        return (BASE_URL + img_div.a.get("href"))
