@@ -64,6 +64,10 @@ save_directories = {
         "path": os.path.join(PARENT_DIR, "Images\\Pokemon\\Menu Sprites\\HOME\\"),
         "files": set()
     },
+    "BANK" : {
+        "path": os.path.join(PARENT_DIR, "Images\\Pokemon\\BANK Sprites\\"),
+        "files": set()
+    },
     "Drawn" : {
         "path": os.path.join(PARENT_DIR, "Images\\Pokemon\\Drawn\\"),
         "files": set()
