@@ -1203,29 +1203,19 @@ def should_exclude_menu_poke_form(poke_info):
 def populate_bank_filenames(cursor):
     print("Populating BANK sprite filenames into database...")
 
-    poke_forms = get_poke_form_records(cursor)
-    sprite_types = get_sprite_types(cursor)
+    cursor.execute("""
+        SELECT filename, poke_num, form_id, sprite_id FROM obtainable_game_filenames
+        WHERE game_id = ? 
+          AND sprite_id IN (?, ?)
+    """, (get_game_id("SM_USUM", cursor), get_sprite_type_id("Default", cursor), get_sprite_type_id("-Shiny", cursor)))
+    rows = cursor.fetchall()
 
-    for poke_form, poke_info in poke_forms.items():
-        for sprite_id, sprite_type in sprite_types.items():
-            if sprite_type not in ("Default", "-Shiny"): continue   # Bank only has regular and shiny static front sprites
-            if not is_form_obtainable(poke_info, "SM_USUM"): continue   # Passing SM_USUM because all those rules apply to bank
+    for row in rows:
+        filename = row["filename"].replace("Gen7 SM_USUM", " BANK")
 
-            filename = generate_bank_filename(poke_info, sprite_type)
-            file_ids = {"filename": filename, "poke_num": poke_info["poke num"], "form_id": poke_form[1], "sprite_id": sprite_id, "does_exist": None}
-
-            file_ids["does_exist"] = file_exists(filename, save_directories["BANK"]["files"])
-            insert_into_table(cursor, "bank_filenames", **file_ids)
-
-
-def generate_bank_filename(poke_info, sprite_type):
-    poke_num = str(poke_info["poke num"]).zfill(4)
-    form_name = "" if poke_info["form name"] == "Default" else poke_info["form name"]
-    shiny_tag = "-Shiny" if sprite_type == "-Shiny" else ""
-
-    # Hyphen before game allows for alphabetical sorting of back sprites below the front game sprites
-    filename = f"{poke_num} {poke_info["poke name"]} BANK{form_name}{shiny_tag}"
-    return filename
+        file_ids = {"filename": filename, "poke_num": row["poke_num"], "form_id": row["form_id"], "sprite_id": row["sprite_id"], "does_exist": None}
+        file_ids["does_exist"] = file_exists(filename, save_directories["BANK"]["files"])
+        insert_into_table(cursor, "bank_filenames", **file_ids)
 
 
 
