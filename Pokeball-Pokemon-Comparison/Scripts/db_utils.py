@@ -148,6 +148,19 @@ def create_db():
     """)
 
     cursor.execute("""
+    CREATE TABLE IF NOT EXISTS bank_filenames (
+        id INTEGER PRIMARY KEY,
+        filename TEXT NOT NULL UNIQUE,
+        poke_num INTEGER NOT NULL,
+        form_id INTEGER NOT NULL,
+        sprite_id INTEGER NOT NULL,
+        does_exist BOOLEAN NOT NULL,
+        FOREIGN KEY (poke_num, form_id) REFERENCES poke_forms,
+        FOREIGN KEY (sprite_id) REFERENCES sprite_types(id)
+    );
+    """)
+
+    cursor.execute("""
     CREATE TABLE IF NOT EXISTS home_menu_filenames (
         id INTEGER PRIMARY KEY,
         filename TEXT NOT NULL UNIQUE,
@@ -236,6 +249,7 @@ def populate_db(force=False):
         connection.commit() # Committing because database was locked when populate_drawn_filenames trying to access with has_f_form
         populate_home_filenames(cursor)
         populate_home_menu_filenames(cursor)
+        populate_bank_filenames(cursor)
         connection.commit() # Db locked again
         populate_drawn_filenames(cursor)
         populate_pokeballs(cursor)
@@ -525,7 +539,6 @@ def get_all_form_names_for_poke(poke_num, cursor=None):
     if form_names: return [row["form_name"] for row in form_names]
     else: return None
 
-print(get_all_form_names_for_poke(25))
 
 def get_poke_form_records(cursor):
     cursor.execute("""
@@ -1179,6 +1192,40 @@ def should_exclude_menu_poke_form(poke_info):
     if poke_num == 646 and "Overdrive" in form_name: return True
 
     return False
+
+
+
+
+#|================================================================================================|
+#|~~~~~~~~~~~~~~~~~~~~~~~~~~[     POKEMON BANK FILENAME TABLE     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+#|================================================================================================|
+
+def populate_bank_filenames(cursor):
+    print("Populating BANK sprite filenames into database...")
+
+    poke_forms = get_poke_form_records(cursor)
+    sprite_types = get_sprite_types(cursor)
+
+    for poke_form, poke_info in poke_forms.items():
+        for sprite_id, sprite_type in sprite_types.items():
+            if sprite_type not in ("Default", "-Shiny"): continue   # Bank only has regular and shiny static front sprites
+            if not is_form_obtainable(poke_info, "SM_USUM"): continue   # Passing SM_USUM because all those rules apply to bank
+
+            filename = generate_bank_filename(poke_info, sprite_type)
+            file_ids = {"filename": filename, "poke_num": poke_info["poke num"], "form_id": poke_form[1], "sprite_id": sprite_id, "does_exist": None}
+
+            file_ids["does_exist"] = file_exists(filename, save_directories["BANK"]["files"])
+            insert_into_table(cursor, "bank_filenames", **file_ids)
+
+
+def generate_bank_filename(poke_info, sprite_type):
+    poke_num = str(poke_info["poke num"]).zfill(4)
+    form_name = "" if poke_info["form name"] == "Default" else poke_info["form name"]
+    shiny_tag = "-Shiny" if sprite_type == "-Shiny" else ""
+
+    # Hyphen before game allows for alphabetical sorting of back sprites below the front game sprites
+    filename = f"{poke_num} {poke_info["poke name"]} BANK{form_name}{shiny_tag}"
+    return filename
 
 
 
