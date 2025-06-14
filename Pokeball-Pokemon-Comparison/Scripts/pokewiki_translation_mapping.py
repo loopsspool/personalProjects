@@ -39,11 +39,11 @@ POKEWIKI_FORM_DENOTER = {
 # NOTE: Just because you don't see the sprites on the respective game list DOES NOT MEAN THEY DON'T EXIST -- check URL generated, they may just not be linked properly
     # Helpful as well: https://www.pokewiki.de/Kategorie:Pok%C3%A9monsprite
 POKEWIKI_DOESNT_HAVE_IMGS_FOR = {
-    "only scraping LGPE and above": lambda my_filename: extract_gen_num_from_my_filename(my_filename) < 7,   # I scraped bulba and wikidex previously, which filled in everything below LGPE. This can be commented out to scrape everything
+    "only scraping LGPE and above": lambda my_filename: not any(non_game_sprite in my_filename for non_game_sprite in (" BANK", " HOME")) and extract_gen_num_from_my_filename(my_filename) < 7,   # I scraped bulba and wikidex previously, which filled in everything below LGPE. This can be commented out to scrape everything
 
-    "no LGPE animated": lambda my_filename: " LGPE" in my_filename and "-Animated" in my_filename,
-    "no LA animated or back sprites": lambda my_filename: " LA" in my_filename and any(sprite_type in my_filename for sprite_type in ("-Animated", "-Back")),
-    "no BDSP animated or back sprites": lambda my_filename: " BDSP" in my_filename and any(sprite_type in my_filename for sprite_type in ("-Animated", "-Back")),
+    "no LGPE animated": lambda my_filename: "LGPE" in my_filename and "-Animated" in my_filename,
+    "no LA animated or back sprites": lambda my_filename: "LA" in my_filename and any(sprite_type in my_filename for sprite_type in ("-Animated", "-Back")),
+    "no BDSP animated or back sprites": lambda my_filename: "BDSP" in my_filename and any(sprite_type in my_filename for sprite_type in ("-Animated", "-Back")),
     "no gen8 back sprites": lambda my_filename: " Gen8" in my_filename and "-Back" in my_filename,  # Technically it does have SwSh back sprites for new galar forms, gigantamax, and gen8 pokes, but these were already scraped for
     "no gen9 back sprites": lambda my_filename: " Gen9" in my_filename and "-Back" in my_filename,
     "no home animated": lambda my_filename: " HOME" in my_filename and "-Animated" in my_filename
@@ -56,9 +56,18 @@ POKEWIKI_DOESNT_HAVE_IMGS_FOR = {
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     UNIVERSAL FORMS DATA     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
-UNIVERSAL_FORMS_EXCLUDING_REGIONALS = [form for form in UNIVERSAL_FORMS if "-Region" not in form]
-UNIVERSAL_FORMS_EXCLUDING_REGIONALS.extend(["-Gigantamax-Form_Single_Strike", "-Gigantamax-Form_Rapid_Strike"])   # Since I check for equality, "-Gigantamax" wont filter these
 REGIONAL_FORMS = [form for form in UNIVERSAL_FORMS if "-Region" in form]    # Chronological earliest -> latest
+
+UNIVERSAL_FORMS_EXCLUDING_REGIONALS = {
+    "Default": "", 
+    "-f": "",   # f tag handled seperately since there is extra processing involved 
+    "-Mega_X": "m1", 
+    "-Mega_Y": "m2",
+    "-Mega": "m1",
+    "-Gigantamax-Form_Single_Strike": "g1",
+    "-Gigantamax-Form_Rapid_Strike": "g2",
+    "-Gigantamax": "g1" 
+}
 
 
 
@@ -601,7 +610,7 @@ POKEWIKI_POKE_FORM_TRANSLATION_MAP = {
         "-Form_Ribbon_Sweet": "ag",
         "-Form_Star_Sweet": "ad",
         "-Form_Strawberry_Sweet": "aa"
-    },
+        },
 
     # Eiscue
     875: {
