@@ -31,10 +31,13 @@ def pokewiki_get_img(url, save_path, allow_download, has_animation=False):
     my_filename = save_path.split("\\")[-1]
     img_page_soup = img_exists_at_url(url)
     
-    if allow_download:
-        img_url = pokewiki_get_largest_img(img_page_soup)
-        # TODO: Test this, if it works can remove conditionals for bulba & wikidex too
-        determine_animation_status_before_downloading(img_url, save_path)
+    if not img_page_soup:
+        print_couldnt_dl_msg(my_filename)
+        return ()
+    else:
+        if allow_download:
+            img_url = pokewiki_get_largest_img(img_page_soup)
+            determine_animation_status_before_downloading(img_url, save_path)
     
 
 def pokewiki_doesnt_have_images_for(my_filename):
@@ -71,15 +74,24 @@ def get_pokewiki_translated_form(poke_info, my_filename):
 
 def get_pokewiki_universal_form(poke_num, form_name):
     # Checking equality so any pokes that have a universal paired with another form (ie Hisuian Female Sneasel) will continue so can be denoted for the other form
-    if any(universal_form == form_name for universal_form in UNIVERSAL_FORMS_EXCLUDING_REGIONALS):
-        return True, ""
+    for universal_form, translation in UNIVERSAL_FORMS_EXCLUDING_REGIONALS.items():
+        if universal_form == form_name:
+            return True, translation
     
+    is_regional_form, translation = determine_regional_form_translation(poke_num, form_name)
+    if is_regional_form:
+        return True, translation
+
+    return False, None
+
+
+def determine_regional_form_translation(poke_num, form_name):
     # Regional forms in pokewiki are marked the same as species forms -- a, b, c, d, etc.
     # This checks if a form is ONLY a regional form (so Hisuian Female Sneasel doesnt go into this, nor galarian zen/standard darmanitan, etc)
     # And if the only forms that pokemon has are regional forms and ones that have their own non-form denoter (females, megas, etc)
     # If so, return the appropriate chronological denoter for that regional form (whichever region released first, will be sooner in alphabet)
     # This saves me from writing every regional form for every applicable poke in the translation dict
-    elif form_name in REGIONAL_FORMS:
+    if form_name in REGIONAL_FORMS:
         all_forms_for_poke = get_all_form_names_for_poke(poke_num)
         regional_forms_for_poke = [form for form in all_forms_for_poke if "-Region" in form]
         # Checking against UNIVERSAL_FORMS to make sure only forms are Default, Regionals, and ones that have their own non-form denoter and dont affect regionals (mega, female, etc)
@@ -96,8 +108,8 @@ def get_pokewiki_universal_form(poke_num, form_name):
                 chronological_regional_form_index = chronological_regional_forms_for_poke.index(form_name)  # Gets chronological index of specific regional form (form_name)
                 chronological_regional_form_translated = list(POKEWIKI_FORM_DENOTER.values())[chronological_regional_form_index + 1]   # Getting form denoter, +1 to account for Default form 
                 return True, chronological_regional_form_translated
-    else:
-        return False, None
+            
+    return False, None
 
 
 
@@ -114,14 +126,13 @@ def pokewiki_translate(my_filename, poke_info):
     
     translated_form = get_pokewiki_translated_form(poke_info, my_filename)
     form_tag = translated_form if translated_form != "" else ""
-    gigantamax_tag = determine_gigantamax_tag(poke_num_int, form_name)
     female_tag = determine_female_tag(poke_num_int, form_name)
     back_tag = " Rückseite" if "-Back" in my_filename else ""
     shiny_tag = " Schillernd" if "-Shiny" in my_filename else ""
     platform = determine_platform_tag(my_filename)
     file_ext = ".png" if "-Animated" not in my_filename else ".gif"
 
-    pokewiki_filename = f"Pokémonsprite {poke_num_leading_zeros}{form_tag}{gigantamax_tag}{female_tag}{back_tag}{shiny_tag}{platform}{file_ext}"
+    pokewiki_filename = f"Pokémonsprite {poke_num_leading_zeros}{form_tag}{female_tag}{back_tag}{shiny_tag}{platform}{file_ext}"
     return (pokewiki_filename)
 
 
@@ -134,18 +145,7 @@ def determine_female_tag(poke_num, form_name):
         return ("")
 
 
-def determine_gigantamax_tag(poke_num, form_name):
-    gmax_denoter = ""
-    if "-Gigantamax" in form_name:
-        if poke_num == 892 and "-Form_Rapid_Strike" in form_name:   # Urshifu has different form gigantamaxes
-            gmax_denoter = "g2"
-        else:
-            gmax_denoter = "g1"
-
-    return gmax_denoter
-
-
 def determine_platform_tag(my_filename):
     if " HOME" in my_filename: return (" HOME")
-    elif " BANK" in my_filename: return (" BANK")
+    elif " BANK" in my_filename: return (" Bank")
     else: return(get_translated_game(my_filename, POKEWIKI_GAME_MAP, POKEWIKI_ALT_GAME_MAP))
