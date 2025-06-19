@@ -225,6 +225,7 @@ def create_db():
     );
     """)
 
+    # TODO: Add GO, make sure to add to populate db and update db
     connection.commit()
     connection.close()
 
@@ -275,6 +276,7 @@ def update_file_existence(cursor=None):
         update_game_files_existence(cur)
         update_non_game_files_existence("all_home_filenames", save_directories["HOME"]["files"], cur)
         update_non_game_files_existence("obtainable_home_filenames", save_directories["HOME"]["files"], cur)
+        update_non_game_files_existence("bank_filenames", save_directories["BANK"]["files"], cur)
         update_non_game_files_existence("home_menu_filenames", save_directories["HOME Menu"]["files"], cur)
         update_non_game_files_existence("drawn_filenames", save_directories["Drawn"]["files"], cur)
         update_non_game_files_existence("all_pokeball_filenames", save_directories["Pokeball"]["files"], cur)
@@ -1211,7 +1213,7 @@ def populate_bank_filenames(cursor):
     rows = cursor.fetchall()
 
     for row in rows:
-        filename = row["filename"].replace("Gen7 SM_USUM", " BANK")
+        filename = row["filename"].replace("Gen7 SM_USUM", "BANK")
 
         file_ids = {"filename": filename, "poke_num": row["poke_num"], "form_id": row["form_id"], "sprite_id": row["sprite_id"], "does_exist": None}
         file_ids["does_exist"] = file_exists(filename, save_directories["BANK"]["files"])
