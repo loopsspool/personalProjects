@@ -1,4 +1,5 @@
-import urllib   # For downloading those images to my computer
+from urllib.request import Request, urlopen   # For downloading those images to my computer
+from urllib.parse import quote  # For translating non-english letters (with dots, lines, etc) to ASCII for Referer header
 import os
 import requests
 from bs4 import BeautifulSoup
@@ -14,25 +15,26 @@ from translation_utils import EXCLUDE_TRANSLATIONS_MAP
 from app_globals import *
 
 
+# TODO: Add headers for wikidex and bulba
+headers = {'User-Agent': 'Mozilla/5.0'}     # NOTE: For each new website add a Referer member (eg 'Referer': 'https://www.pokewiki.de/')
 
 
 #|================================================================================================|
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     DOWNLOADING UTILITIES     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
-# NOTE: ALL DOWNLOADS MUST BE DONE IN THE FASHION BELOW -- Otherwise bulba has a check on if the site is being web scraped and it will block the download
-opener = urllib.request.URLopener()
-opener.addheader('User-Agent', 'Mozilla/5.0')
-
-
 # TODO: After conversion process figured out, this will need to convert animateds to webp
 def download_img(url, save_path):
     img_type = get_file_ext(url)
+    req = Request(url, headers=headers)
+
+    #wait_for_server_to_load_img_if_needed(url)
 
     if img_type in (".png", ".gif"):
-        filename, headers = opener.retrieve(url, save_path)
+        with urlopen(req) as response, open(save_path, 'wb') as my_file:
+            my_file.write(response.read())
     elif img_type == ".webm":
-        ani_img = fetch_url_with_retry(url).content
+        ani_img = fetch_url_with_retry(url, headers).content
         with open(save_path, 'wb') as my_file:
             my_file.write(ani_img)
 
@@ -57,7 +59,7 @@ def determine_animation_status_before_downloading(img_url, save_path):
 
 # TODO: Rename function to be more accurate?
 def img_exists_at_url(url):
-    img_page = fetch_url_with_retry(url)
+    img_page = fetch_url_with_retry(url, headers)
 
     if img_page == None: return False     # This means a redirect or 404 was caught, and saying the page doesn't exist
     
@@ -66,31 +68,33 @@ def img_exists_at_url(url):
     return (img_page_soup)
 
 
-def fetch_url_with_retry(url, stream_flag=False):
+def fetch_url_with_retry(url, headers=headers, stream_flag=False):
     MAX_RETRIES = 5
     BASE_DELAY = 5
     attempt = 0
 
     while attempt < MAX_RETRIES:
         try:
-            response = requests.get(url, stream=stream_flag, allow_redirects=False)
+            response = requests.get(url, headers=headers, stream=stream_flag, allow_redirects=False)
 
-            # Success, return soup of page
-            if response.status_code == 200: 
-                return response
+            # Sometimes (really only with pokewiki) the image will be cutoff, I think due to caching. The below are ways to get data length so I can retry if this happens
+            content_type = response.headers.get('Content-Type')
+            content_length = response.headers.get("Content-Length")
+            data = response.content
             
             # The below catches a redirect... Can happen for instance trying to get gen6 pokemon back sprites for gen 7, which just downloads the same image twice when I already have the games as fallbacks in my db
             # Generally, I want my URLs to go to that exact image, and if it links to another, my db should also link to another... But TODO: Check after scrape, if oddballs missing this may be why
-            elif 300 <= response.status_code < 400:
+            if 300 <= response.status_code < 400:
                 return None
             
             elif response.status_code == 404:
                 return None
 
-            # Most frequent error is 503, I assume rate limiting
-            elif response.status_code in (429, 503):
+            # Most frequent error is 503, I assume rate limiting. Content length (image cutoff) perhaps a caching issue, checking content type is the image bc sometimes pages are cut short too
+            elif response.status_code in (429, 503) or ("image" in content_type and len(data) != int(content_length)):
                 retry_after = response.headers.get("Retry-After")
                 wait_time = parse_retry_after(retry_after) if retry_after else None
+                reason = response.status_code if response.status_code in (429, 503) else "incomplete image given from server"
 
                 if wait_time is None:
                     # Fallback to exponential backoff
@@ -100,11 +104,16 @@ def fetch_url_with_retry(url, stream_flag=False):
                 pp_current_central_time = current_central_time.strftime("%I:%M:%S %p")
                 print(f"""\n\n\n
                       *********************************************************************************************
-                      Retrying after {wait_time} seconds due to {response.status_code} at {pp_current_central_time}
+                      Retrying after {wait_time} seconds due to {reason} at {pp_current_central_time}
                       *********************************************************************************************
                       \n\n\n""")
                 time.sleep(wait_time)
                 attempt += 1
+            
+                # Success, return page
+            elif response.status_code == 200: 
+                return response
+            
             else:
                 response.raise_for_status()  # Raise other HTTP errors
 
@@ -185,7 +194,7 @@ def translate_all_my_filenames_to_url(filename_dict, translate_func, exclude, st
             if exclude != None and exclude(my_filename): continue
 
             translated_filename = translate_func(my_filename, poke_info)
-            if found_excluded_term(translated_filename): continue
+            if found_excluded_term(translated_filename) or translated_filename is None: continue
 
             translated_filename_url = convert_translated_filename_to_url(starter_url, translated_filename)
             urls.append((my_filename, translated_filename_url))
