@@ -15,6 +15,8 @@ POKEWIKI_STARTER_URL = "https://www.pokewiki.de/Datei:"
 
 def pokewiki_scrape_pokemon(poke_num, allow_download=False):
     pokewiki_scrape_config = generate_config_dict(POKEWIKI_STARTER_URL, pokewiki_get_img, allow_download)
+    headers["Referer"] = "https://www.pokewiki.de/"
+    # headers["Accept"] = "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7"
 
     scrape_imgs(poke_num, "obtainable_game_filenames", pokewiki_translate, exclusions=pokewiki_doesnt_have_images_for, has_animation=True, save_path=save_directories["Game Sprites"]["path"], config_dict=pokewiki_scrape_config)
     scrape_imgs(poke_num, "obtainable_home_filenames", pokewiki_translate, exclusions=pokewiki_doesnt_have_images_for, has_animation=True, save_path=save_directories["HOME"]["path"], config_dict=pokewiki_scrape_config)
