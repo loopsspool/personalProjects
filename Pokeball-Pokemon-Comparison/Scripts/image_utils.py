@@ -1,4 +1,5 @@
 from PIL import Image, ImageEnhance, ImageFilter   # For converting URL image data to PIL Image object 
+from io import BytesIO
 import requests # To retrieve webpages
 from bs4 import BeautifulSoup   # To parse webpages
 import re
@@ -11,11 +12,21 @@ import tempfile     # To temporarily read webm
 
 from scraping_utils import fetch_url_with_retry
 
+
+def get_img(url):
+    try:
+        img = Image.open(BytesIO(fetch_url_with_retry(url).content))    # TODO: Test this works on apngs and gifs, as well as bulba and wikidex
+        img.verify()
+        return img
+    except Exception as e:
+        raise RuntimeError(f"Failed to check animation status for {url}: {e}")
+
+
 def is_animated(url):
     file_type = f".{url.split(".")[-1]}"
 
     if file_type in (".png", ".gif"):
-        img = Image.open(fetch_url_with_retry(url, stream_flag=True).raw)
+        img = get_img(url)
         return(img.is_animated)
     elif file_type in (".webm"):
         return(True)
@@ -34,7 +45,7 @@ def save_first_frame(url, save_path):
 
 
 def save_first_frame_of_png_or_gif(url, save_path):
-    img = Image.open(fetch_url_with_retry(url, stream_flag=True).raw)
+    img = get_img(url)
     first_frame = img.copy()    # Returns just first frame
     first_frame.save(save_path)
 
@@ -156,9 +167,8 @@ def wikidex_get_largest_img(img_page_soup):
     
 
 def pokewiki_get_largest_img(img_page_soup):
-    # file w only 1 size: https://www.pokewiki.de/Datei:Pok%C3%A9monsprite_1016_Schillernd_HOME.png
-    # file w different sizes: https://www.pokewiki.de/Datei:Pok%C3%A9monsprite_1016_Schillernd_KAPU.gif
     BASE_URL = "https://www.pokewiki.de"    # Pokewiki uses relative paths, so I manually have to make it absolute to get img
+    
     has_larger_img = img_page_soup.find("a", string=re.compile(r"Originaldatei"))   # Checks string for largest, original img
     if has_larger_img: 
         return (BASE_URL + has_larger_img.get("href"))
