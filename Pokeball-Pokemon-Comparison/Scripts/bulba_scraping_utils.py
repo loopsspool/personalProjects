@@ -79,10 +79,7 @@ def get_bulba_img(url, save_path, allow_download, has_animation=False):
         if allow_download:
             img_url = bulba_get_largest_png(img_page_soup)
 
-            if has_animation:
-                determine_animation_status_before_downloading(img_url, save_path)
-            else:
-                download_img(img_url, save_path)
+            determine_animation_status_before_downloading(img_url, save_path)
 
 
 def bulba_doesnt_have_images_for(my_filename):

@@ -7,11 +7,10 @@ from translation_utils import *
 
 
 # WEB DATA
-sprite_page = requests.get("https://www.wikidex.net/wiki/Categor%C3%ADa:Sprites_de_Pok%C3%A9mon")
+#sprite_page = requests.get("https://www.wikidex.net/wiki/Categor%C3%ADa:Sprites_de_Pok%C3%A9mon")
 WIKIDEX_STARTER_URL = "https://www.wikidex.net/wiki/Archivo:"
 
 
-# NOTE: If ever decide to use Wikidex for menu sprites, drawn, etc. this will have to be nested like bulbas
 def wikidex_scrape_pokemon(poke_num, allow_download=False):
     wikidex_scrape_config = generate_config_dict(WIKIDEX_STARTER_URL, wikidex_get_img, allow_download)
 
@@ -29,7 +28,7 @@ def wikidex_scrape_pokemon(poke_num, allow_download=False):
 
 def wikidex_get_img(url, save_path, allow_download, has_animation=False):
     my_filename = save_path.split("\\")[-1]
-    img_page_soup, my_filename_w_wikidex_file_ext = search_image_under_all_file_extensions(url, my_filename)    # TODO: Have this alter my filename if different extensions
+    img_page_soup, my_filename_w_wikidex_file_ext = search_image_under_all_file_extensions(url, my_filename)
 
     if not img_page_soup:
         print_couldnt_dl_msg(my_filename)
@@ -45,11 +44,7 @@ def wikidex_get_img(url, save_path, allow_download, has_animation=False):
         # Can't do now bc db wont recognize it as existing in these filepaths so will continuously try to download images    
         #save_path = os.path.join(determine_save_path_from_file_type(img_url_file_ext), my_filename)
 
-        # TODO: Put this into a func in scraping_utils and change it in bulba & wikidex scraping_utils
-        if has_animation:
-            determine_animation_status_before_downloading(img_url, save_path)
-        else:
-            download_img(img_url, save_path)
+        determine_animation_status_before_downloading(img_url, save_path)
 
 
 def search_image_under_all_file_extensions(url, my_filename):
@@ -159,3 +154,13 @@ def determine_file_extension(my_filename):
     else:
         if " HOME" in my_filename: return ".webm"
         else: return ".gif"
+
+
+#########   GO TRANSLATIONS     ############
+# TODO: Adjust game translations to include now nested dict
+# TODO: Check to see if costumes have f forms
+# TODO: Shiny forms work with costumes? Subreddit seems to have a list here: https://www.reddit.com/r/pokemongo/wiki/faq/
+# This will be your best friend: https://pokemongo.fandom.com/wiki/List_of_Event_Pok%C3%A9mon_by_release_date
+# NOTE: Got costume list from https://pokemongo.fandom.com/wiki/Event_Pok%C3%A9mon#Regular_(262_of_265)
+    # Copy/Paste into excel matching source formatting, then func to pull cell starting with #, combining that cell and the two below
+# TODO: Deal w pokes that have forms & events (like meloetta hat zigzagoon only galarian?)
