@@ -46,6 +46,23 @@ def create_db():
     """)
 
     cursor.execute("""
+    CREATE TABLE IF NOT EXISTS costumes (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        costume_name TEXT NOT NULL UNIQUE
+    );
+    """)
+
+    cursor.execute("""
+    CREATE TABLE IF NOT EXISTS poke_costumes (
+        poke_num INTEGER NOT NULL,
+        costume_id INTEGER NOT NULL,
+        PRIMARY KEY (poke_num, costume_id),
+        FOREIGN KEY (poke_num) REFERENCES pokemon(num),
+        FOREIGN KEY (costume_id) REFERENCES costumes(id)
+    );
+    """)
+
+    cursor.execute("""
     CREATE TABLE IF NOT EXISTS games (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL UNIQUE,
@@ -241,6 +258,7 @@ def populate_db(force=False):
     try:
         populate_pokes(cursor)
         populate_forms(cursor)
+        populate_costumes(cursor)
         populate_games(cursor)
         connection.commit() # Committing here so form_game_obtainability can get form ids from forms via a different connection
         populate_form_game_obtainability(cursor, force)
@@ -326,6 +344,12 @@ def insert_into_both_form_tables(cursor, form_name, poke_num):
     insert_into_table(cursor, "poke_forms", **{"poke_num": poke_num, "form_id": form_id})
 
 
+def insert_into_both_costume_tables(cursor, costume_name, poke_num):
+    insert_into_table(cursor, "costumes", **{"costume_name": costume_name})
+    costume_id = get_costume_id(costume_name, cursor)
+    insert_into_table(cursor, "poke_costumes", **{"poke_num": poke_num, "costume_id": costume_id})
+
+
 # TODO: Change all execute statements to parameter substition instead of inserting into f string (this converts None <-> Null properly)
 def update_game_files_existence(cursor):
     cursor.execute("SELECT * FROM obtainable_game_filenames")
@@ -404,6 +428,14 @@ def get_form_name(form_id, cursor=None):
         cur.execute("SELECT form_name FROM forms WHERE id=?", (form_id,))
         form_name = cur.fetchone()
     if form_name: return form_name["form_name"]
+    else: return None
+
+
+def get_costume_id(costume_name, cursor=None):
+    with get_cursor(cursor) as cur:
+        cur.execute("SELECT id FROM costumes WHERE costume_name=?", (costume_name,))
+        costume_id = cur.fetchone()
+    if costume_id: return costume_id["id"]
     else: return None
 
 
@@ -926,6 +958,26 @@ def adjust_forms_for_exceptions(poke_num, forms):
 
 
 #|================================================================================================|
+#|~~~~~~~~~~~~~~~~~~~~~~~~~[     COSTUME & POKE_COSTUME TABLES     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+#|================================================================================================|
+
+def populate_costumes(cursor):
+    print("Populating costumes and poke_costumes into database...")
+
+    for row in range(2, POKE_INFO_LAST_ROW + 1): 
+        poke_num = row-1
+
+        if isnt_empty(POKEMON_INFO_SHEET, row, POKE_INFO_COSTUMES_COL):
+            costumes = denote_forms(cell_value(POKEMON_INFO_SHEET, row, POKE_INFO_COSTUMES_COL), "-Costume_")
+
+            # Inserting into BOTH tables means forms table (just id and name) and poke_forms table (id, name, and poke it applies to)
+            for costume in costumes:
+                insert_into_both_costume_tables(cursor, costume, poke_num)
+
+
+
+
+#|================================================================================================|
 #|~~~~~~~~~~~~~~~~~~~~~~~~~[     FORM GAME OBTAINABILITY TABLE     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
@@ -1259,6 +1311,16 @@ def generate_drawn_filenames(poke_info, cursor):
 
     filenames.append(f"{poke_num_leading_zeros} {poke_info["poke name"]}{form_name}")
     return filenames
+
+
+
+
+#|================================================================================================|
+#|~~~~~~~~~~~~~~~~~~~~~~~~~~~[     POKEMON GO FILENAME TABLE     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+#|================================================================================================|
+# NOTE: 658, 710, 711 have costume & misc forms (which is every one that has both except pikachu)
+# NOTE: Only other forms that can be paired with costumes are female
+# NOTE: No spiky eared pikachu, check other forms when translating
 
 
 
