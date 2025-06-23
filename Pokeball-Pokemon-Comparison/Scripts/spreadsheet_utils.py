@@ -17,9 +17,9 @@ def normalize_empty_in_sheet(sheet):
                 cell.value = None
 
 
-def load_sheet_from_excel(wb_path, sheet_index=0):
+def load_sheet_from_excel(wb_path, sheet_name):
     workbook = load_workbook(filename = wb_path, data_only=True)
-    sheet = workbook.worksheets[sheet_index]
+    sheet = workbook[sheet_name]
     normalize_empty_in_sheet(sheet)
     workbook.close()
     return sheet
@@ -86,7 +86,7 @@ def poke_isnt_in_game(poke_num, game):
 
 # Spreadsheet for Pokedex Info (pokemon, f/region/mega/giganta variants, megas, species forms, game exclusivity, etc)
 POKEMON_INFO_SHEET_PATH = os.path.join(PARENT_DIR, 'Pokemon Info.xlsx')
-POKEMON_INFO_SHEET = load_sheet_from_excel(POKEMON_INFO_SHEET_PATH)
+POKEMON_INFO_SHEET = load_sheet_from_excel(POKEMON_INFO_SHEET_PATH, "Clean Data")
 
 POKE_INFO_LAST_ROW = get_last_row(POKEMON_INFO_SHEET)
 POKE_INFO_NAME_COL = get_col_number(POKEMON_INFO_SHEET, "Name")
@@ -97,3 +97,5 @@ POKE_INFO_MEGA_COL = get_col_number(POKEMON_INFO_SHEET, "Mega")
 POKE_INFO_GIGANTA_COL = get_col_number(POKEMON_INFO_SHEET, "Gigantamax")
 POKE_INFO_REG_FORMS_COL = get_col_number(POKEMON_INFO_SHEET, "Regional Forms")
 POKE_INFO_MISC_FORMS_COL = get_col_number(POKEMON_INFO_SHEET, "Misc Forms")
+
+POKE_INFO_COSTUMES_COL = get_col_number(POKEMON_INFO_SHEET, "Costumes")
