@@ -39,7 +39,7 @@ def is_empty(sheet, row, col):
 
 # Returns column number from column name
 def get_col_number(sheet, col_name):
-    for col in range(1, sheet.max_column):
+    for col in range(1, sheet.max_column + 1):
         if (cell_value(sheet, 1, col) == col_name):
             return col
 
