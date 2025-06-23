@@ -4,10 +4,12 @@ import re
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     TRANSLATIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
-def get_translated_game(my_filename, game_map_dict, mid_gen_poke_intro_game_map_dict):
-    # Check if its a pokemon introduced mid-gen, if so adjust game name appropriately
-    mid_gen_poke_intro_game = get_game_needing_special_translation_for_mid_gen_pokes(my_filename)
-    if mid_gen_poke_intro_game: return f" {mid_gen_poke_intro_game_map_dict[mid_gen_poke_intro_game]}"
+def get_translated_game(my_filename, game_map_dict, mid_gen_poke_intro_game_map_dict=None):
+    # This allows me to bypass the mid-gen poke introductions if I'm scraping a site for sprites more recent than gen5-7
+    if not mid_gen_poke_intro_game_map_dict:
+        # Check if its a pokemon introduced mid-gen, if so adjust game name appropriately
+        mid_gen_poke_intro_game = get_game_needing_special_translation_for_mid_gen_pokes(my_filename)
+        if mid_gen_poke_intro_game: return f" {mid_gen_poke_intro_game_map_dict[mid_gen_poke_intro_game]}"
 
     for game, translation in game_map_dict.items():
         if "-Back" in my_filename:
@@ -45,7 +47,8 @@ def get_game_needing_special_translation_for_mid_gen_pokes(my_filename):
 
 # This is to filter out these forms when translating species forms
 # The exceptions that have a universal AND species form (See 555 Galarian Darmanitan Zen form) have their own unique form id generated in db_utils > FORM_EXCEPTION_POKEMON
-UNIVERSAL_FORMS = {
+# NOTE: Keep Regions chronological, this is important for site filename translation for scraping
+UNIVERSAL_FORMS = [
     "Default", 
     "-f", 
     "-Mega", 
@@ -56,7 +59,7 @@ UNIVERSAL_FORMS = {
     "-Region_Galar", 
     "-Region_Hisui", 
     "-Region_Paldea"
-}
+]
 
 
 EXCLUDE_TRANSLATIONS_MAP = {
