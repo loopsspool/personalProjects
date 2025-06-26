@@ -185,6 +185,15 @@ NO_DRAWN_FORMS = {
 for k,v in SHARED_SHINY_FORMS.items(): NO_DRAWN_FORMS[k] = set(v)
 
 
+NO_COSTUMES_WITH_THESE_FORMS = {
+    # UNIVERSAL
+    "no universal form costumes (except default and female)": lambda poke_num, form_name: any(u_form in form_name for u_form in ("Mega", "Region", "Gigantamax")),
+
+    # SPECIFIC POKEMON
+    "no pikachu forms with costume": lambda poke_num, form_name: poke_num == 25 and form_name != "Default"
+}
+
+
 
 
 #|================================================================================================|
