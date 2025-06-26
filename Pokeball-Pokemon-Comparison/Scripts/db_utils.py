@@ -200,6 +200,21 @@ def create_db():
     """)
 
     cursor.execute("""
+    CREATE TABLE IF NOT EXISTS go_filenames (
+        id INTEGER PRIMARY KEY,
+        filename TEXT NOT NULL UNIQUE,
+        poke_num INTEGER NOT NULL,
+        form_id INTEGER NOT NULL,
+        costume_id INTEGER NOT NULL,
+        sprite_id INTEGER NOT NULL,
+        does_exist BOOLEAN NOT NULL,
+        FOREIGN KEY (poke_num, form_id) REFERENCES poke_forms,
+        FOREIGN KEY (poke_num, costume_id) REFERENCES poke_costumes,
+        FOREIGN KEY (sprite_id) REFERENCES sprite_types(id)
+    );
+    """)
+
+    cursor.execute("""
     CREATE TABLE IF NOT EXISTS pokeballs (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT NOT NULL UNIQUE,
@@ -270,6 +285,7 @@ def populate_db(force=False):
         populate_home_menu_filenames(cursor)
         populate_bank_filenames(cursor)
         connection.commit() # Db locked again
+        populate_go_filenames(cursor)
         populate_drawn_filenames(cursor)
         populate_pokeballs(cursor)
         populate_pokeball_img_types(cursor)
@@ -295,6 +311,7 @@ def update_file_existence(cursor=None):
         update_non_game_files_existence("all_home_filenames", save_directories["HOME"]["files"], cur)
         update_non_game_files_existence("obtainable_home_filenames", save_directories["HOME"]["files"], cur)
         update_non_game_files_existence("bank_filenames", save_directories["BANK"]["files"], cur)
+        update_non_game_files_existence("go_filenames", save_directories["GO"]["files"], cur)
         update_non_game_files_existence("home_menu_filenames", save_directories["HOME Menu"]["files"], cur)
         update_non_game_files_existence("drawn_filenames", save_directories["Drawn"]["files"], cur)
         update_non_game_files_existence("all_pokeball_filenames", save_directories["Pokeball"]["files"], cur)
@@ -436,6 +453,14 @@ def get_costume_id(costume_name, cursor=None):
         cur.execute("SELECT id FROM costumes WHERE costume_name=?", (costume_name,))
         costume_id = cur.fetchone()
     if costume_id: return costume_id["id"]
+    else: return None
+
+
+def get_costume_name(costume_id, cursor=None):
+    with get_cursor(cursor) as cur:
+        cur.execute("SELECT costume_name FROM costumes WHERE id=?", (costume_id,))
+        costume_name = cur.fetchone()
+    if costume_name: return costume_name["costume_name"]
     else: return None
 
 
@@ -590,6 +615,16 @@ def get_poke_form_records(cursor):
                                             "poke gen" : row["gen"]
                         }
     return forms
+
+
+def get_poke_costume_records(cursor):
+    cursor.execute("SELECT poke_num, costume_id FROM poke_costumes")
+
+    costumes = defaultdict(list)
+    for row in cursor.fetchall():
+        costumes[row["poke_num"]].append(row["costume_id"])
+
+    return costumes
 
 
 def get_poke_form_obtainability_records(cursor):
@@ -966,6 +1001,7 @@ def populate_costumes(cursor):
 
     for row in range(2, POKE_INFO_LAST_ROW + 1): 
         poke_num = row-1
+        insert_into_both_costume_tables(cursor, "None", poke_num)
 
         if isnt_empty(POKEMON_INFO_SHEET, row, POKE_INFO_COSTUMES_COL):
             costumes = denote_forms(cell_value(POKEMON_INFO_SHEET, row, POKE_INFO_COSTUMES_COL), "-Costume_")
@@ -1320,8 +1356,51 @@ def generate_drawn_filenames(poke_info, cursor):
 #|================================================================================================|
 # NOTE: 658, 710, 711 have costume & misc forms (which is every one that has both except pikachu)
 # NOTE: Only other forms that can be paired with costumes are female
-# NOTE: No spiky eared pikachu, check other forms when translating
+# NOTE: No spiky eared pichu, check other forms when translating
 
+def populate_go_filenames(cursor):
+    print("Populating GO filenames into database...")
+
+    cursor.execute("SELECT poke_num, filename, form_id, sprite_id from obtainable_home_filenames WHERE filename NOT LIKE '%-Back%' AND filename NOT LIKE '%-Animated%'")
+    home_filenames = cursor.fetchall()
+
+    for home_file in home_filenames:
+        poke_num = home_file["poke_num"]
+        home_filename = home_file["filename"]
+        form_id = home_file["form_id"]
+        sprite_id = home_file["sprite_id"]
+        
+        filenames = generate_go_filenames(cursor, poke_num, form_id, home_filename)
+
+        for file in filenames:
+            filename = file[0].replace(" HOME", " GO")
+            costume_id = file[1]
+            exists = file_exists(filename, save_directories["GO"]["files"])
+            file_ids = {"filename": filename, "poke_num": poke_num, "form_id": form_id, "costume_id": costume_id, "sprite_id": sprite_id, "does_exist": exists}
+            insert_into_table(cursor, "go_filenames", **file_ids)
+
+
+def generate_go_filenames(cursor, poke_num, form_id, home_filename):
+    poke_costumes = get_poke_costume_records(cursor)
+    filenames = []
+
+    for costume_id in poke_costumes[poke_num]:
+        # Pikachu forms do not have costumes, so if the home filename has a form, just adding that with no costume
+        if costume_cant_be_equipped(poke_num, get_form_name(form_id)):
+            filenames.append((home_filename, get_costume_id("None")))
+            break
+        costume_name = "" if get_costume_name(costume_id, cursor) == "None" else get_costume_name(costume_id, cursor)
+        costume_filename = home_filename + costume_name
+        filenames.append((costume_filename, costume_id))
+
+    return filenames
+
+
+def costume_cant_be_equipped(poke_num, form_name):
+    for exclusion in NO_COSTUMES_WITH_THESE_FORMS.values():
+        if exclusion(poke_num, form_name):
+            return True
+    return False
 
 
 
