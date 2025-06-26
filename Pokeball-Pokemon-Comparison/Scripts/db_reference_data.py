@@ -274,6 +274,7 @@ POKEBALL_IMG_EXCLUSIONS = {
 POKEBALL_IMG_TYPES = [
     {"name": "PGL", "gen": -1}, # Pokemon global link (Dream)
     {"name": "Drawn", "gen": -1}, # Drawn (Sugimori)
+    {"name": "GO", "gen": -1},
 
     {"name": "Gen3", "gen": 3},
     {"name": "Gen4_Battle", "gen": 4},

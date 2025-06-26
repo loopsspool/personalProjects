@@ -281,6 +281,8 @@ def pokeball_translate(my_filename, pokeball_info):
     if "Bag" in img_type_name:
         bag_platform = get_bulba_translated_pokeball_info(img_type_name)
         bulba_filename = f"Bag {pokeball_name}{bag_platform} Sprite.png"
+    elif img_type_name == "GO":
+        bulba_filename = f"GO {pokeball_name}.png"
     elif img_type_name == "PGL":
         bulba_filename = f"Dream {pokeball_name} Sprite.png"
     elif img_type_name == "Drawn":
