@@ -1386,7 +1386,7 @@ def generate_go_filenames(cursor, poke_num, form_id, home_filename):
 
     for costume_id in poke_costumes[poke_num]:
         # Pikachu forms do not have costumes, so if the home filename has a form, just adding that with no costume
-        if costume_cant_be_equipped(poke_num, get_form_name(form_id)):
+        if costume_cant_be_equipped(poke_num, get_form_name(form_id), get_costume_name(costume_id)):
             filenames.append((home_filename, get_costume_id("None")))
             break
         costume_name = "" if get_costume_name(costume_id, cursor) == "None" else get_costume_name(costume_id, cursor)
@@ -1396,9 +1396,9 @@ def generate_go_filenames(cursor, poke_num, form_id, home_filename):
     return filenames
 
 
-def costume_cant_be_equipped(poke_num, form_name):
+def costume_cant_be_equipped(poke_num, form_name, costume_name):
     for exclusion in NO_COSTUMES_WITH_THESE_FORMS.values():
-        if exclusion(poke_num, form_name):
+        if exclusion(poke_num, form_name, costume_name):
             return True
     return False
 
