@@ -187,10 +187,11 @@ for k,v in SHARED_SHINY_FORMS.items(): NO_DRAWN_FORMS[k] = set(v)
 
 NO_COSTUMES_WITH_THESE_FORMS = {
     # UNIVERSAL
-    "no universal form costumes (except default and female)": lambda poke_num, form_name: any(u_form in form_name for u_form in ("Mega", "Region", "Gigantamax")),
+    "no universal form costumes (except default and female)": lambda poke_num, form_name, costume_name: any(u_form in form_name for u_form in ("Mega", "Region", "Gigantamax")),
 
     # SPECIFIC POKEMON
-    "no pikachu forms with costume": lambda poke_num, form_name: poke_num == 25 and form_name != "Default"
+    "no pikachu forms with costume": lambda poke_num, form_name, costume_name: poke_num == 25 and form_name != "Default",
+    "meloetta hat only for galarian forms of ponyta and zigzagoon": lambda poke_num, form_name, costume_name: poke_num in (77, 263) and costume_name == "-Costume_Meloetta_Hat" and form_name != "-Region_Galar"
 }
 
 
