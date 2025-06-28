@@ -1,5 +1,5 @@
 from wikidex_translation_mapping import *
-from db_utils import get_poke_name, get_form_name, get_pokeball_name, get_pokeball_img_type_name
+from db_utils import get_poke_name, get_form_name, get_costume_name
 from app_globals import *
 from scraping_utils import *
 from image_utils import wikidex_get_largest_img
@@ -14,10 +14,11 @@ WIKIDEX_STARTER_URL = "https://www.wikidex.net/wiki/Archivo:"
 def wikidex_scrape_pokemon(poke_num, allow_download=False):
     wikidex_scrape_config = generate_config_dict(WIKIDEX_STARTER_URL, wikidex_get_img, allow_download)
 
-    scrape_imgs(poke_num, "obtainable_game_filenames", wikidex_translate, exclusions=wikidex_doesnt_have_images_for, has_animation=True, save_path=save_directories["Game Sprites"]["path"], config_dict=wikidex_scrape_config)
-    scrape_imgs(poke_num, "obtainable_home_filenames", wikidex_translate, exclusions=None, has_animation=True, save_path=save_directories["HOME"]["path"], config_dict=wikidex_scrape_config)
-    # NOTE: Technically Wikidex does have drawn images and home menu images, but bulba has every one so there's no need to scrape
-    # If this changes in the future, it may be useful to browse their archives via url thru https://www.wikidex.net/index.php?title=Categor%C3%ADa:Pokemon_name
+    # Game filenames now from Pokewiki
+    # HOME CAN come from here, but prefer Root on X
+    #scrape_imgs(poke_num, "obtainable_game_filenames", wikidex_game_translate, exclusions=wikidex_doesnt_have_images_for, has_animation=True, save_path=save_directories["Game Sprites"]["path"], config_dict=wikidex_scrape_config)
+    #scrape_imgs(poke_num, "obtainable_home_filenames", wikidex_game_translate, exclusions=None, has_animation=True, save_path=save_directories["HOME"]["path"], config_dict=wikidex_scrape_config)
+    scrape_imgs(poke_num, "go_filenames", wikidex_go_translate, exclusions=None, has_animation=False, save_path=save_directories["GO"]["path"], config_dict=wikidex_scrape_config)
 
 
 
@@ -88,6 +89,12 @@ def get_wikidex_translated_species_form(poke_info, my_filename):
     # No widespread universal forms combined with species forms, the few exceptions have their own form id/name associated with it
     if form_name in UNIVERSAL_FORMS:
         return("")
+    
+    # This adjusts some form names that differ in GO (namely empty for games, but in GO they have a denoter)
+    if " GO" in my_filename:
+        if poke_num in GO_FORM_TRANSLATION_EXCEPTIONS:
+            if form_name in GO_FORM_TRANSLATION_EXCEPTIONS[poke_num]:
+                return GO_FORM_TRANSLATION_EXCEPTIONS[poke_num][form_name]
 
     if poke_num in WIKIDEX_POKE_FORM_TRANSLATION_MAP:
         for form, translation in WIKIDEX_POKE_FORM_TRANSLATION_MAP[poke_num].items():
@@ -98,13 +105,30 @@ def get_wikidex_translated_species_form(poke_info, my_filename):
     return(EXCLUDE_TRANSLATIONS_MAP["NIM"])
 
 
+def get_wikidex_translated_costume(poke_info, costume_name, my_filename):
+    poke_num = poke_info[0]
+
+    if costume_name == "None": return ""
+    # These pokes have the same costume name as others, but its denoted differently in wikidex
+    if poke_num in GO_COSTUME_TRANSLATION_EXCEPTIONS:
+        if costume_name in GO_COSTUME_TRANSLATION_EXCEPTIONS[poke_num]:
+            return GO_COSTUME_TRANSLATION_EXCEPTIONS[poke_num][costume_name]
+        
+    if costume_name in GO_COSTUME_TRANSLATIONS_MAP:
+        return GO_COSTUME_TRANSLATIONS_MAP[costume_name]
+    
+    print(f"Couldn't search for image to download... No respective form in map set for \t{my_filename}")
+    return(EXCLUDE_TRANSLATIONS_MAP["NIM"])
+
+
+
 
 
 #|================================================================================================|
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     GAME IMAGES     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
-def wikidex_translate(my_filename, poke_info):
+def wikidex_game_translate(my_filename, poke_info):
     # poke_info == (poke_num, form_id)
     poke_num = poke_info[0]
     poke_name = get_poke_name(poke_num)
@@ -156,11 +180,28 @@ def determine_file_extension(my_filename):
         else: return ".gif"
 
 
-#########   GO TRANSLATIONS     ############
-# TODO: Adjust game translations to include now nested dict
-# TODO: Check to see if costumes have f forms
-# TODO: Shiny forms work with costumes? Subreddit seems to have a list here: https://www.reddit.com/r/pokemongo/wiki/faq/
-# This will be your best friend: https://pokemongo.fandom.com/wiki/List_of_Event_Pok%C3%A9mon_by_release_date
-# NOTE: Got costume list from https://pokemongo.fandom.com/wiki/Event_Pok%C3%A9mon#Regular_(262_of_265)
-    # Copy/Paste into excel matching source formatting, then func to pull cell starting with #, combining that cell and the two below
-# TODO: Deal w pokes that have forms & events (like meloetta hat zigzagoon only galarian?)
+
+
+#|================================================================================================|
+#|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     GO IMAGES     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+#|================================================================================================|
+
+def wikidex_go_translate(my_filename, poke_info):
+    # poke_info == (poke_num, form_id, costume_id)
+    poke_num = poke_info[0]
+    poke_name = get_poke_name(poke_num)
+    form_name = get_form_name(poke_info[1])
+    costume_name = get_costume_name(poke_info[2])
+
+    translated_costume = get_wikidex_translated_costume(poke_info, costume_name, my_filename)
+    translated_form = get_wikidex_translated_species_form(poke_info, my_filename)
+    adj_poke_name = adjust_poke_name(poke_name, form_name)
+    if poke_name == "Spinda": adj_poke_name += " 9"  # Spinda has predetermined forms in GO, I'm just selecting one here for use
+
+    costume_tag = f" {translated_costume}" if translated_costume != "" else ""
+    form_tag = f" {translated_form}" if translated_form != "" else ""
+    female_tag = " hembra" if "-f" in form_name else ""
+    shiny_tag = " variocolor" if "-Shiny" in my_filename else ""
+
+    wikidex_filename = f"{adj_poke_name}{form_tag}{costume_tag} GO{female_tag}{shiny_tag}.png"
+    return (wikidex_filename)
