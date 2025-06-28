@@ -817,11 +817,13 @@ def get_missing_poke_imgs_by_table(poke_num, table, cursor=None):
     data = defaultdict(list)
     
     with get_cursor(cursor) as cur:
-        cur.execute(f"SELECT poke_num, form_id, filename FROM {table} WHERE poke_num={poke_num} AND does_exist=0")
+        fields = "poke_num, form_id, filename"
+        if table == "go_filenames": fields += ", costume_id"
+        cur.execute(f"SELECT {fields} FROM {table} WHERE poke_num={poke_num} AND does_exist=0")
         result = cur.fetchall()
         for row in result:
             # { (poke_num, form_id) : [missing imgs list] }
-            poke_info = (row["poke_num"], row["form_id"])
+            poke_info = (row["poke_num"], row["form_id"]) if table != "go_filenames" else (row["poke_num"], row["form_id"], row["costume_id"])
             data[poke_info].append(row["filename"])
     return data
 
@@ -1354,8 +1356,8 @@ def generate_drawn_filenames(poke_info, cursor):
 #|================================================================================================|
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~[     POKEMON GO FILENAME TABLE     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
-# NOTE: 658, 710, 711 have costume & misc forms (which is every one that has both except pikachu)
-# NOTE: Only other forms that can be paired with costumes are female
+
+# TODO: Add Shiny cap pikachu, cosplay pikachu when I exclude from HOME, etc
 # NOTE: No spiky eared pichu, check other forms when translating
 
 def populate_go_filenames(cursor):
