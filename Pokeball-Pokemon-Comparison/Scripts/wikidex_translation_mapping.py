@@ -64,6 +64,7 @@ WIKIDEX_ALT_GAME_MAP = {
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     NAME ADJUSTMENTS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
+# TODO: Gen 9 Pokemon with 2 words as their name
 POKE_NAME_ADJ_NEEDED = [
     # (condition, return name)
 
@@ -73,6 +74,18 @@ POKE_NAME_ADJ_NEEDED = [
     (lambda poke_name, form_name: poke_name == "Flabebe", lambda poke_name, form_name: "Flabébé"),
     (lambda poke_name, form_name: poke_name == "Type Null", lambda poke_name, form_name: "Código Cero"),
     (lambda poke_name, form_name: poke_name == "Necrozma" and form_name == "-Form_Ultra", lambda poke_name, form_name: "Ultra-Necrozma"),
+    (lambda poke_name, form_name: poke_name == "Great Tusk", lambda poke_name, form_name: "Colmilargo"),
+    (lambda poke_name, form_name: poke_name == "Scream Tail", lambda poke_name, form_name: "Colagrito"),
+    (lambda poke_name, form_name: poke_name == "Brute Bonnet", lambda poke_name, form_name: "Furioseta"),
+    (lambda poke_name, form_name: poke_name == "Flutter Mane", lambda poke_name, form_name: "Melenaleteo"),
+    (lambda poke_name, form_name: poke_name == "Slither Wing", lambda poke_name, form_name: "Reptalada"),
+    (lambda poke_name, form_name: poke_name == "Sandy Shocks", lambda poke_name, form_name: "Pelarena"),
+    (lambda poke_name, form_name: poke_name == "Iron Treads", lambda poke_name, form_name: "Ferrodada"),
+    (lambda poke_name, form_name: poke_name == "Iron Bundle", lambda poke_name, form_name: "Ferrosaco"),
+    (lambda poke_name, form_name: poke_name == "Iron Hands", lambda poke_name, form_name: "Ferropalmas"),
+    (lambda poke_name, form_name: poke_name == "Iron Jugulis", lambda poke_name, form_name: "Ferrocuello"),
+    (lambda poke_name, form_name: poke_name == "Iron Moth", lambda poke_name, form_name: "Ferropolilla"),
+    (lambda poke_name, form_name: poke_name == "Iron Thorns", lambda poke_name, form_name: "Ferropúas"),
 
     ##### Universal Forms (Needed here bc they add a denoter before the actual pokemon name)
     (lambda poke_name, form_name: "-Mega_X" in form_name, lambda poke_name, form_name: f"Mega-{poke_name} X"),
@@ -111,6 +124,7 @@ WIKIDEX_TYPE_FORM_MAP = {
 }
 
 
+# NOTE: If ever decide to use Wikidex for menu sprites, drawn, etc. this will have to be nested like bulbas
 WIKIDEX_POKE_FORM_TRANSLATION_MAP = {
     # Pikachu
     25: {
@@ -715,4 +729,197 @@ WIKIDEX_POKE_FORM_TRANSLATION_MAP = {
         "-Form_Terastal": "Teracristal",
         "-Form_Stellar": "astral"
     }
+}
+
+
+
+
+#|================================================================================================|
+#|~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~[     GO TRANSLATIONS     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
+#|================================================================================================|
+
+GO_COSTUME_TRANSLATIONS_MAP = {
+    "-Costume_Halloween": "Halloween",
+    "-Costume_Party_Hat_Red": "con gorro de fiesta rojo",
+    "-Costume_Pikachu_Visor": "con gorro de Pikachu",
+    "-Costume_Clone": "clon",
+    "-Costume_Sunglasses": "con gafas de sol",
+    "-Costume_Fashionable": "con disfraz de la Semana de la Moda",
+    "-Costume_Party_Hat_Green": "con gorro de fiesta azul",
+    "-Costume_Akari_Kerchief": "con pañuelo de Kira",
+    "-Costume_Beanie": "Navidad 2019",
+    "-Costume_Brendan_Hat": "con gorro de Brendan-Bruno",
+    "-Costume_Cake": "con disfraz de tarta",
+    "-Costume_Captain": "con gorra de Capi",
+    "-Costume_Charizard_Hat": "con gorro de Charizard",
+    "-Costume_Cherry_Blossoms": "con flores de cerezo",
+    "-Costume_Dapper_Blue_Accents": "con traje elegante azul y gafas",
+    "-Costume_Dapper_Red_Accents": "con traje elegante rojo y gafas",
+    "-Costume_Dapper_Yellow_Accents": "con traje elegante amarillo y gafas",
+    "-Costume_Dawn_Hat": "con el gorro de Maya",
+    "-Costume_Detective": "detective",
+    "-Costume_Explorer": "explorador",
+    "-Costume_Festive_Hat": "con sombrero festivo",
+    "-Costume_Flower_Crown": "con una corona de flores",
+    "-Costume_Flower_Hat": "Primavera",
+    "-Costume_Flying_1": "Volador 2022",
+    "-Costume_Flying_2": "Vuelo con globos especiales",
+    "-Costume_Flying_3": "Vuelo con globos morados",
+    "-Costume_Flying_4": "Vuelo con globos multicolor",
+    "-Costume_Flying_5th_Anniversary": "5 aniversario",
+    "-Costume_Flying_6": "Vuelo con globos naranja",
+    "-Costume_Flying_7": "Vuelo con globos verdes",
+    "-Costume_Formal_Blue_Accents": "con traje elegante azul y monóculo",
+    "-Costume_Formal_Red_Accents": "con traje elegante rojo y monóculo",
+    "-Costume_Formal_Yellow_Accents": "con traje elegante amarillo y monóculo",
+    "-Costume_Gem_Crown_Amethyst": "con corona de amatista",
+    "-Costume_Gem_Crown_Aquamarine": "con corona de aguamarina",
+    "-Costume_Gem_Crown_Malachite": "con corona de malaquita",
+    "-Costume_Gem_Crown_Pyrite": "con corona de pirita",
+    "-Costume_Gem_Crown_Quartz": "con corona de cuarzo",
+    "-Costume_Gracidea_flower": "Gracídea",
+    "-Costume_HF_Custom_Cap": "gorra negra",
+    "-Costume_Halloween_Mischief": "con un disfraz de Travesuras de Halloween",
+    "-Costume_Hilbert_Hat": "con gorra de Lucho",   
+    "-Costume_Hilda_Hat": "con gorra de Liza",
+    "-Costume_Holiday": "con estilo invernal",  # Golduck, psyduck con atuendo festivo for Pikachu/Raichu, con traje de fiesta for spheal/stantler
+    "-Costume_Kariyushi_Shirt": "con una camisa kariyushi de Okinawa",
+    "-Costume_Kurta": "con Kurta",
+    "-Costume_Lucario_Hat": "con gorro de Lucario",
+    "-Costume_Lucas_Hat": "con la boina de León",
+    "-Costume_May_Bow": "con lazo de May-Aura",
+    "-Costume_Meloetta_Hat": "Fest",
+    "-Costume_Mimikyu": "Halloween",
+    "-Costume_Moon_Crown": "con corona de luna",
+    "-Costume_Nate_Visor": "con visera de Rizzo",
+    "-Costume_New_Years_Hat": "con gorrito de Año Nuevo",
+    "-Costume_Party_Hat": "con gorro de fiesta morado",
+    "-Costume_Party_Top_Hat": "con chistera de fiesta",
+    "-Costume_Rayquaza_Hat": "con gorro de Rayquaza",
+    "-Costume_Rei_Cap": "con gorra de Luka",
+    "-Costume_Rosa_Visor": "con visera de Nanci",
+    "-Costume_Safari_Hat": "safari",
+    "-Costume_Saree": "vestido de Sari",
+    "-Costume_Shaymin_Scarf": "con bufanda inspirada en Shaymin",
+    "-Costume_Straw_Hat": "pirata",
+    "-Costume_Summer_Style": "Verano",
+    "-Costume_Sun_Crown": "con corona de sol",
+    "-Costume_T_Shirt_Blue": "con camisa azul de cítricos",
+    "-Costume_T_Shirt_Gold": "con una camisa Batik",
+    "-Costume_T_Shirt_Green": "con una camiseta verde (Flor)",
+    "-Costume_T_Shirt_Purple": "con una camiseta morada (Flor)",
+    "-Costume_TCG_Hat": "con gorra de JCC Pokémon",
+    "-Costume_Tricks_and_Treats": "con disfraz de Halloween",
+    "-Costume_Umbreon_Hat": "con gorro de Umbreon",
+    "-Costume_Winter_Carnival": "con traje de Carnaval de invierno",
+    "-Costume_Witch_Hat": "con gorro de bruja",
+    "-Costume_World_Championships_2022": "con disfraz del Mundial 2022",
+    "-Costume_World_Championships_2023": "con disfraz del Mundial 2023",
+    "-Costume_World_Championships_2024": "del Campeonato Mundial 2024",
+    "-Costume_Original_Cap": "con gorra de Ash",
+    "-Costume_World_Cap": "trotamundo",
+    "-Costume_Crown": "con corona",
+    "-Costume_Spooky_Festival": "con disfraz del Festival Tenebroso",
+    "-Costume_Ribbon": "con lazo",
+    "-Costume_Candela": "con un accesorio de Candela",
+    "-Costume_2020_Glasses": "con gafas de 2020",
+    "-Costume_2021_Glasses": "con gafas de 2021",
+    "-Costume_Cempasuchil_Crown": "con corona de cempasúchil",
+    "-Costume_Spark": "con un accesorio de Spark",
+    "-Costume_Blanche": "con un accesorio de Blanche",
+    "-Costume_Scarf": "con bufanda",
+    "-Costume_Explorer_Hat": "con sombrero de explorador",
+    "-Costume_Holiday_Hat": "con gorro festivo",
+    "-Costume_Satchel": "con mochila",
+    "-Costume_Cowboy_Hat": "vaquero",
+    "-Costume_Nightcap": "con gorro de dormir",
+    "-Costume_Studded_Jacket": "con chaqueta de tachuelas",
+    "-Costume_Armored": "acorazado",
+    "-Costume_New_Years_Outfit": "con traje de Año Nuevo",
+    "-Costume_Day_Scarf": "con bufanda de día",
+    "-Costume_Night_Scarf": "con bufanda de noche",
+    "-Costume_2022_Glasses": "con gafas de 2022",
+    "-Costume_Holiday_Ribbon": "con lazo festivo",
+    "-Costume_Visor": "con visera",
+    "-Costume_Undersea_Holiday": "con traje de fiesta submarina",
+    "-Costume_Holiday_Attire": "con atuendo festivo",
+    "-Costume_Train_Conductor": "locomotora",
+    "-Costume_Hat_with_Liko_Pin": "con sombrero y la horquilla de Liko",
+    "-Costume_9th_Anniversary_Coin": "con una moneda del 9.º aniversario"
+}
+
+
+GO_COSTUME_TRANSLATION_EXCEPTIONS = {
+    # Pikachu
+    25: {
+        "-Costume_Beanie": "con gorro de copo de nieve",
+        "-Costume_Holiday": "con atuendo festivo"
+    },
+    # Raichu
+    26: { "-Costume_Holiday": "con atuendo festivo" },
+
+    # Stantler
+    234: { "-Costume_Holiday": "con traje de fiesta" },
+
+    # Spheal
+    363: { "-Costume_Holiday": "con traje de fiesta" },
+
+    # Greninja line
+    656: { "-Costume_Halloween": "con disfraz de Halloween" },
+    657: { "-Costume_Halloween": "con disfraz de Halloween" },
+    658: { "-Costume_Halloween": "con disfraz de Halloween" },
+    
+    # Decidiueye line
+    722: { "-Costume_Halloween": "con disfraz de Halloween" },
+    723: { "-Costume_Halloween": "con disfraz de Halloween" },
+    724: { "-Costume_Halloween": "con disfraz de Halloween" }    
+}
+
+
+# NOTE: If I ever combine all translation dicts, nest these into wikidex[GO]
+GO_FORM_TRANSLATION_EXCEPTIONS = {
+    # Pikachu
+    25: {
+        #TODO: Add caps
+        "-Form_Cap_Alola": EXCLUDE_TRANSLATIONS_MAP["DNE"],
+        "-Form_Cap_Hoenn": EXCLUDE_TRANSLATIONS_MAP["DNE"],
+        "-Form_Cap_Kalos": EXCLUDE_TRANSLATIONS_MAP["DNE"],
+        "-Form_Cap_Original": "con gorra de Ash",
+        "-Form_Cap_Sinnoh": EXCLUDE_TRANSLATIONS_MAP["DNE"],
+        "-Form_Cap_Unova": EXCLUDE_TRANSLATIONS_MAP["DNE"],
+        "-Form_Cap_Partner": EXCLUDE_TRANSLATIONS_MAP["DNE"],
+        "-Form_Cap_World": "trotamundo",
+
+        "-Form_Cosplay": EXCLUDE_TRANSLATIONS_MAP["DNE"],
+        "-Form_Cosplay_Belle": EXCLUDE_TRANSLATIONS_MAP["DNE"],
+        "-Form_Cosplay_Libre": "Libre",
+        "-Form_Cosplay_PhD": "Erudita",
+        "-Form_Cosplay_Pop_Star": "Estrella del Pop",
+        "-Form_Cosplay_Rock_Star": "Estrella del Rock"
+    },
+
+    # Keldeo
+    647: { "-Form_Ordinary": "habitual" },
+
+    # Xerneas
+    716: { "-Form_Active": "activa" },
+
+    # Zygarde
+    718: { "-Form_50%": "al 50%" },
+
+    # Hoopa
+    720: { "-Form_Confined": "contenido" },
+
+    # Mimikyu
+    778: { "-Form_Disguised": EXCLUDE_TRANSLATIONS_MAP["DNE"] },
+
+    # Eiscue
+    875: { "-Form_Ice_Face": EXCLUDE_TRANSLATIONS_MAP["DNE"] },
+
+    # Morpeko
+    877: { "-Form_Full_Belly": "saciada" },
+
+    # Zacian & Zamazenta
+    888: { "-Form_Hero_of_Many_Battles": "guerrero avezado" },
+    889: { "-Form_Hero_of_Many_Battles": "guerrero avezado" }
 }
