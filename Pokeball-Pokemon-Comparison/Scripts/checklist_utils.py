@@ -2,9 +2,65 @@ import os
 import xlsxwriter
 
 from app_globals import PARENT_DIR
-from db_utils import GAMES, SPRITE_TYPES, HOME_SPRITE_EXCLUDE, POKEBALL_IMG_TYPES
+from db_reference_data import GAMES, SPRITE_TYPES, HOME_SPRITE_EXCLUDE, POKEBALLS, POKEBALL_IMG_TYPES
+from db_utils import get_poke_name, get_all_game_filenames_info, get_all_home_filenames_info, get_all_1D_non_game_filename_info, get_all_pokeball_filename_info
 
 # TODO: Organize into chunks
+
+# TODO: Make class?
+# NOTE: Tablenames matching my database only matter if they're going to be a 1 Dimensional spreadsheet and pull from get_all_1D_non_game_filename_info
+    # Thats why Game Sprites, HOME, and Pokeballs have more readable table names, they have custom functions in db_utils to pull dimensional data
+checklist_sheets = {
+    "Game Sprites": {
+        "Table": "Games",
+        "Is Pokemon": True,
+        "New Poke Divider": True,
+        "Mult Col List": [game[0] for game in GAMES],
+        "Missing Img Getter Callback": get_all_game_filenames_info
+    },
+    "HOME": {
+        "Table": "HOME",
+        "Is Pokemon": True,
+        "New Poke Divider": False,
+        "Mult Col List": [sprite_type for sprite_type in reversed(list(SPRITE_TYPES)) if sprite_type not in HOME_SPRITE_EXCLUDE],  # Reversing bc I like the normal order it's in, so when it gets reversed again in generate headers it will be ordered proper
+        "Missing Img Getter Callback": get_all_home_filenames_info
+    },
+    # "Drawn": {
+    #     "Table": "drawn_filenames",
+    #     "Is Pokemon": True,
+    #     "New Poke Divider": False,
+    #     "Mult Col List": None,
+    #     "Missing Img Getter Callback": get_all_1D_non_game_filename_info
+    # },
+    "Home Menu": {
+        "Table": "home_menu_filenames",
+        "Is Pokemon": True,
+        "New Poke Divider": False,
+        "Mult Col List": None,
+        "Missing Img Getter Callback": get_all_1D_non_game_filename_info
+    },
+    "Bank": {
+        "Table": "bank_filenames",
+        "Is Pokemon": True,
+        "New Poke Divider": False,
+        "Mult Col List": None,
+        "Missing Img Getter Callback": get_all_1D_non_game_filename_info    # TODO: Determine if you want Reg col & Shiny Col
+    },
+    "GO": {
+        "Table": "go_filenames",
+        "Is Pokemon": True,
+        "New Poke Divider": False,
+        "Mult Col List": None,
+        "Missing Img Getter Callback": get_all_1D_non_game_filename_info    # TODO: Determine if you want Reg col & Shiny Col
+    },
+    "Pokeballs": {
+        "Table": "Pokeballs",
+        "Is Pokemon": False,
+        "New Poke Divider": False,
+        "Mult Col List": None,  # NOTE: This gets defined properly right before workbook writing with recreate_pokeball_list_w_gen5_stills_combined_into_one
+        "Missing Img Getter Callback": get_all_pokeball_filename_info
+    }
+}
 
 #|================================================================================================|
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~[     IMAGE CHECKLIST SPREADSHEET     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
@@ -14,20 +70,6 @@ def create_file_checklist_spreadsheet():
     # This will always create a new file that overrides an existing one
     image_checklist_filepath = os.path.join(PARENT_DIR, 'Pokemon Images Checklist.xlsx')
     workbook = xlsxwriter.Workbook(image_checklist_filepath)
-    # TODO: Need to create dict to track all these and deal with header cols, etc. Should just be able to add string/dict of table, etc. and its handled
-    game_sprite_availability_sheet = workbook.add_worksheet('Game Sprites')
-    home_sprite_availability_sheet = workbook.add_worksheet('Home Sprites')
-    #bank_sprite_availability_sheet = workbook.add_worksheet('Bank Sprites')
-    drawn_availability_sheet = workbook.add_worksheet('Drawn')
-    home_menu_sprite_availability_sheet = workbook.add_worksheet('Home Menu Imgs')
-    pokeball_availability_sheet = workbook.add_worksheet('Pokeballs')
-
-    game_sprite_availability_sheet.freeze_panes(1, 3)
-    home_sprite_availability_sheet.freeze_panes(1, 3)
-    #bank_sprite_availability_sheet.freeze_panes(1, 3)
-    drawn_availability_sheet.freeze_panes(1, 3)
-    home_menu_sprite_availability_sheet.freeze_panes(1, 3)
-    pokeball_availability_sheet.freeze_panes(1, 1)
 
     green = '#40D073'
     red = '#C75451'
@@ -45,20 +87,15 @@ def create_file_checklist_spreadsheet():
         "grey": workbook.add_format({'border': 1, 'align': 'center', 'bg_color': grey, 'font_color': grey})
     }
 
-    # NOTE: Tablenames matching my database only matter if they're going to be a 1 Dimensional spreadsheet and pull from get_all_1D_non_game_filename_info
-    # Thats why Game Sprites, HOME, and Pokeballs have more readable table names, they have custom functions in db_utils to pull dimensional data
-    # Game sprite availability
-    write_pokemon_availability(game_sprite_availability_sheet, formats, table="Games")
-    # Home sprite availability
-    write_pokemon_availability(home_sprite_availability_sheet, formats, table="HOME")
-    # Bank sprite availability
-    #write_pokemon_availability(bank_sprite_availability_sheet, formats, table="bank_filenames")
-    # Drawn availability
-    write_pokemon_availability(drawn_availability_sheet, formats, table="drawn_filenames")
-    # Home Menu Imgs availability
-    write_pokemon_availability(home_menu_sprite_availability_sheet, formats, table="home_menu_filenames")
-    # Pokeball availability
-    write_pokeball_availability(pokeball_availability_sheet, formats)
+    checklist_sheets["Pokeballs"]["Mult Col List"] = recreate_pokeball_list_w_gen5_stills_combined_into_one()
+    for sheet_name, sheet_properties in checklist_sheets.items():
+        sheet = sheet_properties["Sheet Object"] = workbook.add_worksheet(sheet_name)
+
+        is_pokemon_sheet = sheet_properties["Is Pokemon"]
+        freeze_cols_to = 3 if is_pokemon_sheet else 1
+        sheet.freeze_panes(1, freeze_cols_to)
+
+        write_file_availability(sheet, formats, sheet_properties, is_pokemon_sheet)
 
     print("Spreadsheet finished!")
     print("Finalizing spreadsheet close...")
@@ -87,14 +124,19 @@ def generate_header_row(worksheet, formats, is_pokemon=True, mult_col_names=None
     else:   # 1 Dimensional sheets
         worksheet.write(0, 3, "Available")
         return None
+    
+
+def write_file_availability(worksheet, formats, sheet_properties, is_pokemon_sheet):
+    if is_pokemon_sheet:
+        write_pokemon_availability(worksheet, formats, sheet_properties)
+    else:
+        write_pokeball_availability(worksheet, formats, sheet_properties)
 
 
-def write_pokeball_availability(worksheet, formats):
-    from db_utils import get_all_pokeball_filename_info
-    from db_reference_data import POKEBALLS
-
-    col_map = determine_header_cols(worksheet, "Pokeballs", formats)
-    pokeball_info = get_all_pokeball_filename_info()
+# TODO: I think you can combine pokemon & pokeball availability functions into one and base differenced on Is Pokemon Sheet
+def write_pokeball_availability(worksheet, formats, sheet_properties):
+    col_map = generate_header_row(worksheet, formats, is_pokemon=False, mult_col_names=sheet_properties["Mult Col List"])  # Returns col name: col num for multi column sheets, else None
+    pokeball_info = sheet_properties["Missing Img Getter Callback"]()    # Gets existence status
     longest_pokeball_name = len(max(POKEBALLS, key=lambda ball: len(ball["name"]))["name"])
 
     # Starting at 1 to account for header row
@@ -103,16 +145,18 @@ def write_pokeball_availability(worksheet, formats):
 
         for img_type_name, file_status in img_type.items():
             col_num = col_map[img_type_name]
-            write_image_status_where_can_be_unobtainable(worksheet, formats, row, col_num, file_status)
+            write_image_status_where_can_be_unobtainable(worksheet, formats, row, col_num, file_status, is_new_poke=False, has_new_poke_divider=False)
 
     worksheet.set_column(0, 0, longest_pokeball_name + 2)   # +2 for padding
 
 
-def write_pokemon_availability(worksheet, formats, table):
-    from db_utils import get_poke_name
+def write_pokemon_availability(worksheet, formats, sheet_properties):
+    table = sheet_properties["Table"]
+    has_new_poke_divider = sheet_properties["New Poke Divider"]
+    get_missing_imgs_callback = sheet_properties["Missing Img Getter Callback"]
 
-    col_map = determine_header_cols(worksheet, table, formats)  # Returns col name: col num for multi column sheets, else None
-    all_file_info = get_file_info(table)    # Gets existence status
+    col_map = generate_header_row(worksheet, formats, is_pokemon=True, mult_col_names=sheet_properties["Mult Col List"])  # Returns col name: col num for multi column sheets, else None
+    all_file_info = get_missing_imgs_callback() if get_missing_imgs_callback is not get_all_1D_non_game_filename_info else get_missing_imgs_callback(table)    # Gets existence status, 1D sheets require table name
 
     longest_values = {"num": 4, "name": 0, "tags": 0}   # For setting col width later
     prev_poke_num = 0
@@ -127,12 +171,14 @@ def write_pokemon_availability(worksheet, formats, table):
         longest_values = determine_if_longest_length_value_yet(longest_values, poke_name, tags)
 
         # Putting a top border on if its a new poke for tables where I want that (currently just game sprites)
-        is_new_poke, sprite_info_format = determine_if_new_poke(prev_poke_num, poke_num, table, formats)
+        is_new_poke, sprite_info_format = determine_if_new_poke(prev_poke_num, poke_num,has_new_poke_divider , formats)
             
+        # Writing file info
         worksheet.write(row, 0, poke_num, sprite_info_format)
         worksheet.write(row, 1, poke_name, sprite_info_format)
         worksheet.write(row, 2, tags, sprite_info_format)
-        write_file_existence(worksheet, formats, table, row, col_map, file_info, is_new_poke)
+        # Writing if file actually exists
+        write_file_existence(worksheet, formats, row, col_map, file_info, is_new_poke, has_new_poke_divider)
         
         prev_poke_num = poke_num
 
@@ -146,24 +192,22 @@ def write_pokemon_availability(worksheet, formats, table):
     print('\r' + ' '*45 + '\r', end='')
 
 
-def write_file_existence(worksheet, formats, table, row, col_map, file_info, is_new_poke):
+def write_file_existence(worksheet, formats, row, col_map, file_info, is_new_poke, has_new_poke_divider):
     if col_map: # If has multiple columns
         for col_name, file_status in file_info.items():
             col_num = col_map[col_name]
-            # is_new_poke will set border divider for new pokemon, currently I only want this in the game sprites file existence spreadsheet
-            is_new_poke = is_new_poke if table == "Games" else False
-            write_image_status_where_can_be_unobtainable(worksheet, formats, row, col_num, file_status, is_new_poke)
+            write_image_status_where_can_be_unobtainable(worksheet, formats, row, col_num, file_status, is_new_poke, has_new_poke_divider)
     else:   # 1 Dimensional
         file_exists = file_info["exists"]
-        format = determine_format_by_boolean_existence(file_exists) 
+        format = determine_format_by_boolean_existence(file_exists, is_new_poke, has_new_poke_divider) 
         worksheet.write(row, 3, "X" if file_exists else "M", formats[format])
 
 
-def determine_if_new_poke(prev_poke_num, poke_num, table, formats):
+def determine_if_new_poke(prev_poke_num, poke_num, has_new_poke_divider, formats):
     if prev_poke_num != poke_num:
         is_new_poke = True
         print(f"\rWriting pokemon #{poke_num} file availability...", end='', flush=True)
-        sprite_info_format = formats["new info"] if table == "Games" else None
+        sprite_info_format = formats["new info"] if has_new_poke_divider else None
     else:
         is_new_poke = False
         sprite_info_format = None
@@ -171,30 +215,13 @@ def determine_if_new_poke(prev_poke_num, poke_num, table, formats):
     return is_new_poke, sprite_info_format
 
 
-def determine_header_cols(worksheet, table, formats):
-    if table == "Games": return generate_header_row(worksheet, formats, mult_col_names=[game[0] for game in GAMES])
-    elif table == "HOME": return generate_header_row(worksheet, formats, mult_col_names=[sprite_type for sprite_type in reversed(list(SPRITE_TYPES)) if sprite_type not in HOME_SPRITE_EXCLUDE])  # Reversing bc I like the normal order it's in, so when it gets reversed again in generate headers it will be ordered proper
-    elif table == "drawn_filenames": return generate_header_row(worksheet, formats)
-    elif table == "home_menu_filenames": return generate_header_row(worksheet, formats)
-    elif table == "Pokeballs":
-        pokeball_cols = [pokeball["name"] for pokeball in POKEBALL_IMG_TYPES]
-        # Combining statics 0-8 into one column, logic for if they all exist or not is in get_all_pokeball_filename_info in db_utils
-        gen5_static_0_index = pokeball_cols.index("Gen5_Battle-Static_0")
-        pokeball_cols[gen5_static_0_index] = "Gen5_Battle-Statics"
-        pokeball_cols = [ball for ball in pokeball_cols if not ball.startswith("Gen5_Battle-Static_")]  # Excludes my combined element because of the underscore
-        return generate_header_row(worksheet, formats, is_pokemon=False, mult_col_names=pokeball_cols)
-    else: raise ValueError(f"Table name ({table}) not recognized")
-
-
-def get_file_info(table):
-    from db_utils import get_all_game_filenames_info, get_all_home_filenames_info, get_all_1D_non_game_filename_info, get_all_pokeball_filename_info
-
-    if table == "Games": return get_all_game_filenames_info()
-    elif table == "HOME": return get_all_home_filenames_info()
-    elif table == "drawn_filenames": return get_all_1D_non_game_filename_info(table)
-    elif table == "home_menu_filenames": return get_all_1D_non_game_filename_info(table)
-    elif table == "Pokeballs": return get_all_pokeball_filename_info()
-    else: raise ValueError(f"Table name ({table}) not recognized")
+def recreate_pokeball_list_w_gen5_stills_combined_into_one():
+    pokeball_cols = [pokeball["name"] for pokeball in POKEBALL_IMG_TYPES]
+    # Combining statics 0-8 into one column, logic for if they all exist or not is in get_all_pokeball_filename_info in db_utils
+    gen5_static_0_index = pokeball_cols.index("Gen5_Battle-Static_0")
+    pokeball_cols[gen5_static_0_index] = "Gen5_Battle-Statics"
+    pokeball_cols = [ball for ball in pokeball_cols if not ball.startswith("Gen5_Battle-Static_")]  # Excludes my combined element because of the underscore
+    return pokeball_cols
 
 
 def determine_if_longest_length_value_yet(longest_values_dict, name, tags):
@@ -205,16 +232,16 @@ def determine_if_longest_length_value_yet(longest_values_dict, name, tags):
     return longest_values_dict
         
 
-def write_image_status_where_can_be_unobtainable(worksheet, formats, row, col_num, file_status, is_new_poke=False):
+def write_image_status_where_can_be_unobtainable(worksheet, formats, row, col_num, file_status, is_new_poke, has_new_poke_divider):
     has_sub = None if "has_sub" not in file_status else file_status["has_sub"]
     text = denote_file_status(file_status["obtainable"], file_status["exists"], has_sub)
-    format = determine_format_w_unobtainable(text, is_new_poke)
+    format = determine_format_w_unobtainable(text, is_new_poke, has_new_poke_divider)
 
     worksheet.write(row, col_num, text, formats[format])
 
 
-def determine_format_w_unobtainable(text, is_new_poke):
-    format = "new " if is_new_poke else ""
+def determine_format_w_unobtainable(text, is_new_poke, has_new_poke_divider):
+    format = "new " if has_new_poke_divider and is_new_poke else ""
     if text == "U": format += "grey"
     elif text in ("S", "X"): format += "green"
     elif text == "M": format += "red"
@@ -222,8 +249,8 @@ def determine_format_w_unobtainable(text, is_new_poke):
 
 
 # is_new_poke = False allows omission of it to not draw the top border for a new item
-def determine_format_by_boolean_existence(is_avail, is_new_poke=False):
-    format = "new " if is_new_poke else ""
+def determine_format_by_boolean_existence(is_avail, is_new_poke, has_new_poke_divider):
+    format = "new " if has_new_poke_divider and is_new_poke else ""
     if is_avail: format += "green"
     if not is_avail: format += "red"
     return format
@@ -249,8 +276,7 @@ def denote_file_status(obtainable, exists, sub=None):
 # NOTE: Tags *could* be pulled via form/sprite type but I do reorder them differently (eg changing -Shiny tag placement in filename)
 def get_poke_tags(poke_name, file_info, table):
     # TODO: Error here....
-    if table == "HOME": 
-        filename = file_info["Default"]["filename"]     # Getting default filename will leave me with tags only (no "-Shiny", "-Animated", etc)
+    if table == "HOME": filename = file_info["Default"]["filename"]     # Getting default filename will leave me with tags only (no "-Shiny", "-Animated", etc)
     elif table == "Games": filename = file_info["SV"]["filename"]   # Any game would work here for tags, just pulling it out of the next loop so it isn't rewritten for each game
     else: filename = file_info["filename"]  # 1 Dimensional tables
     
