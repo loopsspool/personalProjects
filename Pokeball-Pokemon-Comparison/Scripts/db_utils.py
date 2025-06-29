@@ -732,6 +732,27 @@ def get_all_1D_non_game_filename_info(table):
     return data
 
 
+# Used where want spreadsheet cols of Default and Shiny based off table
+def get_all_default_and_shiny_filenames_info(table):
+    connection = sqlite3.connect(DB_PATH)
+    connection.row_factory = sqlite3.Row
+    cursor = connection.cursor()
+
+    cursor.execute(f"SELECT * FROM {table}")
+    rows = cursor.fetchall()
+    data = defaultdict(lambda: defaultdict(dict))
+
+    for row in rows:
+        main_key = (row["poke_num"], row["form_id"]) #if table != "go_filenames" else (row["poke_num"], row["form_id"], row["costume_id"])
+        sprite_type_name = get_sprite_type_name(row["sprite_id"], cursor)
+        data[main_key][sprite_type_name]["filename"] = row["filename"]  # Necessary to get tags
+        data[main_key][sprite_type_name]["exists"] = True if row["does_exist"] else False
+
+    connection.close()
+    for k, v in data.items(): print(f"{k}: {v}")
+    return data
+
+
 def get_all_home_filenames_info():
     connection = sqlite3.connect(DB_PATH)
     connection.row_factory = sqlite3.Row
