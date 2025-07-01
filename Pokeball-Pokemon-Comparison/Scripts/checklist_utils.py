@@ -3,7 +3,7 @@ import xlsxwriter
 
 from app_globals import PARENT_DIR
 from db_reference_data import GAMES, SPRITE_TYPES, HOME_SPRITE_EXCLUDE, POKEBALLS, POKEBALL_IMG_TYPES
-from db_utils import get_poke_name, get_all_game_filenames_info, get_all_home_filenames_info, get_all_1D_non_game_filename_info, get_all_pokeball_filename_info
+from db_utils import get_poke_name, get_all_game_filenames_info, get_all_home_filenames_info, get_all_default_and_shiny_filenames_info, get_all_1D_non_game_filename_info, get_all_pokeball_filename_info
 
 # TODO: Organize into chunks
 
@@ -11,52 +11,59 @@ from db_utils import get_poke_name, get_all_game_filenames_info, get_all_home_fi
 # NOTE: Tablenames matching my database only matter if they're going to be a 1 Dimensional spreadsheet and pull from get_all_1D_non_game_filename_info
     # Thats why Game Sprites, HOME, and Pokeballs have more readable table names, they have custom functions in db_utils to pull dimensional data
 checklist_sheets = {
-    "Game Sprites": {
-        "Table": "Games",
-        "Is Pokemon": True,
-        "New Poke Divider": True,
-        "Mult Col List": [game[0] for game in GAMES],
-        "Missing Img Getter Callback": get_all_game_filenames_info
-    },
-    "HOME": {
-        "Table": "HOME",
-        "Is Pokemon": True,
-        "New Poke Divider": False,
-        "Mult Col List": [sprite_type for sprite_type in reversed(list(SPRITE_TYPES)) if sprite_type not in HOME_SPRITE_EXCLUDE],  # Reversing bc I like the normal order it's in, so when it gets reversed again in generate headers it will be ordered proper
-        "Missing Img Getter Callback": get_all_home_filenames_info
-    },
+    # "Game Sprites": {
+    #     "Table": "Games",
+    #     "Is Pokemon": True,
+    #     "New Poke Divider": True,
+    #     "Contains Unobtainables": True,
+    #     "Mult Col List": [game[0] for game in GAMES],
+    #     "Missing Img Getter Callback": get_all_game_filenames_info
+    # },
+    # "HOME": {
+    #     "Table": "HOME",
+    #     "Is Pokemon": True,
+    #     "New Poke Divider": False,
+    #     "Contains Unobtainables": True,
+    #     "Mult Col List": [sprite_type for sprite_type in reversed(list(SPRITE_TYPES)) if sprite_type not in HOME_SPRITE_EXCLUDE],  # Reversing bc I like the normal order it's in, so when it gets reversed again in generate headers it will be ordered proper
+    #     "Missing Img Getter Callback": get_all_home_filenames_info
+    # },
     # "Drawn": {
     #     "Table": "drawn_filenames",
     #     "Is Pokemon": True,
     #     "New Poke Divider": False,
+    #     "Contains Unobtainables": False,
     #     "Mult Col List": None,
     #     "Missing Img Getter Callback": get_all_1D_non_game_filename_info
     # },
-    "Home Menu": {
+    "HOME Menu": {
         "Table": "home_menu_filenames",
         "Is Pokemon": True,
         "New Poke Divider": False,
+        "Contains Unobtainables": False,
         "Mult Col List": None,
         "Missing Img Getter Callback": get_all_1D_non_game_filename_info
     },
     "Bank": {
-        "Table": "bank_filenames",
+        "Table": "all_bank_filenames",
         "Is Pokemon": True,
         "New Poke Divider": False,
-        "Mult Col List": None,
-        "Missing Img Getter Callback": get_all_1D_non_game_filename_info    # TODO: Determine if you want Reg col & Shiny Col
+        "Contains Unobtainables": True,
+        "Mult Col List": ["-Shiny", "Default"], # Will be reversed on generation
+        "Missing Img Getter Callback": get_all_default_and_shiny_filenames_info
     },
     "GO": {
         "Table": "go_filenames",
         "Is Pokemon": True,
         "New Poke Divider": False,
-        "Mult Col List": None,
-        "Missing Img Getter Callback": get_all_1D_non_game_filename_info    # TODO: Determine if you want Reg col & Shiny Col
+        "Contains Unobtainables": False,    # Technically, GO does have unobtainables but a list is too much effort to create (mainly for non-released as some pokes are in the game files that I have images for that aren't in GO yet and all sources have been unreliable/too difficult to automate)
+        "Mult Col List": ["-Shiny", "Default"], # Will be reversed on generation
+        "Missing Img Getter Callback": get_all_default_and_shiny_filenames_info
     },
     "Pokeballs": {
         "Table": "Pokeballs",
         "Is Pokemon": False,
         "New Poke Divider": False,
+        "Contains Unobtainables": True,
         "Mult Col List": None,  # NOTE: This gets defined properly right before workbook writing with recreate_pokeball_list_w_gen5_stills_combined_into_one
         "Missing Img Getter Callback": get_all_pokeball_filename_info
     }
@@ -133,7 +140,6 @@ def write_file_availability(worksheet, formats, sheet_properties, is_pokemon_she
         write_pokeball_availability(worksheet, formats, sheet_properties)
 
 
-# TODO: I think you can combine pokemon & pokeball availability functions into one and base differenced on Is Pokemon Sheet
 def write_pokeball_availability(worksheet, formats, sheet_properties):
     col_map = generate_header_row(worksheet, formats, is_pokemon=False, mult_col_names=sheet_properties["Mult Col List"])  # Returns col name: col num for multi column sheets, else None
     pokeball_info = sheet_properties["Missing Img Getter Callback"]()    # Gets existence status
@@ -156,7 +162,7 @@ def write_pokemon_availability(worksheet, formats, sheet_properties):
     get_missing_imgs_callback = sheet_properties["Missing Img Getter Callback"]
 
     col_map = generate_header_row(worksheet, formats, is_pokemon=True, mult_col_names=sheet_properties["Mult Col List"])  # Returns col name: col num for multi column sheets, else None
-    all_file_info = get_missing_imgs_callback() if get_missing_imgs_callback is not get_all_1D_non_game_filename_info else get_missing_imgs_callback(table)    # Gets existence status, 1D sheets require table name
+    all_file_info = get_missing_imgs_callback() if get_missing_imgs_callback not in (get_all_1D_non_game_filename_info, get_all_default_and_shiny_filenames_info) else get_missing_imgs_callback(table)    # Gets existence status, 1D sheets require table name
 
     longest_values = {"num": 4, "name": 0, "tags": 0}   # For setting col width later
     prev_poke_num = 0
@@ -165,7 +171,7 @@ def write_pokemon_availability(worksheet, formats, sheet_properties):
     for row, (poke_info, file_info) in enumerate(all_file_info.items(), start=1):
         poke_num = poke_info[0]
         poke_name = get_poke_name(poke_num)
-        tags = get_poke_tags(poke_name, file_info, table)
+        tags = get_poke_tags(poke_name, file_info, sheet_properties)
 
         # Finding longest text to set column width to
         longest_values = determine_if_longest_length_value_yet(longest_values, poke_name, tags)
@@ -178,7 +184,7 @@ def write_pokemon_availability(worksheet, formats, sheet_properties):
         worksheet.write(row, 1, poke_name, sprite_info_format)
         worksheet.write(row, 2, tags, sprite_info_format)
         # Writing if file actually exists
-        write_file_existence(worksheet, formats, row, col_map, file_info, is_new_poke, has_new_poke_divider)
+        write_file_existence(worksheet, formats, row, col_map, file_info, is_new_poke, has_new_poke_divider, sheet_properties["Contains Unobtainables"])
         
         prev_poke_num = poke_num
 
@@ -192,11 +198,17 @@ def write_pokemon_availability(worksheet, formats, sheet_properties):
     print('\r' + ' '*45 + '\r', end='')
 
 
-def write_file_existence(worksheet, formats, row, col_map, file_info, is_new_poke, has_new_poke_divider):
+def write_file_existence(worksheet, formats, row, col_map, file_info, is_new_poke, has_new_poke_divider, has_unobtainbles):
     if col_map: # If has multiple columns
         for col_name, file_status in file_info.items():
             col_num = col_map[col_name]
-            write_image_status_where_can_be_unobtainable(worksheet, formats, row, col_num, file_status, is_new_poke, has_new_poke_divider)
+            if has_unobtainbles:
+                write_image_status_where_can_be_unobtainable(worksheet, formats, row, col_num, file_status, is_new_poke, has_new_poke_divider)
+            else:
+                file_exists = file_status["exists"]
+                #except: file_exists = file_status["-Shiny"]["exists"]   # This is basically just for Minior and Alcremie, since they have specific forms for their shinies that don't have default forms... TODO: Can make an unobtainable table for Bank and GO 
+                format = determine_format_by_boolean_existence(file_exists, is_new_poke, has_new_poke_divider) 
+                worksheet.write(row, col_num, "X" if file_exists else "M", formats[format])
     else:   # 1 Dimensional
         file_exists = file_info["exists"]
         format = determine_format_by_boolean_existence(file_exists, is_new_poke, has_new_poke_divider) 
@@ -274,10 +286,12 @@ def denote_file_status(obtainable, exists, sub=None):
 
 
 # NOTE: Tags *could* be pulled via form/sprite type but I do reorder them differently (eg changing -Shiny tag placement in filename)
-def get_poke_tags(poke_name, file_info, table):
-    # TODO: Error here....
-    if table == "HOME": filename = file_info["Default"]["filename"]     # Getting default filename will leave me with tags only (no "-Shiny", "-Animated", etc)
-    elif table == "Games": filename = file_info["SV"]["filename"]   # Any game would work here for tags, just pulling it out of the next loop so it isn't rewritten for each game
+def get_poke_tags(poke_name, file_info, sheet_properties):
+    # NOTE: Any specific tag exception must come before the Mult Col List, as that will apply to any non-1D table, and assumes columns are sprite types (-Shiny, -Animated, atc)
+    if sheet_properties["Table"] == "Games": filename = file_info["SV"]["filename"]   # Any game would work here for tags, just pulling it out of the next loop so it isn't rewritten for each game
+    elif sheet_properties["Mult Col List"]: 
+        if "Default" in file_info: filename = file_info["Default"]["filename"]     # Getting default filename will leave me with tags only (no "-Shiny", "-Animated", etc)
+        elif "-Shiny" in file_info: filename = file_info["-Shiny"]["filename"]     # This is basically just for Minior and Alcremie, since they have specific forms for their shinies that don't have default forms... TODO: Can make an unobtainable table for Bank and GO
     else: filename = file_info["filename"]  # 1 Dimensional tables
     
     # Getting tags from filename split based off first hyphen
@@ -290,4 +304,5 @@ def get_poke_tags(poke_name, file_info, table):
         tags = "-" + split_filename[len(split_filename)-1]
     else:   # If theres no tags in the filename (Default), return an empty string
         tags = ""
+
     return tags
