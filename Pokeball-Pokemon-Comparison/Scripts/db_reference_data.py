@@ -5,7 +5,7 @@ from app_globals import lazy_import
 #|================================================================================================|
 
 # NOTE: These are in chronological order and that is IMPORTANT since I rely on game ids sometimes for form filtering (eg mid gen form introductions)
-GAMES = (
+GAMES = [
     ("Red_Green", 1),
     ("Red_Blue", 1),
     ("Yellow", 1),
@@ -26,7 +26,7 @@ GAMES = (
     ("BDSP", 8),
     ("LA", 8),
     ("SV", 9)
-)
+]
 
 
 # If no file exists for the key game, it may be a recycled sprite from the value games
@@ -191,7 +191,13 @@ NO_COSTUMES_WITH_THESE_FORMS = {
 
     # SPECIFIC POKEMON
     "no pikachu forms with costume": lambda poke_num, form_name, costume_name: poke_num == 25 and form_name != "Default",
-    "meloetta hat only for galarian forms of ponyta and zigzagoon": lambda poke_num, form_name, costume_name: poke_num in (77, 263) and costume_name == "-Costume_Meloetta_Hat" and form_name != "-Region_Galar"
+    "meloetta hat only for galarian forms of ponyta and zigzagoon": lambda poke_num, form_name, costume_name: poke_num in (77, 263) and costume_name == "-Costume_Meloetta_Hat" and form_name != "-Region_Galar",
+    "candela costume only on regular ponyta and rapidash": lambda poke_num, form_name, costume_name: poke_num in (77, 78) and costume_name == "-Costume_Candela" and form_name != "Default"
+}
+
+DOESNT_EXIST_IN_GO = {
+    # SPECIFIC POKEMON
+    "no spiky eared pichu": lambda poke_num, form_name, costume_name: poke_num == 172 and form_name == "-Form_Spiky_Eared"
 }
 
 
