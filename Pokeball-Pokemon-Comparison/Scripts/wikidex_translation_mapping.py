@@ -86,6 +86,14 @@ POKE_NAME_ADJ_NEEDED = [
     (lambda poke_name, form_name: poke_name == "Iron Jugulis", lambda poke_name, form_name: "Ferrocuello"),
     (lambda poke_name, form_name: poke_name == "Iron Moth", lambda poke_name, form_name: "Ferropolilla"),
     (lambda poke_name, form_name: poke_name == "Iron Thorns", lambda poke_name, form_name: "Ferropúas"),
+    (lambda poke_name, form_name: poke_name == "Roaring Moon", lambda poke_name, form_name: "Bramaluna"),
+    (lambda poke_name, form_name: poke_name == "Iron Valiant", lambda poke_name, form_name: "Ferropaladín"),
+    (lambda poke_name, form_name: poke_name == "Walking Wake", lambda poke_name, form_name: "Ondulagua"),
+    (lambda poke_name, form_name: poke_name == "Iron Leaves", lambda poke_name, form_name: "Ferroverdor"),
+    (lambda poke_name, form_name: poke_name == "Gouging Fire", lambda poke_name, form_name: "Flamariete"),
+    (lambda poke_name, form_name: poke_name == "Raging Bolt", lambda poke_name, form_name: "Electrofuria"),
+    (lambda poke_name, form_name: poke_name == "Iron Boulder", lambda poke_name, form_name: "Ferromole"),
+    (lambda poke_name, form_name: poke_name == "Iron Crown", lambda poke_name, form_name: "Ferrotesta"),
 
     ##### Universal Forms (Needed here bc they add a denoter before the actual pokemon name)
     (lambda poke_name, form_name: "-Mega_X" in form_name, lambda poke_name, form_name: f"Mega-{poke_name} X"),
@@ -788,7 +796,7 @@ GO_COSTUME_TRANSLATIONS_MAP = {
     "-Costume_Lucario_Hat": "con gorro de Lucario",
     "-Costume_Lucas_Hat": "con la boina de León",
     "-Costume_May_Bow": "con lazo de May-Aura",
-    "-Costume_Meloetta_Hat": "Fest",
+    "-Costume_Meloetta_Hat": "GO Fest",
     "-Costume_Mimikyu": "Halloween",
     "-Costume_Moon_Crown": "con corona de luna",
     "-Costume_Nate_Visor": "con visera de Rizzo",
@@ -896,6 +904,12 @@ GO_FORM_TRANSLATION_EXCEPTIONS = {
         "-Form_Cosplay_PhD": "Erudita",
         "-Form_Cosplay_Pop_Star": "Estrella del Pop",
         "-Form_Cosplay_Rock_Star": "Estrella del Rock"
+    },
+
+    # Cherrim
+    421: {
+        "-Form_Overcast": "encapotada",
+        "-Form_Sunshine": "soleada"
     },
 
     # Keldeo
