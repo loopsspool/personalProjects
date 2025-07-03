@@ -18,7 +18,7 @@ def wikidex_scrape_pokemon(poke_num, allow_download=False):
     # HOME CAN come from here, but prefer Root on X
     #scrape_imgs(poke_num, "obtainable_game_filenames", wikidex_game_translate, exclusions=wikidex_doesnt_have_images_for, has_animation=True, save_path=save_directories["Game Sprites"]["path"], config_dict=wikidex_scrape_config)
     #scrape_imgs(poke_num, "obtainable_home_filenames", wikidex_game_translate, exclusions=None, has_animation=True, save_path=save_directories["HOME"]["path"], config_dict=wikidex_scrape_config)
-    scrape_imgs(poke_num, "go_filenames", wikidex_go_translate, exclusions=None, has_animation=False, save_path=save_directories["GO"]["path"], config_dict=wikidex_scrape_config)
+    scrape_imgs(poke_num, "obtainable_go_filenames", wikidex_go_translate, exclusions=None, has_animation=False, save_path=save_directories["GO"]["path"], config_dict=wikidex_scrape_config)
 
 
 
@@ -200,8 +200,9 @@ def wikidex_go_translate(my_filename, poke_info):
 
     costume_tag = f" {translated_costume}" if translated_costume != "" else ""
     form_tag = f" {translated_form}" if translated_form != "" else ""
+    gigantamax_tag = " Gigamax" if "-Gigantamax" in form_name else ""
     female_tag = " hembra" if "-f" in form_name else ""
     shiny_tag = " variocolor" if "-Shiny" in my_filename else ""
 
-    wikidex_filename = f"{adj_poke_name}{form_tag}{costume_tag} GO{female_tag}{shiny_tag}.png"
+    wikidex_filename = f"{adj_poke_name}{form_tag}{gigantamax_tag}{costume_tag} GO{female_tag}{shiny_tag}.png"
     return (wikidex_filename)
