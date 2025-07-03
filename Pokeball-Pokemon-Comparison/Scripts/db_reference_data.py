@@ -185,16 +185,36 @@ NO_DRAWN_FORMS = {
 for k,v in SHARED_SHINY_FORMS.items(): NO_DRAWN_FORMS[k] = set(v)
 
 
-# TODO: Maybe change dict name to reflect will be nonexistant in db?
 # NOTE: This will exclude from the database entirely, if you want to mark it as unobtainable it should go in DOESNT_EXIST_IN_GO
 NO_COSTUMES_EXIST_WITH_THESE_FORMS = {
     # UNIVERSAL
-    # NOTE: Only excluded ponyta and zigzagoon numbers, not specifying galarian form w meloetta costume
-    "no universal form costumes (except default and female) except galarian ponyta & zigzagoon w meloetta hat": lambda poke_num, form_name, costume_name: any(u_form in form_name for u_form in ("Mega", "Region", "Gigantamax"))  and costume_name != "None" and poke_num not in (77, 263),
+    "no universal form costumes (except default and female) except galarian ponyta & zigzagoon w meloetta hat": lambda poke_num, form_name, costume_name: any(u_form in form_name for u_form in ("Mega", "Region", "Gigantamax"))  and costume_name != "None" and poke_isnt_allowed_u_form_w_costume(poke_num, form_name, costume_name),
 
     # SPECIFIC POKEMON
     "no pikachu forms with costume except default and female": lambda poke_num, form_name, costume_name: poke_num == 25 and form_name != "Default" and form_name != "-f" and costume_name != "None",
 }
+
+
+# NOTE: List value allows any of the forms listed to be paired with the costume key. This WILL exclude Default (original region) form if not listed -- EXCLUDED from db, not just marked unobtainable
+# NOTE: This ONLY applies to (non default/female) universal forms, species-specific forms paired with costumes are enabled by default, unless excluded explicity in UNOBATAINABLE_IN_GO (see Pikachu)
+POKES_WITH_COSTUMES_AND_UNIVERSAL_FORMS = {
+    # Ponyta
+    77: {
+        "-Costume_Meloetta_Hat": ["-Region_Galar"]
+    },
+    # Zigzagoon
+    263: {
+        "-Costume_Meloetta_Hat": ["-Region_Galar"]
+    }
+}
+
+def poke_isnt_allowed_u_form_w_costume(poke_num, form_name, costume_name):
+    if poke_num in POKES_WITH_COSTUMES_AND_UNIVERSAL_FORMS:
+        poke_info = POKES_WITH_COSTUMES_AND_UNIVERSAL_FORMS[poke_num]
+        for costume, u_forms in poke_info.items():
+            if any(u_form == form_name for u_form in u_forms) and costume_name == costume:
+                return False
+    return True
 
 
 # TODO: Will need sprite_type to mark shiny locked mons as unobtainable
@@ -202,12 +222,12 @@ NO_COSTUMES_EXIST_WITH_THESE_FORMS = {
 UNOBTAINABLE_IN_GO = {
     # UNIVERSAL
     "no pokemon existing unless marked as such in info spreadsheet": lambda poke_num, form_name, costume_name: lazy_import("spreadsheet_utils").poke_isnt_in_game(poke_num, "GO"),
+    # NOTE: Costume name check required here, otherwise this will apply to all forms/costumes
+    "no pokemon costumes w universal forms unless exempted in POKES_WITH_COSTUMES_AND_UNIVERSAL_FORMS": lambda poke_num, form_name, costume_name: poke_num in POKES_WITH_COSTUMES_AND_UNIVERSAL_FORMS and any(costume == costume_name for costume in POKES_WITH_COSTUMES_AND_UNIVERSAL_FORMS[poke_num].keys()) and poke_isnt_allowed_u_form_w_costume(poke_num, form_name, costume_name),
 
     # SPECIFIC POKEMON COSTUMES
     "no female kurta pikachu": lambda poke_num, form_name, costume_name: poke_num == 25 and costume_name == "-Costume_Kurta" and form_name == "-f",
     "no male saree pikachu": lambda poke_num, form_name, costume_name: poke_num == 25 and costume_name == "-Costume_Saree" and form_name == "Default",
-    "meloetta hat only for galarian forms of ponyta and zigzagoon": lambda poke_num, form_name, costume_name: poke_num in (77, 263) and costume_name == "-Costume_Meloetta_Hat" and form_name != "-Region_Galar",
-    "candela costume only on regular ponyta and rapidash": lambda poke_num, form_name, costume_name: poke_num in (77, 78) and costume_name == "-Costume_Candela" and form_name != "Default",
                                                        
     # SPECIFIC POKEMON FORMS
     # TODO: Add Gigantamaxes not in game yet (see spreadsheet AFTER deleting Gigantamax file and running scrape again)
