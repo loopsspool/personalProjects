@@ -222,7 +222,7 @@ def create_db():
         costume_id INTEGER NOT NULL,
         sprite_id INTEGER NOT NULL,
         obtainable BOOLEAN NOT NULL,
-        does_exist BOOLEAN NOT NULL,
+        does_exist BOOLEAN,
         FOREIGN KEY (poke_num, form_id) REFERENCES poke_forms,
         FOREIGN KEY (poke_num, costume_id) REFERENCES poke_costumes,
         FOREIGN KEY (sprite_id) REFERENCES sprite_types(id)
@@ -1421,8 +1421,8 @@ def generate_drawn_filenames(poke_info, cursor):
 #|================================================================================================|
 
 # TODO: Add Shiny cap pikachu, cosplay pikachu when I exclude from HOME, etc
-# NOTE: No spiky eared pichu, check other forms when translating
 
+# TODO: Print what pokemon # on like other filename generators
 def populate_go_filenames(cursor):
     print("Populating GO filenames into database...")
     
@@ -1444,14 +1444,12 @@ def populate_go_filenames(cursor):
                 filename = generate_go_filename(poke_info, sprite_type, costume_name)
                 file_ids = {"filename": filename, "poke_num": poke_num, "form_id": poke_form[1], "sprite_id": sprite_id, "costume_id": costume_id, "does_exist": None}
 
-                # TODO: This isn't adding to all_go_filenames (see spiky eared pichu)
-                if should_skip_go_sprite(poke_num, form_name, sprite_type):
+                if unobtainable_in_go(poke_num, form_name, costume_name):
                     insert_into_table_w_unobtainables(cursor, obtainable=False, table="all_go_filenames", **file_ids)
-                    continue
-                
-                file_ids["does_exist"] = file_exists(filename, save_directories["GO"]["files"])
-                insert_into_table(cursor, "obtainable_go_filenames", **file_ids)
-                insert_into_table_w_unobtainables(cursor, obtainable=True, table="all_go_filenames", **file_ids)
+                else:
+                    file_ids["does_exist"] = file_exists(filename, save_directories["GO"]["files"])
+                    insert_into_table(cursor, "obtainable_go_filenames", **file_ids)
+                    insert_into_table_w_unobtainables(cursor, obtainable=True, table="all_go_filenames", **file_ids)
 
 
 def generate_go_filename(poke_info, sprite_type, costume_name):
@@ -1467,15 +1465,15 @@ def generate_go_filename(poke_info, sprite_type, costume_name):
 
 
 def costume_cant_be_equipped(poke_num, form_name, costume_name):
-    for exclusion in NO_COSTUMES_WITH_THESE_FORMS.values():
+    for exclusion in NO_COSTUMES_EXIST_WITH_THESE_FORMS.values():
         if exclusion(poke_num, form_name, costume_name):
             return True
     return False
 
 
-def should_skip_go_sprite(poke_num, form_name, sprite_type):
-    for exclusion in DOESNT_EXIST_IN_GO.values():
-        if exclusion(poke_num, form_name, sprite_type):
+def unobtainable_in_go(poke_num, form_name, costume_name):
+    for exclusion in UNOBTAINABLE_IN_GO.values():
+        if exclusion(poke_num, form_name, costume_name):
             return True
     return False
 
