@@ -217,37 +217,46 @@ def poke_isnt_allowed_u_form_w_costume(poke_num, form_name, costume_name):
     return True
 
 
+# TODO: See if these are shiny locked across all games?
+GO_SHINY_LOCKED_POKES = {720, 721, 789, 891, 892, 893, 905}
+
+# TODO: Change to all forms and exclude missing Hisuian, etc
+GO_NO_GIGANTAMAX_FORMS = {12, 25, 52, 133, 569, 809, 823, 826, 834, 839, 841, 842, 844, 851, 858, 861, 869, 879, 884}
+
+
 # TODO: Will need sprite_type to mark shiny locked mons as unobtainable
 # NOTE: This will be marked as unobtainable in the database, if you want to exclude it entirely it should go in NO_COSTUMES_EXIST_WITH_THESE_FORMS
 UNOBTAINABLE_IN_GO = {
     # UNIVERSAL
-    "no pokemon existing unless marked as such in info spreadsheet": lambda poke_num, form_name, costume_name: lazy_import("spreadsheet_utils").poke_isnt_in_game(poke_num, "GO"),
+    "no pokemon existing unless marked as such in info spreadsheet": lambda poke_num, form_name, costume_name, sprite_type: lazy_import("spreadsheet_utils").poke_isnt_in_game(poke_num, "GO"),
     # NOTE: Costume name check required here, otherwise this will apply to all forms/costumes
-    "no pokemon costumes w universal forms unless exempted in POKES_WITH_COSTUMES_AND_UNIVERSAL_FORMS": lambda poke_num, form_name, costume_name: poke_num in POKES_WITH_COSTUMES_AND_UNIVERSAL_FORMS and any(costume == costume_name for costume in POKES_WITH_COSTUMES_AND_UNIVERSAL_FORMS[poke_num].keys()) and poke_isnt_allowed_u_form_w_costume(poke_num, form_name, costume_name),
+    "no pokemon costumes w universal forms unless exempted in POKES_WITH_COSTUMES_AND_UNIVERSAL_FORMS": lambda poke_num, form_name, costume_name, sprite_type: poke_num in POKES_WITH_COSTUMES_AND_UNIVERSAL_FORMS and any(costume == costume_name for costume in POKES_WITH_COSTUMES_AND_UNIVERSAL_FORMS[poke_num].keys()) and poke_isnt_allowed_u_form_w_costume(poke_num, form_name, costume_name),
+    "no shiny clone costumes": lambda poke_num, form_name, costume_name, sprite_type: costume_name == "-Costume_Clone" and "-Shiny" in sprite_type,
+    "no shiny locked pokemon": lambda poke_num, form_name, costume_name, sprite_type: poke_num in GO_SHINY_LOCKED_POKES and "-Shiny" in sprite_type,
 
     # SPECIFIC POKEMON COSTUMES
-    "no female kurta pikachu": lambda poke_num, form_name, costume_name: poke_num == 25 and costume_name == "-Costume_Kurta" and form_name == "-f",
-    "no male saree pikachu": lambda poke_num, form_name, costume_name: poke_num == 25 and costume_name == "-Costume_Saree" and form_name == "Default",
+    "no female kurta pikachu": lambda poke_num, form_name, costume_name, sprite_type: poke_num == 25 and costume_name == "-Costume_Kurta" and form_name == "-f",
+    "no male saree pikachu": lambda poke_num, form_name, costume_name, sprite_type: poke_num == 25 and costume_name == "-Costume_Saree" and form_name == "Default",
                                                        
     # SPECIFIC POKEMON FORMS
     # TODO: Add Gigantamaxes not in game yet (see spreadsheet AFTER deleting Gigantamax file and running scrape again)
-    "no cap pikachus except original and world": lambda poke_num, form_name, costume_name: poke_num == 25 and "-Form_Cap" in form_name and form_name not in ("-Form_Cap_Original", "-Form_Cap_World"),
-    "no default cosplay or belle cosplay pikachus": lambda poke_num, form_name, costume_name: poke_num == 25 and form_name in ("-Form_Cosplay", "-Form_Cosplay_Belle"),
-    "no spiky eared pichu": lambda poke_num, form_name, costume_name: poke_num == 172 and form_name == "-Form_Spiky_Eared",
-    "no ??? type Arceus": lambda poke_num, form_name, costume_name: poke_num == 493 and form_name == "-Form_Qmark",
-    "no Ash Greninja": lambda poke_num, form_name, costume_name: poke_num == 658 and form_name == "-Form_Ash",
-    "no eternal flower floette": lambda poke_num, form_name, costume_name: poke_num == 670 and form_name == "-Form_Eternal_Flower",
-    "no radiant sun solgaleo": lambda poke_num, form_name, costume_name: poke_num == 791 and form_name == "-Form_Radiant_Sun",
-    "no full moon lunala": lambda poke_num, form_name, costume_name: poke_num == 792 and form_name == "-Form_Full_Moon",
-    "no ultra necrozma": lambda poke_num, form_name, costume_name: poke_num == 800 and form_name == "-Form_Ultra",
-    "no stamped form sinistea": lambda poke_num, form_name, costume_name: poke_num == 854 and form_name != "Default",
-    "no stamped form polteageist": lambda poke_num, form_name, costume_name: poke_num == 855 and form_name != "Default",
-    "no eternamax eternatus": lambda poke_num, form_name, costume_name: poke_num == 890 and form_name == "-Form_Eternamax",
-    "no dada zarude": lambda poke_num, form_name, costume_name: poke_num == 893 and form_name == "-Form_Dada",
-    "no ursaluna bloodmoon": lambda poke_num, form_name, costume_name: poke_num == 901 and form_name == "-Form_Bloodmoon",
-    "no chest form gimmighoul": lambda poke_num, form_name, costume_name: poke_num == 999 and form_name == "-Form_Chest",
-    "no stamped form poltchageist": lambda poke_num, form_name, costume_name: poke_num == 1012 and form_name != "Default",
-    "no stamped form sinistcha": lambda poke_num, form_name, costume_name: poke_num == 1013 and form_name != "Default"
+    "no cap pikachus except original and world": lambda poke_num, form_name, costume_name, sprite_type: poke_num == 25 and "-Form_Cap" in form_name and form_name not in ("-Form_Cap_Original", "-Form_Cap_World"),
+    "no default cosplay or belle cosplay pikachus": lambda poke_num, form_name, costume_name, sprite_type: poke_num == 25 and form_name in ("-Form_Cosplay", "-Form_Cosplay_Belle"),
+    "no spiky eared pichu": lambda poke_num, form_name, costume_name, sprite_type: poke_num == 172 and form_name == "-Form_Spiky_Eared",
+    "no ??? type Arceus": lambda poke_num, form_name, costume_name, sprite_type: poke_num == 493 and form_name == "-Form_Qmark",
+    "no Ash Greninja": lambda poke_num, form_name, costume_name, sprite_type: poke_num == 658 and form_name == "-Form_Ash",
+    "no eternal flower floette": lambda poke_num, form_name, costume_name, sprite_type: poke_num == 670 and form_name == "-Form_Eternal_Flower",
+    "no radiant sun solgaleo": lambda poke_num, form_name, costume_name, sprite_type: poke_num == 791 and form_name == "-Form_Radiant_Sun",
+    "no full moon lunala": lambda poke_num, form_name, costume_name, sprite_type: poke_num == 792 and form_name == "-Form_Full_Moon",
+    "no ultra necrozma": lambda poke_num, form_name, costume_name, sprite_type: poke_num == 800 and form_name == "-Form_Ultra",
+    "no stamped form sinistea": lambda poke_num, form_name, costume_name, sprite_type: poke_num == 854 and form_name != "Default",
+    "no stamped form polteageist": lambda poke_num, form_name, costume_name, sprite_type: poke_num == 855 and form_name != "Default",
+    "no eternamax eternatus": lambda poke_num, form_name, costume_name, sprite_type: poke_num == 890 and form_name == "-Form_Eternamax",
+    "no dada zarude": lambda poke_num, form_name, costume_name, sprite_type: poke_num == 893 and form_name == "-Form_Dada",
+    "no ursaluna bloodmoon": lambda poke_num, form_name, costume_name, sprite_type: poke_num == 901 and form_name == "-Form_Bloodmoon",
+    "no chest form gimmighoul": lambda poke_num, form_name, costume_name, sprite_type: poke_num == 999 and form_name == "-Form_Chest",
+    "no stamped form poltchageist": lambda poke_num, form_name, costume_name, sprite_type: poke_num == 1012 and form_name != "Default",
+    "no stamped form sinistcha": lambda poke_num, form_name, costume_name, sprite_type: poke_num == 1013 and form_name != "Default"
 }
 
 
