@@ -287,7 +287,6 @@ def create_db():
     );
     """)
 
-    # TODO: Add GO, make sure to add to populate db and update db
     connection.commit()
     connection.close()
 
@@ -1420,9 +1419,6 @@ def generate_drawn_filenames(poke_info, cursor):
 #|~~~~~~~~~~~~~~~~~~~~~~~~~~~[     POKEMON GO FILENAME TABLE     ]~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~|
 #|================================================================================================|
 
-# TODO: Add Shiny cap pikachu, cosplay pikachu when I exclude from HOME, etc
-
-# TODO: Print what pokemon # on like other filename generators
 def populate_go_filenames(cursor):
     print("Populating GO filenames into database...")
     
@@ -1433,6 +1429,7 @@ def populate_go_filenames(cursor):
     for poke_form, poke_info in poke_forms.items():
         poke_num = poke_info["poke num"]
         form_name = poke_info["form name"]
+        print(f"\rGenerating pokemon #{poke_num} GO filenames...", end='', flush=True)
 
         for costume_id in poke_costumes[poke_num]:
             costume_name = get_costume_name(costume_id)
@@ -1444,12 +1441,15 @@ def populate_go_filenames(cursor):
                 filename = generate_go_filename(poke_info, sprite_type, costume_name)
                 file_ids = {"filename": filename, "poke_num": poke_num, "form_id": poke_form[1], "sprite_id": sprite_id, "costume_id": costume_id, "does_exist": None}
 
-                if unobtainable_in_go(poke_num, form_name, costume_name):
+                if unobtainable_in_go(poke_num, form_name, costume_name, sprite_type):
                     insert_into_table_w_unobtainables(cursor, obtainable=False, table="all_go_filenames", **file_ids)
                 else:
                     file_ids["does_exist"] = file_exists(filename, save_directories["GO"]["files"])
                     insert_into_table(cursor, "obtainable_go_filenames", **file_ids)
                     insert_into_table_w_unobtainables(cursor, obtainable=True, table="all_go_filenames", **file_ids)
+
+    # Resetting console line after updates from above
+    print('\r' + ' '*60 + '\r', end='')
 
 
 def generate_go_filename(poke_info, sprite_type, costume_name):
@@ -1464,9 +1464,9 @@ def generate_go_filename(poke_info, sprite_type, costume_name):
     return filename
 
 
-def costume_cant_be_equipped(poke_num, form_name, costume_name):
+def costume_cant_be_equipped(poke_num, form_name, costume_name, sprite_type):
     for exclusion in NO_COSTUMES_EXIST_WITH_THESE_FORMS.values():
-        if exclusion(poke_num, form_name, costume_name):
+        if exclusion(poke_num, form_name, costume_name, sprite_type):
             return True
     return False
 
