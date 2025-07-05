@@ -72,7 +72,7 @@ FORM_EXCEPTION_POKEMON = {
 
 # Minior and Alcremie have special "shared" forms for their shinies
 SHARED_SHINY_FORMS = {  774: ["-Form_Core"], 
-                        869: ["-Form_Berry_Sweet", "-Form_Clover_Sweet", "-Form_Flower_Sweet", "-Form_Love_Sweet", "-Form_Ribbon_Sweet", "-Form_Star_Sweet", "-Form_Strawberry_Sweet", "-Gigantamax"]
+                        869: ["-Form_Berry_Sweet", "-Form_Clover_Sweet", "-Form_Flower_Sweet", "-Form_Love_Sweet", "-Form_Ribbon_Sweet", "-Form_Star_Sweet", "-Form_Strawberry_Sweet"]
 }
 
 
@@ -157,7 +157,7 @@ SPRITE_EXCLUSIONS = {
 # Sprites that don't exist. Shouldn't even be marked unobtainable, which is why theyre here not SPRITE_EXCLUSIONS
 NONEXISTANT_SPRITES={
     # UNIVERSAL EXCLUSIONS
-    "skip all shared shiny forms that arent adjusted appropriately": lambda poke_num, form_name, sprite_type: poke_num in SHARED_SHINY_FORMS and "Shiny" in sprite_type and form_name not in SHARED_SHINY_FORMS[poke_num],
+    "skip all shared shiny forms that arent adjusted appropriately": lambda poke_num, form_name, sprite_type: poke_num in SHARED_SHINY_FORMS and "Shiny" in sprite_type and form_name not in SHARED_SHINY_FORMS[poke_num] and form_name != "-Gigantamax",   # Omitting gigantamax for Alcremie
     "skip all non shiny sprites for shared shinies that are adjusted": lambda poke_num, form_name, sprite_type: poke_num in SHARED_SHINY_FORMS and "Shiny" not in sprite_type and form_name in SHARED_SHINY_FORMS[poke_num],
 
     # INDIVIDUAL POKEMON
@@ -183,6 +183,21 @@ NO_DRAWN_FORMS = {
 }
 # Excludes shared shiny forms (minior, alcremie, etc)
 for k,v in SHARED_SHINY_FORMS.items(): NO_DRAWN_FORMS[k] = set(v)
+
+
+UNOBTAINABLE_IN_HOME_AND_BANK = {
+    # UNIVERSAL
+    "no animated gigantamax": lambda poke_num, form_name, sprite_type: "-Gigantamax" in form_name and "-Animated" in sprite_type,
+
+    # SPECIFIC POKEMON
+    "no cosplay pikachu": lambda poke_num, form_name, sprite_type: poke_num == 25 and "-Form_Cosplay" in form_name,
+    "no spiky eared pichu": lambda poke_num, form_name, sprite_type: poke_num == 172 and form_name == "-Form_Spiky_Eared",
+    "no ??? form arceus": lambda poke_num, form_name, sprite_type: poke_num == 493 and form_name == "-Form_Qmark",
+    "no radiant sun solgaleo": lambda poke_num, form_name, sprite_type: poke_num == 791 and form_name == "-Form_Radiant_Sun",
+    "no full moon lunala": lambda poke_num, form_name, sprite_type: poke_num == 792 and form_name == "-Form_Full_Moon",
+    "no animated eternamax": lambda poke_num, form_name, sprite_type: poke_num == 890 and form_name == "-Form_Eternamax" and "-Animated" in sprite_type,
+    "no animated stellar terapagos": lambda poke_num, form_name, sprite_type: poke_num == 1024 and form_name == "-Form_Stellar" and "-Animated" in sprite_type,
+}
 
 
 # NOTE: This will exclude from the database entirely, if you want to mark it as unobtainable it should go in DOESNT_EXIST_IN_GO
