@@ -220,15 +220,26 @@ def poke_isnt_allowed_u_form_w_costume(poke_num, form_name, costume_name):
 # TODO: See if these are shiny locked across all games?
 GO_SHINY_LOCKED_POKES = {720, 721, 789, 891, 892, 893, 905}
 
-# TODO: Change to all forms and exclude missing Hisuian, etc
-GO_NO_GIGANTAMAX_FORMS = {12, 25, 52, 133, 569, 809, 823, 826, 834, 839, 841, 842, 844, 851, 858, 861, 869, 879, 884}
+
+GO_NO_FORMS = {
+    "-Gigantamax": {12, 25, 52, 133, 569, 809, 823, 826, 834, 839, 841, 842, 844, 851, 858, 861, 869, 879, 884, 892},
+    "-Region_Hisui": {705, 706}
+}
 
 
-# TODO: Will need sprite_type to mark shiny locked mons as unobtainable
+def isnt_obtainable_form_in_go(poke_num, form_name):
+    for unobtainable_form in GO_NO_FORMS:
+        if unobtainable_form in form_name:  # In here instead of == due to Gigantamax_Strike Urshifus being their own form
+            if poke_num in GO_NO_FORMS[unobtainable_form]:
+                return True
+    return False
+
+
 # NOTE: This will be marked as unobtainable in the database, if you want to exclude it entirely it should go in NO_COSTUMES_EXIST_WITH_THESE_FORMS
 UNOBTAINABLE_IN_GO = {
     # UNIVERSAL
     "no pokemon existing unless marked as such in info spreadsheet": lambda poke_num, form_name, costume_name, sprite_type: lazy_import("spreadsheet_utils").poke_isnt_in_game(poke_num, "GO"),
+    "no forms as specified in GO_NO_FORMS": lambda poke_num, form_name, costume_name, sprite_type: isnt_obtainable_form_in_go(poke_num, form_name),
     # NOTE: Costume name check required here, otherwise this will apply to all forms/costumes
     "no pokemon costumes w universal forms unless exempted in POKES_WITH_COSTUMES_AND_UNIVERSAL_FORMS": lambda poke_num, form_name, costume_name, sprite_type: poke_num in POKES_WITH_COSTUMES_AND_UNIVERSAL_FORMS and any(costume == costume_name for costume in POKES_WITH_COSTUMES_AND_UNIVERSAL_FORMS[poke_num].keys()) and poke_isnt_allowed_u_form_w_costume(poke_num, form_name, costume_name),
     "no shiny clone costumes": lambda poke_num, form_name, costume_name, sprite_type: costume_name == "-Costume_Clone" and "-Shiny" in sprite_type,
@@ -239,7 +250,6 @@ UNOBTAINABLE_IN_GO = {
     "no male saree pikachu": lambda poke_num, form_name, costume_name, sprite_type: poke_num == 25 and costume_name == "-Costume_Saree" and form_name == "Default",
                                                        
     # SPECIFIC POKEMON FORMS
-    # TODO: Add Gigantamaxes not in game yet (see spreadsheet AFTER deleting Gigantamax file and running scrape again)
     "no cap pikachus except original and world": lambda poke_num, form_name, costume_name, sprite_type: poke_num == 25 and "-Form_Cap" in form_name and form_name not in ("-Form_Cap_Original", "-Form_Cap_World"),
     "no default cosplay or belle cosplay pikachus": lambda poke_num, form_name, costume_name, sprite_type: poke_num == 25 and form_name in ("-Form_Cosplay", "-Form_Cosplay_Belle"),
     "no spiky eared pichu": lambda poke_num, form_name, costume_name, sprite_type: poke_num == 172 and form_name == "-Form_Spiky_Eared",
