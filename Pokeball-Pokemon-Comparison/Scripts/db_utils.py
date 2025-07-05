@@ -1345,15 +1345,11 @@ def generate_home_menu_filename(poke_info):
 def should_exclude_menu_poke_form(poke_info):
     poke_num = poke_info["poke num"]
     form_name = poke_info["form name"]
-    # No f menu sprites
-    if form_name == "-f": return True     
-    # These get excluded from menu sprites too
-    if poke_num in NO_DRAWN_FORMS:  
-        if form_name in NO_DRAWN_FORMS[poke_num]:
-            return True
-    # No Kyurem overdrive
-    if poke_num == 646 and "Overdrive" in form_name: return True
 
+    # TODO: Can turn each of these into a function
+    for exclusion in HOME_MENU_IMG_DOESNT_EXIST.values():
+        if exclusion(poke_num, form_name):
+            return True
     return False
 
 
