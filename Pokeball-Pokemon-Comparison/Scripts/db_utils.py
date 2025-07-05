@@ -953,8 +953,8 @@ def has_default_form(poke_num):
     else: return False
 
 
-def is_stamped_poke_form(poke_info):
-    if poke_info["poke num"] in STAMPED_FORM_POKES and poke_info["form name"] != "Default": return True
+def is_stamped_poke_form(poke_num, form_name):
+    if poke_num in STAMPED_FORM_POKES and form_name != "Default": return True
     else: return False
 
 
@@ -1274,22 +1274,21 @@ def populate_home_filenames(cursor):
 
     for poke_form, poke_info in poke_forms.items():
         for sprite_id, sprite_type in sprite_types.items():
-            if "-Back-Animated" in sprite_type: continue    # Animated back sprites are unobtainable for all HOME pokes, so excluding even them from all_home_filenames
+            if "-Back-Animated" in sprite_type: continue    # Animated back sprites are excluded for all HOME pokes, so excluding even them from all_home_filenames'. This formatting also excludes shiny animated back sprites
+
+            poke_num = poke_info["poke num"]
+            form_id = poke_form[1]
+            form_name = get_form_name(form_id, cursor)
 
             filename = generate_home_filename(poke_info, sprite_type)
-            file_ids = {"filename": filename, "poke_num": poke_info["poke num"], "form_id": poke_form[1], "sprite_id": sprite_id, "does_exist": None}
+            file_ids = {"filename": filename, "poke_num": poke_num, "form_id": form_id, "sprite_id": sprite_id, "does_exist": None}
 
-            if should_skip_nonexistant_sprite(poke_info["poke num"], poke_info["form name"], sprite_type):
+            if poke_is_unobtainable_in_home_and_bank(poke_num, form_name, sprite_type):
                 insert_into_table_w_unobtainables(cursor, obtainable=False, table="all_home_filenames", **file_ids)
-                continue
-            # No home back sprites, except for stamped pokemon to show stamp
-            if "-Back" in sprite_type and not is_stamped_poke_form(poke_info):
-                insert_into_table_w_unobtainables(cursor, obtainable=False, table="all_home_filenames", **file_ids)
-                continue
-            
-            file_ids["does_exist"] = file_exists(filename, save_directories["HOME"]["files"])
-            insert_into_table(cursor, "obtainable_home_filenames", **file_ids)
-            insert_into_table_w_unobtainables(cursor, obtainable=True, table="all_home_filenames", **file_ids)
+            else:
+                file_ids["does_exist"] = file_exists(filename, save_directories["HOME"]["files"])
+                insert_into_table(cursor, "obtainable_home_filenames", **file_ids)
+                insert_into_table_w_unobtainables(cursor, obtainable=True, table="all_home_filenames", **file_ids)
 
 
 def generate_home_filename(poke_info, sprite_type):
@@ -1301,6 +1300,19 @@ def generate_home_filename(poke_info, sprite_type):
     filename = f"{poke_num} {poke_info["poke name"]} HOME{"-Shiny" if is_shiny else ""}{form_name}{sprite_type}"
     return filename
 
+
+def poke_is_unobtainable_in_home_and_bank(poke_num, form_name, sprite_type):
+    if should_skip_nonexistant_sprite(poke_num, form_name, sprite_type):
+        return True
+    
+    if "-Back" in sprite_type and not is_stamped_poke_form(poke_num, form_name):    # No home back sprites, except for stamped pokemon to show stamp
+        return True
+    
+    # NOTE: If this function is too slow, only the below applies to bank
+    for exclusion in UNOBTAINABLE_IN_HOME_AND_BANK.values():
+        if exclusion(poke_num, form_name, sprite_type):
+            return True
+    return False
 
 
 
@@ -1364,12 +1376,22 @@ def populate_bank_filenames(cursor):
     rows = cursor.fetchall()
 
     for row in rows:
+        poke_num = row["poke_num"]
+        form_id = row["form_id"]
+        form_name = get_form_name(form_id, cursor)
+        sprite_id = row["sprite_id"]
+        sprite_type = get_sprite_type_name(sprite_id, cursor)
         filename = row["filename"].replace("Gen7 SM_USUM", "BANK")
 
-        exists = file_exists(filename, save_directories["BANK"]["files"])
-        file_ids = {"filename": filename, "poke_num": row["poke_num"], "form_id": row["form_id"], "sprite_id": row["sprite_id"], "does_exist": exists}
+        
+        file_ids = {"filename": filename, "poke_num": poke_num, "form_id": form_id, "sprite_id": sprite_id, "does_exist": None}
 
-        insert_into_table_w_unobtainables(cursor, obtainable=row["obtainable"], table="all_bank_filenames", **file_ids)
+        if poke_is_unobtainable_in_home_and_bank(poke_num, form_name, sprite_type):
+            insert_into_table_w_unobtainables(cursor, obtainable=False, table="all_bank_filenames", **file_ids)
+        else:
+            file_ids["does_exist"] = file_exists(filename, save_directories["BANK"]["files"])
+            insert_into_table(cursor, "obtainable_go_filenames", **file_ids)
+            insert_into_table_w_unobtainables(cursor, obtainable=True, table="all_bank_filenames", **file_ids)
 
 
 
