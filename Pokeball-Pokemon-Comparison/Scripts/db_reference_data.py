@@ -123,7 +123,7 @@ FORM_EXCLUSIONS = {
     "no solgaleo lunala forms outside SM USUM": lambda poke_form, game: poke_form["poke num"] in (791, 792) and poke_form["form name"] != "Default" and game["name"] != "SM_USUM",
     "no ultra necrozma outside SM USUM": lambda poke_form, game: poke_form["poke num"] == 800 and poke_form["form name"] == "-Form_Ultra" and game["name"] != "SM_USUM",
     "no meltan or melmetal until LGPE": lambda poke_form, game: poke_form["poke num"] in (808, 809) and lazy_import("db_utils").get_game_id(game["name"]) < lazy_import("db_utils").get_game_id("LGPE"),    # Technically these are gen 7 pokemon, they just werent introduced until LGPE
-    "no stamped poke sprites in games": lambda poke_form, game: poke_form["poke num"] in (854, 855, 1012, 1013) and poke_form["form name"] != "Default",     # Both forms look the same except for the stamp, which is really only visible in HOME anyways. This is where the stamp img will be downloaded
+    "no stamped poke sprites in games": lambda poke_form, game: poke_form["poke num"] in STAMPED_FORM_POKES and poke_form["form name"] != "Default",     # Both forms look the same except for the stamp, which is really only visible in HOME anyways. This is where the stamp img will be downloaded
     "no eternamax eternatus outside SwSh": lambda poke_form, game: poke_form["poke num"] == 890 and poke_form["form name"] == "-Form_Eternamax" and game["name"] != "SwSh",
     "no bloodmoon ursaluna form until SV": lambda poke_form, game: poke_form["poke num"] == 901 and poke_form["form name"] == "-Form_Bloodmoon"  and lazy_import("db_utils").get_game_id(game["name"]) < lazy_import("db_utils").get_game_id("SV")
 }
@@ -166,7 +166,7 @@ NONEXISTANT_SPRITES={
     "no shiny cap pikachu": lambda poke_num, form_name, sprite_type: poke_num == 25 and "-Form_Cap" in form_name and "Shiny" in sprite_type,
     # The below only affects home because (non-default) forms of the stamped pokes were already marked as unobtainable in games (since no way to see stamp in game and all other sprites are identical)
     # Further processing is done in the generate_home_filenames function to exclude default form back sprites (couldn't include here bc would also filter them for games)
-    "no stamped poke forms except show stamp back sprite": lambda poke_num, form_name, sprite_type: poke_num in (854, 855, 1012, 1013) and form_name != "Default" and sprite_type not in ("-Back", "-Shiny-Back")
+    "no stamped poke forms except show stamp back sprite": lambda poke_num, form_name, sprite_type: poke_num in STAMPED_FORM_POKES and form_name != "Default" and sprite_type not in ("-Back", "-Shiny-Back")
 }
 
 
@@ -197,6 +197,21 @@ UNOBTAINABLE_IN_HOME_AND_BANK = {
     "no full moon lunala": lambda poke_num, form_name, sprite_type: poke_num == 792 and form_name == "-Form_Full_Moon",
     "no animated eternamax": lambda poke_num, form_name, sprite_type: poke_num == 890 and form_name == "-Form_Eternamax" and "-Animated" in sprite_type,
     "no animated stellar terapagos": lambda poke_num, form_name, sprite_type: poke_num == 1024 and form_name == "-Form_Stellar" and "-Animated" in sprite_type,
+}
+
+
+HOME_MENU_IMG_DOESNT_EXIST = {
+    # UNIVERSAL
+    "no gigantamax": lambda poke_num, form_name: "-Gigantamax" in form_name,    # These do exist for Gen8 menu sprites, just not hd and dont match style
+    "no female forms": lambda poke_num, form_name: "-f" in form_name,
+
+    # SPECIFIC POKEMON
+    "no cosplay pikachu": lambda poke_num, form_name: poke_num == 25 and "-Form_Cosplay" in form_name,  # These do exist for Gen6 menu sprites, just not hd and dont match style
+    "no spiky eared pichu": lambda poke_num, form_name: poke_num == 172 and form_name == "-Form_Spiky_Eared",
+    "no ??? form arceus": lambda poke_num, form_name: poke_num == 493 and form_name == "-Form_Qmark",
+    "no overdrice form kyurem": lambda poke_num, form_name: poke_num == 646 and "Overdrive" in form_name,
+    "only average size pumpkaboo and gourgeist": lambda poke_num, form_name: poke_num in (710, 711) and form_name != "-Form_Average_Size",
+    "no stamped forms": lambda poke_num, form_name: poke_num in STAMPED_FORM_POKES and form_name != "Default",
 }
 
 
@@ -274,14 +289,11 @@ UNOBTAINABLE_IN_GO = {
     "no radiant sun solgaleo": lambda poke_num, form_name, costume_name, sprite_type: poke_num == 791 and form_name == "-Form_Radiant_Sun",
     "no full moon lunala": lambda poke_num, form_name, costume_name, sprite_type: poke_num == 792 and form_name == "-Form_Full_Moon",
     "no ultra necrozma": lambda poke_num, form_name, costume_name, sprite_type: poke_num == 800 and form_name == "-Form_Ultra",
-    "no stamped form sinistea": lambda poke_num, form_name, costume_name, sprite_type: poke_num == 854 and form_name != "Default",
-    "no stamped form polteageist": lambda poke_num, form_name, costume_name, sprite_type: poke_num == 855 and form_name != "Default",
+    "no stamped forms": lambda poke_num, form_name, costume_name, sprite_type: poke_num in STAMPED_FORM_POKES and form_name != "Default",
     "no eternamax eternatus": lambda poke_num, form_name, costume_name, sprite_type: poke_num == 890 and form_name == "-Form_Eternamax",
     "no dada zarude": lambda poke_num, form_name, costume_name, sprite_type: poke_num == 893 and form_name == "-Form_Dada",
     "no ursaluna bloodmoon": lambda poke_num, form_name, costume_name, sprite_type: poke_num == 901 and form_name == "-Form_Bloodmoon",
-    "no chest form gimmighoul": lambda poke_num, form_name, costume_name, sprite_type: poke_num == 999 and form_name == "-Form_Chest",
-    "no stamped form poltchageist": lambda poke_num, form_name, costume_name, sprite_type: poke_num == 1012 and form_name != "Default",
-    "no stamped form sinistcha": lambda poke_num, form_name, costume_name, sprite_type: poke_num == 1013 and form_name != "Default"
+    "no chest form gimmighoul": lambda poke_num, form_name, costume_name, sprite_type: poke_num == 999 and form_name == "-Form_Chest"
 }
 
 
