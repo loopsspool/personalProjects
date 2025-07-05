@@ -1464,16 +1464,16 @@ def generate_go_filename(poke_info, sprite_type, costume_name):
     return filename
 
 
-def costume_cant_be_equipped(poke_num, form_name, costume_name, sprite_type):
+def costume_cant_be_equipped(poke_num, form_name, costume_name):
     for exclusion in NO_COSTUMES_EXIST_WITH_THESE_FORMS.values():
-        if exclusion(poke_num, form_name, costume_name, sprite_type):
+        if exclusion(poke_num, form_name, costume_name):
             return True
     return False
 
 
-def unobtainable_in_go(poke_num, form_name, costume_name):
+def unobtainable_in_go(poke_num, form_name, costume_name, sprite_type):
     for exclusion in UNOBTAINABLE_IN_GO.values():
-        if exclusion(poke_num, form_name, costume_name):
+        if exclusion(poke_num, form_name, costume_name, sprite_type):
             return True
     return False
 
